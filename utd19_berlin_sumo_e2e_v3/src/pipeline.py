@@ -128,8 +128,8 @@ def step_network(ctx: StepContext, accept_auto: bool) -> dict:
         cmd += ["--demo-nodes", PROJECT / "demo/demo.nod.xml", "--demo-edges", PROJECT / "demo/demo.edg.xml"]
     elif ctx.cfg["osm"].get("clip_to_detector_bbox"):
         cmd += [
-            "--clip", "--locations", ctx.dirs["processed/berlin"] / "berlin_locations.csv",
-            "--buffer-km", ctx.cfg["osm"].get("detector_bbox_buffer_km", 4),
+            "--clip", "--locations", str(ctx.dirs["processed/berlin"] / "berlin_locations.csv"),
+            "--buffer-km", str(ctx.cfg["osm"].get("detector_bbox_buffer_km", 4)),
         ]
     call(ctx, cmd)
     call(ctx, module(

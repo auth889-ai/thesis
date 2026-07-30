@@ -13,6 +13,9 @@ beautifulsoup4>=4.12
 openpyxl>=3.1
 lxml>=5.0
 shapely>=2.0
+# sumolib needs pyproj to convert detector WGS84 coordinates into network
+# coordinates; without it map_detectors aborts on the geo-projection check.
+pyproj>=3.6
 geopandas>=0.14
 folium>=0.16
 networkx>=3.2

@@ -69,7 +69,11 @@ candidates:
 
 route_sampler:
   optimize: full
-  threads: 4
+  # routeSampler cannot run multi-threaded: sumolib's edgedata records are
+  # instances of a class defined inside a function, so multiprocessing fails to
+  # pickle them. calibrate.py retries single-threaded automatically, but asking
+  # for 1 up front skips a guaranteed failed attempt.
+  threads: 1
   write_flows: number
   merge_same_edge: max
 
