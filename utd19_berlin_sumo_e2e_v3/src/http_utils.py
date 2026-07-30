@@ -28,6 +28,16 @@ def download(url: str, destination: str | Path, *, expected_size: int | None = N
             mode = "ab"
         try:
             with session().get(url, headers=headers, stream=True, timeout=timeout) as r:
+                # 416 means the Range start is past the end of the resource, i.e.
+                # the local copy is already complete (or longer than the remote).
+                # Without this, re-running any completed download step fails.
+                if r.status_code == 416 and existing:
+                    if not expected_size or existing == expected_size:
+                        return dest
+                    # Local file is the wrong size; drop it so the next
+                    # attempt starts from byte 0 instead of re-sending Range.
+                    dest.unlink()
+                    continue
                 if existing and r.status_code != 206:
                     existing = 0
                     mode = "wb"
