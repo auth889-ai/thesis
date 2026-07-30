@@ -9,12 +9,20 @@ import pandas as pd
 
 from .utils import find_col, normalize_col, parse_date_list, write_json
 
-ID_ALIASES = ["detid", "detector_id", "detektor_id", "mq_hr", "mq_id", "messquerschnitt", "id"]
-DATE_ALIASES = ["date", "datum", "day", "messdatum"]
+# The official Berlin Messquerschnitt hourly files use the header
+#   mq_name;tag;stunde;qualitaet;q_kfz_mq_hr;v_kfz_mq_hr;q_pkw_mq_hr;...
+# which maps onto the paper's Table III as
+#   mq_name=detid, tag=date, stunde=hour, qualitaet=quality,
+#   q_kfz_mq_hr=N_veh, v_kfz_mq_hr=v_veh.
+# Those exact names must appear here; find_col matches whole names, not prefixes.
+ID_ALIASES = ["detid", "mq_name", "detector_id", "detektor_id", "mq_hr", "mq_id",
+              "messquerschnitt", "id"]
+DATE_ALIASES = ["date", "tag", "datum", "day", "messdatum"]
 HOUR_ALIASES = ["hour", "stunde", "std", "zeitintervall"]
 QUALITY_ALIASES = ["quality", "qualitaet", "qualität", "gueltig", "gültig"]
-FLOW_ALIASES = ["nveh", "anzahl_fahrzeuge", "fahrzeuge", "verkehrsstaerke", "verkehrsstarke", "q_kfz", "count", "flow"]
-SPEED_ALIASES = ["vveh", "geschwindigkeit", "speed", "v_kfz"]
+FLOW_ALIASES = ["nveh", "q_kfz_mq_hr", "q_kfz_fs_hr", "anzahl_fahrzeuge", "fahrzeuge",
+                "verkehrsstaerke", "verkehrsstarke", "q_kfz", "count", "flow"]
+SPEED_ALIASES = ["vveh", "v_kfz_mq_hr", "v_kfz_fs_hr", "geschwindigkeit", "speed", "v_kfz"]
 
 
 def read_csv_flexible(path: Path) -> pd.DataFrame:
@@ -98,7 +106,65 @@ def _first_prop(props: dict[str, Any], aliases: list[str]) -> Any:
     return None
 
 
+def parse_locations_stammdaten(path: Path) -> pd.DataFrame:
+    """Read the official Stammdaten_Verkehrsdetektion workbook.
+
+    The hourly Messquerschnitt files identify a cross-section as `TE001`
+    (column MQ_KURZNAME), while the paper's Table III shows the 15-digit
+    DET_ID15/MQ_ID15 form. teu_standorte.json only carries the unrelated
+    TEU id space, so this workbook is the only published bridge between
+    the measurement ids and WGS84 coordinates.
+
+    One row per physical detector (lane); a cross-section spans several,
+    so the row count per MQ_KURZNAME is the number of monitored lanes.
+    """
+    frame = pd.read_excel(path)
+    frame.columns = [normalize_col(c) for c in frame.columns]
+    id_col = find_col(frame.columns, ["mq_kurzname"])
+    # "LÄNGE (WGS84)" normalizes to l_nge_wgs84 because the umlaut is stripped.
+    lon_col = find_col(frame.columns, ["l_nge_wgs84", "lange_wgs84", "laenge_wgs84",
+                                       "long", "longitude"])
+    lat_col = find_col(frame.columns, ["breite_wgs84", "breitewgs84", "lat", "latitude"])
+    road_col = find_col(frame.columns, ["strasse"], required=False)
+    direction_col = find_col(frame.columns, ["richtung"], required=False)
+    mq_id_col = find_col(frame.columns, ["mq_id15"], required=False)
+
+    frame["_lon"] = pd.to_numeric(frame[lon_col], errors="coerce")
+    frame["_lat"] = pd.to_numeric(frame[lat_col], errors="coerce")
+    frame = frame.dropna(subset=["_lon", "_lat"])
+
+    rows: list[dict[str, Any]] = []
+    for mq, group in frame.groupby(frame[id_col].map(clean_id)):
+        if not mq:
+            continue
+        first = group.iloc[0]
+        record = {
+            "primary_location_id": mq,
+            "longitude": float(group["_lon"].mean()),
+            "latitude": float(group["_lat"].mean()),
+            "road_name": first[road_col] if road_col else None,
+            "direction": first[direction_col] if direction_col else None,
+            # Each workbook row is one monitored lane of the cross-section.
+            "lanes_reported": int(len(group)),
+            "raw_properties": json.dumps(
+                {"source": "Stammdaten_Verkehrsdetektion", "rows": int(len(group))},
+                ensure_ascii=False,
+            ),
+        }
+        aliases = {mq: "MQ_KURZNAME"}
+        if mq_id_col:
+            for value in group[mq_id_col].dropna().unique():
+                aliases.setdefault(clean_id(value), "MQ_ID15")
+        for alias, source in aliases.items():
+            rows.append({**record, "detid": alias, "alias_source": source})
+
+    result = pd.DataFrame(rows).dropna(subset=["longitude", "latitude"])
+    return result.drop_duplicates("detid")
+
+
 def parse_locations(path: Path) -> pd.DataFrame:
+    if path.suffix.lower() in {".xlsx", ".xls"}:
+        return parse_locations_stammdaten(path)
     payload = json.loads(path.read_text(encoding="utf-8-sig"))
     features = payload.get("features", []) if isinstance(payload, dict) else payload
     rows = []

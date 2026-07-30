@@ -89,7 +89,7 @@ def main() -> None:
     parser.add_argument("--output-dir", required=True)
     parser.add_argument("--year", type=int, default=2021)
     parser.add_argument("--month", type=int, default=2)
-    parser.add_argument("--branch-regex", default=r"Messquerschnitt.*fahrtrichtungsbezogen")
+    parser.add_argument("--branch-regex", default=r"Messquerschnitte/mq_hr")
     parser.add_argument("--list-only", action="store_true")
     parser.add_argument("--download-all-year-files", action="store_true")
     args = parser.parse_args()
@@ -110,6 +110,23 @@ def main() -> None:
         return
 
     location_path = download(LOCATION_URL, out / "teu_standorte.json")
+
+    # The hourly Messquerschnitt files key on MQ_KURZNAME (TE001...), an id
+    # space teu_standorte.json does not contain. The Stammdaten workbook is the
+    # published bridge from those ids to WGS84 coordinates and lane counts.
+    # Listed without a prefix: the workbook sits at the container root, not
+    # under a year folder, so the year-prefixed listing above cannot see it.
+    stammdaten = [b for b in list_blobs()
+                  if re.search(r"stammdaten.*\.xlsx$", b["name"], re.I)]
+    stammdaten_path = None
+    if stammdaten:
+        newest = sorted(stammdaten, key=lambda b: b["name"])[-1]
+        stammdaten_path = download(newest["url"], out / "Stammdaten.xlsx",
+                                   expected_size=newest["size"] or None)
+        print(f"Detector master data: {newest['name']}")
+    else:
+        print("WARNING: no Stammdaten workbook found; detector mapping will fail.")
+
     eligible = [b for b in ranked if b["score"] >= 25]
     selected = []
     if eligible:
@@ -129,6 +146,12 @@ def main() -> None:
         "name": "teu_standorte.json", "url": LOCATION_URL,
         "saved_as": str(location_path), "sha256": sha256_file(location_path),
     }]
+    if stammdaten_path:
+        downloaded.append({
+            "name": "Stammdaten.xlsx", "saved_as": str(stammdaten_path),
+            "sha256": sha256_file(stammdaten_path),
+            "role": "MQ_KURZNAME -> WGS84 + monitored lane count",
+        })
     for item in selected:
         preserved_name = safe_filename(item["name"].replace("/", "__"))
         dest = download(item["url"], out / preserved_name,

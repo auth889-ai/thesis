@@ -91,7 +91,11 @@ def step_preprocess_berlin(ctx: StepContext, accept_auto: bool) -> dict:
     cfg = ctx.cfg["berlin"]
     cmd = module(
         "preprocess_berlin", "--raw-dir", ctx.dirs["raw/berlin"],
-        "--locations", ctx.dirs["raw/berlin"] / "teu_standorte.json",
+        # Stammdaten.xlsx is the only source that links the MQ_KURZNAME ids used
+        # by the hourly files to coordinates; teu_standorte.json cannot match them.
+        "--locations", ctx.dirs["raw/berlin"] / ("Stammdaten.xlsx"
+                                                 if ctx.cfg["mode"] != "demo"
+                                                 else "teu_standorte.json"),
         "--output-dir", ctx.dirs["processed/berlin"],
         "--year", cfg["year"], "--month", cfg["month"],
         "--actual-dates", *cfg.get("actual_dates", []),
