@@ -1,0 +1,29 @@
+seed: 2018
+simulation:
+  begin: 0
+  end: 3600
+  step_length: 1.0
+  teleport: -1
+unit_intersection:
+  demand:
+    north_south_period_s: 6
+    south_north_period_s: 6
+    east_west_period_s: 12
+    west_east_period_s: 12
+  signal:
+    ns_green_s: 30
+    ew_green_s: 30
+    yellow_s: 3
+    all_red_s: 1
+    min_green_s: 10
+metrics:
+  queue_sample_s: 1
+  tripinfo: true
+  summary: true
+controllers:
+  fixed_time: true
+  actuated: true
+  max_pressure: true
+official_bologna:
+  repo: https://github.com/DLR-TS/sumo-scenarios.git
+  relative_path: bologna/acosta

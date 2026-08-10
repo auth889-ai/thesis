@@ -1,3 +1,41 @@
-/paper
+# macOS
 .DS_Store
 **/.DS_Store
+
+# Old scratch areas (pre-Lab-00)
+/paper
+test/
+
+# ---- Data / storage policy: large files live in Google Drive, never in git ----
+datasets/
+**/datasets/raw/
+*.csv.part
+*.parquet
+*.pbf
+*.sqlite
+*.duckdb
+
+# Model weights / checkpoints
+*.pt
+*.pth
+*.ckpt
+*.h5
+checkpoints/
+
+# Secrets
+.env
+*.env
+**/secrets*
+
+# Caches / notebook noise
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+**/duckdb_tmp/
+
+# Large experiment outputs (small summary CSVs/PNGs under paper_labs/*/outputs are tracked)
+outputs/large/
+**/outputs/large/
+
+# Exceptions: small audit CSVs inside lab outputs ARE tracked
+!paper_labs/**/outputs/**/*.csv
