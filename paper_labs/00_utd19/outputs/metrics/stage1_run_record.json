@@ -1,0 +1,93 @@
+{
+  "env": {
+    "run_started_utc": "2026-08-10T14:00:42.258393+00:00",
+    "python": "3.12.13",
+    "platform": "Linux-6.6.122+-x86_64-with-glibc2.35",
+    "duckdb": "1.1.3",
+    "pandas": "2.2.2",
+    "numpy": "2.0.2",
+    "scipy": "1.13.1",
+    "matplotlib": "3.10.0",
+    "seed": 42
+  },
+  "config": {
+    "drive_root": "/content/drive/MyDrive/DhakaFlow-Nexus-Data/Lab00_UTD19",
+    "city": "torino",
+    "seed": 42,
+    "n_draws": 300,
+    "sample_frac": 0.8,
+    "quantiles": [
+      0.95,
+      0.975
+    ],
+    "k_bin_width_candidates": [
+      2.0,
+      4.0
+    ],
+    "min_detectors_per_interval": 10,
+    "freeflow_speed_pct": 0.85,
+    "freeflow_occ_pct": 0.1,
+    "min_valid_intervals_per_detector": 500,
+    "duckdb_memory_limit": "8GB",
+    "duckdb_temp_dir": "/content/duckdb_tmp"
+  },
+  "occ_scale_percent": true,
+  "rows_raw": 2080768,
+  "rows_clean": 1805085,
+  "detectors_used": 335,
+  "rescale_scalar_stats": {
+    "count": 335.0,
+    "mean": 101.88378704919049,
+    "std": 7.3752607570324615,
+    "min": 86.00000000000013,
+    "25%": 99.99999999999977,
+    "50%": 100.0,
+    "75%": 106.24999999999994,
+    "max": 132.6086956521738
+  },
+  "primary": {
+    "bin_width": 2.0,
+    "quantile": 0.95,
+    "k_crit": 31.900000000000002,
+    "q_crit": 1104.1518735312416,
+    "v_crit": 34.612911395963685,
+    "params": {
+      "vf": 44.224058511688504,
+      "Q": 1274.1101076656564,
+      "kappa": 614.4054488797702,
+      "w": 66.9377552312522,
+      "lam": 333.7424382470138
+    }
+  },
+  "comparison": {
+    "shape_is_concave_with_interior_maximum": false,
+    "v_crit_kmh": 34.612911395963685,
+    "paper_sample_mean_v_crit_kmh": 18.8,
+    "v_crit_within_paper_sample_range": true,
+    "k_crit_over_kappa": 0.05192011245694916,
+    "paper_consistency_rule": "critical accumulation should not exceed ~1/3 of jam (ref 19)",
+    "k_crit_ratio_ok": true,
+    "sensitivity": {
+      "bin2.0_q0.95": {
+        "k*": 31.900000000000002,
+        "q*": 1104.1518735312416,
+        "v*": 34.612911395963685
+      },
+      "bin2.0_q0.975": {
+        "k*": 31.900000000000002,
+        "q*": 1266.0665239672721,
+        "v*": 39.688605766999125
+      },
+      "bin4.0_q0.95": {
+        "k*": 33.0,
+        "q*": 1209.971546938321,
+        "v*": 36.66580445267639
+      },
+      "bin4.0_q0.975": {
+        "k*": 33.0,
+        "q*": 1227.7085360999156,
+        "v*": 37.203288972724714
+      }
+    }
+  }
+}

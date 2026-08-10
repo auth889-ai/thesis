@@ -67,16 +67,43 @@ functional-form fit of ref 18 by bounded NLS, critical point = fitted maximum.
 Sensitivity over bin width {2,4} veh/km/lane × quantile {0.95, 0.975} — all four
 estimates reported, none silently chosen.
 
-`[STAGE1: filter counts, detectors used, rescale-scalar stats, critical-point
-table, figures]`
+**Completed 2026-08-10 (all numbers from `outputs/metrics/stage1_run_record.json`):**
+
+- Filtering: 2,080,768 raw torino rows → **1,805,085** analyzed (V10 error-flag
+  261,085; V5 occupancy-out-of-range 62,649; V1/V3/V4/V7 all zero — torino is a
+  clean city apart from flags). 339→**335 detectors** (4 dropped as sparse).
+- Occupancy scale confirmed **0–100 percent** (converted to fraction).
+- Rescale scalars s_i: median 100.0, mean 101.9 ± 7.4, range 86–133 — tight
+  distribution, i.e., torino detectors are mutually consistent.
+- Re-sampled cloud: 300 draws × 268 detectors → **1,814,400 network-state
+  points**, density range 0.4–32.0 veh/km/lane.
+- Critical-point estimates (all four sensitivity variants):
+
+| bin (veh/km) | quantile | k\* (veh/km/lane) | q\* (veh/h/lane) | v\* (km/h) |
+|---|---|---|---|---|
+| 2.0 | 0.950 | 31.9 | 1104 | 34.6 |
+| 2.0 | 0.975 | 31.9 | 1266 | 39.7 |
+| 4.0 | 0.950 | 33.0 | 1210 | 36.7 |
+| 4.0 | 0.975 | 33.0 | 1228 | 37.2 |
+
+- **Honest caveat recorded by the pipeline itself:**
+  `shape_is_concave_with_interior_maximum = false` — the fitted maximum lies at
+  the *edge* of the observed density range. Whole-city torino (our single
+  "region", per limitation 2 below) rarely enters the congested branch, so
+  (k\*, q\*) is a **lower-bound/boundary estimate** of the critical point, not an
+  interior peak. This is precisely the behavior the paper's <10 km² regional
+  partitioning exists to avoid.
+- Figures: `outputs/figures/stage1/PAPER_FAITHFUL_MFD.png` (cloud + 95th-pct
+  upper bound + ref-18 fit + critical point) and
+  `critical_point_visualization.png` (v(k) with v\* marked) — both inspected.
 
 ## 5. Published vs our results
 
 | Quantity | Published | Ours | Comparable? |
 |---|---|---|---|
-| MFD shape | smooth ∩-curve with interior maximum (Fig 1d) | `[STAGE1]` | qualitative |
-| Critical speed | sample mean 18.8 km/h across 107 networks (Fig 2b) | `[STAGE1]` v\* for torino | order-of-magnitude only (one network, uncalibrated) |
-| Critical/jam ratio | critical accumulation ≤ ~1/3 jam (ref 19) | `[STAGE1]` k\*/κ | consistency check |
+| MFD shape | smooth ∩-curve with interior maximum (Fig 1d) | smooth concave rise; maximum at data edge (no deep congested branch at whole-city scale) | qualitative — consistent with a free-flow-dominant aggregate |
+| Critical speed | sample mean 18.8 km/h across 107 networks (Fig 2b) | v\* = 34.6–39.7 km/h (torino, uncalibrated, whole city) | within the paper's cross-network range; higher than the mean, as expected for an aggregate that dilutes congestion |
+| Critical/jam ratio | critical accumulation ≤ ~1/3 jam (ref 19) | k\*/κ = 0.05 ≤ 1/3 ✓ (κ weakly identified — no congested-branch data) | consistency check passes |
 | P̄\*, n̄\* (veh-km/h/km², veh/km²) | 12,236 ± 5,513; 653 ± 308 | not computed | **No** — needs OSM network length L per regional network (out of Stage-1 scope) |
 | Table 1 regression | R²≈0.9, elasticities | not attempted | No — needs all 107 networks + topology variables |
 | Torino-specific MFD (Supp. Figs) | image only | `[STAGE1]` | visual, if Supplementary PDF obtained |
@@ -88,9 +115,13 @@ table, figures]`
   exactly; `tests/test_stage1_synthetic.py` — planted critical point recovered
   (k\* 36.5 vs 36.0, q\* 1760 vs 1800, v\* 48.2 vs 50.0). Two real bugs caught
   before Colab (DuckDB `avg(boolean)`; fragile occupancy-scale heuristic).
-- In-Colab manual checks on real data: smoke (4 assertions) and Stage 1
-  (bin-percentile by hand, seeded draw reproduction, fitted-maximum
-  consistency, v\* arithmetic) `[STAGE1: confirm]`.
+- In-Colab manual checks on real data — **all passed**: smoke (4 assertions:
+  mean flow/occ, unit conversion, MFD point, V4 recount) and Stage 1 (bin
+  percentile recomputed by hand: 628.69 == 628.69 over 179,001 points; seeded
+  draw 0 reproduced exactly, 6,048 points; fitted-maximum consistency
+  q(k\*)=1104.2; v\* arithmetic).
+- Config governance: `tests/test_configs_match.py` guarantees notebook CONFIGs
+  mirror `configs/smoke.yaml` / `configs/full.yaml`.
 
 ## 7. Discrepancies and limitations (honest list)
 
@@ -105,8 +136,13 @@ table, figures]`
 4. **Released ≠ analyzed sample** (39 vs 41 cities; date ranges may differ).
 5. Bin width, free-flow percentiles, sparse-detector threshold: ASSUMED
    (documented, sensitivity-checked where feasible).
-6. Colab free tier disconnected repeatedly; all steps are resumable and the
-   final runs completed `[STAGE1: confirm]`.
+6. Colab free tier disconnected repeatedly during the night runs; all steps are
+   resumable and **both final runs (smoke + Stage 1) completed** on
+   anastasiasaat81@gmail.com on 2026-08-10, with artifacts verified in Drive
+   and copied into this repo.
+7. κ (jam density) and w (wave speed) are extrapolations here: with no
+   congested-branch observations the fit cannot identify them — only the
+   free-flow branch and the boundary maximum are data-supported.
 
 ## 8. What was learned (teaching summary)
 

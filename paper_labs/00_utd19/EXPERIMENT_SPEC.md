@@ -1,7 +1,12 @@
-# EXPERIMENT_SPEC — Lab 00 smoke test (Colab)
+# EXPERIMENT_SPEC — Lab 00 experiments (Colab)
 
-Status: IN PROGRESS — fields marked `[RUN]` are filled from the completed Colab
-run record (`outputs/run_record.json`); do not fill them by hand.
+Status: **COMPLETE** (2026-08-10). Run records:
+`outputs/metrics/smoke_run_record.json`, `outputs/metrics/stage1_run_record.json`.
+Smoke window: 2016-09-26 → 2016-10-02 (7 days). Stage 1: all 21 valid torino
+days, 335 detectors, results in `outputs/tables/stage1/critical_point_estimates.csv`.
+Stage-1 notebook URL: https://colab.research.google.com/drive/1YvVZAKbiZ5BDlnsPqerKWMLry0D_RAPw
+Canonical parameters: `configs/smoke.yaml`, `configs/full.yaml` (enforced by
+`tests/test_configs_match.py`).
 
 ## Environment
 
