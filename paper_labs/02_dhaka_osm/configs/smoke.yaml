@@ -1,0 +1,14 @@
+# Lab 02 smoke: inner sub-box (Karwan Bazar / Bangla Motor core), light demand.
+experiment_name: lab02_smoke
+bbox:            # WGS84; subset of the full pre-registered region
+  south: 23.738
+  west: 90.385
+  north: 23.752
+  east: 90.400
+seed: 42
+sim_end: 600
+trip_period: 3.0        # ~1 trip per 3 s
+min_edges: 50
+min_scc_fraction: 0.85  # smoke box is clipped harder at its boundary
+min_tls: 1
+max_unroutable_fraction: 0.02
