@@ -1,0 +1,40 @@
+{
+  "config": {
+    "experiment_name": "lab01_smoke",
+    "sumo_binary": "sumo",
+    "sim_end": 900,
+    "seeds": [
+      11
+    ],
+    "controllers": [
+      "fixed_time",
+      "actuated",
+      "max_pressure"
+    ],
+    "demand": {
+      "periods": [
+        {
+          "begin": 0,
+          "end": 450,
+          "ns_vph_each": 450,
+          "ew_vph_each": 150
+        },
+        {
+          "begin": 450,
+          "end": 750,
+          "ns_vph_each": 150,
+          "ew_vph_each": 450
+        }
+      ]
+    },
+    "controller": {
+      "tls_id": "C",
+      "min_green": 10,
+      "max_green": 45,
+      "decision_interval": 5,
+      "extension": 5,
+      "switch_margin": 1
+    }
+  },
+  "config_path": "/content/DhakaFlow-Nexus/paper_labs/01_sumo_foundation/configs/smoke.yaml"
+}

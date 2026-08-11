@@ -36,3 +36,18 @@ verified to contain nothing unique (its RESOURCES.md links are a subset of
 
 - Nothing. No handoff file was scientifically wrong; the only defect found was
   the missing repo-into-Colab mechanism (fixed above).
+
+## Execution-time fixes (2026-08-11 Colab gate)
+
+4. `scripts/install_colab.sh`'s embedded check did `import traci` at top level;
+   the eclipse-sumo wheel exposes traci under `SUMO_HOME/tools`, not as a pip
+   top-level module → check failed (install itself succeeded;
+   `colab_env.configure_sumo_env()` provides the working environment). Defect
+   documented; runtime unaffected.
+5. `scripts/run_bologna_unmodified.sh` used `/usr/bin/time -v`, which does not
+   exist in the Colab image → first Bologna attempt exited 127 before SUMO
+   started. Fixed: plain execution + bash SECONDS wall time.
+6. Same script treated ANY `git status` output as upstream dirt; the unmodified
+   acosta config writes outputs into the scenario dir (untracked files), so the
+   check always failed after a SUCCESSFUL run. Fixed: integrity =
+   `--untracked-files=no` (no tracked file modified) + untracked count recorded.

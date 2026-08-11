@@ -1,0 +1,44 @@
+{
+  "config": {
+    "experiment_name": "lab01_full",
+    "sumo_binary": "sumo",
+    "sim_end": 2100,
+    "seeds": [
+      11,
+      22,
+      33,
+      44,
+      55
+    ],
+    "controllers": [
+      "fixed_time",
+      "actuated",
+      "max_pressure"
+    ],
+    "demand": {
+      "periods": [
+        {
+          "begin": 0,
+          "end": 900,
+          "ns_vph_each": 650,
+          "ew_vph_each": 220
+        },
+        {
+          "begin": 900,
+          "end": 1800,
+          "ns_vph_each": 220,
+          "ew_vph_each": 650
+        }
+      ]
+    },
+    "controller": {
+      "tls_id": "C",
+      "min_green": 10,
+      "max_green": 45,
+      "decision_interval": 5,
+      "extension": 5,
+      "switch_margin": 1
+    }
+  },
+  "config_path": "/content/DhakaFlow-Nexus/paper_labs/01_sumo_foundation/configs/full.yaml"
+}
