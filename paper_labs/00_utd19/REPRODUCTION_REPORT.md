@@ -152,9 +152,15 @@ network's mean flow vs mean density traces the MFD; production/accumulation are
 the network-scaled versions; the curve rises (free flow), peaks at the critical
 point (capacity, n\*/k\*), and falls (congestion — more cars, less movement);
 critical speed v\* = q\*/k\* is where congestion begins (paper: ~19 km/h on
-average — city networks saturate at surprisingly low speeds). Signal control
-should hold the network near n\* (Introduction ¶4) — the scientific basis for
-DhakaFlow's future RL set-points.
+average — city networks saturate at surprisingly low speeds). The paper notes
+that maximising travel production alone would act near n ≈ n\* (Introduction
+¶4); in DhakaFlow the critical point is carried forward as a **diagnostic and
+optional feature** (state / reward-shaping / risk signal, to be justified by
+ablation), not as a control target — later controllers optimise travel time,
+waiting, queue, pressure, spillback, throughput, downstream capacity,
+person/pedestrian/emergency delay, forecast risk and safety. Torino's critical
+values are network-specific and are never transferred into Dhaka control or
+calibration.
 
 ## 9. Relevance to DhakaFlow Nexus
 

@@ -8,11 +8,33 @@ This module carries the *definitions and invariants* into the platform. It does
 NOT recompute or restate Lab 00's frozen torino numbers — those live in
 paper_labs/00_utd19/outputs/ and are cited, never duplicated.
 
-Why the platform needs it: the paper's operating principle is that an ideal
-control keeps the network near n ≈ n* (Loder et al. §Introduction). That makes
-the critical point the set-point/reference against which Labs 14-21 controllers
-are judged, and the congested branch is why routing more vehicles into a
+Role of the critical point in DhakaFlow — read this before using it
+-------------------------------------------------------------------
+Loder et al. observe that, for maximising *travel production alone*, an ideal
+control would act near n ≈ n* (their §Introduction). That is a statement about
+one macroscopic quantity in their study networks. It is **not** the DhakaFlow
+control objective, and no controller in this project is required or expected to
+hold n ≈ n*.
+
+Within DhakaFlow the critical point is used only as:
+  * a **traffic-science diagnostic** (is this network in its free-flow or
+    congested branch?);
+  * a **congestion/capacity reference** for interpreting results;
+  * an optional **state feature** for a controller or forecaster;
+  * an optional **reward-shaping feature** whose usefulness must be established
+    by ablation, never assumed;
+  * an optional **constraint / risk signal** (e.g. over-saturation warning).
+
+Controllers in Labs 14-21 optimise broader, multi-objective outcomes — travel
+time, waiting time, queue length, pressure, spillback, throughput, downstream
+capacity, person-delay, pedestrian delay, emergency delay, forecast risk and
+safety. The congested branch also explains why routing more vehicles into a
 saturated region lowers total throughput (Lab 22).
+
+Transferability warning: critical values are network-specific. A value measured
+on one city's network (e.g. Lab 00's torino estimate) must never be transferred
+as an operating threshold for Dhaka; Dhaka's own critical behaviour has to be
+estimated from Dhaka data (Labs 06/13).
 """
 from __future__ import annotations
 
@@ -50,6 +72,11 @@ class CriticalPoint:
     fitted maximum sits at the edge of the observed range (whole-city torino
     never entered deep congestion) the critical point is a lower bound, not a
     peak, and must not be reported as a capacity estimate without that caveat.
+
+    NETWORK-SPECIFIC. A critical point belongs to the network and observation
+    period it was estimated from (`source_lab`). Values are not portable between
+    cities: Lab 00's torino estimate is a reproduction artifact, never a Dhaka
+    operating threshold, control target or calibration input.
     """
 
     critical_density: float          # n* or k*
@@ -98,9 +125,17 @@ def network_speed(production: float, accumulation: float) -> float:
 
 
 def distance_to_critical(current_accumulation: float, critical: CriticalPoint) -> float:
-    """Signed gap n - n*: negative = spare capacity, positive = over-saturated.
+    """Signed gap n - n*: negative = below the critical point, positive = beyond it.
 
-    This is the control-relevant scalar for perimeter/pressure strategies and a
-    natural reward-shaping term for Lab 20 — hence its home in the platform.
+    A DIAGNOSTIC scalar, not a control target. It may be offered to a controller
+    as a state feature, a reward-shaping term or a risk/constraint signal, but
+    any such use must be justified by ablation (Lab 20) against the broader
+    objective set (travel time, waiting, queue, pressure, spillback, throughput,
+    downstream capacity, person/pedestrian/emergency delay, forecast risk,
+    safety). Nothing in the platform drives the network toward n = n*.
+
+    `critical` must have been estimated on the SAME network being measured.
     """
+    if critical.units != "per_km2" and critical.units != "per_lane":
+        raise ValueError(f"unknown units {critical.units!r}")
     return current_accumulation - critical.critical_density

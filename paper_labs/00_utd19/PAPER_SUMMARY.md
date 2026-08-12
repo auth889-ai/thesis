@@ -87,10 +87,19 @@ still uncongested — critical speed averaged 18.8 km/h across networks (Fig. 2b
 
 ### Why this matters for DhakaFlow Nexus later
 
-- **Signal control (future RL labs):** the paper states ideal control keeps the
-  network near n ≈ n\* (Introduction ¶4). The MFD critical point is exactly the
-  set-point that perimeter-control / pressure-based signal strategies target. Our
-  future RL reward shaping will be judged against this traffic science.
+- **Signal control (future RL labs) — bounded claim:** the paper states that, to
+  maximise *travel production*, an ideal control would act near n ≈ n\*
+  (Introduction ¶4). That is the paper's statement about one macroscopic
+  quantity in its study networks; it is **not** DhakaFlow's control objective.
+  In this project the critical point is used as a traffic-science diagnostic, a
+  congestion/capacity reference, and an *optional* state feature, reward-shaping
+  term or risk/constraint signal whose value must be demonstrated by ablation.
+  Later controllers (Labs 14–21) optimise travel time, waiting, queue, pressure,
+  spillback, throughput, downstream capacity, person-delay, pedestrian delay,
+  emergency delay, forecast risk and safety — Forecast-Aware MAPPO is never
+  required to simply hold n ≈ n\*. Critical values are also network-specific:
+  the torino estimate below must never be transferred into Dhaka control or
+  calibration.
 - **Routing:** congested-branch behavior explains why routing more vehicles into
   a saturated region reduces total throughput.
 - **Dhaka:** bus production density B reducing capacity is directly relevant to a

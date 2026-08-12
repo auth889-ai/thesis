@@ -17,11 +17,17 @@ remain frozen and unedited (verified: `git diff` on their evidence is empty).
 | Edge-of-range maximum caveat (torino never entered deep congestion) | `CriticalPoint.interior_maximum` — a required honesty flag |
 | "n\* ≤ ~⅓ jam density" physics check (Loder et al.) | `CriticalPoint.sanity_check_vs_jam()`; unknown jam density returns True (unavailable ≠ failed) |
 | Calibrated vs uncalibrated analysis distinction | `CriticalPoint.calibrated` (False ⇒ UNCALIBRATED_ANALYSIS) |
-| **Control relevance:** ideal control keeps n ≈ n\* | `distance_to_critical()` — the set-point signal for Labs 14–21 and a candidate reward term for Lab 20 |
+| **Control relevance (bounded):** Loder et al. note that maximising *travel production alone* would act near n ≈ n\* | `distance_to_critical()` — a **diagnostic**, offered to later labs only as an optional state feature / reward-shaping term / risk signal, to be justified by ablation. **Not a control target**: Labs 14–21 optimise travel time, waiting, queue, pressure, spillback, throughput, downstream capacity, person/pedestrian/emergency delay, forecast risk and safety. Forecast-Aware MAPPO (Lab 20) is never required to hold n ≈ n\* |
 
-**Cross-check (no Lab 00 number altered):** the platform formula reproduces Lab
-00's frozen torino value — `CriticalPoint(31.9, 1104).critical_speed ≈ 34.6 km/h`
-— asserted in `tests/platform/test_interfaces.py`.
+**Lab 00 regression fixture (no Lab 00 number altered):**
+`test_lab00_torino_regression_fixture_is_not_a_dhaka_threshold` pins that the
+platform's v\* = P\*/n\* arithmetic still reproduces the frozen torino estimate
+(31.9 veh/km/lane, 1104 veh/h/lane → 34.6 km/h) together with its
+`interior_maximum=False` and `calibrated=False` caveats. It verifies **frozen
+Lab 00 behaviour only**. It is **not** a Dhaka operating threshold, control
+target or calibration input — critical values are network-specific and torino's
+must never be transferred into Dhaka control or calibration. Dhaka's own
+critical behaviour is estimated from Dhaka data in Labs 06/13.
 
 **Not graduated:** the UTD19 dataset, the fitted torino parameters, and the
 re-sampling/quantile-fit pipeline stay in `paper_labs/00_utd19/` and are cited,
@@ -38,7 +44,7 @@ never duplicated.
 | Scenario definition (net + routes + seed + duration) | `common/TrafficScenario`, incl. `warmup_s` and `evaluation_window_s` (Bologna §1.5 warm-up lesson) |
 | Per-step observation (halting counts, queue ratio, running/arrived) | `common/TrafficObservation` + `LaneState` |
 | Controller decisions (hold/extend/terminate) with rationale | `control/SignalAction`, `SignalActionType`, `TrafficController.act(obs, t, forecast=None)` |
-| min-green / max-green / yellow preserved; 0 collisions, 0 teleports | `safety/SafetyConstraints` (defaults **are** Lab 01's 10 s/45 s/3 s) + `SafetyShield` |
+| min-green / max-green / yellow preserved; 0 collisions, 0 teleports | `safety/SafetyConstraints` (**no universal defaults** — every timing value comes from a named scenario profile) + `SafetyShield`. Lab 01's 10 s/45 s/3 s survive only as the explicitly named `LAB01_VALIDATED_REFERENCE_PROFILE`, tagged as synthetic-scenario values with no real-world jurisdiction; Dhaka profiles must come from Dhaka field/regulatory data |
 | Transport metric set incl. proxy honesty (stops, spillback) | `common/TrafficMetrics` + `MetricsComputer.proxy_metric_names` |
 | Fair multi-seed matrix (identical demand across arms) | `evaluation/BenchmarkSpec.assert_fair()` + `ArmSetup` |
 | Upstream integrity discipline (pinned SHAs, no vendoring) | `common/RunProvenance.upstream_shas`; policy in `PLATFORM_ARCHITECTURE.md` |

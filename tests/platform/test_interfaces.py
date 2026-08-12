@@ -26,7 +26,8 @@ from dhakaflow.evaluation.traffic_science import (CriticalPoint, MFDPoint,
 from dhakaflow.genai.interfaces import CopilotAnswer, Evidence
 from dhakaflow.perception.interfaces import BoundingBox, Detection, Detector
 from dhakaflow.routing.interfaces import RouteDecision
-from dhakaflow.safety.interfaces import SafetyConstraints
+from dhakaflow.safety.interfaces import (LAB01_VALIDATED_REFERENCE_PROFILE, SAFETY_PROFILES,
+                                          SafetyConstraints)
 from dhakaflow.simulation.interfaces import SimulationBackend
 from dhakaflow.visualization.interfaces import FigureSpec
 
@@ -74,11 +75,38 @@ def test_metrics_missing_values_stay_none_and_cleanliness_is_explicit():
 
 # ------------------------------------------------------ Lab 00 traffic science
 def test_critical_point_speed_and_congestion_state():
-    cp = CriticalPoint(critical_density=31.9, critical_flow=1104.0, interior_maximum=False)
-    assert cp.critical_speed == pytest.approx(34.6, abs=0.1)   # cf. Lab 00 torino
+    """Generic arithmetic of the critical point — synthetic values, no city."""
+    cp = CriticalPoint(critical_density=50.0, critical_flow=2000.0)
+    assert cp.critical_speed == pytest.approx(40.0)
     assert cp.congestion_state(20.0) == "free_flow"
-    assert cp.congestion_state(40.0) == "congested"
-    assert distance_to_critical(40.0, cp) == pytest.approx(8.1)
+    assert cp.congestion_state(60.0) == "congested"
+    assert cp.congestion_state(50.0) == "critical"
+    assert distance_to_critical(60.0, cp) == pytest.approx(10.0)
+
+
+def test_lab00_torino_regression_fixture_is_not_a_dhaka_threshold():
+    """LAB 00 REGRESSION FIXTURE — pins frozen Lab 00 behaviour only.
+
+    Guards that the platform's v* = P*/n* arithmetic still reproduces the frozen
+    Lab 00 torino estimate (k*=31.9 veh/km/lane, q*=1104 veh/h/lane → 34.6 km/h,
+    per paper_labs/00_utd19/outputs/metrics/stage1_run_record.json).
+
+    This is NOT a Dhaka operating threshold, NOT a control target and NOT a
+    calibration input. Torino critical values must never be transferred into
+    Dhaka control or calibration — Dhaka's critical behaviour must be estimated
+    from Dhaka data (Labs 06/13). The fixture also pins the two honesty flags
+    that make the torino number quotable at all.
+    """
+    torino = CriticalPoint(
+        critical_density=31.9, critical_flow=1104.0, units="per_lane",
+        interior_maximum=False,     # fitted max sat at the edge of observed range
+        calibrated=False,           # UNCALIBRATED_ANALYSIS (no Google speed calib.)
+        source_lab="00_utd19",
+    )
+    assert torino.critical_speed == pytest.approx(34.6, abs=0.1)
+    assert torino.interior_maximum is False, "lower-bound caveat must survive"
+    assert torino.calibrated is False, "uncalibrated caveat must survive"
+    assert torino.source_lab == "00_utd19"
 
 
 def test_jam_ratio_check_and_unknown_jam_is_not_a_failure():
@@ -102,10 +130,35 @@ def test_signal_action_validation():
     assert ok.duration_s == 5
 
 
-def test_safety_constraints_reject_impossible_values():
-    SafetyConstraints(min_green_s=10, max_green_s=45)          # Lab 01 values
+def test_safety_constraints_require_a_named_profile_and_valid_timings():
+    ok = SafetyConstraints(profile_name="scenario_x", min_green_s=8,
+                           max_green_s=60, yellow_s=4)
+    assert ok.profile_name == "scenario_x"
+    with pytest.raises(ValueError, match="profile_name"):
+        SafetyConstraints(profile_name="", min_green_s=8, max_green_s=60, yellow_s=4)
     with pytest.raises(ValueError):
-        SafetyConstraints(min_green_s=50, max_green_s=45)
+        SafetyConstraints(profile_name="bad", min_green_s=50, max_green_s=45, yellow_s=3)
+
+
+def test_no_universal_timing_defaults_exist():
+    """Timing values must be supplied per scenario — never inherited silently."""
+    with pytest.raises(TypeError):
+        SafetyConstraints(profile_name="incomplete")      # no min/max/yellow defaults
+
+
+def test_lab01_reference_profile_is_named_and_not_a_dhaka_default():
+    p = LAB01_VALIDATED_REFERENCE_PROFILE
+    assert p.profile_name == "LAB01_VALIDATED_REFERENCE_PROFILE"
+    assert (p.min_green_s, p.max_green_s, p.yellow_s) == (10.0, 45.0, 3.0)
+    assert "Lab 01" in p.provenance and "synthetic" in p.provenance
+    # it is reachable only by explicit name, and no "default"/"dhaka" profile exists
+    assert SafetyConstraints.from_profile(p.profile_name) is p
+    assert not any(k.lower() in ("default", "dhaka") for k in SAFETY_PROFILES)
+    with pytest.raises(KeyError):
+        SafetyConstraints.from_profile("default")
+    tuned = SafetyConstraints.from_profile(p.profile_name, min_green_s=12,
+                                           profile_name="dhaka_farmgate_draft")
+    assert tuned.min_green_s == 12 and tuned.profile_name == "dhaka_farmgate_draft"
 
 
 # ------------------------------------------------------------ grounded genai

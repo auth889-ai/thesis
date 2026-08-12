@@ -108,14 +108,15 @@ def master_architecture():
     box(ax, 0.48, 0.335, 0.20, 0.165,
         "priority/\nPriorityPolicy\n\nLab 23\nemergency · bus/person-delay\npedestrian", C_CTRL)
     box(ax, 0.70, 0.335, 0.28, 0.165,
-        "safety/  SafetyShield (Lab 21)\nmin/max green · yellow · all-red\nconflicting-green exclusion\naction masking · emergency override\n→ every action passes through", C_CTRL, bold=True)
+        "safety/  SafetyShield (Lab 21)\nnamed per-scenario timing profiles\n(no universal min/max-green values)\nconflicting-green exclusion · masking\n→ every action passes through", C_CTRL, bold=True)
 
     # ---- row 5: evaluation & operator
     box(ax, 0.02, 0.15, 0.44, 0.145,
         "evaluation/   (Labs 00 ✓ + 01 ✓)\n"
-        "TrafficMetrics · MetricsComputer · BenchmarkSpec.assert_fair()\n"
-        "traffic science: MFDPoint · CriticalPoint (n*, P*, v*) · distance_to_critical()\n"
-        "travel time · p95 · waiting · queue · stops · spillback · emissions · person delay", C_PLAT, bold=True)
+        "objectives: travel time · p95 · waiting · queue · pressure · spillback · throughput\n"
+        "downstream capacity · person/pedestrian/emergency delay · forecast risk · safety\n"
+        "traffic science (diagnostic): MFDPoint · CriticalPoint · distance_to_critical()",
+        C_PLAT, bold=True)
     box(ax, 0.48, 0.15, 0.24, 0.145,
         "genai/  TrafficCopilot (Lab 25)\ngrounded explanation · what-if\nRAG over experiments · tool calls\nEvidence required, never free-form", C_PLAT)
     box(ax, 0.74, 0.15, 0.24, 0.145,
@@ -177,11 +178,13 @@ def interface_map():
     box(ax, 0.02, 0.175, 0.47, 0.10,
         "LAB 00 → evaluation/traffic_science.py\n"
         "MFDPoint · CriticalPoint(n*, P*, v*) · distance_to_critical()\n"
-        "the control set-point n ≈ n* and the congested branch come from here", C_LAB, fs=8.2, bold=True)
+        "DIAGNOSTIC / optional feature — not a control target; network-specific",
+        C_LAB, fs=8.2, bold=True)
     box(ax, 0.51, 0.175, 0.47, 0.10,
         "LAB 01 → simulation/ · control/ · safety/ · evaluation/\n"
         "SimulationBackend · SignalActuator · SignalAction · TrafficController\n"
-        "SafetyConstraints(min/max green, yellow) · TrafficMetrics · BenchmarkSpec", C_LAB, fs=8.2, bold=True)
+        "SafetyConstraints (named profiles, no universal timings) · BenchmarkSpec",
+        C_LAB, fs=8.2, bold=True)
 
     box(ax, 0.02, 0.035, 0.96, 0.105,
         "GRADUATION PATH:   paper reproduction → benchmark → Dhaka adaptation → KEEP decision → adapter → dhakaflow/\n"

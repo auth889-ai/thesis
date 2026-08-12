@@ -49,11 +49,26 @@ satisfy the protocols while inheriting only from `object`.
 `TrafficObservation`. This is what makes real-vs-simulated calibration (Lab 13)
 and sim2real transfer (Lab 21) *type-level* guarantees rather than glue code.
 
-**3. Safety is a layer, not a habit.** In Lab 01 each controller policed its own
-min/max-green. An RL policy cannot be trusted to do that, so `SafetyShield` sits
-between controller and actuator: it returns a safe replacement action and logs a
-`SafetyViolation` rather than raising — violations become a first-class metric
-instead of a crash.
+**3. Safety is a layer, not a habit — and its numbers are never universal.** In
+Lab 01 each controller policed its own min/max-green. An RL policy cannot be
+trusted to do that, so `SafetyShield` sits between controller and actuator: it
+returns a safe replacement action and logs a `SafetyViolation` rather than
+raising — violations become a first-class metric instead of a crash. Timing
+values are *not* library defaults: `SafetyConstraints` requires an explicit
+`profile_name` and explicit green/yellow durations, because safe timings depend
+on approach speed, geometry, crossing width, pedestrian volume and local
+regulation. Lab 01's 10 s/45 s/3 s exist only as the named
+`LAB01_VALIDATED_REFERENCE_PROFILE` (synthetic scenario, no jurisdiction);
+Dhaka profiles must be derived from Dhaka evidence.
+
+**3b. The MFD critical point is a diagnostic, not a control target.** Lab 00's
+`CriticalPoint`/`distance_to_critical()` provide a congestion-and-capacity
+reference and an *optional* state / reward-shaping / risk feature whose value
+must be shown by ablation. Controllers (Labs 14–21) optimise travel time,
+waiting, queue, pressure, spillback, throughput, downstream capacity,
+person-delay, pedestrian delay, emergency delay, forecast risk and safety.
+Forecast-Aware MAPPO is **not** required to hold n ≈ n\*. Critical values are
+network-specific and never transferable between cities.
 
 **4. Missing values are `None`, never `0`.** `TrafficMetrics` fields default to
 `None`; `speed_from_flow_density` raises at zero density. Lab 00 showed how a
