@@ -6,6 +6,7 @@ import os
 import re
 import subprocess
 import sys
+from collections import Counter
 from pathlib import Path
 
 
@@ -78,12 +79,19 @@ def run_simulation(net_file: Path, routes_file: Path, out_dir: Path, seed: int,
            "--no-step-log", "true", "--duration-log.statistics", "true"]
     proc = subprocess.run(cmd, capture_output=True, text=True)
     logtxt = log.read_text(errors="ignore") if log.exists() else ""
-    lower = logtxt.lower()
+    # Count EVENTS, not any line containing the word: one teleport emits both a
+    # "Teleporting vehicle" warning and an "ends teleporting" line, plus the
+    # word appears in SUMO's closing statistics.
+    teleport_events = re.findall(r"Teleporting vehicle '([^']+)'; waited too long \((\w+)\)",
+                                 logtxt)
     record = {
         "command": cmd, "returncode": proc.returncode,
-        "teleports": lower.count("teleport"),
-        "collisions": lower.count("collision"),
-        "emergency_braking": lower.count("emergency braking"),
+        "teleports": len(teleport_events),
+        "teleport_reasons": Counter(reason for _, reason in teleport_events),
+        "collisions": (int(m.group(1)) if (m := re.search(r"Collisions:\s*(\d+)", logtxt))
+                       else len(re.findall(r"Warning:.*collision", logtxt))),
+        "emergency_braking": len(re.findall(
+            r"performs emergency braking", logtxt)),
         "tripinfo": str(tripinfo), "summary": str(summary),
     }
     (out_dir / "sim_record.json").write_text(json.dumps(record, indent=2))

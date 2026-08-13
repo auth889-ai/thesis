@@ -1,0 +1,103 @@
+{
+  "pairs": [
+    {
+      "from_role": "south",
+      "to_role": "north",
+      "from_edge": "-237085807#4",
+      "to_edge": "-222970999#7",
+      "routable": true,
+      "n_edges": 82,
+      "cost_s": 8065.1
+    },
+    {
+      "from_role": "north",
+      "to_role": "south",
+      "from_edge": "-222970999#7",
+      "to_edge": "-237085807#4",
+      "routable": true,
+      "n_edges": 72,
+      "cost_s": 6913.8
+    },
+    {
+      "from_role": "west",
+      "to_role": "east",
+      "from_edge": "-1095357714#2",
+      "to_edge": "-222970999#7",
+      "routable": true,
+      "n_edges": 101,
+      "cost_s": 11807.9
+    },
+    {
+      "from_role": "east",
+      "to_role": "west",
+      "from_edge": "-222970999#7",
+      "to_edge": "-1095357714#2",
+      "routable": true,
+      "n_edges": 94,
+      "cost_s": 13086.7
+    },
+    {
+      "from_role": "center",
+      "to_role": "north",
+      "from_edge": "-299230720#2",
+      "to_edge": "-222970999#7",
+      "routable": true,
+      "n_edges": 57,
+      "cost_s": 6215.5
+    },
+    {
+      "from_role": "north",
+      "to_role": "center",
+      "from_edge": "-222970999#7",
+      "to_edge": "-299230720#2",
+      "routable": true,
+      "n_edges": 47,
+      "cost_s": 4634.8
+    },
+    {
+      "from_role": "center",
+      "to_role": "east",
+      "from_edge": "-299230720#2",
+      "to_edge": "-222970999#7",
+      "routable": true,
+      "n_edges": 57,
+      "cost_s": 6215.5
+    },
+    {
+      "from_role": "east",
+      "to_role": "center",
+      "from_edge": "-222970999#7",
+      "to_edge": "-299230720#2",
+      "routable": true,
+      "n_edges": 47,
+      "cost_s": 4634.8
+    }
+  ],
+  "n_ok": 8,
+  "n_total": 8,
+  "candidate_pool": "largest_strongly_connected_component",
+  "n_candidate_edges": 6000,
+  "n_edges_total": 6527,
+  "boundary_stubs": {
+    "count": 325,
+    "fraction_of_edges": 0.0498,
+    "sample": [
+      "-941993799",
+      "1008172627",
+      "1008172628",
+      "1008172629",
+      "1008172630",
+      "1008172631",
+      "1008172632",
+      "1008172633",
+      "1008172635#0",
+      "1008172635#1",
+      "1016065925#2",
+      "1058053036#2",
+      "1095357718",
+      "1106247706",
+      "1156243841#0"
+    ],
+    "explanation": "edges with zero outgoing connections \u2014 the OSM extract was clipped at the bbox, so these terminate at the boundary; expected, and excluded from O-D selection"
+  }
+}

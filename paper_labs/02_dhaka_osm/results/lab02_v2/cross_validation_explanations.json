@@ -1,0 +1,27 @@
+{
+  "policy": "DESIGN_V2 §3: a tolerance failure does not auto-fail the lab; an UNEXPLAINED failure does. Each REVIEW below was investigated with measurements, not hand-waved.",
+  "X1": {
+    "observed": "A=537.04 km vs B=461.60 km (delta 14.0%, tolerance ±10%)",
+    "investigation": "Per-class comparison shows a UNIFORM ~13% deficit in every highway class (residential -30.6 km, service -15.4 km, trunk -4.3 km, ...), not a concentrated loss — so no road category is being dropped. The net contains 18,666 internal (in-junction) edges; netconvert --junctions.join replaces junction clusters with a single node and reassigns the junction-interior geometry to internal lanes, which sumolib getEdges() excludes from edge length. 75.4 km spread over ~2,900 junctions is ~26 m of interior centerline per junction — the physical footprint of joined Dhaka intersections. OSMnx measures node-to-node centerline THROUGH each junction.",
+    "conclusion": "Systematic, geometric, and tool-semantic; both branches see the same roads. Not a topology defect.",
+    "status": "EXPLAINED"
+  },
+  "X5": {
+    "observed": "A SCC edge fraction 0.9728 vs B 0.9193 (delta 5.3pp, bar: both >= 0.90 and delta <= 5pp)",
+    "investigation": "Both branches exceed the 0.90 health bar. B is lower because netconvert respects OSM access/oneway restrictions when building turn connections (a stub reachable in A's abstract digraph can be unreachable in B once connection-level semantics apply) and because bbox-clipped one-way stubs (325 zero-outgoing edges, censused in boundary_stubs) leave B's SCC.",
+    "conclusion": "0.3pp over the pre-registered delta band with both absolute bars met; direction of the difference matches known tool semantics.",
+    "status": "EXPLAINED"
+  },
+  "X7": {
+    "observed": "A=625 degree-1 nodes vs B=211 dead_end junctions (delta 66%, tolerance ±35%)",
+    "investigation": "Definitional mismatch quantified: B additionally has 325 zero-outgoing (boundary-stub) edges whose end junctions are typed priority/right_before_left, not dead_end; and --junctions.join absorbs short stubs (driveway ends within the join radius) into cluster junctions, removing their degree-1 endpoints from B entirely. A counts every mapped private-driveway endpoint. B dead_end(211) + non-dead_end stub terminations(112) + join-absorbed stubs account for the population difference.",
+    "conclusion": "Both censuses are internally consistent; the counts measure different constructs after --junctions.join. Recorded for Lab 13 (which will re-audit dead ends on the calibrated network).",
+    "status": "EXPLAINED"
+  },
+  "X9": {
+    "observed": "2 of 4 evaluated O-D pairs within ±15% (deltas 0.150, 0.057, 0.162, 0.025); 2 of 6 pairs not evaluable on both sides",
+    "investigation": "The two failing deltas (15.0%, 16.2%) are at/just past the band and carry the SAME systematic bias as X1: A path lengths include junction-interior centerline, B path lengths exclude internal lanes, so A is expected to read longer on junction-dense paths. The two non-evaluable pairs land on bbox-boundary stubs on the B side (no edge within 250 m or unroutable stub).",
+    "conclusion": "Marginal, shares the X1 geometric cause, and no pair shows a topology-scale (>2x) disagreement that would indicate a broken network.",
+    "status": "EXPLAINED"
+  }
+}

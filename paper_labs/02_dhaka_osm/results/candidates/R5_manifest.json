@@ -1,0 +1,21 @@
+{
+  "source": "OpenStreetMap via Overpass API",
+  "endpoint": "https://overpass-api.de/api/interpreter",
+  "endpoints_tried": [
+    "https://overpass-api.de/api/interpreter"
+  ],
+  "transient_errors": [
+    "https://overpass-api.de/api/interpreter attempt 1: HTTPError: HTTP Error 429: Too Many Requests"
+  ],
+  "query": "[out:xml][timeout:180];(way[\"highway\"](23.715,90.405,23.735,90.425);node[\"highway\"=\"bus_stop\"](23.715,90.405,23.735,90.425);relation[\"route\"=\"bus\"](23.715,90.405,23.735,90.425);node[\"amenity\"=\"hospital\"](23.715,90.405,23.735,90.425);way[\"amenity\"=\"hospital\"](23.715,90.405,23.735,90.425);node[\"man_made\"=\"surveillance\"](23.715,90.405,23.735,90.425);node[\"highway\"=\"crossing\"](23.715,90.405,23.735,90.425););(._;>;);out body;",
+  "bbox": {
+    "south": 23.715,
+    "west": 90.405,
+    "north": 23.735,
+    "east": 90.425
+  },
+  "downloaded_utc": "2026-08-13T12:10:18.429001+00:00",
+  "bytes": 596225,
+  "sha256": "8c97f5f2f9373aa684aa07ab70e24559d7d531189da0f271efd2dcf21fc8c4f9",
+  "license": "ODbL 1.0 (OpenStreetMap contributors)"
+}

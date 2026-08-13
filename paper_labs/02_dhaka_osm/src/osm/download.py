@@ -20,12 +20,28 @@ OVERPASS_MIRRORS = (
 )
 
 
-def overpass_query(bbox: dict) -> str:
-    """All highway ways + their nodes in bbox. bbox keys: south west north east."""
+def overpass_query(bbox: dict, include_context: bool = False) -> str:
+    """All highway ways + their nodes in bbox. bbox keys: south west north east.
+
+    With `include_context`, the SAME snapshot additionally carries the features
+    the pre-registered region-selection criteria score (bus stops/routes,
+    hospitals, surveillance cameras, pedestrian crossings). netconvert ignores
+    non-highway elements, so the network build is unaffected — one snapshot
+    serves both the network and the selection metrics (single-snapshot rule).
+    """
     b = f"{bbox['south']},{bbox['west']},{bbox['north']},{bbox['east']}"
+    core = f"way[\"highway\"]({b});"
+    extras = (
+        f"node[\"highway\"=\"bus_stop\"]({b});"
+        f"relation[\"route\"=\"bus\"]({b});"
+        f"node[\"amenity\"=\"hospital\"]({b});"
+        f"way[\"amenity\"=\"hospital\"]({b});"
+        f"node[\"man_made\"=\"surveillance\"]({b});"
+        f"node[\"highway\"=\"crossing\"]({b});"
+    ) if include_context else ""
     return (
         f"[out:xml][timeout:180];"
-        f"(way[\"highway\"]({b}););"
+        f"({core}{extras});"
         f"(._;>;);"
         f"out body;"
     )
@@ -43,7 +59,8 @@ def sha256_file(p: Path, chunk: int = 1 << 20) -> str:
 
 
 def download_osm(bbox: dict, dest: Path, manifest_path: Path,
-                 endpoint: str | None = None, attempts_per_mirror: int = 2) -> dict:
+                 endpoint: str | None = None, attempts_per_mirror: int = 2,
+                 include_context: bool = False) -> dict:
     """Fetch the extract, rotating over public Overpass mirrors on 429/504/timeout.
 
     Every mirror serves the same OSM database; the one used is recorded so the
@@ -53,7 +70,7 @@ def download_osm(bbox: dict, dest: Path, manifest_path: Path,
 
     dest = Path(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
-    query = overpass_query(bbox)
+    query = overpass_query(bbox, include_context=include_context)
     endpoints = [endpoint] if endpoint else list(OVERPASS_MIRRORS)
     t0 = datetime.datetime.now(datetime.timezone.utc)
 

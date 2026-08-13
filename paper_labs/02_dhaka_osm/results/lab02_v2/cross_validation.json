@@ -1,0 +1,149 @@
+{
+  "checks": [
+    {
+      "id": "X1",
+      "invariant": "total drive length (km)",
+      "osmnx": 537.04,
+      "sumo": 461.6,
+      "tolerance": "\u00b110%",
+      "status": "REVIEW",
+      "note": "delta=14.0%"
+    },
+    {
+      "id": "X2",
+      "invariant": "lane-km (A: tagged only, B: incl. typemap defaults)",
+      "osmnx": 327.43,
+      "sumo": 581.84,
+      "tolerance": "B within [0.8\u00b7A, \u221e); gap quantifies defaults",
+      "status": "PASS",
+      "note": "default-reliance gap=43.7%"
+    },
+    {
+      "id": "X3",
+      "invariant": "road-hierarchy length shares",
+      "osmnx": {
+        "residential": 0.3929,
+        "service": 0.1943,
+        "secondary": 0.1074,
+        "living_street": 0.0778,
+        "tertiary": 0.0754,
+        "trunk": 0.0636,
+        "primary": 0.054,
+        "unclassified": 0.0181,
+        "motorway": 0.0051,
+        "secondary_link": 0.0031,
+        "trunk_link": 0.003,
+        "primary_link": 0.0027,
+        "motorway_link": 0.0019,
+        "tertiary_link": 0.0006
+      },
+      "sumo": {
+        "residential": 0.3908,
+        "service": 0.1928,
+        "secondary": 0.1125,
+        "living_street": 0.0794,
+        "tertiary": 0.0751,
+        "trunk": 0.0646,
+        "primary": 0.0548,
+        "unclassified": 0.018,
+        "motorway": 0.0056,
+        "motorway_link": 0.002,
+        "trunk_link": 0.0017,
+        "secondary_link": 0.0013,
+        "primary_link": 0.0013,
+        "tertiary_link": 0.0001
+      },
+      "tolerance": "\u00b15pp per class",
+      "status": "PASS",
+      "note": "worst class delta=0.5pp"
+    },
+    {
+      "id": "X4",
+      "invariant": "one-way edge share",
+      "osmnx": 0.1886,
+      "sumo": 0.1672,
+      "tolerance": "\u00b15pp",
+      "status": "PASS",
+      "note": "delta=2.1pp"
+    },
+    {
+      "id": "X5",
+      "invariant": "largest-SCC edge fraction",
+      "osmnx": 0.9728,
+      "sumo": 0.9193,
+      "tolerance": "both \u22650.90, \u0394\u22645pp",
+      "status": "REVIEW",
+      "note": "delta=5.3pp"
+    },
+    {
+      "id": "X6",
+      "invariant": "weak components (A raw vs B post-prune)",
+      "osmnx": 1,
+      "sumo": 1,
+      "tolerance": "report+explain",
+      "status": "PASS",
+      "note": "netconvert prune warnings: 0 isolated-edge, 0 component msgs"
+    },
+    {
+      "id": "X7",
+      "invariant": "dead ends (A deg-1 nodes vs B dead_end junctions)",
+      "osmnx": 625,
+      "sumo": 211,
+      "tolerance": "\u00b135% (clipping + cluster-join effects)",
+      "status": "REVIEW",
+      "note": "delta=66.2%"
+    },
+    {
+      "id": "X8",
+      "invariant": "signalised junctions (A signal nodes vs B TLS after join)",
+      "osmnx": 28,
+      "sumo": 17,
+      "tolerance": "B \u2264 A and B > 0",
+      "status": "PASS",
+      "note": "TLS clusters containing a tagged signal node: 23"
+    },
+    {
+      "id": "X9",
+      "invariant": "O-D shortest-path length agreement",
+      "osmnx": 2,
+      "sumo": 4,
+      "tolerance": "\u226575% of pairs within \u00b115%",
+      "status": "REVIEW",
+      "note": "per-pair deltas=[0.15, 0.057, 0.162, 0.025]"
+    },
+    {
+      "id": "X10",
+      "invariant": "k=3 alternatives per O-D (\u22652 distinct)",
+      "osmnx": 6,
+      "sumo": 6,
+      "tolerance": "\u226580% of pairs",
+      "status": "PASS",
+      "note": "route choice needed by Lab 22"
+    },
+    {
+      "id": "X11",
+      "invariant": "top-10 betweenness-central junctions present in SUMO",
+      "osmnx": 8,
+      "sumo": 10,
+      "tolerance": "\u22656/10",
+      "status": "PASS",
+      "note": "identity via OSM node ids after cluster expansion"
+    },
+    {
+      "id": "X12",
+      "invariant": "attribute completeness (lanes/maxspeed/name)",
+      "osmnx": {
+        "lanes": 0.2208,
+        "maxspeed": 0.1284,
+        "name": 0.4523
+      },
+      "sumo": "n/a",
+      "tolerance": "report only",
+      "status": "PASS",
+      "note": "quantifies what Lab 13 must field-survey"
+    }
+  ],
+  "n_pass": 8,
+  "n_review": 4,
+  "verdict": "PASS_WITH_EXPLANATIONS"
+}

@@ -153,14 +153,22 @@ def audit_traffic_lights(net_file: Path, out_dir: Path, sample_size: int = 8) ->
             greens = [s for s in states if ("G" in s or "g" in s) and "y" not in s.lower()]
             yellows = [s for s in states if "y" in s.lower()]
             all_green = [s for s in states if s and set(s) <= {"G", "g"}]
-            # real safety test: are two CONFLICTING links ever green together?
+            # Real safety test: two CONFLICTING links both signalled PRIORITY
+            # green ('G') in the same phase — a right-of-way contradiction.
+            # 'G'+'g' on a foe pair is SUMO's permissive semantics: the minor
+            # 'g' link must yield inside the junction (e.g. a turn crossing the
+            # oncoming carriageway). That is legitimate signal design, censused
+            # separately, not a violation.
             foe_pairs = conflict_map.get(tls.getID(), set())
-            violations = []
+            violations, permissive = [], 0
             for pi, state in enumerate(states):
-                green_idx = {i for i, ch in enumerate(state) if ch in ("G", "g")}
+                major_idx = {i for i, ch in enumerate(state) if ch == "G"}
+                any_green_idx = {i for i, ch in enumerate(state) if ch in ("G", "g")}
                 for (a, b) in foe_pairs:
-                    if a in green_idx and b in green_idx:
+                    if a in major_idx and b in major_idx:
                         violations.append({"phase": pi, "state": state, "links": [a, b]})
+                    elif a in any_green_idx and b in any_green_idx:
+                        permissive += 1
             entry = {
                 "tls_id": tls.getID(),
                 "program": pid,
@@ -171,6 +179,7 @@ def audit_traffic_lights(net_file: Path, out_dir: Path, sample_size: int = 8) ->
                 "n_conflicting_link_pairs": len(foe_pairs),
                 "conflicting_green_violations": violations[:5],
                 "n_conflicting_green_violations": len(violations),
+                "n_permissive_green_conflicts": permissive,
                 "cycle_time_s": sum(p.duration for p in phases),
                 "phase_durations_s": [p.duration for p in phases],
                 "n_controlled_links": len(states[0]) if states else 0,
@@ -207,6 +216,12 @@ def audit_traffic_lights(net_file: Path, out_dir: Path, sample_size: int = 8) ->
             all(p["has_yellow_phase"] for p in with_conflicts) if with_conflicts else None),
         "total_conflicting_green_violations": sum(
             p["n_conflicting_green_violations"] for p in programs),
+        "total_permissive_green_conflicts": sum(
+            p.get("n_permissive_green_conflicts", 0) for p in programs),
+        "permissive_note": ("a foe pair with one PRIORITY green 'G' and one "
+                            "minor green 'g' is SUMO's permissive semantics — "
+                            "the 'g' movement yields inside the junction; "
+                            "only G/G foe pairs are right-of-way violations"),
         "n_all_green_states_without_conflicts": sum(
             1 for p in programs if p["has_all_green_state"]
             and p["n_conflicting_link_pairs"] == 0),
@@ -232,10 +247,16 @@ def audit_turn_connections(net_file: Path, out_dir: Path) -> dict:
     net = sumolib.net.readNet(str(net_file))
     dir_hist: Counter = Counter()
     no_outgoing, missing_turns = [], []
+    n_nonvehicular_skipped = 0
+
+    def vehicular(e) -> bool:
+        # footway/pedestrian/steps edges legitimately offer no car movements
+        return any(lane.allows("passenger") for lane in e.getLanes())
 
     for node in net.getNodes():
-        incoming = node.getIncoming()
-        outgoing = node.getOutgoing()
+        incoming = [e for e in node.getIncoming() if vehicular(e)]
+        n_nonvehicular_skipped += len(node.getIncoming()) - len(incoming)
+        outgoing = [e for e in node.getOutgoing() if vehicular(e)]
         for e in incoming:
             conns = e.getOutgoing()          # {to_edge: [connections]}
             if not conns and outgoing:
@@ -264,6 +285,10 @@ def audit_turn_connections(net_file: Path, out_dir: Path) -> dict:
                              "t": "turnaround", "i": "internal"},
         "n_incoming_edges_without_movements": len(no_outgoing),
         "incoming_without_movements_sample": no_outgoing[:20],
+        "n_nonvehicular_approaches_excluded": n_nonvehicular_skipped,
+        "vehicular_note": "audit restricted to approaches allowing passenger "
+                          "cars; footway/pedestrian edges carry no car "
+                          "movements by design",
         "n_approaches_with_single_exit_at_multiarm_junctions": len(missing_turns),
         "single_exit_sample": missing_turns[:20],
     }
