@@ -10,6 +10,13 @@ from pathlib import Path
 
 # Option set justified in ASSUMPTIONS.md; changing it is a documented decision.
 NETCONVERT_OPTIONS = [
+    # --- CRITICAL for Bangladesh: left-hand traffic. -------------------------
+    # Bangladesh drives on the LEFT. Without this flag netconvert builds
+    # right-hand-drive geometry: internal junction lanes, turn connections and
+    # right-of-way are all mirrored, which silently invalidates every downstream
+    # control experiment. Added 2026-08-13 after auditing the 090ec31 scaffold,
+    # which omitted it (defect recorded in ASSUMPTIONS.md -> MODIFIED_BY_US).
+    "--lefthand",
     "--geometry.remove",
     "--junctions.join",
     "--tls.guess-signals",
@@ -18,6 +25,8 @@ NETCONVERT_OPTIONS = [
     "--remove-edges.isolated",
     "--keep-edges.components", "1",
     "--no-turnarounds.tls",
+    # keep OSM street names so signalized junctions can be sampled by real name
+    "--output.street-names", "true",
 ]
 
 # Warning classes we know and accept WITH documentation; anything else lands in

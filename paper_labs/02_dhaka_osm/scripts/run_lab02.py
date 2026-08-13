@@ -18,6 +18,10 @@ import yaml  # noqa: E402
 from src.osm.download import download_osm, sha256_file  # noqa: E402
 from src.network.build import build_network  # noqa: E402
 from src.validation.network_checks import validate_network, representative_routes  # noqa: E402
+from src.validation.lefthand import verify_lefthand  # noqa: E402
+from src.validation.audits import (audit_lanes_and_direction, audit_traffic_lights,  # noqa: E402
+                                   audit_turn_connections)
+from src.platform_adapter import build_scenario  # noqa: E402
 from src.demand.generate import generate_and_route, run_simulation  # noqa: E402
 from src.metrics.summarize import summarize_tripinfo, summarize_run  # noqa: E402
 from src.visualization.plot_net import plot_network  # noqa: E402
@@ -51,14 +55,32 @@ def main() -> dict:
     gate["netconvert_warnings"] = rec["warnings"]["counts"]
     gate["OSM_TO_SUMO"] = "PASS" if rec["returncode"] == 0 else "FAIL"
 
-    # 3. network validation
+    # 3. network validation + Bangladesh-specific audits
     val = validate_network(net_file, out / "validation")
     gate["network_validation"] = val
     gate["NETWORK_VALIDATION"] = "PASS" if val["n_edges"] > cfg["min_edges"] else "FAIL"
     gate["CONNECTIVITY"] = "PASS" if val["scc_edge_fraction"] >= cfg["min_scc_fraction"] else "FAIL"
-    tls_ok = (val["n_tls"] >= cfg["min_tls"] and val["tls_all_have_yellow"]
-              and not val["tls_any_all_green"])
+
+    lh = verify_lefthand(net_file, out / "validation", expected="left_hand")
+    gate["lefthand"] = lh
+    gate["LEFT_HAND_TRAFFIC"] = "PASS" if lh["passed"] else "FAIL"
+
+    lanes_audit = audit_lanes_and_direction(net_file, out / "validation")
+    gate["lane_direction_audit"] = lanes_audit
+    gate["LANE_DIRECTION_AUDIT"] = ("PASS" if lanes_audit["n_implausible_lane_counts"] == 0
+                                    else "REVIEW")
+
+    tls_audit = audit_traffic_lights(net_file, out / "validation")
+    gate["traffic_light_audit"] = tls_audit
+    tls_ok = (tls_audit["n_tls"] >= cfg["min_tls"]
+              and tls_audit["total_conflicting_green_violations"] == 0
+              and (tls_audit["all_conflicted_programs_have_yellow"] is not False))
     gate["SIGNAL_VALIDATION"] = "PASS" if tls_ok else "FAIL"
+
+    turns = audit_turn_connections(net_file, out / "validation")
+    gate["turn_connection_audit"] = turns
+    gate["TURN_CONNECTIONS"] = ("PASS" if turns["n_incoming_edges_without_movements"] == 0
+                                else "REVIEW")
 
     # 4. representative routes
     rep = representative_routes(net_file, out / "validation")
@@ -84,7 +106,16 @@ def main() -> dict:
     gate["DEMAND_RUN"] = "PASS" if demand_ok else "FAIL"
     gate["METRICS"] = "PASS" if trips["n_arrived_trips"] > 0 else "FAIL"
 
-    # 7. figures
+    # 7. platform integration (Sprint A interfaces)
+    scenario = build_scenario(net_file, Path(dem["routes_file"]), cfg,
+                              scenario_id=f"dhaka_{cfg['experiment_name']}")
+    gate["platform_scenario"] = {
+        "scenario_id": scenario.scenario_id,
+        "evaluation_window_s": scenario.evaluation_window_s,
+        "metadata": dict(scenario.metadata),
+    }
+
+    # 8. figures
     figs = plot_network(net_file, out / "figures" / "dhaka_network.png",
                         title=f"Dhaka OSM network — {cfg['experiment_name']}")
     gate["figures"] = figs

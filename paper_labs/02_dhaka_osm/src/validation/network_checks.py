@@ -130,10 +130,24 @@ def validate_network(net_file: Path, out_dir: Path) -> dict:
 
 
 def representative_routes(net_file: Path, out_dir: Path, n_axis_pairs: int = 4) -> dict:
-    """Deterministic boundary/center O-D pairs, routed in both directions."""
+    """Deterministic N/S/E/W + centre O-D pairs, routed in BOTH directions.
+
+    Candidates are restricted to the largest strongly-connected component — the
+    routable core that demand actually uses. Selecting by raw extreme coordinate
+    instead picks bbox-clipped stubs: edges ending at a `dead_end` node with zero
+    outgoing connections, from which no route can exist by construction. Those
+    stubs are an artifact of clipping the OSM extract, not a network defect, and
+    are censused separately in `boundary_stubs` rather than silently excluded.
+    """
     import sumolib
     net = sumolib.net.readNet(str(net_file))
-    edges = [e for e in net.getEdges() if e.getLaneNumber() >= 1]
+
+    scc = _kosaraju_largest_scc(_edge_graph(net))
+    all_edges = [e for e in net.getEdges() if e.getLaneNumber() >= 1]
+    stubs = [e for e in all_edges if len(e.getOutgoing()) == 0]
+    edges = [e for e in all_edges if e.getID() in scc]
+    if not edges:
+        raise RuntimeError("largest SCC is empty — network is not routable")
 
     def center(e):
         (x1, y1), (x2, y2) = e.getFromNode().getCoord(), e.getToNode().getCoord()
@@ -163,7 +177,22 @@ def representative_routes(net_file: Path, out_dir: Path, n_axis_pairs: int = 4) 
             "cost_s": round(cost, 1) if path else None,
         })
     ok = sum(1 for r in results if r["routable"])
-    report = {"pairs": results, "n_ok": ok, "n_total": len(results)}
+    report = {
+        "pairs": results,
+        "n_ok": ok,
+        "n_total": len(results),
+        "candidate_pool": "largest_strongly_connected_component",
+        "n_candidate_edges": len(edges),
+        "n_edges_total": len(all_edges),
+        "boundary_stubs": {
+            "count": len(stubs),
+            "fraction_of_edges": round(len(stubs) / len(all_edges), 4) if all_edges else None,
+            "sample": [e.getID() for e in stubs[:15]],
+            "explanation": ("edges with zero outgoing connections — the OSM extract "
+                            "was clipped at the bbox, so these terminate at the "
+                            "boundary; expected, and excluded from O-D selection"),
+        },
+    }
     out_dir = Path(out_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     (out_dir / "representative_routes.json").write_text(json.dumps(report, indent=2))

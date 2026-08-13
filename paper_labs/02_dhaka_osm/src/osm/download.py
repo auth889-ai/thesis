@@ -9,6 +9,16 @@ from pathlib import Path
 
 DEFAULT_ENDPOINT = "https://overpass-api.de/api/interpreter"
 
+#: Public Overpass instances, tried in order. All serve the same OpenStreetMap
+#: database; using a mirror changes throughput, never the data source. The
+#: endpoint actually used is recorded in the manifest.
+OVERPASS_MIRRORS = (
+    "https://overpass-api.de/api/interpreter",
+    "https://overpass.kumi.systems/api/interpreter",
+    "https://overpass.private.coffee/api/interpreter",
+    "https://overpass.osm.jp/api/interpreter",
+)
+
 
 def overpass_query(bbox: dict) -> str:
     """All highway ways + their nodes in bbox. bbox keys: south west north east."""
@@ -33,23 +43,51 @@ def sha256_file(p: Path, chunk: int = 1 << 20) -> str:
 
 
 def download_osm(bbox: dict, dest: Path, manifest_path: Path,
-                 endpoint: str = DEFAULT_ENDPOINT) -> dict:
+                 endpoint: str | None = None, attempts_per_mirror: int = 2) -> dict:
+    """Fetch the extract, rotating over public Overpass mirrors on 429/504/timeout.
+
+    Every mirror serves the same OSM database; the one used is recorded so the
+    download stays fully traceable.
+    """
+    import time
+
     dest = Path(dest)
     dest.parent.mkdir(parents=True, exist_ok=True)
     query = overpass_query(bbox)
-    req = urllib.request.Request(
-        endpoint, data=query.encode(),
-        headers={"User-Agent": "DhakaFlowNexus-Lab02/1.0"})
+    endpoints = [endpoint] if endpoint else list(OVERPASS_MIRRORS)
     t0 = datetime.datetime.now(datetime.timezone.utc)
-    with urllib.request.urlopen(req, timeout=300) as r, open(dest, "wb") as f:
-        while True:
-            chunk = r.read(1 << 20)
-            if not chunk:
+
+    used_endpoint, errors = None, []
+    for ep in endpoints:
+        for attempt in range(attempts_per_mirror):
+            try:
+                req = urllib.request.Request(
+                    ep, data=query.encode(),
+                    headers={"User-Agent": "DhakaFlowNexus-Lab02/1.0"})
+                with urllib.request.urlopen(req, timeout=300) as r, open(dest, "wb") as f:
+                    while True:
+                        chunk = r.read(1 << 20)
+                        if not chunk:
+                            break
+                        f.write(chunk)
+                if dest.stat().st_size < 5000:
+                    raise RuntimeError(f"suspiciously small extract "
+                                       f"({dest.stat().st_size} bytes)")
+                used_endpoint = ep
                 break
-            f.write(chunk)
+            except Exception as exc:                      # noqa: BLE001 - reported
+                errors.append(f"{ep} attempt {attempt + 1}: {type(exc).__name__}: {exc}")
+                time.sleep(5 * (attempt + 1))
+        if used_endpoint:
+            break
+    if not used_endpoint:
+        raise RuntimeError("all Overpass endpoints failed:\n  " + "\n  ".join(errors))
+
     manifest = {
         "source": "OpenStreetMap via Overpass API",
-        "endpoint": endpoint,
+        "endpoint": used_endpoint,
+        "endpoints_tried": endpoints[:endpoints.index(used_endpoint) + 1],
+        "transient_errors": errors,
         "query": query,
         "bbox": bbox,
         "downloaded_utc": t0.isoformat(),
