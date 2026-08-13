@@ -1,0 +1,111 @@
+# Machine-readable twin of RESOURCE_MANIFEST.md — Lab 02
+lab: 02_dhaka_osm
+verified_date: "2026-08-13"
+classification_legend: [USED, VERIFIED_NOT_USED, OPTIONAL, FUTURE, REJECTED]
+
+resources:
+  - id: R-01
+    name: Eclipse SUMO
+    role: CORE
+    classification: USED
+    primary_paper:
+      citation: "Alvarez Lopez et al., Microscopic Traffic Simulation using SUMO, IEEE ITSC 2018"
+      doi: 10.1109/ITSC.2018.8569938
+      archived_pdf: ../01_sumo_foundation/paper/AlvarezLopez2018_SUMO_ITSC.pdf
+    project_page: https://eclipse.dev/sumo/
+    repository: https://github.com/eclipse-sumo/sumo
+    pin: {tag: v1_27_1, sha: 7717f2379d9e314a0c81c5cec748444de06a2a91, pip: eclipse-sumo==1.27.1}
+    documentation: https://sumo.dlr.de/docs/
+    configs: "typemap data/typemap/osmNetconvert.typ.xml from installed wheel (path in results/lab02_v2/netconvert_record.json)"
+    preprocessing: "netconvert (full command + classified warnings recorded)"
+    evaluation: "sumo --tripinfo-output/--summary-output + sumolib"
+    visualization: "sumo-gui via TraCI gui.screenshot (XQuartz)"
+    environment: {python: 3.13.9, install: pip}
+    docker: {available: true, classification: VERIFIED_NOT_USED}
+    benchmark: "Bologna/Acosta (DLR-TS/sumo-scenarios @ 00f6eb479a9dc0fbaeb731495c11d48d7a9661d3, used in Lab 01)"
+    license: EPL-2.0
+    adapter_paths: [src/network/build.py, src/demand/generate.py, src/platform_adapter.py]
+    artifacts: [outputs/lab02_v2/network/dhaka_r1.net.xml, results/lab02_v2/netconvert_record.json, results/lab02_v2/gate_record.json]
+
+  - id: R-02
+    name: OSMnx
+    role: CORE
+    classification: USED
+    primary_paper:
+      citation: "Boeing (2025), Modeling and Analyzing Urban Networks and Amenities with OSMnx, Geographical Analysis 57(4):567-577"
+      doi: 10.1111/gean.70009
+      arxiv: "2505.00736"
+    project_page: https://osmnx.readthedocs.io/
+    repository: https://github.com/gboeing/osmnx
+    pin: {tag: v2.1.1, sha: 2fc39cb2792ff869881b99f724a2d97f0e958667, pip: osmnx==2.1.1}
+    documentation: https://osmnx.readthedocs.io/en/stable/
+    preprocessing: "graph_from_xml on the SAME archived snapshot (single-snapshot rule)"
+    baseline_context_paper: {citation: "Boeing (2017), CEUS 65:126-139", doi: 10.1016/j.compenvurbsys.2017.05.004, classification: OPTIONAL}
+    environment: {networkx: 3.6.1}
+    license: MIT
+    adapter_paths: [src/analysis/osmnx_graph.py, src/analysis/cross_validate.py]
+    artifacts: [results/lab02_v2/osmnx_metrics.json, results/lab02_v2/osmnx_routes.json, results/lab02_v2/cross_validation.json]
+
+  - id: R-03
+    name: OpenStreetMap via Overpass API
+    role: CORE_DATASET
+    classification: USED
+    source: "OpenStreetMap contributors"
+    endpoints:
+      used: https://overpass-api.de/api/interpreter
+      mirrors: [https://overpass.kumi.systems/api/interpreter, https://overpass.private.coffee/api/interpreter, https://overpass.osm.jp/api/interpreter]
+    documentation: https://wiki.openstreetmap.org/wiki/Overpass_API
+    license: ODbL-1.0
+    rate_limits: "public throttling (429/504) handled by mirror rotation, attempts_per_mirror=2"
+    datasets:
+      - {region: R1, sha256: d854b26a8bb014ba123e870f560cfca3562307a0a74eca3b2188d57c48916654, bytes: 1626102, downloaded: "2026-08-13", role: product}
+      - {region: R2, manifest: results/candidates/R2_manifest.json, downloaded: "2026-08-13", role: archived}
+      - {region: R3, manifest: results/candidates/R3_manifest.json, downloaded: "2026-08-13", role: archived}
+      - {region: R4, manifest: results/candidates/R4_manifest.json, downloaded: "2026-08-13", role: archived}
+      - {region: R5, manifest: results/candidates/R5_manifest.json, downloaded: "2026-08-13", role: archived}
+    split: "N/A — one snapshot per candidate; R1 selected, R2-R5 kept for Lab 26"
+    preprocessing: "Branch B netconvert NETCONVERT_OPTIONS; Branch A graph_from_xml + vehicular filter; context census from same snapshot"
+    artifacts: [results/candidates/decision_table.json, results/candidates/decision_table.csv]
+
+  - id: R-04
+    name: Google Routes API (computeRoutes)
+    role: EXTERNAL_LIVE_REFERENCE
+    classification: VERIFIED_NOT_USED
+    provider: Google Maps Platform
+    purpose: "independent live travel-time reference; never ground truth or Lab-02 calibration"
+    documentation: https://developers.google.com/maps/documentation/routes
+    endpoint: https://routes.googleapis.com/directions/v2:computeRoutes
+    verified_semantics:
+      routing_preferences: [TRAFFIC_UNAWARE, TRAFFIC_AWARE, TRAFFIC_AWARE_OPTIMAL]
+      fields: [duration, staticDuration, distanceMeters]
+      field_mask: "required; ours excludes polylines by design"
+    billing: "Google Cloud project with billing enabled; per-request pricing"
+    terms_storage: "Maps Content caching restricted (place IDs exempt); DECISION 1 stricter: nothing persisted anywhere permanent, in-memory only, metadata + derived booleans persistable"
+    credential_signup: https://console.cloud.google.com/
+    secret_env_var: GOOGLE_MAPS_API_KEY   # name only; value never stored
+    adapter_paths: [dhakaflow/common/live_reference.py, src/live_reference/google_routes.py]
+    artifacts: ["results/lab02_v2/gate_record.json::live_reference == READY_NOT_EXECUTED"]
+
+  - id: R-05
+    name: Google Roads API
+    role: future_gps_adapter_shape
+    classification: FUTURE
+    documentation: https://developers.google.com/maps/documentation/roads
+    notes: "not invoked (no GPS data); speed-limit endpoint REJECTED as real-time truth"
+
+  - id: R-06
+    name: supporting environment
+    classification: USED
+    components:
+      - {name: networkx, version: 3.6.1, license: BSD-3}
+      - {name: matplotlib, purpose: figures}
+      - {name: PyYAML, purpose: configs}
+      - {name: XQuartz, purpose: sumo-gui capture}
+
+rejected:
+  - {name: osmWebWizard, reason: "GUI wrapper hides netconvert options we must pin/audit"}
+  - {name: "Geofabrik .pbf + osmium", reason: "Overpass gives exact reproducible bbox query; revisit if throttled"}
+  - {name: "Google tiles/geometry as network source", reason: "licence-incompatible with OSM-derived network"}
+  - {name: "live traffic as calibration target", reason: "calibration is Lab 13 from camera-derived measurement"}
+
+core_pass_check: "SUMO, OSMnx, OSM snapshots all fetched+pinned+used; no CORE resource merely linked"
