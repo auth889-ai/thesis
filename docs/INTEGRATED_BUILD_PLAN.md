@@ -119,6 +119,41 @@ keeps it that way.
 
 ---
 
+### Operating modes — what the system actually does
+
+The goal decomposes into **two modes with different triggers, actions, metrics
+and burdens of proof**. Both are required; both consume the same forecast.
+
+| | **Mode A — PREVENT** | **Mode B — REACT** |
+|---|---|---|
+| Trigger | Forecast: junction/link will exceed critical density in *h* minutes | Measurement: queue / spillback exceeds threshold **now** |
+| Signal action | Shift green toward the approach that *will* load, before the queue forms | Pressure-based discharge; protect the downstream link from spillback |
+| Routing action | Divert a fraction of demand before the bottleneck saturates | Route around the existing jam, using the forecast so the alternate is not congested on arrival |
+| Success metric | The predicted congestion does not materialise | Recovery time, queue clearance rate, delay during the event |
+| Proof | **Counterfactual only** (see below) | Directly measurable |
+
+**Forecast horizon must exceed actuation lead time.** This is why the benchmark
+uses 5 / 15 / 30 min — each maps to a real lead time, not to aesthetics:
+
+| Action | Lead time before it changes anything | Minimum useful horizon |
+|---|---|---|
+| Signal timing change | ~1–2 cycles ≈ 2–4 min | **5 min** |
+| Fleet rerouting redistribution | 5–15 min | **15 min** |
+| Planning / operator advisory | — | 30 min |
+
+**Proving prevention requires the twin.** A jam that was prevented cannot be
+observed in reality — there is no real-world counterfactual. The proof is:
+
+```
+identical network + demand + seed
+  ├── branch 1: baseline control   → jam forms,     total delay D1
+  └── branch 2: forecast-aware     → jam prevented, total delay D2
+claim = (D1 - D2) over N seeds, with a statistical test
+```
+
+This is the reason the digital twin sits in the middle of the architecture rather
+than at the end, and the reason Mode A cannot be validated on live data alone.
+
 ## 2. CURRENT_FROZEN_FOUNDATIONS
 
 | Asset | Status | What it gives the system |
