@@ -1,0 +1,246 @@
+{
+  "schema_version": 1,
+  "stage": "P0_VERTICAL_SLICE",
+  "city": {
+    "city_id": "dhaka_r1",
+    "display_name": "Dhaka \u2014 Farmgate \u00b7 Karwan Bazar \u00b7 Bangla Motor \u00b7 Shahbagh",
+    "country": "Bangladesh",
+    "traffic_side": "left_hand",
+    "network_sha256": "06194df039740fa2ceb0bcb2c438444efd755f26e0f863327f0e1d6524775dcb",
+    "network_verified": true,
+    "signal_timing_provenance": "IMPORTED_HEURISTIC"
+  },
+  "evidence_domain": "DHAKA_SIMULATED_SENSOR_GRAPH",
+  "evidence_note": "All numbers below are SIMULATED SUMO outputs on a real, verified network topology. They are not real traffic measurements.",
+  "scaffolding_components": [
+    "persistence_forecast",
+    "fixed_time_signals",
+    "no_perception"
+  ],
+  "graph": {
+    "routable_edges": 4434
+  },
+  "od_pair": {
+    "origin": "-188458229#0",
+    "destination": "-326284058#3"
+  },
+  "alternatives": [
+    {
+      "index": 0,
+      "n_edges": 86,
+      "router_predicted_cost_s": 246.5,
+      "overlap_with_previous": 0.0
+    },
+    {
+      "index": 1,
+      "n_edges": 68,
+      "router_predicted_cost_s": 263.2,
+      "overlap_with_previous": 0.162
+    },
+    {
+      "index": 2,
+      "n_edges": 63,
+      "router_predicted_cost_s": 259.7,
+      "overlap_with_previous": 0.413
+    }
+  ],
+  "candidates": [
+    {
+      "label": "all_path_0",
+      "shares": [
+        1.0,
+        0.0,
+        0.0
+      ],
+      "mean_avg_time_loss_s": 244.12,
+      "mean_avg_travel_time_s": 560.04,
+      "mean_throughput_veh": 300.0,
+      "all_runs_clean": true,
+      "all_runs_comparable": true,
+      "per_seed": [
+        {
+          "seed": 42,
+          "returncode": 0,
+          "clean": true,
+          "comparable": true,
+          "throughput_veh": 300,
+          "avg_travel_time_s": 560.04,
+          "avg_waiting_time_s": 50.02,
+          "avg_time_loss_s": 244.12,
+          "p95_travel_time_s": 614.0,
+          "collisions": 0,
+          "teleports": 0,
+          "demand": {
+            "loaded": 300,
+            "inserted": 300,
+            "running_at_end": 0,
+            "waiting_at_end": 0,
+            "insertion_rate": 1.0,
+            "complete": true
+          },
+          "avg_depart_delay_s": "363.94"
+        }
+      ]
+    },
+    {
+      "label": "all_path_1",
+      "shares": [
+        0.0,
+        1.0,
+        0.0
+      ],
+      "mean_avg_time_loss_s": 243.24,
+      "mean_avg_travel_time_s": 568.65,
+      "mean_throughput_veh": 300.0,
+      "all_runs_clean": true,
+      "all_runs_comparable": true,
+      "per_seed": [
+        {
+          "seed": 42,
+          "returncode": 0,
+          "clean": true,
+          "comparable": true,
+          "throughput_veh": 300,
+          "avg_travel_time_s": 568.65,
+          "avg_waiting_time_s": 0.13,
+          "avg_time_loss_s": 243.24,
+          "p95_travel_time_s": 636.0,
+          "collisions": 0,
+          "teleports": 0,
+          "demand": {
+            "loaded": 300,
+            "inserted": 300,
+            "running_at_end": 0,
+            "waiting_at_end": 0,
+            "insertion_rate": 1.0,
+            "complete": true
+          },
+          "avg_depart_delay_s": "361.36"
+        }
+      ]
+    },
+    {
+      "label": "all_path_2",
+      "shares": [
+        0.0,
+        0.0,
+        1.0
+      ],
+      "mean_avg_time_loss_s": 188.4,
+      "mean_avg_travel_time_s": 518.64,
+      "mean_throughput_veh": 300.0,
+      "all_runs_clean": true,
+      "all_runs_comparable": true,
+      "per_seed": [
+        {
+          "seed": 42,
+          "returncode": 0,
+          "clean": true,
+          "comparable": true,
+          "throughput_veh": 300,
+          "avg_travel_time_s": 518.64,
+          "avg_waiting_time_s": 1.04,
+          "avg_time_loss_s": 188.4,
+          "p95_travel_time_s": 611.0,
+          "collisions": 0,
+          "teleports": 0,
+          "demand": {
+            "loaded": 300,
+            "inserted": 300,
+            "running_at_end": 0,
+            "waiting_at_end": 0,
+            "insertion_rate": 1.0,
+            "complete": true
+          },
+          "avg_depart_delay_s": "380.99"
+        }
+      ]
+    },
+    {
+      "label": "even_split",
+      "shares": [
+        0.3333333333333333,
+        0.3333333333333333,
+        0.3333333333333333
+      ],
+      "mean_avg_time_loss_s": 233.93,
+      "mean_avg_travel_time_s": 557.51,
+      "mean_throughput_veh": 300.0,
+      "all_runs_clean": true,
+      "all_runs_comparable": true,
+      "per_seed": [
+        {
+          "seed": 42,
+          "returncode": 0,
+          "clean": true,
+          "comparable": true,
+          "throughput_veh": 300,
+          "avg_travel_time_s": 557.51,
+          "avg_waiting_time_s": 63.27,
+          "avg_time_loss_s": 233.93,
+          "p95_travel_time_s": 772.0,
+          "collisions": 0,
+          "teleports": 0,
+          "demand": {
+            "loaded": 300,
+            "inserted": 300,
+            "running_at_end": 0,
+            "waiting_at_end": 0,
+            "insertion_rate": 1.0,
+            "complete": true
+          },
+          "avg_depart_delay_s": "294.11"
+        }
+      ]
+    },
+    {
+      "label": "split_0",
+      "shares": [
+        0.55,
+        0.25,
+        0.2
+      ],
+      "mean_avg_time_loss_s": 212.9,
+      "mean_avg_travel_time_s": 533.84,
+      "mean_throughput_veh": 300.0,
+      "all_runs_clean": true,
+      "all_runs_comparable": true,
+      "per_seed": [
+        {
+          "seed": 42,
+          "returncode": 0,
+          "clean": true,
+          "comparable": true,
+          "throughput_veh": 300,
+          "avg_travel_time_s": 533.84,
+          "avg_waiting_time_s": 58.48,
+          "avg_time_loss_s": 212.9,
+          "p95_travel_time_s": 744.0,
+          "collisions": 0,
+          "teleports": 0,
+          "demand": {
+            "loaded": 300,
+            "inserted": 300,
+            "running_at_end": 0,
+            "waiting_at_end": 0,
+            "insertion_rate": 1.0,
+            "complete": true
+          },
+          "avg_depart_delay_s": "322.02"
+        }
+      ]
+    }
+  ],
+  "selection": {
+    "rule": "min mean avg_time_loss_s over COMPARABLE runs (all demand inserted and completed)",
+    "excluded_incomparable_candidates": [],
+    "system_optimal": "all_path_2",
+    "user_optimal": "all_path_0",
+    "user_vs_system": {
+      "user_optimal_time_loss_s": 244.12,
+      "system_optimal_time_loss_s": 188.4,
+      "improvement_percent": 22.824840242503686
+    }
+  },
+  "runtime_s": 6.0
+}
