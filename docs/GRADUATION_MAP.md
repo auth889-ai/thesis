@@ -2,8 +2,9 @@
 
 Rule: `paper reproduction → benchmark → Dhaka adaptation → KEEP decision →
 adapter → dhakaflow/`. A lab's *numbers* never move into the platform; its
-*validated capabilities* do, expressed as interfaces. Lab 00 and Lab 01 results
-remain frozen and unedited (verified: `git diff` on their evidence is empty).
+*validated capabilities* do, expressed as interfaces. Lab 00, Lab 01 and Lab 02
+results remain frozen and unedited (verified 2026-08-14: `git diff HEAD` over
+`paper_labs/00_utd19`, `01_sumo_foundation` and `02_dhaka_osm` is empty).
 
 ## Lab 00 — Traffic Science / UTD19 MFD → `dhakaflow/evaluation/`
 
@@ -53,6 +54,52 @@ never duplicated.
 **Explicitly not graduated:** the max-pressure *algorithm* (it is a
 `BASELINE_IMPLEMENTATION`, superseded by Lab 14's network-scale benchmark), the
 unit scenario XMLs, and the frozen 5-seed numbers.
+
+## Lab 02 — Real Dhaka Network (OSM → SUMO) → `dhakaflow/common/`, `simulation/`
+
+**Status:** PASS — **FROZEN** (user approval 2026-08-14). Freeze baseline is two
+commits: `SCIENTIFIC_EXECUTION_COMMIT = 6936ea9` (measured region selection,
+dual-construction validation, live-reference foundation) and
+`RESOURCE_TRACEABILITY_COMMIT = c852e64` (manifests + master resource index).
+Lab 02 is not to be rerun, redesigned, extended or cosmetically modified unless
+a future integration test reveals a genuine defect. **Graduates to:** the
+scenario/observation contracts and the live-reference protocol.
+
+Lab 02 is a *substrate* lab: its product is a geography, not an algorithm. So
+what graduates is the **capability to express a validated real network through
+the platform contracts** — never the network file itself, and never a number
+measured on it.
+
+| Lab 02 capability (validated on the real R1 snapshot) | Platform expression |
+|---|---|
+| A validated real network is a runnable scenario (net + demand + seed + horizon) | `common/TrafficScenario` — Lab 02's `build_scenario` emits `dhaka_R1_lab02_v2` with **no new type**; the Lab 01 contract absorbed a real 6 527-edge network unchanged |
+| Provenance of a geographic artifact (source endpoint, download time, licence, checksum) | `common/provenance.py` (`sha256_file`, `RunProvenance`) — the OSM snapshot and `.net.xml` are pinned by sha256, so any later lab can prove *which* Dhaka it simulated |
+| Honesty labels on inherited infrastructure | `TrafficScenario.metadata` string flags — `demand=SYNTHETIC_VALIDATION_DEMAND`, `traffic_side=left_hand`. Signal timings stay `IMPORTED_HEURISTIC`. Later labs must read these before claiming realism |
+| Driving a real network through the Lab 01 lifecycle | `simulation/SimulationBackend` — `SumoDhakaBackend` (in the lab, structural conformance only) proved the contract holds outside the unit scenarios: `reset · step · close` on 3 001 trips, 0 collisions |
+| Left-hand traffic as a checkable property, not an assumption | Verified two ways in-lab (declared `lefthand=true` + geometry over 5 250 opposite-carriageway pairs, 98.9%). Graduates as the `traffic_side` metadata key — **Bangladesh drives on the left, and every later scenario must carry this flag** |
+| External ground truth without ingesting proprietary content | `common/live_reference.py`: `LiveTrafficReference` protocol, `LiveRouteRequest/Observation`, and `LiveRouteObservation.persistable_metadata()` — the type system makes "metadata and boolean verdicts only" enforceable rather than a promise. Status `READY_NOT_EXECUTED` (no key; user DECISION 1) |
+| Dual-construction cross-validation as a method (independent Branch A/B, explained tolerance failures) | **Method, not code** — recorded in `DESIGN_V2.md §3`. Labs that build a second artifact from the same source reuse the rule: an explained deviation passes, an unexplained one fails |
+
+**Explicitly not graduated:**
+
+- `R1.osm` and `dhaka_r1.net.xml` — cited by checksum from
+  `paper_labs/02_dhaka_osm/`, never copied into `dhakaflow/`.
+- The **synthetic demand** (`randomTrips`/`duarouter`, seed 42) and every metric
+  measured under it — mean travel time 266.7 s and mean speed 13.1 m/s are
+  *toolchain-health evidence*, **not** Dhaka traffic conditions and not a
+  calibration target. Lab 13 calibrates against real observations.
+- The **netconvert-synthesised signal programs** (17 TLS across 19 traffic-light
+  junctions). `IMPORTED_HEURISTIC` timings are a placeholder for Lab 13's real
+  DMP/field plans; no RL lab may treat them as the operational baseline.
+- The region-selection scoring (C1–C8) and `src/regions.py` candidates — a
+  one-time decision procedure, frozen as evidence in `REGION_SELECTION.md`.
+- `SumoDhakaBackend` itself stays in the lab: it is a *conformance
+  demonstration*. A production backend belongs in `simulation/` only after a lab
+  needs it under a KEEP decision.
+
+**Carried-forward obligations** (limitations that later labs inherit): OSM
+attribute completeness on R1 is lanes 22.1%, maxspeed 12.8%, name 45.2% — this
+is the measured field-survey burden any calibration must close.
 
 ## Forward slots (empty by design)
 
