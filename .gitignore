@@ -55,9 +55,19 @@ paper_labs/02_dhaka_osm/outputs/lab02_*/
 # Official repos are cloned to $DHAKAFLOW_WORKSPACE (default ~/.dhakaflow/upstream),
 # outside the repo. upstream/ here holds manifests only.
 /upstream/*/
-artifacts/**
-!artifacts/.gitkeep
-!artifacts/**/*.json
-!artifacts/**/*.md
+# Evidence STAYS IN GIT so a reviewer can see the work without running anything:
+# figures, metrics, tables, manifests, logs-as-evidence. Only genuinely large
+# binaries are excluded (datasets, weights, video, archives) — those live in
+# Drive/S3 and are referenced by checksum + URI.
+artifacts/**/*.mp4
+artifacts/**/*.avi
+artifacts/**/*.mov
+artifacts/**/*.zip
+artifacts/**/*.tar
+artifacts/**/*.tar.gz
+artifacts/**/*.npz
+artifacts/**/*.npy
+artifacts/**/*.pkl
+artifacts/**/*.parquet
 *.onnx
 *.safetensors
