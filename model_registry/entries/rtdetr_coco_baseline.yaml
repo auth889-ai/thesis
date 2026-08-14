@@ -1,0 +1,25 @@
+# Perception candidate. NOTHING HAS BEEN RUN YET — status is CANDIDATE and
+# metrics are deliberately absent. An entry may not claim numbers it does not
+# have; the loader refuses WINNER/CHALLENGER/REJECTED without measured metrics.
+key: rtdetr_coco_baseline
+subsystem: perception
+architecture: RT-DETR (Real-Time DEtection TRansformer), COCO-pretrained
+status: CANDIDATE
+
+paper: https://arxiv.org/abs/2304.08069
+official_repo: https://github.com/lyuwenyu/RT-DETR
+official_sha: ""            # resolved by scripts/fetch_upstream.py, then written here
+config: configs/perception/detector.yaml
+
+trained_on: COCO 2017 (upstream pretrained weights — no DhakaFlow training yet)
+checkpoint_uri: ""          # remote URI only, once we host a fine-tuned checkpoint
+benchmark: ""               # set when it enters the common Dhaka benchmark
+metrics: []
+
+extra:
+  role: >
+    v0 baseline for the end-to-end vertical slice. Present so the skeleton runs
+    on real Dhaka video before any fine-tuning exists. Expected to detect
+    car/bus/truck/motorcycle/person and to MISS rickshaw, CNG and easybike
+    entirely — COCO has no such classes. That expected failure is the measured
+    justification for the Bangladeshi fine-tuning gate.

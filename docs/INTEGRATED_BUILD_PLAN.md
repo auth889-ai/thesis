@@ -67,12 +67,12 @@ when its gate opens.
 correct end-to-end, with one thing it does not yet show, and it is the single
 most important design fact in this project:
 
-> **Graph forecasting needs a sensor *network*, and Dhaka video gives us ~4
-> locations.** DCRNN, Graph WaveNet, STAEformer and STID are defined over a graph
-> of many spatially-distributed sensors — METR-LA has **207 loop detectors**.
-> TFP-BD has **4 camera locations**. A 4-node graph makes every graph model
-> mathematically degenerate: there is almost no spatial structure to learn, and
-> "DCRNN beats LSTM" would be meaningless.
+> **The four real Bangladesh camera sites are insufficient for a convincing
+> large-network Graph-ML benchmark.** DCRNN, Graph WaveNet, STAEformer and STID
+> are defined over a graph of many spatially-distributed sensors — METR-LA has
+> **207 loop detectors**; TFP-BD has **4 camera locations**. These models *may
+> still be run* on four nodes, and we will report those results — but **no strong
+> spatial-generalisation claim may rest on four nodes alone.**
 
 **Resolution (this is what makes the thesis defensible):** the **digital twin is
 promoted from consumer to producer**. The frozen Lab 02 R1 network carries
@@ -98,6 +98,24 @@ live Google Routes speeds ────────────────┘   
 This is stated as an assumption to defend, not a trick: **forecasting is trained
 on calibrated-synthetic sensor series and validated against real measurements at
 the sites we actually observe.** Any paper claim will say exactly that.
+
+### The three forecasting evidence domains (never merged)
+
+Every number this project reports declares which domain it came from. The
+`model_registry` refuses a metric block without one.
+
+| Domain | What it is | What it may support |
+|---|---|---|
+| **`OFFICIAL_REAL_BENCHMARK`** | METR-LA, PEMS-BAY, COCO, MOT17 — the authors' own benchmark data | REPRODUCTION_PASS: proof our harness matches published numbers |
+| **`DHAKA_SIMULATED_SENSOR_GRAPH`** | 100–300 SUMO detectors on the real frozen Dhaka topology | High-dimensional graph forecasting and control integration. **Always labelled SIMULATED.** Never described as real sensor measurements |
+| **`DHAKA_REAL_VALIDATION_ANCHORS`** | Real Bangladesh observation sites, real BD datasets, permitted external live references | The only domain that can support a real-Dhaka claim |
+
+**Simulator-circularity guard (enforced in code).** A model trained only on SUMO
+data and evaluated only on the same simulation family supports **no real-Dhaka
+forecasting claim**. `ModelEntry.real_world_claim_supported` returns False for
+such a model, and
+`tests/platform/test_taxonomy_and_evidence.py::test_simulated_only_model_supports_no_real_world_claim`
+keeps it that way.
 
 ---
 
@@ -306,7 +324,7 @@ checks out:
 
 | Provider | What it really is | Dhaka reality |
 |---|---|---|
-| **Vizzion** | Aggregates 100k+ cameras via 200+ **transport agencies**, "30+ countries" / "40 countries" (their own pages disagree) | ⚠️ **No Dhaka coverage confirmed.** Their model is DOT partnerships; Bangladesh has no public DOT camera feed programme |
+| **Vizzion** | Aggregates 100k+ cameras via 200+ **transport agencies**, "30+ countries" / "40 countries" (their own pages disagree) | ⚠️ **Bangladesh/Dhaka is not listed in Vizzion's public Asia coverage.** Their model is DOT partnerships; Bangladesh has no public DOT camera-feed programme |
 | **TrafficLand** | US **DOT** video feeds | ❌ US-centric |
 | **Argus AI** | Incident detection on traffic/dashcam feeds | ❌ no BD coverage evidence |
 | **GoodVision** | Analytics **on a stream you supply** — it is not a camera source | ❌ needs a Dhaka camera first; it cannot create one |
@@ -360,6 +378,18 @@ Three uses of non-Bangladeshi data, deliberately kept separate:
 ⇒ **Vizzion/TrafficLand/Argus/GoodVision are not needed at all.** A paid aggregator
 would buy us foreign cameras we can get free, and still no Dhaka coverage.
 
+**If Vizzion trial/API access is obtained anyway**, it is validated on a market
+they actually serve (e.g. Jakarta or Bangkok) and the result is classified:
+
+* ✅ `PROVIDER_INTEGRATION_VALIDATION` — "our `CameraProvider` adapter ingests a
+  commercial live feed correctly"
+* ❌ **never** `DHAKA_LIVE_CAMERA_VALIDATION`
+
+**The Dhaka core must remain fully independent of Vizzion availability.** No gate,
+benchmark or claim may depend on a commercial provider; the dependency is
+declared `configs/live/external_reference.yaml: camera_providers.vizzion.status:
+NOT_PURCHASED` and the permitted/forbidden uses are written into that config.
+
 **Running a Dhaka-trained detector on a foreign live feed is itself a finding**,
 not a demo trick: BNVD has rickshaw/CNG/easybike classes that do not exist in New
 York, so degradation there is expected and is reported as a *domain-shift
@@ -393,19 +423,80 @@ every job checkpoints (spot instances can be reclaimed mid-run).
 
 ## 12. SOFTWARE_SYSTEM_TRACK
 
+### Repository architecture (implemented, tested)
+
 ```
-dhakaflow/
+dhakaflow/        THE source tree — stable runtime interfaces + adapters +
+                  our original integration. No duplicate src/ anywhere.
   common/ perception/ tracking/ sensing/ forecasting/ digital_twin/
   control/ safety/ routing/ priority/ nlp/ genai/ evaluation/
   visualization/ services/
-upstream/          # pinned official repos, byte-untouched
+research/         Official reproduction · fair benchmark · ablation.
+  perception/ tracking/ sensing/ forecasting/ twin/ control/ routing/
+configs/          Config hierarchy, one dir per subsystem (§5 below)
+model_registry/   Model METADATA only — entries/*.yaml, never weights
+upstream/         MANIFESTS ONLY — UPSTREAM_PINS.yaml; no clones, ever
+scripts/          fetch_upstream.py and other entrypoints
+tests/            Architecture + unit + integration
+dashboard/        Operator UI
+deployment/       Docker, IaC, service config
+docs/             This plan, architecture, graduation map, resource index
+artifacts/        Run outputs (gitignored except small JSON/MD evidence)
+paper_labs/       FROZEN Labs 00–02 — cited, never edited
 ```
 
-Ours = adapters, configs, benchmark harnesses, Dhaka features, integration,
-deployment, original contribution. Justified additions only: Docker, structured
-logging, health checks, experiment tracking (MLflow), model/version provenance,
-FastAPI service, artifact registry, tests, CI, S3/CloudWatch. **No decorative
-microservices.**
+**research/ vs dhakaflow/ is the load-bearing split.** `research/` reproduces and
+compares official algorithms; `dhakaflow/` holds the stable runtime. Official
+algorithms stay official upstream code — DhakaFlow adapters translate inputs and
+outputs, they never rewrite the algorithm.
+
+Justified additions only: Docker, structured logging, health checks, experiment
+tracking (MLflow), model/version provenance, FastAPI service, artifact registry,
+tests, CI, S3/CloudWatch. **No decorative microservices.**
+
+### Configuration hierarchy
+
+`configs/{perception,tracking,forecasting,twin,control,routing,live,deployment}/`
+— each non-empty, each value tagged `OFFICIAL` (from upstream's own config),
+`MEASURED` (from our audit of real data), or `ASSUMED` (our choice, to be
+justified or ablated). **No important hyperparameter may live only as an
+unexplained hard-coded constant**; `test_config_subsystem_exists_and_is_not_empty`
+fails an empty config directory.
+
+### Model registry
+
+`model_registry/entries/*.yaml`, loaded and validated by
+`dhakaflow/common/model_registry.py`. Records architecture, paper, official repo
++ SHA, config, dataset, **remote** checkpoint URI, metrics with their evidence
+domain, status and decision rationale. Two rules enforced at load:
+
+* `checkpoint_uri` must be remote (`s3://`, `hf://`, Drive, https) — a path
+  inside the repo raises.
+* `WINNER` / `CHALLENGER` / `REJECTED` require **measured metrics** plus a
+  written rationale, and a `WINNER` must name the benchmark it won. **No model is
+  promoted on reputation.**
+
+### Upstream fetch policy
+
+`upstream/UPSTREAM_PINS.yaml` holds manifests only (13 repos pinned as of
+2026-08-14). `scripts/fetch_upstream.py` clones each into the **gitignored
+external workspace** `$DHAKAFLOW_WORKSPACE` (default `~/.dhakaflow/upstream`) —
+outside the repository, so a nested repo cannot be committed even by accident —
+and verifies the checked-out SHA against the pin. A floating `ref` is resolved
+and must be written back before the repo may be marked `USED`. GPL upstream
+(LibSignal) must carry `license_risk: HIGH` and is executed only as an isolated
+benchmark process.
+
+### Storage
+
+| Kind | Location |
+|---|---|
+| Code, configs, manifests, small JSON/CSV evidence, figures | git |
+| Datasets, checkpoints, training caches, large experiment outputs | **Google Drive / S3** |
+| Official upstream clones | `$DHAKAFLOW_WORKSPACE` (gitignored, outside repo) |
+
+Enforced by `test_no_model_weights_committed` and `test_no_large_tracked_files`
+(10 MB ceiling).
 
 ---
 

@@ -1,0 +1,14 @@
+# Detector configuration — perception gate.
+model:
+  family: RT-DETR                 # OFFICIAL: https://github.com/lyuwenyu/RT-DETR
+  variant: rtdetr_r50vd           # OFFICIAL: upstream config name
+  pretrained: coco                # v0 baseline; replaced by the BD fine-tune
+  input_size: [640, 640]          # OFFICIAL: upstream default
+  score_threshold: 0.30           # ASSUMED: to be swept; drives the precision/recall trade
+  nms: false                      # OFFICIAL: RT-DETR is NMS-free by design
+classes:
+  taxonomy: dhakaflow             # see dhakaflow/perception/taxonomy.py
+  train_on_ambiguous: false       # ASSUMED: AMBIGUOUS source labels are excluded, never guessed
+evaluation:
+  metrics: [mAP50, mAP50_95, precision, recall, per_class_AP, latency_ms, fps, peak_mem_mb]
+  decisive_classes: [rickshaw, cng_autorickshaw]   # what makes Dhaka different from COCO

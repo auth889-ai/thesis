@@ -1,0 +1,23 @@
+# Common forecasting benchmark — the SAME split/horizons/metrics for every model.
+harness: BasicTS                  # OFFICIAL: https://github.com/GestaltCogTeam/BasicTS
+split:
+  type: chronological             # ASSUMED->REQUIRED: random splits leak future into past
+  train: 0.7
+  val: 0.1
+  test: 0.2
+horizons_min: [5, 15, 30]
+input_window_min: 60
+metrics:
+  primary: [MAE, RMSE]
+  conditional:
+    MAPE:
+      note: >
+        Dhaka has genuine zero-flow intervals; MAPE is undefined there. Reported
+        WITH a validity mask and never used as the headline metric.
+      min_denominator: 1.0
+models:
+  classical: [persistence, historical_average, random_forest, xgboost]
+  deep_temporal: [lstm, gru]
+  graph: [dcrnn, graph_wavenet, stid, staeformer]
+  foundation: [chronos2_zeroshot, chronos2_finetuned]
+evidence_domain_required: true    # every result must declare its domain (see model_registry)

@@ -1,0 +1,13 @@
+# ByteTrack — OFFICIAL defaults kept explicit so any Dhaka deviation is visible.
+tracker:
+  name: ByteTrack                 # OFFICIAL: https://github.com/FoundationVision/ByteTrack
+  track_thresh: 0.5               # OFFICIAL default
+  track_buffer: 30                # OFFICIAL default (frames)
+  match_thresh: 0.8               # OFFICIAL default
+  min_box_area: 10                # OFFICIAL default
+  frame_rate: 30                  # MEASURED per clip; TFP-BD source video is 60 fps
+dhaka_deviations:
+  note: >
+    ASSUMED: Dhaka density and occlusion are far above MOT17. Any change to the
+    four OFFICIAL values above must be recorded here with the measurement that
+    justified it, so the official baseline stays recoverable.

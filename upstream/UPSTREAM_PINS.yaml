@@ -1,0 +1,181 @@
+# DhakaFlow upstream pins — MANIFESTS ONLY.
+#
+# HARD RULE: official research code is never committed into this repository and
+# never modified. This file records *what* to fetch and *at which exact commit*.
+# `scripts/fetch_upstream.py` clones each entry into the gitignored external
+# workspace ($DHAKAFLOW_WORKSPACE, default ~/.dhakaflow/upstream) and verifies
+# the checked-out SHA matches this file before the code may be used.
+#
+# `verified` is the date we confirmed the URL and SHA resolve. Re-verify when a
+# component's gate opens — never trust a pin written months earlier.
+#
+# status: PINNED (recorded) | FETCHED (present in workspace, SHA verified)
+#         | USED (an adapter actually imports/executes it)
+
+schema_version: 1
+
+workspace_env_var: DHAKAFLOW_WORKSPACE
+workspace_default: ~/.dhakaflow/upstream
+
+repos:
+
+  # ---------------------------------------------------------------- perception
+  - name: RT-DETR
+    subsystem: perception
+    url: https://github.com/lyuwenyu/RT-DETR.git
+    ref: main
+    sha: null                 # RESOLVE AT FETCH — must be written back before USED
+    verified: "2026-08-14"
+    status: PINNED
+    paper: https://arxiv.org/abs/2304.08069
+    venue: CVPR 2024
+    license: Apache-2.0       # to re-confirm from LICENSE file at fetch
+    why: Official RT-DETR (v1/v2). Detector candidate; official configs and
+         training pipeline are used unmodified.
+
+  - name: BNVD
+    subsystem: perception
+    url: https://github.com/bipin-saha/BNVD.git
+    ref: main
+    sha: b4e74d17dc089af5ffe81c9a29c6b4dbdf59ff6f
+    verified: "2026-08-14"
+    status: FETCHED
+    paper: https://arxiv.org/abs/2405.12150
+    dataset_download: https://www.kaggle.com/datasets/sahabipin/bangladeshi-native-vehicle-dataset
+    license: UNSPECIFIED      # README License section is EMPTY — blocker before use
+    sparse_paths: [docs, notebooks, Tools, Stats]   # never fetch checkpoints locally
+    why: >
+      Authoritative BNVD class-index order is read from
+      Tools/annotation_counter.py (class_list), never guessed from the README.
+      versions.txt pins the exact upstream commits the authors benchmarked:
+      yolov5 b599ae42d9adb8bcb96a1de6ad093436aac9fe6b,
+      yolov6 e86a483f3f6bded25d45970b56831345a99744a4,
+      yolov7 a207844b1ce82d204ab36d87d496728d3d2348e7,
+      ultralytics 8.2.2.
+
+  # ------------------------------------------------------------------ tracking
+  - name: ByteTrack
+    subsystem: tracking
+    url: https://github.com/FoundationVision/ByteTrack.git
+    ref: main
+    sha: null
+    verified: "2026-08-14"
+    status: PINNED
+    paper: https://arxiv.org/abs/2110.06864
+    venue: ECCV 2022
+    license: MIT              # to confirm at fetch
+    why: Official ByteTrack. Association algorithm used as published; we supply
+         detections and consume tracks.
+
+  # --------------------------------------------------------------- forecasting
+  - name: BasicTS
+    subsystem: forecasting
+    url: https://github.com/GestaltCogTeam/BasicTS.git
+    ref: master
+    sha: null
+    verified: "2026-08-14"
+    status: PINNED
+    license: Apache-2.0       # to confirm at fetch
+    why: >
+      Fair-comparison harness that already implements STID, Graph WaveNet and
+      DCRNN under one pipeline. We add a Dhaka dataset adapter — we do not write
+      per-model training loops. This is the single largest time saving in the
+      forecasting gate and removes the unfair-comparison risk.
+
+  - name: STID
+    subsystem: forecasting
+    url: https://github.com/GestaltCogTeam/STID.git
+    ref: master
+    sha: null
+    verified: "2026-08-14"
+    status: PINNED
+    venue: CIKM 2022
+
+  - name: STAEformer
+    subsystem: forecasting
+    url: https://github.com/XDZhelheim/STAEformer.git
+    ref: main
+    sha: null
+    verified: "2026-08-14"
+    status: PINNED
+    paper: https://arxiv.org/abs/2308.10425
+    venue: CIKM 2023
+
+  - name: DCRNN
+    subsystem: forecasting
+    url: https://github.com/liyaguang/DCRNN.git
+    ref: master
+    sha: null
+    verified: "2026-08-14"
+    status: PINNED
+    venue: ICLR 2018
+    note: TensorFlow original. If the TF1 environment proves unreproducible, the
+          BasicTS DCRNN implementation is the fallback and the substitution is
+          recorded in the REPRODUCTION_PASS record — never silently swapped.
+
+  - name: chronos-forecasting
+    subsystem: forecasting
+    url: https://github.com/amazon-science/chronos-forecasting.git
+    ref: main
+    sha: null
+    verified: "2026-08-14"
+    status: PINNED
+    weights: https://huggingface.co/amazon/chronos-2
+    note: Chronos-2, released 2025-10-20; 120M encoder-only, zero-shot,
+          covariate-aware. Evaluated zero-shot AND fine-tuned.
+
+  # ------------------------------------------------------------------- control
+  - name: sumo-rl
+    subsystem: control
+    url: https://github.com/LucasAlegre/sumo-rl.git
+    ref: main
+    sha: null
+    verified: "2026-08-14"
+    status: PINNED
+    license: MIT              # to confirm at fetch
+    why: SUMO <-> Gymnasium/PettingZoo bridge for the RL control gate.
+
+  - name: MAPPO
+    subsystem: control
+    url: https://github.com/marlbenchmark/on-policy.git
+    ref: main
+    sha: null
+    verified: "2026-08-14"
+    status: PINNED
+    paper: https://arxiv.org/abs/2103.01955
+    why: Official MAPPO. Forecast-Aware MAPPO extends this, it does not
+         reimplement it.
+
+  - name: CoLight
+    subsystem: control
+    url: https://github.com/wingsweihua/colight.git
+    ref: master
+    sha: null
+    verified: "2026-08-14"
+    status: PINNED
+
+  - name: LibSignal
+    subsystem: control
+    url: null                 # repo URL to fresh-verify at gate open
+    paper: https://arxiv.org/pdf/2211.10649
+    verified: "2026-08-14"
+    status: PINNED
+    license: GPL-3.0
+    license_risk: HIGH
+    why: >
+      Cross-simulator TSC library (IDQN, CoLight, PressLight). GPL-3.0 is viral:
+      it may be executed as an ISOLATED BENCHMARK PROCESS, but must never be
+      imported into the DhakaFlow runtime, which would impose GPL on the whole
+      platform.
+
+  # ------------------------------------------------------------------- routing
+  - name: URB
+    subsystem: routing
+    url: https://github.com/COeXISTENCE-PROJECT/URB.git
+    ref: main
+    sha: null
+    verified: "2026-08-14"
+    status: PINNED
+    paper: https://arxiv.org/abs/2505.17734
+    venue: NeurIPS 2025 Datasets & Benchmarks
+    why: Urban Routing Benchmark, 29 real networks; integrates RouteRL.

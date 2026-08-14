@@ -1,4 +1,9 @@
-"""DhakaFlow class taxonomy and the source→target mapping layer (mandate §G).
+"""DhakaFlow class taxonomy and the source→target mapping layer.
+
+RUNTIME module: the detector's class contract lives here, so every consumer
+(sensing, twin vehicle types, control features) reads one definition. The
+research-side dataset comparison that produced these mappings lives in
+`research/perception/dataset_registry.py`.
 
 Design rule: **source labels are never destroyed.** A mapping is a declared,
 inspectable object with a quality tag, not a `rename` in a preprocessing script.

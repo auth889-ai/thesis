@@ -1,0 +1,9 @@
+# Routing benchmark. Judged NETWORK-WIDE, never on the routed vehicles alone.
+baselines: [dijkstra, a_star, current_fastest, forecast_fastest, system_aware]
+challenger: URB                   # OFFICIAL: https://github.com/COeXISTENCE-PROJECT/URB
+penetration_rates: [0.05, 0.20, 0.50]   # ASSUMED sweep: routing effects are penetration-dependent
+evaluation:
+  scope: network_wide
+  fail_condition: >
+    A policy that improves routed-vehicle travel time while increasing
+    network-wide total delay is recorded as FAIL, with the externality quantified.

@@ -1,0 +1,13 @@
+# Common control benchmark — identical scenario/demand/seeds/horizon for every arm.
+scenario: dhaka_r1
+seeds: [1, 2, 3, 4, 5]
+horizon_s: 3600
+warmup_s: 600                     # OFFICIAL lesson from Lab 01 / Bologna §1.5
+baselines: [fixed_time, actuated, max_pressure]
+research_controllers: [presslight, frap, colight, mappo]
+contribution:
+  name: forecast_aware_mappo
+  ablation_ladder: [mappo, mappo_forecast, mappo_pressure, mappo_forecast_pressure, full]
+  note: The full model is NOT assumed best; the ladder measures each addition.
+metrics: [mean_travel_time, mean_waiting_time, queue_length, throughput, stops, spillback_proxy]
+safety: {shield_required: true, bypass_allowed: false}

@@ -1,0 +1,22 @@
+# Dhaka digital twin — built on the FROZEN Lab 02 network. Never edit Lab 02.
+network:
+  net_file: paper_labs/02_dhaka_osm/outputs/.../dhaka_r1.net.xml   # resolved at load
+  sha256: 06194df039740fa2ceb0bcb2c438444efd755f26e0f863327f0e1d6524775dcb
+  traffic_side: left_hand         # MEASURED: 98.9% of 5250 opposite-carriageway pairs
+sensors:
+  n_detectors_target: [100, 300]  # ASSUMED: the simulated sensor graph size
+  placement: every_signalised_approach
+  labelling: DHAKA_SIMULATED_SENSOR_GRAPH   # never called a real measurement
+signals:
+  timing_provenance: IMPORTED_HEURISTIC     # netconvert-synthesised, NOT real DMP plans
+vehicle_types:                    # heterogeneous Dhaka mix; lengths in metres
+  car:              {length: 4.5, accel: 2.6, decel: 4.5, sigma: 0.5}   # ASSUMED
+  motorcycle:       {length: 2.0, accel: 3.0, decel: 5.0, sigma: 0.7}   # ASSUMED
+  bus:              {length: 11.0, accel: 1.2, decel: 4.0, sigma: 0.4}  # ASSUMED
+  truck:            {length: 8.0, accel: 1.0, decel: 4.0, sigma: 0.4}   # ASSUMED
+  rickshaw:         {length: 2.2, accel: 0.8, decel: 3.0, sigma: 0.9}   # ASSUMED
+  cng_autorickshaw: {length: 2.8, accel: 1.8, decel: 4.0, sigma: 0.8}   # ASSUMED
+  microbus:         {length: 5.5, accel: 2.0, decel: 4.2, sigma: 0.5}   # ASSUMED
+lateral:
+  model: sublane                  # ASSUMED: Dhaka traffic is not lane-disciplined
+calibration_status: UNCALIBRATED  # becomes CALIBRATED only with real evidence

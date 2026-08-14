@@ -1,0 +1,4 @@
+# Tiny perception smoke config: 20 images, CPU-runnable, catches wiring breaks.
+model: {family: RT-DETR, variant: rtdetr_r50vd, pretrained: coco, input_size: [640, 640], score_threshold: 0.30, nms: false}
+data: {max_images: 20, source: DHAKA_REAL_VALIDATION_ANCHORS}
+evaluation: {metrics: [mAP50], fail_fast: true}

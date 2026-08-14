@@ -1,6 +1,9 @@
-"""Pre-registered candidate registry for Lab 03.
+"""Pre-registered dataset candidate registry for the PERCEPTION research gate.
 
-FROZEN BEFORE MEASUREMENT. This module is the Lab 03 analogue of Lab 02's
+RESEARCH module (not runtime): dataset discovery, scoring and selection. The
+class taxonomy it feeds is runtime and lives in `dhakaflow/perception/taxonomy.py`.
+
+FROZEN BEFORE MEASUREMENT. This module is the perception-gate analogue of Lab 02's
 `regions.py`: the candidate set and every claimed fact are written down *before*
 any scoring runs, so selection cannot be retrofitted to whichever dataset turned
 out easiest to download.

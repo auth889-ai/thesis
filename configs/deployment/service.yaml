@@ -1,0 +1,14 @@
+# Runtime service configuration. Justified components only — no decorative services.
+api: {host: 0.0.0.0, port: 8000, framework: fastapi}
+observability:
+  structured_logging: true
+  health_checks: [detector, forecaster, twin, controller]
+  experiment_tracking: mlflow
+storage:
+  artifacts: s3                   # large outputs never in git
+  checkpoints: s3
+  local_cache: ~/.dhakaflow
+compute:
+  dev: colab_pro                  # interactive, short jobs
+  training: aws_spot              # long runs; MUST checkpoint (spot is reclaimable)
+  checkpoint_interval_min: 15     # ASSUMED: bounds loss on spot reclamation
