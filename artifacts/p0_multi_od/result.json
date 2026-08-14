@@ -1,0 +1,181 @@
+{
+  "stage": "P0_MULTI_OD_ROUTING",
+  "city": "dhaka_r1",
+  "evidence_domain": "DHAKA_SIMULATED_SENSOR_GRAPH",
+  "demand_provenance": "SYNTHETIC_STRUCTURED_DEMAND",
+  "contention": {
+    "n_od_pairs": 20,
+    "total_vehicles": 1200,
+    "n_loaded_edges": 501,
+    "n_contended_edges": 192,
+    "max_edge_load_veh": 360,
+    "testable": true,
+    "note": "A demand set with no contended edges cannot exhibit a user-vs-system-optimal gap \u2014 rerouting would have nothing to relieve."
+  },
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "results": {
+    "user_optimal": {
+      "n_routes": 20,
+      "vehicles": 1200,
+      "mean_time_loss_s": 357.8233333333333,
+      "stdev_time_loss_s": 2.4806517960675922,
+      "all_comparable": true,
+      "per_seed": [
+        {
+          "seed": 1,
+          "comparable": true,
+          "avg_time_loss_s": 357.22,
+          "avg_travel_time_s": 582.07,
+          "p95_travel_time_s": 1236.0,
+          "avg_waiting_time_s": 220.14,
+          "throughput_veh": 1200,
+          "collisions": 0,
+          "teleports": 3,
+          "demand_complete": true,
+          "inserted": 1200,
+          "loaded": 1200
+        },
+        {
+          "seed": 2,
+          "comparable": true,
+          "avg_time_loss_s": 355.7,
+          "avg_travel_time_s": 582.64,
+          "p95_travel_time_s": 1229.0,
+          "avg_waiting_time_s": 215.9,
+          "throughput_veh": 1200,
+          "collisions": 0,
+          "teleports": 6,
+          "demand_complete": true,
+          "inserted": 1200,
+          "loaded": 1200
+        },
+        {
+          "seed": 3,
+          "comparable": true,
+          "avg_time_loss_s": 360.55,
+          "avg_travel_time_s": 585.3,
+          "p95_travel_time_s": 1240.0,
+          "avg_waiting_time_s": 222.2,
+          "throughput_veh": 1200,
+          "collisions": 0,
+          "teleports": 15,
+          "demand_complete": true,
+          "inserted": 1200,
+          "loaded": 1200
+        }
+      ]
+    },
+    "system_aware": {
+      "n_routes": 60,
+      "vehicles": 1200,
+      "mean_time_loss_s": 407.50333333333333,
+      "stdev_time_loss_s": 98.15581303892976,
+      "all_comparable": true,
+      "per_seed": [
+        {
+          "seed": 1,
+          "comparable": true,
+          "avg_time_loss_s": 294.26,
+          "avg_travel_time_s": 551.99,
+          "p95_travel_time_s": 1261.0,
+          "avg_waiting_time_s": 179.39,
+          "throughput_veh": 1200,
+          "collisions": 0,
+          "teleports": 28,
+          "demand_complete": true,
+          "inserted": 1200,
+          "loaded": 1200
+        },
+        {
+          "seed": 2,
+          "comparable": true,
+          "avg_time_loss_s": 468.19,
+          "avg_travel_time_s": 731.94,
+          "p95_travel_time_s": 2258.0,
+          "avg_waiting_time_s": 348.83,
+          "throughput_veh": 1200,
+          "collisions": 0,
+          "teleports": 67,
+          "demand_complete": true,
+          "inserted": 1200,
+          "loaded": 1200
+        },
+        {
+          "seed": 3,
+          "comparable": true,
+          "avg_time_loss_s": 460.06,
+          "avg_travel_time_s": 719.78,
+          "p95_travel_time_s": 2101.0,
+          "avg_waiting_time_s": 330.58,
+          "throughput_veh": 1200,
+          "collisions": 0,
+          "teleports": 60,
+          "demand_complete": true,
+          "inserted": 1200,
+          "loaded": 1200
+        }
+      ]
+    },
+    "random_alternative": {
+      "n_routes": 20,
+      "vehicles": 1200,
+      "mean_time_loss_s": 478.49333333333334,
+      "stdev_time_loss_s": 138.2455226520314,
+      "all_comparable": true,
+      "per_seed": [
+        {
+          "seed": 1,
+          "comparable": true,
+          "avg_time_loss_s": 635.12,
+          "avg_travel_time_s": 901.49,
+          "p95_travel_time_s": 2701.0,
+          "avg_waiting_time_s": 477.97,
+          "throughput_veh": 1200,
+          "collisions": 0,
+          "teleports": 54,
+          "demand_complete": true,
+          "inserted": 1200,
+          "loaded": 1200
+        },
+        {
+          "seed": 2,
+          "comparable": true,
+          "avg_time_loss_s": 426.88,
+          "avg_travel_time_s": 691.86,
+          "p95_travel_time_s": 1538.0,
+          "avg_waiting_time_s": 264.0,
+          "throughput_veh": 1200,
+          "collisions": 0,
+          "teleports": 14,
+          "demand_complete": true,
+          "inserted": 1200,
+          "loaded": 1200
+        },
+        {
+          "seed": 3,
+          "comparable": true,
+          "avg_time_loss_s": 373.48,
+          "avg_travel_time_s": 633.31,
+          "p95_travel_time_s": 1301.0,
+          "avg_waiting_time_s": 213.01,
+          "throughput_veh": 1200,
+          "collisions": 0,
+          "teleports": 2,
+          "demand_complete": true,
+          "inserted": 1200,
+          "loaded": 1200
+        }
+      ]
+    }
+  },
+  "verdict": {
+    "user_optimal_time_loss_s": 357.82,
+    "system_aware_time_loss_s": 407.5,
+    "improvement_percent": -13.88,
+    "system_aware_wins": false
+  }
+}
