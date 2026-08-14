@@ -339,16 +339,55 @@ where the entire scientific contribution lives. A live key makes the demo
 impressive; the frozen real network + real BD datasets + honest benchmarks make
 the *thesis* strong. Get the key — just don't believe the project depends on it.
 
+### Foreign-data policy (what "test on another country" may and may not mean)
+
+Three uses of non-Bangladeshi data, deliberately kept separate:
+
+| Use | Data | Legitimate? |
+|---|---|---|
+| **A. Official reproduction** — prove our harness matches published numbers | COCO (RT-DETR), MOT17/MOT20 (ByteTrack), **METR-LA / PEMS-BAY** (DCRNN, Graph WaveNet, STID, STAEformer) | ✅ **Required.** This is how REPRODUCTION_PASS is earned; all are free, no key |
+| **B. Live-systems demonstration** — prove the pipeline ingests a real live stream in real time | A free public DOT camera feed (see below) | ✅ Legitimate as an *engineering* claim: "the runtime consumes live camera streams" |
+| **C. Scientific claim about Dhaka** | foreign cameras | ❌ **Never.** Foreign traffic cannot validate Dhaka control, Dhaka demand, or heterogeneous-vehicle behaviour |
+
+**Free live camera sources beat paid ones for use B** (verified 2026-08-14):
+
+| Source | Access | Note |
+|---|---|---|
+| **511NY** https://511ny.org/developers/help | **Free developer key** | Cameras + speeds + incidents — the richest free option |
+| **TfL JamCams** https://api.tfl.gov.uk/Place/Type/JamCam/ | **Free app key**, ~900 London cameras | ⚠️ `UNVERIFIED`: secondary sources report JamCams offline since a Sept-2024 cyber attack — check liveness before relying on it |
+| GDOT / Open Data DC (ArcGIS Hub) | Free | Regional US feeds |
+
+⇒ **Vizzion/TrafficLand/Argus/GoodVision are not needed at all.** A paid aggregator
+would buy us foreign cameras we can get free, and still no Dhaka coverage.
+
+**Running a Dhaka-trained detector on a foreign live feed is itself a finding**,
+not a demo trick: BNVD has rickshaw/CNG/easybike classes that do not exist in New
+York, so degradation there is expected and is reported as a *domain-shift
+measurement*, never as a failure of the detector.
+
 ### Paid keys, final list
 
-| # | Key | Cost | Blocking? |
-|---|---|---|---|
-| 1 | **Kaggle token** (free) | $0 | 🔴 **YES — blocks BNVD download today** |
-| 2 | **Google Routes API** | ~$5/1k req | 🟡 live track only |
-| 3 | **Anthropic Claude API** | usage | 🟡 copilot gate only |
-| 4 | **Colab Pro+** | subscription | 🔴 **the real bottleneck** — this is what buys GPU hours |
-| 5 | AWS ($200 credit held) | credited | 🟢 optional |
-| 6 | Camera APIs | — | ⛔ **do not buy until coverage verified** |
+**Three keys required. Two of them free. Everything else is optional or refused.**
+
+| # | Key | Cost | Needed for | When |
+|---|---|---|---|---|
+| 1 | **Kaggle token** | **free** | BNVD download | 🔴 **now — blocking** |
+| 2 | **Google Routes** `GOOGLE_MAPS_API_KEY` | paid, ~$5/1k req | Dhaka live speed reference | 🟡 twin calibration |
+| 3 | **Anthropic Claude** | paid, usage | GenAI copilot | 🟡 last gate |
+| 4 | HuggingFace token | free | Chronos-2 / checkpoint pulls without rate limits | 🟢 forecasting gate |
+| 5 | 511NY developer key | free | live-stream demonstration track | 🟢 optional |
+| 6 | AWS (held, $200 credit) | credited | **long training runs** | ✅ have |
+| 7 | Colab Pro (held) | subscription | interactive dev, short jobs | ✅ have |
+| — | Vizzion / TrafficLand / Argus / GoodVision | paid | nothing we cannot get free | ⛔ **refused** |
+
+**Compute split (Colab Pro is not enough alone).** Colab Pro's compute-unit
+allowance and session limits suit *development and short jobs*; the 250–400
+GPU-hour training budget belongs on **AWS spot with checkpointing to S3**.
+Rough credit maths (`ESTIMATE`, region- and market-dependent — verify at setup):
+`g4dn.xlarge` (T4) spot ≈ $0.16–0.21/h → the $200 credit buys on the order of
+**~1000 GPU-hours**; `g5.xlarge` (A10G) spot ≈ $0.30–0.40/h → **~500–650 hours**.
+Either way the held credit plausibly covers the whole training budget, provided
+every job checkpoints (spot instances can be reclaimed mid-run).
 
 ---
 
