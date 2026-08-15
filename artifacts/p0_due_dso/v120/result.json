@@ -1,0 +1,140 @@
+{
+  "stage": "R4_R5_OFFICIAL_SUMO_ASSIGNMENT",
+  "city": "dhaka_r1",
+  "evidence_domain": "DHAKA_SIMULATED_SENSOR_GRAPH",
+  "sumo_home": "/Users/jannatulferdouseva/miniconda3/lib/python3.13/site-packages/sumo",
+  "iterations": 4,
+  "seeds": [
+    1,
+    2,
+    3
+  ],
+  "contention": {
+    "n_od_pairs": 15,
+    "total_vehicles": 1800,
+    "n_loaded_edges": 394,
+    "n_contended_edges": 114,
+    "max_edge_load_veh": 600,
+    "testable": true,
+    "note": "A demand set with no contended edges cannot exhibit a user-vs-system-optimal gap \u2014 rerouting would have nothing to relieve."
+  },
+  "results": {
+    "R4_DUE": {
+      "command": "/Users/jannatulferdouseva/miniconda3/bin/python3 /Users/jannatulferdouseva/miniconda3/lib/python3.13/site-packages/sumo/tools/assign/duaIterate.py -n /Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml -t /Users/jannatulferdouseva/thesis/artifacts/p0_due_dso/v120/trips.xml -l 4 --nointernal-link --logit duarouter--routing-threads 4 sumo--end 10800.0",
+      "assignment_seconds": 14.5,
+      "route_file": "/Users/jannatulferdouseva/thesis/artifacts/p0_due_dso/v120/R4_DUE/003/trips_003.rou.xml.gz",
+      "official_tool": "SUMO duaIterate.py",
+      "marginal_cost_flag": false,
+      "status": "OK",
+      "mean_time_loss_s": 377.4633333333333,
+      "stdev_time_loss_s": 78.4125253600044,
+      "all_comparable": true,
+      "per_seed": [
+        {
+          "seed": 1,
+          "comparable": true,
+          "avg_time_loss_s": 401.87,
+          "avg_travel_time_s": 646.36,
+          "p95_travel_time_s": 2332.0,
+          "avg_waiting_time_s": 276.62,
+          "throughput_veh": 1800,
+          "collisions": 0,
+          "teleports": 58,
+          "loaded": 1800,
+          "inserted": 1800,
+          "demand_complete": true
+        },
+        {
+          "seed": 2,
+          "comparable": true,
+          "avg_time_loss_s": 440.77,
+          "avg_travel_time_s": 687.24,
+          "p95_travel_time_s": 1902.0,
+          "avg_waiting_time_s": 314.12,
+          "throughput_veh": 1800,
+          "collisions": 0,
+          "teleports": 78,
+          "loaded": 1800,
+          "inserted": 1800,
+          "demand_complete": true
+        },
+        {
+          "seed": 3,
+          "comparable": true,
+          "avg_time_loss_s": 289.75,
+          "avg_travel_time_s": 533.15,
+          "p95_travel_time_s": 1108.0,
+          "avg_waiting_time_s": 164.07,
+          "throughput_veh": 1800,
+          "collisions": 0,
+          "teleports": 8,
+          "loaded": 1800,
+          "inserted": 1800,
+          "demand_complete": true
+        }
+      ]
+    },
+    "R5_DSO_marginal_cost": {
+      "command": "/Users/jannatulferdouseva/miniconda3/bin/python3 /Users/jannatulferdouseva/miniconda3/lib/python3.13/site-packages/sumo/tools/assign/duaIterate.py -n /Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml -t /Users/jannatulferdouseva/thesis/artifacts/p0_due_dso/v120/trips.xml --marginal-cost -l 4 --nointernal-link --logit duarouter--routing-threads 4 sumo--end 10800.0",
+      "assignment_seconds": 12.7,
+      "route_file": "/Users/jannatulferdouseva/thesis/artifacts/p0_due_dso/v120/R5_DSO_marginal_cost/003/trips_003.rou.xml.gz",
+      "official_tool": "SUMO duaIterate.py",
+      "marginal_cost_flag": true,
+      "status": "OK",
+      "mean_time_loss_s": 290.72999999999996,
+      "stdev_time_loss_s": 16.697931009559237,
+      "all_comparable": true,
+      "per_seed": [
+        {
+          "seed": 1,
+          "comparable": true,
+          "avg_time_loss_s": 309.96,
+          "avg_travel_time_s": 554.14,
+          "p95_travel_time_s": 1196.0,
+          "avg_waiting_time_s": 181.12,
+          "throughput_veh": 1800,
+          "collisions": 0,
+          "teleports": 27,
+          "loaded": 1800,
+          "inserted": 1800,
+          "demand_complete": true
+        },
+        {
+          "seed": 2,
+          "comparable": true,
+          "avg_time_loss_s": 282.33,
+          "avg_travel_time_s": 528.43,
+          "p95_travel_time_s": 1109.0,
+          "avg_waiting_time_s": 156.99,
+          "throughput_veh": 1800,
+          "collisions": 0,
+          "teleports": 7,
+          "loaded": 1800,
+          "inserted": 1800,
+          "demand_complete": true
+        },
+        {
+          "seed": 3,
+          "comparable": true,
+          "avg_time_loss_s": 279.9,
+          "avg_travel_time_s": 523.38,
+          "p95_travel_time_s": 1117.0,
+          "avg_waiting_time_s": 155.25,
+          "throughput_veh": 1800,
+          "collisions": 0,
+          "teleports": 8,
+          "loaded": 1800,
+          "inserted": 1800,
+          "demand_complete": true
+        }
+      ]
+    }
+  },
+  "verdict": {
+    "due_time_loss_s": 377.46,
+    "dso_time_loss_s": 290.73,
+    "dso_improvement_percent": 22.98,
+    "dso_better": true,
+    "interpretation": "DSO assigns on marginal cost, so it should trade a small penalty for some drivers against lower TOTAL network delay. A negative improvement means the effect did not materialise at this demand level and must be reported as such."
+  }
+}
