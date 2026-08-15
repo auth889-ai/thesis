@@ -4,6 +4,7 @@ from __future__ import annotations
 import pytest
 
 from research.perception.benchmark_schema import (BenchmarkRow, MANDATED_METRICS,
+                                                  assert_fair_common_budget,
                                                   select_winner)
 from research.perception.voc_to_yolo import (PORIBOHON_CLASSES, convert_dataset,
                                              round_trip_error, voc_box_to_yolo,
@@ -83,10 +84,16 @@ def _metrics(**over):
     return m
 
 
+FAIR_TRAINING = dict(image_size=640, batch_size=16, epochs=60,
+                     optimizer="AdamW (official default)", learning_rate="1e-4",
+                     augmentation="official_default", inference_precision="FP16",
+                     fps_protocol="batch=1 640px FP16 200iter/50warmup")
+
+
 def _row(**over):
     kw = dict(architecture="dfine", recipe="native", dataset_track="PORIBOHON_BD",
               split_id="s1", checkpoint_origin="official", official_repo_sha="abc123",
-              metrics=_metrics())
+              gpu="T4", training=dict(FAIR_TRAINING), metrics=_metrics())
     kw.update(over)
     return BenchmarkRow(**kw)
 
@@ -142,3 +149,49 @@ def test_single_winner_when_tracks_agree():
     verdict = select_winner([a, b, c])
     assert verdict["domain_shift"] is False
     assert verdict["verdict"] == "dfine+native"
+
+
+# ---------------------------------------------------- fair-budget policy
+def test_missing_training_provenance_rejected():
+    t = dict(FAIR_TRAINING); del t["epochs"]
+    with pytest.raises(ValueError, match="training provenance missing"):
+        _row(training=t)
+
+
+def test_unfair_epoch_budget_rejected():
+    """One candidate silently given more epochs -> the comparison refuses to run."""
+    a = _row(architecture="dfine")
+    t = dict(FAIR_TRAINING, epochs=120)          # double budget, same class
+    b = _row(architecture="rtdetr_v2", training=t)
+    with pytest.raises(ValueError, match="UNFAIR BUDGET"):
+        assert_fair_common_budget([a, b])
+
+
+def test_official_reproduction_budget_may_differ():
+    """Author schedules legitimately differ; reproduction rows are exempt."""
+    a = _row(architecture="dfine", budget_class="OFFICIAL_REPRODUCTION_BUDGET",
+             training=dict(FAIR_TRAINING, epochs=72))
+    b = _row(architecture="rtdetr_v2", budget_class="OFFICIAL_REPRODUCTION_BUDGET",
+             training=dict(FAIR_TRAINING, epochs=120))
+    assert_fair_common_budget([a, b])            # no raise
+
+
+def test_winner_selection_ignores_tuned_and_reproduction_rows():
+    tuned = _row(architecture="rtdetr_v2", budget_class="TUNED_BUDGET",
+                 metrics=_metrics(ap_rickshaw=0.99))
+    common = _row(architecture="dfine")
+    verdict = select_winner([tuned, common])
+    assert verdict["verdict"] == "dfine+native"  # tuned row never selects
+
+
+def test_incomplete_benchmark_declares_no_winner():
+    rows = [_row(architecture="dfine")]
+    verdict = select_winner(rows, expected_candidates=[("dfine", "native"),
+                                                       ("rtdetr_v2", "native")])
+    assert verdict["verdict"] == "INCOMPLETE"
+    assert ("rtdetr_v2", "native") in verdict["missing"]["PORIBOHON_BD"]
+
+
+def test_gpu_required():
+    with pytest.raises(ValueError, match="gpu is required"):
+        _row(gpu="")

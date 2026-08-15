@@ -1,0 +1,44 @@
+# P1 FAIR TRAINING-BUDGET POLICY — predeclared BEFORE any training run.
+# Editing this file after results exist is a protocol violation; the file's
+# sha256 at training time is recorded in every result row's split provenance.
+#
+# Three budget classes (user mandate, 2026-08-16):
+
+official_reproduction_budget:
+  # The author's own schedule/config, unmodified, where computationally
+  # feasible. Purpose: REPRODUCTION_PASS — proving our harness matches the
+  # published result before any Bangladesh claim is made.
+  rule: >
+    Use each repository's official config verbatim. Schedules MAY differ
+    between architectures here — that is the point: it reproduces what the
+    authors published. Never used for cross-model winner selection.
+
+dhaka_common_benchmark_budget:
+  # The fair, deployment-oriented comparison. Winner selection uses ONLY rows
+  # trained under this budget.
+  epochs: 60                    # PREDECLARED: identical for every candidate
+  image_size: 640               # PREDECLARED: identical (official RT-DETR/D-FINE eval size)
+  augmentation_preset: official_default   # each repo's own default preset,
+                                # with NO additions/removals per candidate
+  hyperparameter_search: FORBIDDEN        # zero search for anyone
+  optimizer_and_lr: architecture_official_default
+  # Rationale: fairness means an EQUAL BUDGET, not identical hyperparameters.
+  # Forcing D-FINE onto RT-DETR's optimizer would sabotage it and bias the
+  # comparison; each architecture keeps its own official optimizer/LR, and
+  # both are RECORDED per row so the reader can see exactly what ran.
+  batch_size: fit_vram_and_record
+  # Batch may vary with the assigned GPU; effective epochs are what is
+  # equalised. Gradient accumulation, if used, is recorded in `augmentation`
+  # notes. Same GPU for all candidates within a track wherever possible.
+  pretraining: official_coco_or_obj365_checkpoint_as_published
+  inference_precision: FP16     # PREDECLARED deployment-oriented measurement
+  fps_protocol: >
+    batch=1, 640x640, FP16, torch.cuda.synchronize() around 200 timed
+    iterations after 50 warmup, same GPU as training track; report mean FPS
+    and p50 latency in ms.
+
+tuned_budget:
+  rule: >
+    Any later candidate-specific tuning (longer schedules, augmentation
+    changes, LR sweeps) is a separate budget class, reported separately,
+    and NEVER merged into the common-budget comparison table.
