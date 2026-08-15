@@ -195,6 +195,8 @@ repos:
 
   - name: DEIM
     subsystem: perception
+    role: TRAINING_FRAMEWORK        # NOT a model architecture — never compared
+                                    # against D-FINE/RT-DETR as if it were one
     url: https://github.com/Intellindust-AI-Lab/DEIM.git
     ref: main
     sha: null
@@ -202,9 +204,10 @@ repos:
     status: PINNED
     paper: https://arxiv.org/abs/2412.04234
     venue: CVPR 2025
-    why: Training framework over RT-DETR/D-FINE; DEIM-D-FINE-L 54.7 AP @ 124
-         FPS, up to 50% less training time — directly relevant to our GPU
-         budget. Official repo re-implements D-FINE and RT-DETR.
+    why: Training RECIPE (matching improvements) applied to RT-DETR and D-FINE
+         architectures; DEIM-trained D-FINE-L 54.7 AP @ 124 FPS with up to 50%
+         less training time. Used as an alternative recipe axis in the
+         benchmark, orthogonal to the architecture axis.
 
   - name: RT-DETRv4
     subsystem: perception
@@ -214,7 +217,9 @@ repos:
     verified: "2026-08-15"
     status: PINNED
     paper: https://arxiv.org/abs/2510.25257
-    venue: ECCV 2026
+    venue: CURRENT_CHALLENGER       # repo README self-claims ECCV 2026; no
+                                    # official proceedings source verified —
+                                    # do not cite a venue until one is
     why: Newest official RT-DETR family member (VFM distillation); SOTA claims
          over YOLOv10-13. Must be measured on the Bangladesh protocol, not
          assumed best.
