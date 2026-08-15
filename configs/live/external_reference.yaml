@@ -1,6 +1,10 @@
 # External live reference. Provider content is NEVER persisted (DECISION 1).
 google_routes:
   enabled: false                  # READY_NOT_EXECUTED until a key exists
+  provider_module: dhakaflow/live/google_providers.py::GoogleRoutesProvider
+  corridors: DHAKA_R1_CORRIDORS   # 6 OD pairs across the frozen R1 region
+  persist_raw: false              # OFF until operator reviews Google ToS on caching
+  reality_label: REAL_LIVE
   secret_env_var: GOOGLE_MAPS_API_KEY   # NAME only, never a value
   persist: metadata_and_verdicts_only
   field_mask_excludes: [polyline, duration_text]
@@ -15,3 +19,12 @@ camera_providers:
 free_alternatives:
   - {name: 511NY, key: free, use: live-stream ingestion demonstration}
   - {name: TfL JamCams, key: free, liveness: UNVERIFIED}
+
+google_weather:
+  enabled: false                  # same key as Routes
+  provider_module: dhakaflow/live/google_providers.py::GoogleWeatherProvider
+  reality_label: REAL_LIVE
+  claim_policy: exogenous candidate only — forecasting benefit requires ablation
+reality_labels:
+  enum: [REAL_LIVE, REAL_RECORDED, REAL_HISTORICAL, SIMULATED, DERIVED]
+  enforcement: dhakaflow/common/reality.py — unlabelled observations cannot construct
