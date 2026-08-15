@@ -179,3 +179,42 @@ repos:
     paper: https://arxiv.org/abs/2505.17734
     venue: NeurIPS 2025 Datasets & Benchmarks
     why: Urban Routing Benchmark, 29 real networks; integrates RouteRL.
+
+  # ---------------------- perception challengers (fresh-qualified 2026-08-15)
+  - name: D-FINE
+    subsystem: perception
+    url: https://github.com/Peterande/D-FINE.git
+    ref: master
+    sha: null                # resolve at fetch
+    verified: "2026-08-15"
+    status: PINNED
+    paper: https://arxiv.org/abs/2410.13842
+    venue: ICLR 2025 Spotlight
+    why: D-FINE-L 54.0 AP @ 124 FPS (T4) beats RT-DETR-R50 (53.1) at fewer
+         GFLOPs. Serious RT-DETR-family challenger; official code + checkpoints.
+
+  - name: DEIM
+    subsystem: perception
+    url: https://github.com/Intellindust-AI-Lab/DEIM.git
+    ref: main
+    sha: null
+    verified: "2026-08-15"
+    status: PINNED
+    paper: https://arxiv.org/abs/2412.04234
+    venue: CVPR 2025
+    why: Training framework over RT-DETR/D-FINE; DEIM-D-FINE-L 54.7 AP @ 124
+         FPS, up to 50% less training time — directly relevant to our GPU
+         budget. Official repo re-implements D-FINE and RT-DETR.
+
+  - name: RT-DETRv4
+    subsystem: perception
+    url: https://github.com/RT-DETRs/RT-DETRv4.git
+    ref: main
+    sha: null
+    verified: "2026-08-15"
+    status: PINNED
+    paper: https://arxiv.org/abs/2510.25257
+    venue: ECCV 2026
+    why: Newest official RT-DETR family member (VFM distillation); SOTA claims
+         over YOLOv10-13. Must be measured on the Bangladesh protocol, not
+         assumed best.

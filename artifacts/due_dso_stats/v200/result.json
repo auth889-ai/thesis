@@ -1,0 +1,640 @@
+{
+  "stage": "DUE_DSO_STATISTICAL_VALIDATION",
+  "evidence_domain": "DHAKA_SIMULATED_SENSOR_GRAPH",
+  "design_note": "Assignment converged once per arm; N independent simulation seeds per arm isolate the assignment-policy effect. Demand is structured-synthetic (contention-verified), not calibrated Dhaka demand.",
+  "config": {
+    "pairs": 15,
+    "veh_per_pair": 200,
+    "total_trips": 3000,
+    "iterations": 4,
+    "seeds": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10
+    ],
+    "sim_end_s": 10800.0
+  },
+  "contention": {
+    "n_od_pairs": 15,
+    "total_vehicles": 3000,
+    "n_loaded_edges": 394,
+    "n_contended_edges": 114,
+    "max_edge_load_veh": 1000,
+    "testable": true,
+    "note": "A demand set with no contended edges cannot exhibit a user-vs-system-optimal gap \u2014 rerouting would have nothing to relieve."
+  },
+  "arms": {
+    "DUE": {
+      "command": "/Users/jannatulferdouseva/miniconda3/bin/python3 /Users/jannatulferdouseva/miniconda3/lib/python3.13/site-packages/sumo/tools/assign/duaIterate.py -n /Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml -t /Users/jannatulferdouseva/thesis/artifacts/due_dso_stats/v200/trips.xml -l 4 --nointernal-link --logit duarouter--routing-threads 4 sumo--end 10800.0",
+      "assignment_seconds": 36.6,
+      "per_seed": [
+        {
+          "seed": 1,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 53,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2487275.0,
+          "total_delay_s": 1704346.0,
+          "mean_travel_time_s": 829.09,
+          "p95_travel_time_s": 1951.0,
+          "mean_delay_s": 568.12,
+          "mean_waiting_s": 378.78,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 2,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 55,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2395348.0,
+          "total_delay_s": 1609041.1,
+          "mean_travel_time_s": 798.45,
+          "p95_travel_time_s": 1987.0,
+          "mean_delay_s": 536.35,
+          "mean_waiting_s": 353.62,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 3,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 65,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2395838.0,
+          "total_delay_s": 1613823.5,
+          "mean_travel_time_s": 798.61,
+          "p95_travel_time_s": 1933.0,
+          "mean_delay_s": 537.94,
+          "mean_waiting_s": 352.94,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 4,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 104,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2585009.0,
+          "total_delay_s": 1802894.8,
+          "mean_travel_time_s": 861.67,
+          "p95_travel_time_s": 2268.0,
+          "mean_delay_s": 600.96,
+          "mean_waiting_s": 415.98,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 5,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 78,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2513568.0,
+          "total_delay_s": 1730414.3,
+          "mean_travel_time_s": 837.86,
+          "p95_travel_time_s": 2003.0,
+          "mean_delay_s": 576.8,
+          "mean_waiting_s": 385.78,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 6,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 37,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2400819.0,
+          "total_delay_s": 1619698.9,
+          "mean_travel_time_s": 800.27,
+          "p95_travel_time_s": 1904.0,
+          "mean_delay_s": 539.9,
+          "mean_waiting_s": 354.63,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 7,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 44,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2414695.0,
+          "total_delay_s": 1631872.7,
+          "mean_travel_time_s": 804.9,
+          "p95_travel_time_s": 1895.0,
+          "mean_delay_s": 543.96,
+          "mean_waiting_s": 352.6,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 8,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 168,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2843229.0,
+          "total_delay_s": 2057289.5,
+          "mean_travel_time_s": 947.74,
+          "p95_travel_time_s": 2345.0,
+          "mean_delay_s": 685.76,
+          "mean_waiting_s": 495.41,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 9,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 103,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2642133.0,
+          "total_delay_s": 1857641.7,
+          "mean_travel_time_s": 880.71,
+          "p95_travel_time_s": 2198.0,
+          "mean_delay_s": 619.21,
+          "mean_waiting_s": 431.75,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 10,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 70,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2452981.0,
+          "total_delay_s": 1668497.5,
+          "mean_travel_time_s": 817.66,
+          "p95_travel_time_s": 2016.0,
+          "mean_delay_s": 556.17,
+          "mean_waiting_s": 368.57,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        }
+      ]
+    },
+    "DSO": {
+      "command": "/Users/jannatulferdouseva/miniconda3/bin/python3 /Users/jannatulferdouseva/miniconda3/lib/python3.13/site-packages/sumo/tools/assign/duaIterate.py -n /Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml -t /Users/jannatulferdouseva/thesis/artifacts/due_dso_stats/v200/trips.xml --marginal-cost -l 4 --nointernal-link --logit duarouter--routing-threads 4 sumo--end 10800.0",
+      "assignment_seconds": 30.3,
+      "per_seed": [
+        {
+          "seed": 1,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 26,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2119293.0,
+          "total_delay_s": 1354011.5,
+          "mean_travel_time_s": 706.43,
+          "p95_travel_time_s": 1725.0,
+          "mean_delay_s": 451.34,
+          "mean_waiting_s": 282.8,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 2,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 28,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2142393.0,
+          "total_delay_s": 1373182.0,
+          "mean_travel_time_s": 714.13,
+          "p95_travel_time_s": 1731.0,
+          "mean_delay_s": 457.73,
+          "mean_waiting_s": 288.0,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 3,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 60,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2228113.0,
+          "total_delay_s": 1462676.5,
+          "mean_travel_time_s": 742.7,
+          "p95_travel_time_s": 1815.0,
+          "mean_delay_s": 487.56,
+          "mean_waiting_s": 317.66,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 4,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 22,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2042793.0,
+          "total_delay_s": 1279178.3,
+          "mean_travel_time_s": 680.93,
+          "p95_travel_time_s": 1657.0,
+          "mean_delay_s": 426.39,
+          "mean_waiting_s": 264.2,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 5,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 33,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2172453.0,
+          "total_delay_s": 1406103.7,
+          "mean_travel_time_s": 724.15,
+          "p95_travel_time_s": 1817.0,
+          "mean_delay_s": 468.7,
+          "mean_waiting_s": 296.58,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 6,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 37,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2162914.0,
+          "total_delay_s": 1398446.0,
+          "mean_travel_time_s": 720.97,
+          "p95_travel_time_s": 1797.0,
+          "mean_delay_s": 466.15,
+          "mean_waiting_s": 298.7,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 7,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 54,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2297171.0,
+          "total_delay_s": 1531477.9,
+          "mean_travel_time_s": 765.72,
+          "p95_travel_time_s": 1791.0,
+          "mean_delay_s": 510.49,
+          "mean_waiting_s": 326.27,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 8,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 42,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2208253.0,
+          "total_delay_s": 1441847.8,
+          "mean_travel_time_s": 736.08,
+          "p95_travel_time_s": 1774.0,
+          "mean_delay_s": 480.62,
+          "mean_waiting_s": 306.76,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 9,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 28,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2083296.0,
+          "total_delay_s": 1316443.5,
+          "mean_travel_time_s": 694.43,
+          "p95_travel_time_s": 1697.0,
+          "mean_delay_s": 438.81,
+          "mean_waiting_s": 269.95,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        },
+        {
+          "seed": 10,
+          "returncode": 0,
+          "requested": 3000,
+          "loaded": 3000,
+          "inserted": 3000,
+          "completed": 3000,
+          "unfinished": 0,
+          "insertion_backlog": 0,
+          "teleports": 39,
+          "collisions": 0,
+          "throughput": 3000,
+          "total_travel_time_s": 2121356.0,
+          "total_delay_s": 1354272.9,
+          "mean_travel_time_s": 707.12,
+          "p95_travel_time_s": 1703.0,
+          "mean_delay_s": 451.42,
+          "mean_waiting_s": 284.7,
+          "queue_spillback": "NOT_MEASURED (no per-step lane observation in this harness)"
+        }
+      ]
+    }
+  },
+  "integrity": {
+    "DUE": {
+      "all_returncode_zero": true,
+      "total_collisions": 0,
+      "total_teleports": 777,
+      "all_demand_inserted": true,
+      "all_demand_completed": true
+    },
+    "DSO": {
+      "all_returncode_zero": true,
+      "total_collisions": 0,
+      "total_teleports": 369,
+      "all_demand_inserted": true,
+      "all_demand_completed": true
+    }
+  },
+  "comparisons": [
+    {
+      "metric": "total_delay_s",
+      "due": {
+        "n": 10,
+        "mean": 1729552.0,
+        "std": 142628.76,
+        "ci95": [
+          1627521.53,
+          1831582.47
+        ]
+      },
+      "dso": {
+        "n": 10,
+        "mean": 1391764.01,
+        "std": 73659.93,
+        "ci95": [
+          1339070.87,
+          1444457.15
+        ]
+      },
+      "dso_improvement_percent": 19.53,
+      "welch_t": 6.654,
+      "p_value": 1.3153273486173724e-05,
+      "cohens_d": 2.976
+    },
+    {
+      "metric": "mean_delay_s",
+      "due": {
+        "n": 10,
+        "mean": 576.52,
+        "std": 47.54,
+        "ci95": [
+          542.51,
+          610.53
+        ]
+      },
+      "dso": {
+        "n": 10,
+        "mean": 463.92,
+        "std": 24.55,
+        "ci95": [
+          446.36,
+          481.49
+        ]
+      },
+      "dso_improvement_percent": 19.53,
+      "welch_t": 6.654,
+      "p_value": 1.314626417290883e-05,
+      "cohens_d": 2.976
+    },
+    {
+      "metric": "total_travel_time_s",
+      "due": {
+        "n": 10,
+        "mean": 2513089.5,
+        "std": 143369.57,
+        "ci95": [
+          2410529.09,
+          2615649.91
+        ]
+      },
+      "dso": {
+        "n": 10,
+        "mean": 2157803.5,
+        "std": 73771.68,
+        "ci95": [
+          2105030.42,
+          2210576.58
+        ]
+      },
+      "dso_improvement_percent": 14.14,
+      "welch_t": 6.968,
+      "p_value": 8.148518378829969e-06,
+      "cohens_d": 3.116
+    },
+    {
+      "metric": "mean_travel_time_s",
+      "due": {
+        "n": 10,
+        "mean": 837.7,
+        "std": 47.79,
+        "ci95": [
+          803.51,
+          871.88
+        ]
+      },
+      "dso": {
+        "n": 10,
+        "mean": 719.27,
+        "std": 24.59,
+        "ci95": [
+          701.68,
+          736.86
+        ]
+      },
+      "dso_improvement_percent": 14.14,
+      "welch_t": 6.968,
+      "p_value": 8.146917449652075e-06,
+      "cohens_d": 3.116
+    },
+    {
+      "metric": "p95_travel_time_s",
+      "due": {
+        "n": 10,
+        "mean": 2050.0,
+        "std": 160.77,
+        "ci95": [
+          1934.99,
+          2165.01
+        ]
+      },
+      "dso": {
+        "n": 10,
+        "mean": 1750.7,
+        "std": 55.61,
+        "ci95": [
+          1710.92,
+          1790.48
+        ]
+      },
+      "dso_improvement_percent": 14.6,
+      "welch_t": 5.564,
+      "p_value": 0.00016249189927879836,
+      "cohens_d": 2.488
+    },
+    {
+      "metric": "mean_waiting_s",
+      "due": {
+        "n": 10,
+        "mean": 389.01,
+        "std": 46.51,
+        "ci95": [
+          355.73,
+          422.28
+        ]
+      },
+      "dso": {
+        "n": 10,
+        "mean": 293.56,
+        "std": 19.73,
+        "ci95": [
+          279.44,
+          307.68
+        ]
+      },
+      "dso_improvement_percent": 24.54,
+      "welch_t": 5.974,
+      "p_value": 6.170604497509797e-05,
+      "cohens_d": 2.672
+    },
+    {
+      "metric": "throughput",
+      "due": {
+        "n": 10,
+        "mean": 3000,
+        "std": 0.0,
+        "ci95": [
+          3000.0,
+          3000.0
+        ]
+      },
+      "dso": {
+        "n": 10,
+        "mean": 3000,
+        "std": 0.0,
+        "ci95": [
+          3000.0,
+          3000.0
+        ]
+      },
+      "dso_improvement_percent": 0.0,
+      "welch_t": NaN,
+      "p_value": NaN,
+      "cohens_d": null
+    }
+  ]
+}
