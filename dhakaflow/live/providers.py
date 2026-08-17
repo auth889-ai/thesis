@@ -144,6 +144,16 @@ class ObservationStore:
                                  "payload": payload}) + "\n")
         return f
 
+    def append_runtime_reference(self, provider: str, record: dict) -> Path:
+        """Transient-reference log: request metadata + derived verdicts only.
+
+        Used when a provider's content-persistence policy forbids storing the
+        provider's own fields (e.g. GOOGLE_DATA_MODE=RUNTIME_REFERENCE)."""
+        f = self.norm_dir / f"{provider}_runtime_reference.jsonl"
+        with open(f, "a") as fh:
+            fh.write(json.dumps(record) + "\n")
+        return f
+
     def append_normalized(self, state) -> Path:
         d = asdict(state)
         d["_type"] = type(state).__name__

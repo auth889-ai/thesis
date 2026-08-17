@@ -96,17 +96,42 @@ def test_routes_provider_parses_real_shape(tmp_path):
     assert isinstance(p, TrafficProvider)
 
 
-def test_raw_persistence_is_opt_in(tmp_path):
-    def transport(url, body, headers):
-        return ROUTES_PAYLOAD
-
+def test_runtime_reference_mode_persists_no_google_content(tmp_path):
+    """Default GOOGLE_DATA_MODE=RUNTIME_REFERENCE: metadata + derived verdict
+    only — no durations, distances, intervals or geometry hit disk."""
     store = ObservationStore(tmp_path)
-    p = GoogleRoutesProvider(store=store, api_key="k", transport=transport,
-                             persist_raw=False)
-    p.edge_state("c", (23.75, 90.38), (23.74, 90.39))
-    # normalised written; raw NOT written without explicit ToS-reviewed opt-in
-    assert list(store.norm_dir.glob("*.jsonl"))
-    assert not list(store.raw_dir.glob("*.jsonl"))
+    p = GoogleRoutesProvider(store=store, api_key="k",
+                             transport=lambda u, b, h: ROUTES_PAYLOAD)
+    s = p.edge_state("c", (23.75, 90.38), (23.74, 90.39))
+    assert s.duration_s == 540.0                     # transient runtime value OK
+
+    assert not list(store.raw_dir.glob("*.jsonl"))   # no raw payloads
+    files = list(store.norm_dir.glob("*.jsonl"))
+    assert len(files) == 1 and "runtime_reference" in files[0].name
+    rec = json.loads(files[0].read_text().strip())
+    assert rec["congestion_state"] == "SLOW"         # 540/380 = 1.42 -> SLOW
+    assert rec["google_data_mode"] == "RUNTIME_REFERENCE"
+    for banned in ("540", "380", "2450", "duration", "distance"):
+        assert banned not in json.dumps({k: v for k, v in rec.items()
+                                         if k != "captured_utc"})
+
+
+def test_non_default_google_flags_require_permission_basis():
+    from dhakaflow.live.google_providers import GoogleDataPolicy
+    with pytest.raises(ValueError, match="permission_basis"):
+        GoogleDataPolicy(ml_training_allowed=True)
+    ok = GoogleDataPolicy(persist_google_route_content=True,
+                          permission_basis="Google contract #X clause Y (reviewed)")
+    assert ok.persist_google_route_content
+
+
+def test_congestion_buckets():
+    from dhakaflow.live.google_providers import GoogleDataPolicy
+    pol = GoogleDataPolicy()
+    assert pol.congestion_bucket(100, 95) == "FREE_FLOW"
+    assert pol.congestion_bucket(540, 380) == "SLOW"
+    assert pol.congestion_bucket(700, 380) == "CONGESTED"
+    assert pol.congestion_bucket(900, 380) == "SEVERE"
 
 
 # ------------------------------------------------------ Google Weather (mock)

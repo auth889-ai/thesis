@@ -27,6 +27,58 @@ from .providers import ObservationStore, TrafficEdgeState, WeatherState
 ROUTES_ENDPOINT = "https://routes.googleapis.com/directions/v2:computeRoutes"
 WEATHER_ENDPOINT = "https://weather.googleapis.com/v1/currentConditions:lookup"
 
+
+# ---------------------------------------------------------------------------
+# Compliance policy (user mandate 2026-08-17): GOOGLE_DATA_MODE
+# ---------------------------------------------------------------------------
+
+class GoogleDataPolicy:
+    """RUNTIME_REFERENCE is the default and only shipped mode.
+
+    Google Routes fields are a transient external reference for runtime use
+    (current ETA, congestion state, dashboard comparison). They are NOT a
+    persistent ML dataset: with `persist_google_route_content=False` the
+    normalised store receives request metadata and DERIVED congestion verdicts
+    only — no durations, no distances, no speed intervals, no geometry.
+    Changing any flag requires explicit written Google contract/permission
+    review, recorded in `permission_basis`.
+    """
+
+    MODE = "RUNTIME_REFERENCE"
+
+    def __init__(self, persist_raw: bool = False,
+                 persist_google_route_content: bool = False,
+                 ml_training_allowed: bool = False,
+                 ml_validation_allowed: bool = False,
+                 export_allowed: bool = False,
+                 permission_basis: str = ""):
+        non_default = (persist_raw or persist_google_route_content or
+                       ml_training_allowed or ml_validation_allowed or
+                       export_allowed)
+        if non_default and not permission_basis:
+            raise ValueError(
+                "Non-default Google data flags require permission_basis citing "
+                "the explicit Google contract/permission that allows it")
+        self.persist_raw = persist_raw
+        self.persist_google_route_content = persist_google_route_content
+        self.ml_training_allowed = ml_training_allowed
+        self.ml_validation_allowed = ml_validation_allowed
+        self.export_allowed = export_allowed
+        self.permission_basis = permission_basis
+
+    def congestion_bucket(self, duration_s: float, static_s: float) -> str:
+        """DERIVED verdict — ours to persist. Ratio of live to free-flow time."""
+        if static_s <= 0:
+            return "UNKNOWN"
+        r = duration_s / static_s
+        if r < 1.15:
+            return "FREE_FLOW"
+        if r < 1.5:
+            return "SLOW"
+        if r < 2.0:
+            return "CONGESTED"
+        return "SEVERE"
+
 # Field mask: exactly what we consume, nothing more (billing + minimisation).
 ROUTES_FIELD_MASK = ",".join([
     "routes.duration",
@@ -61,11 +113,11 @@ class GoogleRoutesProvider:
     def __init__(self, store: ObservationStore | None = None,
                  api_key: str | None = None,
                  transport: Callable[[str, bytes | None, dict], dict] | None = None,
-                 persist_raw: bool = False):
+                 policy: GoogleDataPolicy | None = None):
         self._key = api_key or os.environ.get("GOOGLE_MAPS_API_KEY", "")
         self._transport = transport or _default_transport
         self._store = store
-        self._persist_raw = persist_raw
+        self.policy = policy or GoogleDataPolicy()
 
     @property
     def name(self) -> str:
@@ -134,9 +186,21 @@ class GoogleRoutesProvider:
                           "not_a": "vehicle count / queue length / CV ground truth"}),
         )
         if self._store:
-            if self._persist_raw:
+            if self.policy.persist_raw:
                 self._store.append_raw(self.name, payload, captured)
-            self._store.append_normalized(state)
+            if self.policy.persist_google_route_content:
+                self._store.append_normalized(state)
+            else:
+                # RUNTIME_REFERENCE: persist metadata + DERIVED verdict only.
+                self._store.append_runtime_reference(self.name, {
+                    "corridor_id": corridor_id,
+                    "captured_utc": captured,
+                    "request_latency_ms": round(latency_ms, 1),
+                    "congestion_state": self.policy.congestion_bucket(
+                        duration, static),                 # derived, ours
+                    "google_data_mode": GoogleDataPolicy.MODE,
+                    "route_content_persisted": False,
+                })
         return state
 
 
