@@ -30,6 +30,15 @@ from .baselines import STEP_S, ChronoSplit
 
 MODES = ("train", "val", "test")
 
+# The pinned v1.0 zoo (models/) has STID/StemGNN but NOT DCRNN, Graph WaveNet
+# or STAEformer; those live in the pre-1.0 benchmark layout (baselines/ at
+# commit 4c3e2d3, 2025-05-26 — the published fair-comparison harness). Both
+# checkouts therefore get an export: v1.0 (`export_basicts_dataset`) and
+# legacy (`export_basicts_legacy_dataset`). Verified from the repo history,
+# not from memory, 2026-08-19.
+LEGACY_BASELINE_SHA = "4c3e2d373c647667c2123e1591f2d79c229dfcc6"
+LEGACY_RATIOS = (0.7, 0.1, 0.2)
+
 
 def export_basicts_dataset(p2_dir: Path, out_dir: Path,
                            period_steps: int = 288) -> Path:
@@ -87,5 +96,72 @@ def export_basicts_dataset(p2_dir: Path, out_dir: Path,
         "basicts_pin_sha": "c2bb6e31e591167e84459775a21a62e70a5893ce",
     }
     p = out / "DESC.json"
+    p.write_text(json.dumps(desc, indent=2))
+    return p
+
+
+def export_basicts_legacy_dataset(p2_dir: Path, out_dir: Path,
+                                  period_steps: int = 288) -> Path:
+    """Translate a P2 dataset into the pre-1.0 BasicTS benchmark layout.
+
+    Contract verified at commit 4c3e2d3 (`basicts/data/simple_tsf_dataset.py`,
+    `basicts/utils/serialization.py::load_adj`):
+
+    * `data.dat`   — float32 memmap, shape recorded in desc.json["shape"];
+      the loader computes the chronological split itself from ratios.
+    * `desc.json`  — must carry "shape"; extra honesty keys are tolerated.
+    * `adj_mx.pkl` — `load_adj` accepts a bare pickled (N, N) matrix.
+
+    Channel layout follows the METR-LA convention: target first, then time
+    features. Missing speeds are 0.0 by explicit fill, matching the legacy
+    harness's own masking convention (NULL_VAL = 0.0 in masked losses).
+    """
+    import pickle
+
+    manifest = json.loads((Path(p2_dir) / "MANIFEST.json").read_text())
+    if manifest["evidence_domain"] != "DHAKA_SIMULATED_SENSOR_GRAPH":
+        raise ValueError("refusing to export: dataset is not labelled "
+                         "DHAKA_SIMULATED_SENSOR_GRAPH")
+    z = np.load(Path(p2_dir) / "sensor_graph_data.npz")
+    data, mask, adj = z["data"], z["mask"], z["adjacency"]
+    t_len, n, _ = data.shape
+
+    speed = np.nan_to_num(data[..., 0], nan=0.0)      # NULL_VAL=0.0 convention
+    flow = data[..., 3]
+    idx = np.arange(t_len)
+    tod = np.repeat(((idx % period_steps) / period_steps)[:, None], n, axis=1)
+    dow = np.repeat(((idx // period_steps) % 7)[:, None], n, axis=1)
+    arr = np.stack([speed, flow, tod, dow], axis=2).astype(np.float32)
+
+    out = Path(out_dir)
+    out.mkdir(parents=True, exist_ok=True)
+    mm = np.memmap(out / "data.dat", dtype="float32", mode="w+",
+                   shape=arr.shape)
+    mm[:] = arr
+    mm.flush()
+    with open(out / "adj_mx.pkl", "wb") as fh:
+        pickle.dump(adj.astype(np.float32), fh)
+
+    valid_len = int(t_len * LEGACY_RATIOS[1])
+    test_len = int(t_len * LEGACY_RATIOS[2])
+    desc = {
+        "name": "DhakaR1SensorGraph_legacy",
+        "shape": list(arr.shape),                     # the key the loader reads
+        "evidence_domain": manifest["evidence_domain"],
+        "reality_label": "SIMULATED",
+        "channels": ["speed_ms", "flow_veh", "tod_fraction", "day_index_mod7"],
+        "target_channel": 0,
+        "null_val": 0.0,
+        "nan_fill_policy": "speed NaN (zero-traffic bins) filled with 0.0 to "
+                           "match the legacy harness NULL_VAL=0.0 masking",
+        "train_val_test_ratio": list(LEGACY_RATIOS),
+        "loader_computed_boundaries": {
+            "train_len": t_len - valid_len - test_len,
+            "valid_len": valid_len, "test_len": test_len},
+        "source_manifest_node_hash": manifest["node_list_sha256"],
+        "network_sha256": manifest["network_sha256"],
+        "basicts_legacy_sha": LEGACY_BASELINE_SHA,
+    }
+    p = out / "desc.json"
     p.write_text(json.dumps(desc, indent=2))
     return p

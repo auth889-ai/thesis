@@ -7,7 +7,8 @@ import numpy as np
 import pytest
 
 from research.forecasting.baselines import ChronoSplit
-from research.forecasting.basicts_adapter import export_basicts_dataset
+from research.forecasting.basicts_adapter import (
+    LEGACY_RATIOS, export_basicts_dataset, export_basicts_legacy_dataset)
 
 
 @pytest.fixture()
@@ -74,3 +75,27 @@ def test_mask_channel_is_authoritative(tmp_path, p2_dir):
     desc = json.loads((out / "DESC.json").read_text())
     assert desc["channels"][-1] == "validity_mask"
     assert "MUST mask" in desc["nan_fill_policy"]
+
+
+def test_legacy_export_matches_pre10_contract(tmp_path, p2_dir):
+    import pickle
+    out = tmp_path / "legacy"
+    export_basicts_legacy_dataset(p2_dir, out)
+    desc = json.loads((out / "desc.json").read_text())
+    t, n = 3 * 288, 12
+    assert desc["shape"] == [t, n, 4]
+    # Loader reads data.dat as a float32 memmap with exactly desc["shape"].
+    mm = np.memmap(out / "data.dat", dtype="float32", mode="r",
+                   shape=tuple(desc["shape"]))
+    assert not np.isnan(mm).any()
+    # Missing speeds are 0 exactly where the P2 mask is False (NULL_VAL=0.0).
+    z = np.load(p2_dir / "sensor_graph_data.npz")
+    assert (np.asarray(mm[..., 0])[~z["mask"]] == 0.0).all()
+    # load_adj's bare-matrix fallback: pickle holds the (N, N) array.
+    with open(out / "adj_mx.pkl", "rb") as fh:
+        adj = pickle.load(fh)
+    assert adj.shape == (n, n)
+    # Ratio-derived boundaries recorded and consistent.
+    b = desc["loader_computed_boundaries"]
+    assert b["train_len"] + b["valid_len"] + b["test_len"] == t
+    assert desc["train_val_test_ratio"] == list(LEGACY_RATIOS)

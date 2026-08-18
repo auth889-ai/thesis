@@ -82,6 +82,24 @@ repos:
       per-model training loops. This is the single largest time saving in the
       forecasting gate and removes the unfair-comparison risk.
 
+  - name: BasicTS-legacy-baselines
+    subsystem: forecasting
+    url: https://github.com/GestaltCogTeam/BasicTS.git
+    ref: master@2025-05-26
+    sha: 4c3e2d373c647667c2123e1591f2d79c229dfcc6
+    verified: "2026-08-19"
+    status: FETCHED            # same clone as BasicTS; checked out by SHA at use
+    license: Apache-2.0
+    why: >
+      Finding (2026-08-19, from repo history, not memory): the v1.0 pin's
+      models/ zoo has STID and StemGNN but NOT DCRNN, Graph WaveNet or
+      STAEformer. Those live in the pre-1.0 benchmark layout (baselines/ at
+      this SHA — the published fair-comparison harness). The forecasting gate
+      therefore runs the graph family on this legacy checkout
+      (research/forecasting/basicts_adapter.py::export_basicts_legacy_dataset)
+      and the v1.0 checkout stays pinned for its current API. Both exports
+      carry the same evidence domain and honesty labels.
+
   - name: STID
     subsystem: forecasting
     url: https://github.com/GestaltCogTeam/STID.git
