@@ -56,11 +56,20 @@ provider-dependent experiment is marked PASS on mocked data.
 
 ## TODO (planned order, none key-blocked)
 
-1. **P2 → PASS**: run `notebooks/P2_sensor_graph_colab.ipynb` on Colab (CPU),
-   verify acceptance checks (cell 5), Drive evidence `P2_PASS_EVIDENCE.json`.
-   Wall-time expectation: full-scale peaks jam, ~25–40+ min per simulated day
-   locally — budget a few hours of Colab CPU; a killed local attempt is why
-   this lives on Colab.
+1. **P2 → PASS** (needs one 2-minute user action — the repo is PRIVATE, so
+   Colab cannot clone it and GitHub OAuth was deliberately left for you to
+   decide):
+   a. Drag `artifacts/colab_bundle/bundle_part_aa…ad` (4 files, 30 MB total)
+      and `notebooks/P2_sensor_graph_colab_drive.ipynb` into Google Drive
+      (**anastasiasaat81** account, MyDrive root or `MyDrive/dhakaflow/` —
+      both work).
+   b. Open the notebook in Colab (`authuser=1`), CPU runtime, Run all.
+   It reassembles the bundle, verifies the frozen-network checksum, smokes,
+   generates 24 h × 3 seeds to Drive, and refuses PASS unless the acceptance
+   checks pass. Wall-time: budget a few hours of Colab CPU (full-scale peaks
+   jam — a killed local attempt is why this lives on Colab).
+   Alternative: authorise Colab's GitHub access once, then the plain
+   `P2_sensor_graph_colab.ipynb` git-clone flow works too.
 2. **P3 forecasting gate execution**: `notebooks/P3_forecasting_colab.ipynb`
    (GPU) — floors → dual export → graph candidates on the legacy harness
    (STID → GWNet → DCRNN → STAEformer), official configs, no winner until all
