@@ -19,12 +19,14 @@ other work continues. One consolidated activation pass exists:
 | Consolidated key-activation board | `scripts/verify_keys.py` |
 | P2 sensor-graph module: deterministic 250-sensor placement (largest-SCC), DCRNN-recipe adjacency, 5-min edgeData extraction, NaN-not-zero masking | `research/twin/sensor_graph.py`, `scripts/run_sensor_graph.py`, 10 tests |
 | P2 smoke runs (2 sim-h): insertion 1.00, 100% reachable sensor pairs, coverage 63% at 0.3 demand scale | `artifacts/p2_sensor_graph_smoke*/MANIFEST.json` |
+| P2 medium validation (8 h × 2 seeds @ 0.5 scale, T=192×N=250×C=4, ~5 min/seed) — full P2→P3 pipeline exercised end-to-end | `artifacts/p2_sensor_graph_medium/MANIFEST.json` |
+| P3 floors validated on real P2 output (persistence speed MAE 1.03/1.39/1.88 m/s @ 5/15/30 min — validation numbers, NOT the gate floors) | `artifacts/p2_sensor_graph_medium/baseline_results.json` |
+| P3 BasicTS exports validated on real P2 output (v1.0 + legacy formats) | `artifacts/p2_basicts_*_medium/` |
+| BasicTS harness finding: v1.0 zoo lacks DCRNN/GWNet/STAEformer → dual pin, legacy benchmark checkout `4c3e2d3` runs the graph family; Graph WaveNet fresh-verified + pinned | `upstream/UPSTREAM_PINS.yaml` |
 
 ## RUNNING
 
-| Item | Where |
-|---|---|
-| P2 full generation (24 h × seeds 42/43/44 → T=864 × N=250 × C=4) | local validation run; canonical Drive copy via `notebooks/P2_sensor_graph_colab.ipynb` (CPU Colab, no keys) |
+(nothing — local queue drained; next heavy step is Colab)
 
 ## PENDING_EXTERNAL_APPROVAL
 
@@ -54,11 +56,15 @@ provider-dependent experiment is marked PASS on mocked data.
 
 ## TODO (planned order, none key-blocked)
 
-1. **P2 → PASS**: run `notebooks/P2_sensor_graph_colab.ipynb` on Colab, verify
-   acceptance checks (cell 5), Drive evidence `P2_PASS_EVIDENCE.json`.
-2. **P3 forecasting gate scaffold**: BasicTS pinned adapter + chronological
-   frozen splits over the P2 dataset; classical baselines (Persistence, HA)
-   run first and locally testable without GPU.
+1. **P2 → PASS**: run `notebooks/P2_sensor_graph_colab.ipynb` on Colab (CPU),
+   verify acceptance checks (cell 5), Drive evidence `P2_PASS_EVIDENCE.json`.
+   Wall-time expectation: full-scale peaks jam, ~25–40+ min per simulated day
+   locally — budget a few hours of Colab CPU; a killed local attempt is why
+   this lives on Colab.
+2. **P3 forecasting gate execution**: `notebooks/P3_forecasting_colab.ipynb`
+   (GPU) — floors → dual export → graph candidates on the legacy harness
+   (STID → GWNet → DCRNN → STAEformer), official configs, no winner until all
+   arms run.
 3. **P1 Colab execution** the moment a Colab session + Kaggle token exist
    (Poribohon-BD track first — no credentials).
 4. Twin calibration gate (needs P1 winner + Google live reference → partially

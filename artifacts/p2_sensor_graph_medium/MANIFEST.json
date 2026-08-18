@@ -1,0 +1,65 @@
+{
+  "evidence_domain": "DHAKA_SIMULATED_SENSOR_GRAPH",
+  "never_described_as": "real sensor measurements",
+  "reality_label": "SIMULATED",
+  "shape": {
+    "timesteps": 192,
+    "nodes": 250,
+    "channels": 4
+  },
+  "channels": [
+    "speed_ms",
+    "density_veh_km",
+    "occupancy_pct",
+    "flow_veh"
+  ],
+  "period_s": 300.0,
+  "node_list_sha256": "8b173a4e48983b76529eb993dcc4bdbdcc133db8f9a6a1e63b6969b887a973b5",
+  "network_sha256": "06194df039740fa2ceb0bcb2c438444efd755f26e0f863327f0e1d6524775dcb",
+  "seeds": [
+    42,
+    43
+  ],
+  "adjacency_recipe": "DCRNN gaussian kernel on directed road distances (Li et al., ICLR 2018), threshold 0.1  [OFFICIAL]",
+  "missing_value_policy": "speed NaN + mask=False when no vehicle sampled; flow/density/occupancy true zeros",
+  "config": {
+    "mode": "full",
+    "hours": [
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11
+    ],
+    "demand_scale": 0.5,
+    "od_pairs": 150,
+    "demand_provenance": "SYNTHETIC_STRUCTURED_DEMAND (pre-calibration)",
+    "seed_boundaries_timesteps": [
+      96,
+      96
+    ],
+    "per_seed": [
+      {
+        "seed": 42,
+        "timesteps": 96,
+        "vehicles": 23250,
+        "wall_s": 292.1,
+        "insertion_rate": 0.9409032258064516,
+        "teleports": 15891,
+        "coverage_pct": 56.7
+      },
+      {
+        "seed": 43,
+        "timesteps": 96,
+        "vehicles": 23250,
+        "wall_s": 286.4,
+        "insertion_rate": 0.9540215053763441,
+        "teleports": 14259,
+        "coverage_pct": 56.9
+      }
+    ]
+  }
+}
