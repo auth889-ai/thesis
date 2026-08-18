@@ -53,4 +53,17 @@ No purchase happens until every checklist item below is verified IN WRITING.
 | INRIX | UNKNOWN — outreach pending | — | — | QUALIFYING |
 | TrafficLand | N/A (external-city role) | — | — | QUALIFYING |
 | Vizzion | NOT LISTED (verified) | — | — | DO_NOT_PURCHASE |
-| 511NY (free) | N/A (external-city role) | free key | public data | READY fallback |
+| 511NY (free) | N/A (external-city role) | key requested 2026-08-19 | public data | **PENDING_EXTERNAL_APPROVAL** |
+
+## D. 511NY — status: PENDING_EXTERNAL_APPROVAL (as of 2026-08-19)
+
+- Developer-key request submitted; approval is a human process on the 511NY
+  side. **Not a project blocker** — nothing downstream waits on it.
+- Integration is DONE and fixture-tested: `dhakaflow/live/ny511_provider.py`
+  (`NY511CameraProvider`, provider-neutral `CameraProvider` protocol).
+- Activation is one isolated step: `export NY511_API_KEY=...` (env names cannot
+  begin with a digit; `dhakaflow/.env` also accepted) then
+  `python scripts/verify_511ny.py` → writes
+  `artifacts/live_511ny/activation_evidence.json` with the verbatim response
+  schema. Classification is locked to `PROVIDER_INTEGRATION_VALIDATION`,
+  never `DHAKA_LIVE_CAMERA_VALIDATION`.

@@ -10,6 +10,14 @@ google_routes:
   field_mask_excludes: [polyline, duration_text]
   classification: EXTERNAL_LIVE_REFERENCE   # not ground truth
 camera_providers:
+  ny511:
+    status: PENDING_EXTERNAL_APPROVAL   # key requested 2026-08-19, not a blocker
+    provider_module: dhakaflow/live/ny511_provider.py::NY511CameraProvider
+    secret_env_var: NY511_API_KEY       # NAME only; env names cannot start with a digit
+    activation: scripts/verify_511ny.py # add key -> run -> evidence JSON
+    permitted_use: PROVIDER_INTEGRATION_VALIDATION
+    forbidden_use: DHAKA_LIVE_CAMERA_VALIDATION
+    data_policy: public government data — raw persistence permitted
   vizzion:
     status: NOT_PURCHASED
     dhaka_coverage: NOT_LISTED    # verified 2026-08-14
