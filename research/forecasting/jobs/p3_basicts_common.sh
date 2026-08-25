@@ -14,10 +14,11 @@ aws s3 cp $S3/datasets/p2_full.tar.gz . && tar xzf p2_full.tar.gz
 python3.11 -m venv venv && . venv/bin/activate
 pip -q install --upgrade pip
 pip -q install torch==2.0.1 --index-url https://download.pytorch.org/whl/cu118
-pip -q install "numpy<2" easytorch easydict pandas scikit-learn setproctitle sympy
-
 git clone https://github.com/GestaltCogTeam/BasicTS.git BasicTS_legacy
 git -C BasicTS_legacy checkout $LEGACY_SHA
+# The harness's OWN requirements (easy-torch==1.3.3, numpy==1.24.4, ...) —
+# latest easytorch lacks init_cfg (found the hard way on the CPU pathfinder).
+pip -q install -r BasicTS_legacy/requirements.txt
 
 # Export the P2 tensor into the legacy layout (validated adapter, cell 4).
 python - <<'PYEOF'
@@ -35,7 +36,7 @@ python /workspace/research/forecasting/make_legacy_config.py \
 
 mkdir -p /workspace/ckpt /workspace/logs
 cd /workspace/BasicTS_legacy
-python experiments/train.py -c "baselines/$MODEL/DhakaR1SensorGraph_legacy.py" -g 0 \
+python experiments/train.py -c "baselines/$MODEL/DhakaR1SensorGraph_legacy.py" \
   2>&1 | tee /workspace/logs/train.log
 # Persist checkpoints + result summaries for triage.
 cp -r checkpoints /workspace/ckpt/ 2>/dev/null || true
