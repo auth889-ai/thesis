@@ -114,38 +114,65 @@ def launch(args) -> None:
         "--region", region])
 
     user_data = USER_DATA_TEMPLATE.format(name=args.name, bucket=BUCKET)
-    cmd = [
-        "aws", "ec2", "run-instances", "--region", region,
-        "--image-id", ami,
-        "--instance-type", args.instance_type,
-        "--iam-instance-profile", f"Name={PROFILE_NAME}",
-        "--instance-market-options",
-        '{"MarketType":"spot","SpotOptions":{"SpotInstanceType":"one-time",'
-        '"InstanceInterruptionBehavior":"terminate"}}',
-        "--instance-initiated-shutdown-behavior", "terminate",
-        "--block-device-mappings",
-        '[{"DeviceName":"/dev/xvda","Ebs":{"VolumeSize":100,'
-        '"VolumeType":"gp3","DeleteOnTermination":true}}]',
-        "--tag-specifications",
-        f'ResourceType=instance,Tags=[{{Key={TAG_KEY},Value={args.name}}}]',
-        "--user-data", base64.b64encode(user_data.encode()).decode(),
-        "--count", "1",
-        "--query", "Instances[0].{id:InstanceId,type:InstanceType,az:Placement.AvailabilityZone}",
-        "--output", "json",
-    ]
-    if args.dry_run:
-        cmd.append("--dry-run")
-    try:
-        print(sh(cmd))
-    except subprocess.CalledProcessError as exc:
-        err = exc.stderr
-        if "DryRunOperation" in err:
-            print("DRY RUN OK — permissions and parameters are valid.")
+
+    def run_cmd(subnet: str | None, spot: bool) -> list[str]:
+        cmd = [
+            "aws", "ec2", "run-instances", "--region", region,
+            "--image-id", ami,
+            "--instance-type", args.instance_type,
+            "--iam-instance-profile", f"Name={PROFILE_NAME}",
+            "--instance-initiated-shutdown-behavior", "terminate",
+            "--block-device-mappings",
+            '[{"DeviceName":"/dev/xvda","Ebs":{"VolumeSize":100,'
+            '"VolumeType":"gp3","DeleteOnTermination":true}}]',
+            "--tag-specifications",
+            f'ResourceType=instance,Tags=[{{Key={TAG_KEY},Value={args.name}}}]',
+            "--user-data", base64.b64encode(user_data.encode()).decode(),
+            "--count", "1",
+            "--query", "Instances[0].{id:InstanceId,type:InstanceType,"
+                       "az:Placement.AvailabilityZone,"
+                       "lifecycle:InstanceLifecycle}",
+            "--output", "json",
+        ]
+        if spot:
+            cmd += ["--instance-market-options",
+                    '{"MarketType":"spot","SpotOptions":'
+                    '{"SpotInstanceType":"one-time",'
+                    '"InstanceInterruptionBehavior":"terminate"}}']
+        if subnet:
+            cmd += ["--subnet-id", subnet]
+        if args.dry_run:
+            cmd.append("--dry-run")
+        return cmd
+
+    # Spot capacity varies per AZ — iterate every default-VPC subnet, then
+    # (unless --spot-only) fall back to on-demand the same way.
+    subnets = sh(["aws", "ec2", "describe-subnets", "--region", region,
+                  "--filters", "Name=default-for-az,Values=true",
+                  "--query", "Subnets[].SubnetId", "--output", "text"]).split()
+    attempts = [(s, True) for s in (subnets or [None])]
+    if not args.spot_only:
+        attempts += [(s, False) for s in (subnets or [None])]
+
+    last_err = ""
+    for subnet, spot in attempts:
+        try:
+            out = sh(run_cmd(subnet, spot))
+            kind = "SPOT" if spot else "ON-DEMAND (spot dry everywhere)"
+            print(f"LAUNCHED [{kind}] subnet={subnet}")
+            print(out)
             return
-        if "MaxSpotInstanceCountExceeded" in err:
-            sys.exit("SPOT QUOTA HIT (8 vCPU until the pending increase lands) "
-                     "— wait for a slot or the quota grant.\n" + err)
-        sys.exit(err)
+        except subprocess.CalledProcessError as exc:
+            last_err = exc.stderr
+            if "DryRunOperation" in last_err:
+                print("DRY RUN OK — permissions and parameters are valid.")
+                return
+            if ("InsufficientInstanceCapacity" in last_err
+                    or "MaxSpotInstanceCountExceeded" in last_err
+                    or "Unsupported" in last_err):   # AZ lacks this type
+                continue                      # try next AZ / market
+            sys.exit(last_err)
+    sys.exit("all AZs exhausted (spot and on-demand):\n" + last_err)
 
 
 def list_arms(region: str) -> None:
@@ -179,6 +206,7 @@ def main() -> None:
     ap.add_argument("--instance-type", default="g5.xlarge")
     ap.add_argument("--region", default=None)
     ap.add_argument("--dry-run", action="store_true")
+    ap.add_argument("--spot-only", action="store_true")
     ap.add_argument("--list", action="store_true")
     ap.add_argument("--terminate", metavar="NAME")
     args = ap.parse_args()
