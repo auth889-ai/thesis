@@ -8,7 +8,11 @@ delay reduction inside a SUMO digital twin of the real road network.
 
 ## Live demo — any video in, traffic intelligence out
 
-![REACT demo on live traffic camera](docs/media/react_demo_dhaka.gif)
+![REACT demo — dense rush-hour traffic detected as CONGESTED](docs/media/react_demo_rush.gif)
+
+*Dense evening rush hour on I-70: ~14 vehicles per frame tracked, 10 of 11
+windows flagged **CONGESTED**, `congestion_detected: true` handed to the
+routing layer — the moment the system decides to intervene.*
 
 *Real output, unedited: a live US traffic-camera clip run through
 `scripts/demo_react.py` with the **Dhaka-fine-tuned RT-DETR r50** winner.
