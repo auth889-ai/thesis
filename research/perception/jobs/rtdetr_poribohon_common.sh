@@ -17,7 +17,10 @@ pip -q install --upgrade pip
 # Authors pin torch==2.0.1 / torchvision==0.15.2 (requirements.txt @ 068dfde).
 pip -q install torch==2.0.1 torchvision==0.15.2 \
     --index-url https://download.pytorch.org/whl/cu118
-pip -q install pycocotools PyYAML scipy transformers pillow
+# numpy<2 is required by the authors' 2023 torchvision pin: NumPy 2 made
+# np.uint8(negative) an error, which crashes their PIL hue-jitter transform
+# (verified from the first arm's traceback, 2026-08-25).
+pip -q install "numpy<2" pycocotools PyYAML scipy transformers pillow
 
 # Official repo at the pinned SHA — never modified.
 git clone https://github.com/lyuwenyu/RT-DETR.git
