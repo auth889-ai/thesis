@@ -71,9 +71,22 @@ shutdown -h now
 """
 
 
+def _env_with_creds() -> dict:
+    """Process env + AWS_* lines from dhakaflow/.env (self-contained CLI)."""
+    import os
+    env = dict(os.environ)
+    envf = REPO / "dhakaflow" / ".env"
+    if envf.exists():
+        for line in envf.read_text().splitlines():
+            m = re.match(r"\s*(AWS_[A-Z_]+)\s*=\s*(\S+)", line)
+            if m and m.group(1) not in env:
+                env[m.group(1)] = m.group(2)
+    return env
+
+
 def sh(cmd: list[str]) -> str:
     return subprocess.run(cmd, check=True, capture_output=True,
-                          text=True).stdout.strip()
+                          text=True, env=_env_with_creds()).stdout.strip()
 
 
 def env_region(default: str = "us-east-1") -> str:

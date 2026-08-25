@@ -32,6 +32,7 @@ other work continues. One consolidated activation pass exists:
 
 | Item | Since | Detail |
 |---|---|---|
+| **P2 FULL generation — GCP VM** | 2026-08-25 ~12:15 UTC | Colab/Drive path RETIRED: runs terminal-launched on `dhakaflow-p2-gen` (c3d-standard-8, on-demand, us-central1-a), identical pipeline to the Drive notebook cells 1–5 (pip SUMO → smoke → full 24h×3 seeds → acceptance checks → P3 floors). Results land in `gs://dhakaflow-p2-direct-abacus/out/`; VM self-terminates. Monitor polls every 5 min |
 | **road511 24/7 recorder** | 2026-08-25 08:49 UTC | `scripts/record_road511.py` (pid in `artifacts/road511_recordings/recorder.pid`). CO+WA incident timeline (deduped deltas) + 6 Denver camera snapshots/min. ~3 API calls/min vs 30/min limit. Stop: `touch artifacts/road511_recordings/STOP`. First sweep: 200 events, snapshots verified real PNG 352×240 |
 
 ## PENDING_EXTERNAL_APPROVAL
@@ -82,20 +83,10 @@ provider-dependent experiment is marked PASS on mocked data.
 
 ## TODO (planned order, none key-blocked)
 
-1. **P2 → PASS** (needs one 2-minute user action — the repo is PRIVATE, so
-   Colab cannot clone it and GitHub OAuth was deliberately left for you to
-   decide):
-   a. Drag `artifacts/colab_bundle/bundle_part_aa…ad` (4 files, 30 MB total)
-      and `notebooks/P2_sensor_graph_colab_drive.ipynb` into Google Drive
-      (**anastasiasaat81** account, MyDrive root or `MyDrive/dhakaflow/` —
-      both work).
-   b. Open the notebook in Colab (`authuser=1`), CPU runtime, Run all.
-   It reassembles the bundle, verifies the frozen-network checksum, smokes,
-   generates 24 h × 3 seeds to Drive, and refuses PASS unless the acceptance
-   checks pass. Wall-time: budget a few hours of Colab CPU (full-scale peaks
-   jam — a killed local attempt is why this lives on Colab).
-   Alternative: authorise Colab's GitHub access once, then the plain
-   `P2_sensor_graph_colab.ipynb` git-clone flow works too.
+1. **P2 → PASS**: RUNNING on the GCP VM (see RUNNING) — no user action needed
+   anymore. PASS is declared only after `P2_PASS_EVIDENCE.json` lands in GCS
+   with all acceptance checks green and results are pulled into
+   `artifacts/p2_sensor_graph_full/`.
 2. **P3 forecasting gate execution**: `notebooks/P3_forecasting_colab.ipynb`
    (GPU) — floors → dual export → graph candidates on the legacy harness
    (STID → GWNet → DCRNN → STAEformer), official configs, no winner until all
