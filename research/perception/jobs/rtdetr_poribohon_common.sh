@@ -5,6 +5,7 @@
 #   $ARM_NAME and $S3_BASE are exported; /workspace/ckpt + /workspace/logs are
 #   synced to S3 every 5 min; exit code lands in logs/<arm>/EXIT_CODE.
 set -exo pipefail
+export CUDA_LAUNCH_BLOCKING=0
 cd /workspace
 S3=s3://dhakaflow-train-915644996102
 
@@ -49,7 +50,12 @@ __include__: ['./${ARCH_CFG}', ]
 
 output_dir: /workspace/ckpt/out
 epoches: 24
-num_classes: 15
+# num_classes = max category_id + 1: with remap_mscoco_category False the
+# official CocoDetection uses category_id (1-based COCO convention, ids 1-15)
+# directly as the label (src/data/coco/coco_dataset.py:106) — 15 classes with
+# 1-based ids therefore need 16 logits. Verified from the CUDA device-side
+# assert both arms hit on 2026-08-25.
+num_classes: 16
 remap_mscoco_category: False
 
 train_dataloader:
