@@ -14,6 +14,8 @@ other work continues. One consolidated activation pass exists:
 
 | Item | Evidence |
 |---|---|
+| **P1 → WINNER: RT-DETR r50** — mAP50:95 **0.711** (BNVD paper's best YOLOv8: 0.643); AP50 rickshaw 0.904 / CNG 0.961 / easy-bike 0.965; official pipeline + official evaluator, fair 24-epoch budget, frozen split | `artifacts/p1_triage/triage.json`; ckpt sha `27852d84…` @ GCS `models/p1_winner/` |
+| **P3 STID complete** — MAE 1.09 @15min vs 1.39 floor (simulated domain) | `artifacts/p3_results/stid_cpu.log` |
 | **P2 → PASS** (24h × 3 seeds on GCP VM, all 7 acceptance checks green; floors on full data: persistence speed MAE 0.41 m/s @ 5min) | `artifacts/p2_sensor_graph_full/P2_PASS_EVIDENCE.json`, data sha256 `c5b1a9ba…`, node hash `8b173a4e…` |
 | REACT demo v0: any video/stream → detect+track → traffic state (0.97× realtime, Mac CPU, validated on live clip) | `scripts/demo_react.py`, `artifacts/react_demo_v0/` |
 | R1 congestion-aware router (real 6,527-edge network; jam-divert case: 47.9 s avoided) | `research/routing/r1_router.py` |
