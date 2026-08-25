@@ -6,6 +6,11 @@ We add nothing algorithmic: a config file in THEIR format describing the arm
 (r50, num_classes 16 — the training-time label space), and a thin predict()
 that maps 1-based training labels back to Poribohon class names.
 
+Runtime environment: conda env `rtdetr` (python 3.11, torch 2.0.1,
+torchvision 0.15.2, numpy<2 — the authors' exact pins; modern torchvision
+removed the `datapoints` API their code imports). Validated 2026-08-26:
+394 ms/frame CPU, 18/18 sane detections on a live camera frame.
+
 The demo path uses this detector with a minimal IoU track-carrier for overlay
 IDs only; benchmark tracking claims come from official ByteTrack at the
 tracking gate, never from the demo tracker.
