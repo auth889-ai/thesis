@@ -46,13 +46,14 @@ other work continues. One consolidated activation pass exists:
 |---|---|---|---|
 | **Kaggle** | `~/.kaggle/kaggle.json` | `kaggle datasets list -s traffic` returns results | BNVD + Poribohon-BD + TFP-BD download → P1 BNVD track no longer blocked |
 | **AWS** | `AWS_ACCESS_KEY_ID`/`SECRET` (in `.env`) | STS verified (acct `915644996102`); training bucket `dhakaflow-train-915644996102` created (7-day ckpt lifecycle); GPU AMI pinned `ami-027de6aaa8774e722`; launcher `scripts/aws/launch_arm.py`. **Quota reality:** G-spot 8 vCPU us-east-1 (= 2 concurrent GPUs), 0 us-west-2; increase to 32 requested in BOTH regions 2026-08-25, PENDING. Spot prices measured: g5.xlarge $0.56–0.97 (east), g4dn.xlarge $0.24 (west)/$0.35 (east) — plan's $0.30–0.40 estimate was optimistic for g5-east. **One user action left: `! bash scripts/aws/bootstrap_iam.sh`** (IAM role for instance→S3 checkpointing; assistant-side IAM mutation is deliberately blocked) |
+| **Google Cloud ($300 trial)** | `gcloud` authed as janaeva@iut-dhaka.edu | project `direct-abacus-505920-t8` renamed "DhakaFlow Nexus", trial billing linked, APIs enabled (compute/routes/weather/apikeys). **CPU quota 200 vCPUs us-central1** — the RL fleet (8 arms × 8 vCPU, SUMO is CPU-bound) runs HERE for ~$30–40, freeing all AWS GPU budget for detector+forecasting. Spot VM smoke: created RUNNING + deleted. NOTE: trial forbids GPUs — GPUs stay on AWS |
+| **Google Routes+Weather** | `GOOGLE_MAPS_API_KEY` (restricted to routes+weather APIs, in `.env`) | **FIRST LIVE CAPTURE EXECUTED 2026-08-25 11:56 UTC** — 6 R1 corridors + Karwan Bazar weather (30.3°C, 69% RH, light rain), reality REAL_LIVE, 0 errors, RUNTIME_REFERENCE persistence honoured (`artifacts/p_live/normalized/google_routes_runtime_reference.jsonl`). Lab 02's READY_NOT_EXECUTED is now EXECUTED |
 | **road511** | `ROAD511_API_KEY` (in `dhakaflow/.env`, gitignored) | adapter `dhakaflow/live/road511_provider.py` live-smoked (WA events + 64 Denver cams, raw+normalized persisted); 7 fixture tests green. Cloudflare requires a non-Python-urllib UA (encoded in transport) | live camera streams · incident feed with NL descriptions · real congestion labels (`cause: congestion`). **Classification: `PROVIDER_INTEGRATION_VALIDATION` + domain-shift measurement — never Dhaka validation.** Rate limit 30 req/min. Supersedes the pending 511NY request |
 
 ## READY_FOR_KEY (code done + tested with fixtures; real-provider validation on key insertion)
 
 | Provider | Key (env var name only) | Activation step | Unlocks |
 |---|---|---|---|
-| Google Routes+Weather | `GOOGLE_MAPS_API_KEY` | `python scripts/run_live_capture.py` (6 R1 corridors + 1 weather, RUNTIME_REFERENCE mode) | live speed reference for twin calibration + demo |
 | Hugging Face (free) | `HF_TOKEN` | `verify_keys.py --live` | Chronos-2 at forecasting gate |
 | Anthropic | `ANTHROPIC_API_KEY` | `verify_keys.py --live` | GenAI copilot (last gate) |
 | AWS | `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` | `verify_keys.py --live` (STS) | long training runs ($200 credit, spot + S3 checkpoints) |
@@ -75,9 +76,9 @@ provider-dependent experiment is marked PASS on mocked data.
 
 ## BLOCKED_EXTERNAL_KEY (execution only — nothing downstream is waiting idle)
 
-* First live Google capture (`BLOCKED_NO_KEY` report already implemented) — the
-  only remaining execution blocker. P1 is **no longer blocked**: the Kaggle token
-  was activated 2026-08-25.
+* (none — the last execution blocker cleared 2026-08-25: first live Google
+  capture executed. Remaining user actions are P2 Drive drag and
+  `! bash scripts/aws/bootstrap_iam.sh`.)
 
 ## TODO (planned order, none key-blocked)
 
