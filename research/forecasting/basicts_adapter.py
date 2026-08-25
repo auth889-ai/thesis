@@ -131,7 +131,11 @@ def export_basicts_legacy_dataset(p2_dir: Path, out_dir: Path,
     idx = np.arange(t_len)
     tod = np.repeat(((idx % period_steps) / period_steps)[:, None], n, axis=1)
     dow = np.repeat(((idx // period_steps) % 7)[:, None], n, axis=1)
-    arr = np.stack([speed, flow, tod, dow], axis=2).astype(np.float32)
+    # METR-LA channel convention as the graph baselines actually index it
+    # (STID arch: ch1 = time-of-day fraction, ch2 = day-of-week) — flow rides
+    # fourth, unused by input_dim=3 models. Found live: flow in ch1 made
+    # STID's tod embedding index 1152 >> 288.
+    arr = np.stack([speed, tod, dow, flow], axis=2).astype(np.float32)
 
     out = Path(out_dir)
     out.mkdir(parents=True, exist_ok=True)
@@ -149,7 +153,7 @@ def export_basicts_legacy_dataset(p2_dir: Path, out_dir: Path,
         "shape": list(arr.shape),                     # the key the loader reads
         "evidence_domain": manifest["evidence_domain"],
         "reality_label": "SIMULATED",
-        "channels": ["speed_ms", "flow_veh", "tod_fraction", "day_index_mod7"],
+        "channels": ["speed_ms", "tod_fraction", "day_index_mod7", "flow_veh"],
         "target_channel": 0,
         "null_val": 0.0,
         "nan_fill_policy": "speed NaN (zero-traffic bins) filled with 0.0 to "
