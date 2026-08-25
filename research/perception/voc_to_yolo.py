@@ -109,6 +109,19 @@ def round_trip_error(xmin: float, ymin: float, xmax: float, ymax: float,
     return max(abs(a - b) for a, b in zip(back, ref))
 
 
+# Label-spelling aliases measured on the OFFICIAL Mendeley files (2026-08-25):
+# the XML <name> tags use unhyphenated spellings while the published class list
+# hyphenates. Without these, 3,920 of 26,853 boxes (all easybikes among them)
+# were dropped as "unknown". Evidence for bike -> motorbike: the dataset ships
+# DISTINCT `Bike/` and `Bicycle/` folders, and `bicycle` already matches
+# exactly, so `bike` can only mean the motorcycle class.
+PORIBOHON_LABEL_ALIASES: dict[str, str] = {
+    "easybike": "easy-bike",
+    "horsecart": "horse-cart",
+    "bike": "motorbike",
+}
+
+
 def convert_dataset(xml_dir: Path, out_dir: Path,
                     class_names: Sequence[str] = PORIBOHON_CLASSES,
                     ) -> ConversionReport:
@@ -128,6 +141,8 @@ def convert_dataset(xml_dir: Path, out_dir: Path,
 
         lines = []
         for name, xmin, ymin, xmax, ymax in boxes:
+            name = PORIBOHON_LABEL_ALIASES.get(name.strip().lower(),
+                                               name.strip().lower())
             if name not in index:
                 rep.n_unknown_labels += 1
                 rep.unknown_labels[name] = rep.unknown_labels.get(name, 0) + 1
