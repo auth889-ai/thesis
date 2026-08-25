@@ -22,6 +22,11 @@ pip -q install torch==2.0.1 torchvision==0.15.2 \
 # np.uint8(negative) an error, which crashes their PIL hue-jitter transform
 # (verified from the first arm's traceback, 2026-08-25).
 pip -q install "numpy<2" pycocotools PyYAML scipy transformers pillow
+# Poribohon-BD contains legitimate ultra-high-res images (one is 192 MP), which
+# trips PIL's decompression-bomb guard (limit 179 MP) inside the official
+# transforms. Lift the limit via sitecustomize — no official code touched.
+SITE=$(python -c 'import site; print(site.getsitepackages()[0])')
+printf 'import PIL.Image\nPIL.Image.MAX_IMAGE_PIXELS = None\n' > "$SITE/sitecustomize.py"
 
 # Official repo at the pinned SHA — never modified.
 git clone https://github.com/lyuwenyu/RT-DETR.git
