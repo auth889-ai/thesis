@@ -14,6 +14,11 @@ other work continues. One consolidated activation pass exists:
 
 | Item | Evidence |
 |---|---|
+| **P2 → PASS** (24h × 3 seeds on GCP VM, all 7 acceptance checks green; floors on full data: persistence speed MAE 0.41 m/s @ 5min) | `artifacts/p2_sensor_graph_full/P2_PASS_EVIDENCE.json`, data sha256 `c5b1a9ba…`, node hash `8b173a4e…` |
+| REACT demo v0: any video/stream → detect+track → traffic state (0.97× realtime, Mac CPU, validated on live clip) | `scripts/demo_react.py`, `artifacts/react_demo_v0/` |
+| R1 congestion-aware router (real 6,527-edge network; jam-divert case: 47.9 s avoided) | `research/routing/r1_router.py` |
+| P1 fine-tunes RUNNING on AWS GPUs (r18 loss 26.6→10.7 in epoch 0) | S3 `logs/p1-rtdetr-*` |
+| P3 arms launch-ready (4 models, official configs, staged S3) | `research/forecasting/jobs/` |
 | Labs 00–02 (UTD19/MFD · SUMO foundation · frozen Dhaka R1 network) | frozen @ `ca2ac81`, `6936ea9`+`c852e64`; `paper_labs/*/FREEZE.md` |
 | P0 vertical slice + PREVENT/REACT operating modes | `artifacts/p0_vertical_slice`, commits `1cff854`, `3f9f235` |
 | E4 routing: DUE vs DSO, 10 seeds, claim 19.5–22.2% (p≤1.3e-03) | `artifacts/due_dso_stats`, commit `88e7db3`; routing frozen until joint gate |
@@ -32,7 +37,7 @@ other work continues. One consolidated activation pass exists:
 
 | Item | Since | Detail |
 |---|---|---|
-| **P2 FULL generation — GCP VM** | 2026-08-25 ~12:15 UTC | Colab/Drive path RETIRED: runs terminal-launched on `dhakaflow-p2-gen` (c3d-standard-8, on-demand, us-central1-a), identical pipeline to the Drive notebook cells 1–5 (pip SUMO → smoke → full 24h×3 seeds → acceptance checks → P3 floors). Results land in `gs://dhakaflow-p2-direct-abacus/out/`; VM self-terminates. Monitor polls every 5 min |
+| ~~P2 FULL generation~~ → **P2 PASS 2026-08-25 18:19 UTC** | done | Colab/Drive path RETIRED: runs terminal-launched on `dhakaflow-p2-gen` (c3d-standard-8, on-demand, us-central1-a), identical pipeline to the Drive notebook cells 1–5 (pip SUMO → smoke → full 24h×3 seeds → acceptance checks → P3 floors). Results land in `gs://dhakaflow-p2-direct-abacus/out/`; VM self-terminates. Monitor polls every 5 min |
 | **road511 24/7 recorder** | 2026-08-25 08:49 UTC | `scripts/record_road511.py` (pid in `artifacts/road511_recordings/recorder.pid`). CO+WA incident timeline (deduped deltas) + 6 Denver camera snapshots/min. ~3 API calls/min vs 30/min limit. Stop: `touch artifacts/road511_recordings/STOP`. First sweep: 200 events, snapshots verified real PNG 352×240 |
 
 ## PENDING_EXTERNAL_APPROVAL

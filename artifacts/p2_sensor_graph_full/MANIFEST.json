@@ -1,0 +1,92 @@
+{
+  "evidence_domain": "DHAKA_SIMULATED_SENSOR_GRAPH",
+  "never_described_as": "real sensor measurements",
+  "reality_label": "SIMULATED",
+  "shape": {
+    "timesteps": 864,
+    "nodes": 250,
+    "channels": 4
+  },
+  "channels": [
+    "speed_ms",
+    "density_veh_km",
+    "occupancy_pct",
+    "flow_veh"
+  ],
+  "period_s": 300.0,
+  "node_list_sha256": "8b173a4e48983b76529eb993dcc4bdbdcc133db8f9a6a1e63b6969b887a973b5",
+  "network_sha256": "06194df039740fa2ceb0bcb2c438444efd755f26e0f863327f0e1d6524775dcb",
+  "seeds": [
+    42,
+    43,
+    44
+  ],
+  "adjacency_recipe": "DCRNN gaussian kernel on directed road distances (Li et al., ICLR 2018), threshold 0.1  [OFFICIAL]",
+  "missing_value_policy": "speed NaN + mask=False when no vehicle sampled; flow/density/occupancy true zeros",
+  "config": {
+    "mode": "full",
+    "hours": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      11,
+      12,
+      13,
+      14,
+      15,
+      16,
+      17,
+      18,
+      19,
+      20,
+      21,
+      22,
+      23
+    ],
+    "demand_scale": 1.0,
+    "od_pairs": 150,
+    "demand_provenance": "SYNTHETIC_STRUCTURED_DEMAND (pre-calibration)",
+    "seed_boundaries_timesteps": [
+      288,
+      288,
+      288
+    ],
+    "per_seed": [
+      {
+        "seed": 42,
+        "timesteps": 288,
+        "vehicles": 121950,
+        "wall_s": 7199.9,
+        "insertion_rate": 0.5358917589175892,
+        "teleports": 161556,
+        "coverage_pct": 57.2
+      },
+      {
+        "seed": 43,
+        "timesteps": 288,
+        "vehicles": 121950,
+        "wall_s": 7320.9,
+        "insertion_rate": 0.524780647806478,
+        "teleports": 165841,
+        "coverage_pct": 57.4
+      },
+      {
+        "seed": 44,
+        "timesteps": 288,
+        "vehicles": 121950,
+        "wall_s": 7220.0,
+        "insertion_rate": 0.5349733497334973,
+        "teleports": 164169,
+        "coverage_pct": 57.4
+      }
+    ]
+  }
+}
