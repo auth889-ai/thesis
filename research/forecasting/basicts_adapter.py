@@ -130,7 +130,9 @@ def export_basicts_legacy_dataset(p2_dir: Path, out_dir: Path,
     flow = data[..., 3]
     idx = np.arange(t_len)
     tod = np.repeat(((idx % period_steps) / period_steps)[:, None], n, axis=1)
-    dow = np.repeat(((idx // period_steps) % 7)[:, None], n, axis=1)
+    # dow as FRACTION day/7 — STID indexes day_in_week_emb[(dow*7).long()],
+    # so integer day values overflow the 7-slot embedding (found live: index 7).
+    dow = np.repeat((((idx // period_steps) % 7) / 7.0)[:, None], n, axis=1)
     # METR-LA channel convention as the graph baselines actually index it
     # (STID arch: ch1 = time-of-day fraction, ch2 = day-of-week) — flow rides
     # fourth, unused by input_dim=3 models. Found live: flow in ch1 made
