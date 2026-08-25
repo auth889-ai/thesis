@@ -155,6 +155,18 @@ def export_basicts_legacy_dataset(p2_dir: Path, out_dir: Path,
         "nan_fill_policy": "speed NaN (zero-traffic bins) filled with 0.0 to "
                            "match the legacy harness NULL_VAL=0.0 masking",
         "train_val_test_ratio": list(LEGACY_RATIOS),
+        # Contract addition (found live 2026-08-26): get_regular_settings()
+        # at 4c3e2d3 reads desc["regular_settings"] — shape copied from the
+        # official generators (scripts/data_preparation/*/generate_training_data.py).
+        "regular_settings": {
+            "INPUT_LEN": 12,
+            "OUTPUT_LEN": 12,
+            "TRAIN_VAL_TEST_RATIO": list(LEGACY_RATIOS),
+            "NORM_EACH_CHANNEL": False,
+            "RESCALE": True,
+            "METRICS": ["MAE", "RMSE", "MAPE"],
+            "NULL_VAL": 0.0,
+        },
         "loader_computed_boundaries": {
             "train_len": t_len - valid_len - test_len,
             "valid_len": valid_len, "test_len": test_len},
