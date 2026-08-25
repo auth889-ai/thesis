@@ -164,6 +164,189 @@ def run(source: str, minutes: float, out_dir: Path, weights: str) -> dict:
     return verdict
 
 
+RTDETR_PY = str(Path.home() / "miniconda3" / "envs" / "rtdetr" / "bin" / "python")
+
+
+class _IoUTracker:
+    """Minimal IoU id-carrier for OVERLAY continuity only (never a benchmark)."""
+
+    def __init__(self, iou_thr: float = 0.3, max_age: int = 10):
+        self.iou_thr, self.max_age = iou_thr, max_age
+        self.tracks: dict[int, tuple[list[float], int]] = {}
+        self._next = 1
+
+    @staticmethod
+    def _iou(a, b):
+        x1, y1 = max(a[0], b[0]), max(a[1], b[1])
+        x2, y2 = min(a[2], b[2]), min(a[3], b[3])
+        inter = max(0.0, x2 - x1) * max(0.0, y2 - y1)
+        ua = ((a[2]-a[0])*(a[3]-a[1]) + (b[2]-b[0])*(b[3]-b[1]) - inter)
+        return inter / ua if ua > 0 else 0.0
+
+    def update(self, boxes: list[list[float]]) -> list[int]:
+        ids = []
+        used = set()
+        for box in boxes:
+            best, best_iou = None, self.iou_thr
+            for tid, (tbox, _age) in self.tracks.items():
+                if tid in used:
+                    continue
+                i = self._iou(box, tbox)
+                if i > best_iou:
+                    best, best_iou = tid, i
+            if best is None:
+                best = self._next
+                self._next += 1
+            used.add(best)
+            self.tracks[best] = (box, 0)
+            ids.append(best)
+        for tid in list(self.tracks):
+            box, age = self.tracks[tid]
+            if tid not in used:
+                if age + 1 > self.max_age:
+                    del self.tracks[tid]
+                else:
+                    self.tracks[tid] = (box, age + 1)
+        return ids
+
+
+def run_rtdetr(source: str, minutes: float, out_dir: Path, weights: str) -> dict:
+    """Same SENSE/STATE/ROUTE/RENDER stages, detection via the Dhaka winner."""
+    import subprocess
+    import tempfile
+
+    import cv2
+
+    out_dir.mkdir(parents=True, exist_ok=True)
+    bridge = subprocess.Popen(
+        [RTDETR_PY, "research/perception/rtdetr_bridge.py", weights, "0.5"],
+        stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True, bufsize=1)
+    def _read_json():
+        for _ in range(200):                     # skip library banners
+            line = bridge.stdout.readline()
+            if not line:
+                raise SystemExit("bridge died — check conda env rtdetr")
+            try:
+                return json.loads(line)
+            except json.JSONDecodeError:
+                continue
+        raise SystemExit("bridge produced no JSON")
+
+    ready = _read_json()
+    print("dhaka detector ready:", ready)
+
+    cap_src = int(source) if source.isdigit() else source
+    cap = cv2.VideoCapture(cap_src)
+    if not cap.isOpened():
+        raise SystemExit(f"cannot open source: {source}")
+    fps = cap.get(cv2.CAP_PROP_FPS) or 15.0
+    w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)) or 640
+    h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) or 480
+    diag = (w * w + h * h) ** 0.5
+    writer = cv2.VideoWriter(str(out_dir / "annotated.mp4"),
+                             cv2.VideoWriter_fourcc(*"mp4v"), max(fps / 5, 1),
+                             (w, h))
+    stride = 5                                   # ~400ms/frame CPU budget
+    tracker = _IoUTracker()
+    tracks_last: dict[int, tuple[float, float, float]] = {}
+    speeds = deque(maxlen=int(fps * 30))
+    timeline, frame_i = [], 0
+    window = {"t0": 0.0, "counts": [], "speeds": [], "stopped": []}
+    tmp = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False).name
+    t_start = time.time()
+    max_frames = int(minutes * 60 * fps)
+
+    while frame_i < max_frames:
+        ok, frame = cap.read()
+        if not ok:
+            break
+        if frame_i % stride:
+            frame_i += 1
+            continue
+        t = frame_i / fps
+        cv2.imwrite(tmp, frame)
+        bridge.stdin.write(tmp + "\n")
+        resp = _read_json()
+        dets = resp.get("dets", [])
+        boxes = [d["box"] for d in dets]
+        ids = tracker.update(boxes)
+
+        n_now, frame_speeds, n_stopped = len(dets), [], 0
+        for det_d, tid in zip(dets, ids):
+            b = det_d["box"]
+            cx, cy = (b[0] + b[2]) / 2, (b[1] + b[3]) / 2
+            if tid in tracks_last:
+                lt, lx, ly = tracks_last[tid]
+                dt = max(t - lt, 1e-6)
+                v = ((cx - lx) ** 2 + (cy - ly) ** 2) ** 0.5 / diag / dt
+                frame_speeds.append(v)
+                speeds.append(v)
+            tracks_last[tid] = (t, cx, cy)
+        if speeds:
+            ref = sorted(speeds)[int(0.95 * (len(speeds) - 1))]
+            n_stopped = sum(1 for v in frame_speeds
+                            if ref > 0 and v < STOP_FRACTION * ref)
+
+        window["counts"].append(n_now)
+        window["speeds"].extend(frame_speeds)
+        window["stopped"].append(n_stopped)
+        if t - window["t0"] >= WINDOW_S:
+            mean_v = (sum(window["speeds"]) / len(window["speeds"])
+                      if window["speeds"] else 0.0)
+            ref = (sorted(speeds)[int(0.95 * (len(speeds) - 1))]
+                   if speeds else 0.0)
+            occ = sum(window["counts"]) / max(len(window["counts"]), 1)
+            stopped_frac = (sum(window["stopped"])
+                            / max(sum(window["counts"]), 1))
+            if occ >= CONGESTED_OCCUPANCY and (mean_v < SLOW_FRACTION * ref
+                                               or stopped_frac > 0.3):
+                state = "CONGESTED"
+            elif ref and mean_v < SLOW_FRACTION * ref:
+                state = "SLOWING"
+            else:
+                state = "FREE"
+            timeline.append({"t_s": round(window["t0"], 1),
+                             "mean_vehicles": round(occ, 2),
+                             "mean_speed_norm": round(mean_v, 4),
+                             "stopped_fraction": round(stopped_frac, 3),
+                             "state": state})
+            window = {"t0": t, "counts": [], "speeds": [], "stopped": []}
+
+        state_now = timeline[-1]["state"] if timeline else "WARMUP"
+        color = {"FREE": (60, 160, 60), "SLOWING": (0, 165, 255),
+                 "CONGESTED": (40, 40, 220), "WARMUP": (160, 160, 160)}[state_now]
+        for det_d, tid in zip(dets, ids):
+            b = [int(x) for x in det_d["box"]]
+            cv2.rectangle(frame, (b[0], b[1]), (b[2], b[3]), (80, 200, 255), 2)
+            cv2.putText(frame, f"{det_d['name']}#{tid}", (b[0], b[1] - 4),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.45, (80, 200, 255), 1)
+        cv2.rectangle(frame, (0, 0), (w, 28), color, -1)
+        cv2.putText(frame,
+                    f"{state_now} | vehicles: {n_now} | t={t:5.1f}s | "
+                    f"DhakaFlow REACT [DHAKA RT-DETR]",
+                    (8, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.55, (255, 255, 255), 1)
+        writer.write(frame)
+        frame_i += 1
+
+    writer.release()
+    bridge.stdin.close()
+    bridge.wait(timeout=10)
+    states = [x["state"] for x in timeline]
+    verdict = {
+        "source": str(source), "frames_processed": frame_i,
+        "wall_time_s": round(time.time() - t_start, 1),
+        "windows": len(timeline),
+        "congested_windows": states.count("CONGESTED"),
+        "final_state": states[-1] if states else "NO_TRAFFIC_DETECTED",
+        "detector": {"weights": weights, "label": "DHAKA_FINETUNED_RTDETR_R50",
+                     "classes": "Poribohon-BD 15 (rickshaw/cng/easy-bike...)"},
+        "routing_input": {"congestion_detected": states.count("CONGESTED") > 0},
+    }
+    (out_dir / "timeline.json").write_text(json.dumps(timeline, indent=1))
+    (out_dir / "summary.json").write_text(json.dumps(verdict, indent=2))
+    return verdict
+
+
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
     ap.add_argument("--source", required=True,
@@ -173,8 +356,13 @@ def main() -> None:
                     default=Path("artifacts/react_demo"))
     ap.add_argument("--weights", default="yolov8s.pt",
                     help="detector weights; Dhaka fine-tune lands here")
+    ap.add_argument("--detector", choices=["yolo", "rtdetr"], default="yolo",
+                    help="rtdetr = Dhaka fine-tuned winner via pinned-env bridge")
     args = ap.parse_args()
-    verdict = run(args.source, args.minutes, args.out, args.weights)
+    if args.detector == "rtdetr":
+        verdict = run_rtdetr(args.source, args.minutes, args.out, args.weights)
+    else:
+        verdict = run(args.source, args.minutes, args.out, args.weights)
     print(json.dumps(verdict, indent=2))
 
 
