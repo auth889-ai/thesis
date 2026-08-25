@@ -1,4 +1,8 @@
-# DhakaFlow Nexus — Status Board (updated 2026-08-19)
+# DhakaFlow Nexus — Status Board (updated 2026-08-25)
+
+> **ACTIVE SPRINT:** `docs/SPRINT_140H.md` — 140 project-hours, 2026-08-25 15:00 →
+> 2026-08-31 11:00 Asia/Dhaka. Read that for the hour-by-hour order.
+> Hard deadline inside it: **FA-MAPPO must launch by `H+60`** (2026-08-28 03:00).
 
 Single source of truth for what is DONE / RUNNING / READY_FOR_KEY /
 BLOCKED_EXTERNAL_KEY / PENDING_EXTERNAL_APPROVAL / TODO. A missing key is
@@ -26,7 +30,9 @@ other work continues. One consolidated activation pass exists:
 
 ## RUNNING
 
-(nothing — local queue drained; next heavy step is Colab)
+| Item | Since | Detail |
+|---|---|---|
+| **road511 24/7 recorder** | 2026-08-25 08:49 UTC | `scripts/record_road511.py` (pid in `artifacts/road511_recordings/recorder.pid`). CO+WA incident timeline (deduped deltas) + 6 Denver camera snapshots/min. ~3 API calls/min vs 30/min limit. Stop: `touch artifacts/road511_recordings/STOP`. First sweep: 200 events, snapshots verified real PNG 352×240 |
 
 ## PENDING_EXTERNAL_APPROVAL
 
@@ -34,12 +40,18 @@ other work continues. One consolidated activation pass exists:
 |---|---|
 | **511NY_CAMERAS** | Developer-key request submitted 2026-08-19, approval is human-gated on the 511NY side. Integration DONE; activation = `export NY511_API_KEY=…` → `python scripts/verify_511ny.py`. Classification locked: `PROVIDER_INTEGRATION_VALIDATION`, never `DHAKA_LIVE_CAMERA_VALIDATION`. |
 
+## ACTIVATED 2026-08-25
+
+| Provider | Env var | Verified by | Unlocks |
+|---|---|---|---|
+| **Kaggle** | `~/.kaggle/kaggle.json` | `kaggle datasets list -s traffic` returns results | BNVD + Poribohon-BD + TFP-BD download → P1 BNVD track no longer blocked |
+| **road511** | `ROAD511_API_KEY` (in `dhakaflow/.env`, gitignored) | adapter `dhakaflow/live/road511_provider.py` live-smoked (WA events + 64 Denver cams, raw+normalized persisted); 7 fixture tests green. Cloudflare requires a non-Python-urllib UA (encoded in transport) | live camera streams · incident feed with NL descriptions · real congestion labels (`cause: congestion`). **Classification: `PROVIDER_INTEGRATION_VALIDATION` + domain-shift measurement — never Dhaka validation.** Rate limit 30 req/min. Supersedes the pending 511NY request |
+
 ## READY_FOR_KEY (code done + tested with fixtures; real-provider validation on key insertion)
 
 | Provider | Key (env var name only) | Activation step | Unlocks |
 |---|---|---|---|
 | Google Routes+Weather | `GOOGLE_MAPS_API_KEY` | `python scripts/run_live_capture.py` (6 R1 corridors + 1 weather, RUNTIME_REFERENCE mode) | live speed reference for twin calibration + demo |
-| Kaggle (free) | `~/.kaggle/kaggle.json` or Colab secret | P1 notebook §3–4 | BNVD download → P1 BNVD track |
 | Hugging Face (free) | `HF_TOKEN` | `verify_keys.py --live` | Chronos-2 at forecasting gate |
 | Anthropic | `ANTHROPIC_API_KEY` | `verify_keys.py --live` | GenAI copilot (last gate) |
 | AWS | `AWS_ACCESS_KEY_ID`/`AWS_SECRET_ACCESS_KEY` | `verify_keys.py --live` (STS) | long training runs ($200 credit, spot + S3 checkpoints) |
@@ -47,12 +59,24 @@ other work continues. One consolidated activation pass exists:
 Rule 13 acknowledged: mock/fixture data verifies *integration only*; no
 provider-dependent experiment is marked PASS on mocked data.
 
+## FINDINGS 2026-08-25
+
+* **BNVD license: CONFIRMED UNSPECIFIED at both sources** — Kaggle metadata
+  `licenses: [{"name": "unknown"}]`; README still carries the unfilled template
+  "released under the [insert license type] license". Action: author email
+  drafted (`docs/BNVD_LICENSE_EMAIL_DRAFT.md`) for the user to send.
+  Poribohon-BD (CC BY 4.0) is the licensed primary track meanwhile; BNVD usable
+  for internal benchmarking only, publication claims flagged until clarified.
+  BNVD download is 6.5 GB → Drive/Colab only, never local.
+* **Upstream workspace complete:** 15/15 fetchable pins now present —
+  Graph-WaveNet VERIFIED; D-FINE and RT-DETRv4 floating refs resolved to SHAs
+  (recorded in `artifacts/upstream_fetch_record.json`).
+
 ## BLOCKED_EXTERNAL_KEY (execution only — nothing downstream is waiting idle)
 
-* P1 fine-tuning runs (Colab GPU; BNVD track additionally needs the Kaggle
-  token; the Poribohon-BD CC-BY-4.0 track needs **no** credentials and is the
-  first cell to run when a Colab session opens).
-* First live Google capture (`BLOCKED_NO_KEY` report already implemented).
+* First live Google capture (`BLOCKED_NO_KEY` report already implemented) — the
+  only remaining execution blocker. P1 is **no longer blocked**: the Kaggle token
+  was activated 2026-08-25.
 
 ## TODO (planned order, none key-blocked)
 
