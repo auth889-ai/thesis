@@ -74,7 +74,8 @@ def main() -> None:
     ba = b64(REPO / "docs/media/fig_before_after_twin.png", "image/png")
     fc = b64(REPO / "docs/media/fig_forecasting_ladder.png", "image/png")
     rt = b64(REPO / "docs/media/fig_route_diversion.png", "image/png")
-    twin_mp4 = REPO / "docs/media/twin_before_after.mp4"
+    corridor = REPO / "docs/media/corridor_before_after.mp4"
+    twin_mp4 = corridor if corridor.exists() else (REPO / "docs/media/twin_before_after.mp4")
     twin_html = (f'<video controls muted loop style="width:100%" '
                  f'src="{b64(twin_mp4, "video/mp4")}"></video>'
                  if twin_mp4.exists() else
@@ -168,7 +169,12 @@ scripts/build_dashboard.py</code></p>
   </div>
 
   <div class="card">
-    <h2>The twin, moving — jam forms (left) vs system routing (right)</h2>
+    <h2>The twin, moving — corridor view, real SUMO rendering</h2>
+    <p style="font-size:13px;color:var(--mut);margin:0 0 8px">LEFT: selfish routing —
+    vehicles pile in a static queue on the side street while the main road is
+    starved. RIGHT: same minutes, system routing — the corridor carries a steady
+    moving stream. Rerouting cannot rescue trapped cars; it stops the jam being
+    fed, so the queue drains and never re-forms.</p>
     {twin_html}
     <p class="cap">rendered from SUMO --fcd-output on the frozen network; same
     trips, same seed, only routing differs</p>
