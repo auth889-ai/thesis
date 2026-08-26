@@ -36,6 +36,18 @@ near-real-time on a laptop CPU, detector label `DHAKA_FINETUNED_RTDETR_R50`
 
 ---
 
+## The proof, moving — same trips, only the routing differs
+
+![SUMO twin before/after](docs/media/twin_before_after.gif)
+
+*The SUMO digital twin on the real Dhaka R1 network: left — selfish routing,
+jams form and 1,224 vehicles are still crawling at minute 24; right — DhakaFlow
+system routing, the same trips spread over spare capacity, only 930 still on
+the road (the rest already arrived). Full statistics: −19.5% mean delay,
+p = 1.3×10⁻⁵ (`artifacts/due_dso_stats/v200/result.json`).*
+
+![Where the traffic moved](docs/media/fig_traffic_moved.png)
+
 ## Results so far (sprint in progress — updated 26 Aug 2026)
 
 | Component | Method (official code, pinned) | Result | Comparison |
