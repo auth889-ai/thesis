@@ -14,6 +14,10 @@ other work continues. One consolidated activation pass exists:
 
 | Item | Evidence |
 |---|---|
+| Control baselines (fair, 3 seeds): fixed-time 547.7s, Max-Pressure 619.0s (+13% worse — negative result motivating coordinated control) | `artifacts/control_baselines/` |
+| FA-MAPPO stack: 17-agent env (smoke PASS) + official rMAPPO trainer (smoke PASS) + GWNet-in-loop forecaster | `research/control/` |
+| Visual proof suite: rush detection video, corridor SUMO film, moved-traffic map, one-command case report (dynamic: jam→act / quiet→no-action) | `docs/media/`, `scripts/case_report.py` |
+| Calibration part A executed (provisional scale 0.5; peak-capture rule active) | `artifacts/twin_calibration_A.json` |
 | **P1 → WINNER: RT-DETR r50** — mAP50:95 **0.711** (BNVD paper's best YOLOv8: 0.643); AP50 rickshaw 0.904 / CNG 0.961 / easy-bike 0.965; official pipeline + official evaluator, fair 24-epoch budget, frozen split | `artifacts/p1_triage/triage.json`; ckpt sha `27852d84…` @ GCS `models/p1_winner/` |
 | **P3 STID complete** — MAE 1.09 @15min vs 1.39 floor (simulated domain) | `artifacts/p3_results/stid_cpu.log` |
 | **P2 → PASS** (24h × 3 seeds on GCP VM, all 7 acceptance checks green; floors on full data: persistence speed MAE 0.41 m/s @ 5min) | `artifacts/p2_sensor_graph_full/P2_PASS_EVIDENCE.json`, data sha256 `c5b1a9ba…`, node hash `8b173a4e…` |
@@ -34,6 +38,12 @@ other work continues. One consolidated activation pass exists:
 | P3 floors validated on real P2 output (persistence speed MAE 1.03/1.39/1.88 m/s @ 5/15/30 min — validation numbers, NOT the gate floors) | `artifacts/p2_sensor_graph_medium/baseline_results.json` |
 | P3 BasicTS exports validated on real P2 output (v1.0 + legacy formats) | `artifacts/p2_basicts_*_medium/` |
 | BasicTS harness finding: v1.0 zoo lacks DCRNN/GWNet/STAEformer → dual pin, legacy benchmark checkout `4c3e2d3` runs the graph family; Graph WaveNet fresh-verified + pinned | `upstream/UPSTREAM_PINS.yaml` |
+
+## BLOCKED_ON_USER (30 seconds)
+
+* `! gcloud auth login` — IUT account session expired (org reauth policy);
+  RL fleet launch staged in `scratchpad/launch_fleet.sh`, fires on auth.
+  **Add to Day-6 checklist: re-auth on presentation morning.**
 
 ## RUNNING
 
