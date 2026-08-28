@@ -39,6 +39,9 @@ sys.path.insert(0, str(REPO))
 NET = str(REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml")
 ROUTES = str(REPO / "artifacts/due_dso_stats/v200/DUE/003/trips_003.rou.xml.gz")
 REROUTE_MODE = "gated"      # off | gated
+ACT_MIN_QUEUE = 20          # below this at t0, correct action is NO action
+                            # (seed-13 lesson: intervening at a barely-queued
+                            # junction made things worse)
 T0_TRIGGER_STOPPED = 250     # auto-t0: act when the network is genuinely jammed
 T0_MAX_S = 7200
 HORIZON_S = 600
@@ -126,13 +129,17 @@ def run(name: str, cam: str, seed: int) -> dict:
         if branch == "no_action":
             t.simulation.saveState(state_file)     # save the exact t0 state
         pre = snapshot(t, tls_lanes)
+        act = pre["target_queue_veh"] >= ACT_MIN_QUEUE
+        if branch == "control" and not act:
+            print(f"t0 target queue {pre['target_queue_veh']} < {ACT_MIN_QUEUE}"
+                  " -> NO_LOCAL_ACTION_WARRANTED (monitoring)")
 
         green_started = t.simulation.getTime()
         while t.simulation.getTime() < T0_S + HORIZON_S and \
                 t.simulation.getMinExpectedNumber() > 0:
             t.simulationStep()
             now = t.simulation.getTime()
-            if branch != "control":
+            if branch != "control" or not act:
                 continue
             if int(now) % 5 == 0:
                 # DISCHARGE: if the most-queued approach isn't green, switch
@@ -185,6 +192,7 @@ def run(name: str, cam: str, seed: int) -> dict:
         late = [x for x in arr if float(x.get("arrival")) >= T0_S]
         losses = [float(x.get("timeLoss")) for x in late]
         results[branch] = {
+            "acted": (branch != "control") or act,
             "t0": pre, "t0_plus_10min": post, "t0_s_actual": T0_S,
             "arrived_in_horizon": len(late),
             "mean_time_loss_of_horizon_arrivals_s":
@@ -203,6 +211,8 @@ def run(name: str, cam: str, seed: int) -> dict:
         "identical_t0_proof": "same seed+demand to t0; state saved at "
                               f"{out / 'state_t0.xml'}",
         "no_action": a, "control": b,
+        "action_taken": results["control"].get("acted", True),
+        "action_rule": f"act only if target queue >= {ACT_MIN_QUEUE} at t0",
         "four_pane": {
             "queue_no_action": a["t0_plus_10min"]["target_queue_veh"],
             "queue_control": b["t0_plus_10min"]["target_queue_veh"],
