@@ -48,7 +48,7 @@ def main() -> None:
         if s:
             rows.append(("Signal control", arm,
                          f"{s['mean_time_loss_s']:.1f} s mean time-loss",
-                         "3 seeds, fair demand", "SIMULATED"))
+                         "3 seeds, fair FIXED demand (calibration wiring pending)", "SIMULATED"))
 
     for arm in ("mappo", "mappo_forecast", "mappo_pressure", "mappo_fp",
                 "mappo_full"):

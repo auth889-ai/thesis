@@ -32,7 +32,16 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 
-DEFAULT_LOCATION = (23.7529, 90.3944)     # Karwan Bazar (mid-R1); override per camera
+# Registered demo cameras on the R1 corridor. An UNREGISTERED video without
+# --location gets honest degradation: perception runs, road-level routing is
+# marked LOCATION_REQUIRED — never a silently invented location.
+REGISTERED_CAMERAS = {
+    "farmgate":     (23.7573, 90.3854),
+    "karwanbazar":  (23.7529, 90.3944),
+    "banglamotor":  (23.7465, 90.3948),
+    "shahbagh":     (23.7389, 90.3958),
+}
+DEFAULT_LOCATION = None
 DEST = (23.7389, 90.3958)                 # Shahbagh — representative trip destination
 WEIGHTS = REPO / "artifacts/p1_winner/rtdetr_r50_poribohon_best.pth"
 
@@ -53,8 +62,12 @@ def main() -> None:
     name = args.name or Path(str(args.source)).stem or "live"
     out = REPO / "artifacts" / f"case_{name}"
     out.mkdir(parents=True, exist_ok=True)
-    loc = (tuple(float(x) for x in args.location.split(","))
-           if args.location else DEFAULT_LOCATION)
+    if args.location and args.location in REGISTERED_CAMERAS:
+        loc = REGISTERED_CAMERAS[args.location]
+    elif args.location:
+        loc = tuple(float(x) for x in args.location.split(","))
+    else:
+        loc = None   # honest: routing degrades to LOCATION_REQUIRED
 
     # ---- steps 1-2: detection + state (Dhaka winner) --------------------
     print("[1-2/5] detection + congestion state on the given video …")
@@ -71,6 +84,18 @@ def main() -> None:
                     str(out / "annotated.gif")], check=True)
 
     # ---- step 3: map the camera to its road segment ---------------------
+    if loc is None:
+        print("[3/5] no registered location — road-level routing SKIPPED")
+        (out / "case.json").write_text(json.dumps({
+            "input": str(args.source),
+            "congestion_detected": congested,
+            "peak_vehicles_per_frame": peak,
+            "routing": "LOCATION_REQUIRED — register the camera "
+                       "(--location farmgate|karwanbazar|banglamotor|shahbagh "
+                       "or lat,lng); perception ran fully.",
+            "detector": verdict["detector"]}, indent=2))
+        print("TRAFFIC PERCEPTION: AVAILABLE · ROAD-LEVEL ROUTING: LOCATION REQUIRED")
+        return
     print("[3/5] mapping camera location to road segment …")
     from research.routing.r1_router import R1Router
     router = R1Router()
@@ -153,7 +178,7 @@ img,video{{max-width:100%;border:1px solid #d6dad6;border-radius:4px}}
 <div class="w">
 <h1>Traffic Case Report — input: <code>{name}</code></h1>
 <p>Generated {time.strftime('%d %b %Y %H:%M')} by <code>scripts/case_report.py</code>.
-Every step below was computed from this exact input — nothing pre-baked.</p>
+Steps 1–4 are computed fresh from this input. Step 5 attaches a separate OFFLINE network experiment for context — the per-input same-state counterfactual is the SAME_STATE gate (in progress).</p>
 
 <div class="step"><h2>Step 1-2 · The system watches the video and judges the traffic</h2>
 <img src="{b64(out / 'annotated.gif', 'image/gif')}">
@@ -169,7 +194,7 @@ Every step below was computed from this exact input — nothing pre-baked.</p>
 <span class="big good">{routed['delay_avoided_s']:.0f} s saved per vehicle</span></p>
 <p class="cap">Dijkstra on the frozen 6,527-edge Dhaka network · research/routing/r1_router.py</p></div>
 
-<div class="step"><h2>Step 5 · Why this reduces TOTAL traffic — proven in the SUMO twin</h2>
+<div class="step"><h2>Step 5 · OFFLINE network experiment (context — not computed from this video)</h2>
 {'<video controls muted loop src="' + b64(corr, 'video/mp4') + '"></video>' if corr.exists() else ''}
 <p>Rerouting cannot rescue vehicles already trapped — it stops the jam being <i>fed</i>:
 approaching vehicles divert upstream, the queue stops growing and drains from the front.

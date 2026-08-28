@@ -50,11 +50,13 @@ my data taught it the Bangladeshi vehicles."
 
 ## Block 5 — Signals
 
-> "The classical method, Max-Pressure, made my network **13 percent worse**
-> than fixed timing — 17 junctions being greedy cause spillback. That's why I
+> "The tested classical pressure baseline made my network **13 percent worse**
+> than fixed timing — consistent with uncoordinated per-junction switching
+> hurting at network scale (mechanism to be verified). That's why I
 > trained a coordinated multi-agent controller, official MAPPO, with my
-> forecast as an input. At its first checkpoint it already matches tuned
-> fixed timing and beats classical adaptive control by 11 percent — and I
+> forecast as an input. At its first checkpoint it recovers most of that degradation — within 1–2
+> percent of tuned fixed timing, 11 percent better than the tested pressure
+> baseline, though not yet beating fixed-time — and I
 > report it honestly at-checkpoint, because honest numbers are the method."
 
 ## Block 6 — The twin is the proof
