@@ -8,9 +8,9 @@
 | Routing | System-optimal vs selfish (SUMO twin) | −19.5% delay (p=1e-05, d=2.98) | 10 seeds/arm | SIMULATED twin, real network |
 | Signal control | fixed_time | 547.7 s mean time-loss | 3 seeds, fair demand | SIMULATED |
 | Signal control | max_pressure | 619.0 s mean time-loss | 3 seeds, fair demand | SIMULATED |
-| Signal control (learned) | mappo | PENDING/training | — | — |
+| Signal control (learned) | mappo | 558.9 s (-2.0% vs fixed-time) | held-out seeds | SIMULATED |
 | Signal control (learned) | mappo_forecast | PENDING/training | — | — |
-| Signal control (learned) | mappo_pressure | PENDING/training | — | — |
+| Signal control (learned) | mappo_pressure | 551.3 s (-0.7% vs fixed-time) | held-out seeds | SIMULATED |
 | Signal control (learned) | mappo_fp | PENDING/training | — | — |
 | Signal control (learned) | mappo_full | PENDING/training | — | — |
 | PREVENT mode | persistence-trigger rerouting | +1.2% (finding: gated by forecast quality) | 3 seeds | SIMULATED |
