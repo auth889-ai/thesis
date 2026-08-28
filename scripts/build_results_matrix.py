@@ -50,15 +50,17 @@ def main() -> None:
                          f"{s['mean_time_loss_s']:.1f} s mean time-loss",
                          "3 seeds, fair FIXED demand (calibration wiring pending)", "SIMULATED"))
 
+    ft = j("artifacts/control_baselines/summary_fixed_time.json")
+    ft_paired = ft["mean_time_loss_s"] if ft and ft.get("seeds") == [11, 12, 13] else 535.9
     for arm in ("mappo", "mappo_forecast", "mappo_pressure", "mappo_fp",
                 "mappo_full"):
         e = j(f"artifacts/rl_eval/eval_{arm}.json")
         if e:
             v = e["mean_time_loss_s"]
-            d = 100 * (547.7 - v) / 547.7
+            d = 100 * (ft_paired - v) / ft_paired
             rows.append(("Signal control (learned)", arm,
-                         f"{v:.1f} s ({d:+.1f}% vs fixed-time)",
-                         "held-out seeds", "SIMULATED"))
+                         f"{v:.1f} s ({d:+.1f}% vs paired fixed-time)",
+                         "PAIRED held-out seeds 11-13", "SIMULATED"))
         else:
             rows.append(("Signal control (learned)", arm, "PENDING/training",
                          "—", "—"))
