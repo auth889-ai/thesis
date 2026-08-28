@@ -43,6 +43,12 @@ STATE = ROOT / "recorder_state.json"
 LOG = ROOT / "recorder.log"
 
 JURISDICTIONS = ["CO", "WA"]
+# Off-load: recordings copy to the 2TB Drive (anastasiasaat81, via rclone
+# remote gdrive2tb) every OFFLOAD_EVERY cycles; local snapshots older than
+# LOCAL_KEEP_S are pruned — the Mac holds a rolling window only.
+DRIVE_DEST = "gdrive2tb:DhakaFlow-Nexus-Data/road511"
+OFFLOAD_EVERY = 30           # cycles (= ~30 min)
+LOCAL_KEEP_S = 6 * 3600
 # Denver metro bbox — the densest verified camera cluster.
 CAMERA_BBOX = (39.4, 40.1, -105.5, -104.6)
 CAMERA_JURISDICTION = "CO"
@@ -136,6 +142,33 @@ def grab_snapshots(roster: list[dict], state: dict) -> int:
     return got
 
 
+def offload_to_drive() -> None:
+    """Copy recordings to the 2TB Drive, then prune local snapshots > 6 h.
+
+    `rclone copy` never deletes remote files, so the Drive archive only grows;
+    pruning runs only after the copy returns, so a failed upload cycle keeps
+    everything local and retries next cycle."""
+    import subprocess
+    for sub in ("snapshots", "raw", "normalized"):
+        src = ROOT / sub
+        if src.exists():
+            subprocess.run(["rclone", "copy", str(src),
+                            f"{DRIVE_DEST}/{sub}", "--transfers", "8", "-q"],
+                           check=True, timeout=900)
+    if TIMELINE.exists():
+        subprocess.run(["rclone", "copyto", str(TIMELINE),
+                        f"{DRIVE_DEST}/incidents_timeline.jsonl", "-q"],
+                       check=True, timeout=120)
+    cutoff = time.time() - LOCAL_KEEP_S
+    pruned = 0
+    for f in SNAP_DIR.rglob("*.jpg"):
+        if f.stat().st_mtime < cutoff:
+            f.unlink()
+            pruned += 1
+    if pruned:
+        log(f"offload: pruned {pruned} local snapshots (archived on Drive)")
+
+
 def main() -> None:
     ROOT.mkdir(parents=True, exist_ok=True)
     store = ObservationStore(ROOT)
@@ -164,6 +197,11 @@ def main() -> None:
         snaps = grab_snapshots(roster, state)
         save_state(state)
         cycles += 1
+        if cycles % OFFLOAD_EVERY == 0:
+            try:
+                offload_to_drive()
+            except Exception as exc:              # noqa: BLE001
+                log(f"offload FAILED (kept local, retry next cycle): {exc!r}")
         if new_ev or cycles % 30 == 0:
             log(f"cycle {cycles}: +{new_ev} timeline events, {snaps} snapshots, "
                 f"timeline={sum(1 for _ in open(TIMELINE)) if TIMELINE.exists() else 0}")

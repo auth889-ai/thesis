@@ -1,0 +1,91 @@
+2026-08-25 20:22:53,089 - easytorch-launcher - INFO - Launching EasyTorch training.
+2026-08-25 20:22:53,098 - easytorch-env - INFO - Use devices 0.
+DESCRIPTION: An Example Config
+GPU_NUM: 1
+RUNNER: <class 'basicts.runners.runner_zoo.simple_tsf_runner.SimpleTimeSeriesForecastingRunner'>
+DATASET:
+  NAME: DhakaR1SensorGraph_legacy
+  TYPE: <class 'basicts.data.simple_tsf_dataset.TimeSeriesForecastingDataset'>
+  PARAM:
+    dataset_name: DhakaR1SensorGraph_legacy
+    train_val_test_ratio: [0.7, 0.1, 0.2]
+    input_len: 12
+    output_len: 12
+SCALER:
+  TYPE: <class 'basicts.scaler.z_score_scaler.ZScoreScaler'>
+  PARAM:
+    dataset_name: DhakaR1SensorGraph_legacy
+    train_ratio: 0.7
+    norm_each_channel: False
+    rescale: True
+MODEL:
+  NAME: STAEformer
+  ARCH: <class 'baselines.STAEformer.arch.staeformer_arch.STAEformer'>
+  PARAM:
+    num_nodes: 250
+    in_steps: 12
+    out_steps: 12
+    steps_per_day: 288
+    input_dim: 3
+    output_dim: 1
+    input_embedding_dim: 24
+    tod_embedding_dim: 24
+    dow_embedding_dim: 24
+    spatial_embedding_dim: 0
+    adaptive_embedding_dim: 80
+    feed_forward_dim: 256
+    num_heads: 4
+    num_layers: 3
+    dropout: 0.1
+    use_mixed_proj: True
+  FORWARD_FEATURES: [0, 1, 2]
+  TARGET_FEATURES: [0]
+METRICS:
+  FUNCS:
+    MAE: masked_mae
+    MAPE: masked_mape
+    RMSE: masked_rmse
+  TARGET: MAE
+  NULL_VAL: 0.0
+TRAIN:
+  NUM_EPOCHS: 100
+  CKPT_SAVE_DIR: checkpoints/STAEformer/DhakaR1SensorGraph_legacy_100_12_12
+  LOSS: masked_mae
+  OPTIM:
+    TYPE: Adam
+    PARAM:
+      lr: 0.001
+      weight_decay: 0.0003
+  LR_SCHEDULER:
+    TYPE: MultiStepLR
+    PARAM:
+      milestones: [20, 25]
+      gamma: 0.1
+  DATA:
+    BATCH_SIZE: 16
+    SHUFFLE: True
+VAL:
+  INTERVAL: 1
+  DATA:
+    BATCH_SIZE: 64
+TEST:
+  INTERVAL: 1
+  DATA:
+    BATCH_SIZE: 64
+EVAL:
+  HORIZONS: [3, 6, 12]
+  USE_GPU: True
+
+Traceback (most recent call last):
+  File "/workspace/BasicTS_legacy/experiments/train.py", line 35, in <module>
+    main()
+  File "/workspace/BasicTS_legacy/experiments/train.py", line 31, in main
+    basicts.launch_training(args.cfg, args.gpus, node_rank=0)
+  File "/workspace/BasicTS_legacy/basicts/launcher.py", line 134, in launch_training
+    easytorch.launch_training(cfg=cfg, devices=gpus, node_rank=node_rank)
+  File "/workspace/venv/lib/python3.11/site-packages/easytorch/launcher/launcher.py", line 78, in launch_training
+    train_dist = dist_wrap(
+                 ^^^^^^^^^^
+  File "/workspace/venv/lib/python3.11/site-packages/easytorch/launcher/dist_wrap.py", line 103, in dist_wrap
+    raise RuntimeError('Device num not match, cfg.DEVICE_NUM = {:d}, ' \
+RuntimeError: Device num not match, cfg.DEVICE_NUM = 1, but torch.cuda.device_count() = 0
