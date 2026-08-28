@@ -70,6 +70,13 @@ def main() -> None:
                      "(finding: gated by forecast quality)",
                      "3 seeds", "SIMULATED"))
 
+    ds = j("artifacts/domain_shift/report.json")
+    if ds:
+        fp = sum(ds["dhaka_specific_false_positives"].values())
+        rows.append(("Domain shift", "Dhaka detector on US cameras",
+                     f"conf 0.60 vs home 0.711 mAP; {fp} Dhaka-class FPs/60 frames",
+                     "measured, not hidden", "REAL foreign domain"))
+
     cal = j("artifacts/twin_calibration_A.json")
     if cal:
         rows.append(("Twin calibration A", "live-reference speed matching",

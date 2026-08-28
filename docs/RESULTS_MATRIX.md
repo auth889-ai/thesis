@@ -14,4 +14,5 @@
 | Signal control (learned) | mappo_fp | PENDING/training | — | — |
 | Signal control (learned) | mappo_full | PENDING/training | — | — |
 | PREVENT mode | persistence-trigger rerouting | +1.2% (finding: gated by forecast quality) | 3 seeds | SIMULATED |
+| Domain shift | Dhaka detector on US cameras | conf 0.60 vs home 0.711 mAP; 44 Dhaka-class FPs/60 frames | measured, not hidden | REAL foreign domain |
 | Twin calibration A | live-reference speed matching | scale 0.584 | 3 captures | REAL live reference |
