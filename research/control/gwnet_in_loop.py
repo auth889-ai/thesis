@@ -19,7 +19,7 @@ import numpy as np
 REPO = Path(__file__).resolve().parents[2]
 WS = Path("/workspace") if Path("/workspace").exists() else REPO
 BTS = WS / "BasicTS_legacy"
-CKPT_GLOB = "checkpoints/GWNet/DhakaR1SensorGraph_legacy*/**/GWNet_best_val_MAE.pt"
+CKPT_GLOB = "checkpoints/GraphWaveNet/**/GraphWaveNet_best_val_MAE.pt"
 SENSORS = WS / "p2_full" / "sensor_nodes.json"
 STEP_S = 300
 

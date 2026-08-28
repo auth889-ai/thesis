@@ -36,8 +36,12 @@ from onpolicy.envs.env_wrappers import (DummyVecEnv,        # noqa: E402
 from research.control.sumo_marl_env import SumoSignalMultiEnv  # noqa: E402
 
 
+FORECAST_ARMS = {"mappo_forecast", "mappo_fp", "mappo_full"}
+PRESSURE_ARMS = {"mappo_pressure", "mappo_fp", "mappo_full"}
+
+
 def forecast_fn_factory(arm: str):
-    if "forecast" not in arm:
+    if arm not in FORECAST_ARMS:
         return None
     from research.control.gwnet_in_loop import GWNetForecaster
     fc = GWNetForecaster()
@@ -51,6 +55,7 @@ def make_env(all_args, offset=0):
                 end_s=all_args.episode_sim_s,
                 seed=all_args.seed + (rank + offset) * 1000,
                 forecast_fn=forecast_fn_factory(all_args.arm),
+                use_pressure=all_args.arm in PRESSURE_ARMS,
                 label=f"r{rank+offset}")
             return env
         return init_env

@@ -39,7 +39,9 @@ DECISION_S = 5.0
 class SumoSignalMultiEnv:
     def __init__(self, routes: str = DEFAULT_ROUTES, end_s: int = 3600,
                  warmup_s: int = 300, seed: int = 1, gui: bool = False,
-                 forecast_fn=None, label: str = "env"):
+                 forecast_fn=None, use_pressure: bool = False,
+                 label: str = "env"):
+        self.use_pressure = use_pressure
         self.routes, self.end_s, self.warmup_s = routes, end_s, warmup_s
         self._seed0, self._episode = seed, 0
         self._gui = gui
@@ -48,7 +50,7 @@ class SumoSignalMultiEnv:
         self._traci = None
         self._boot_probe()
 
-        obs_dim = MAX_PHASES + MAX_LANES + 1 + 1
+        obs_dim = MAX_PHASES + MAX_LANES + 1 + 1 + 1   # +pressure slot
         self.n = len(self._tls_ids)
         self.observation_space = [
             spaces.Box(-np.inf, np.inf, (obs_dim,), np.float32)] * self.n
@@ -73,13 +75,17 @@ class SumoSignalMultiEnv:
         self._start(self._seed0)
         t = self._traci
         self._tls_ids = sorted(t.trafficlight.getIDList())
-        self._lanes = {}
+        self._lanes, self._out_lanes = {}, {}
         for tls in self._tls_ids:
-            lanes = []
+            lanes, outs = [], []
             for link in t.trafficlight.getControlledLinks(tls):
-                if link and link[0][0] not in lanes:
-                    lanes.append(link[0][0])
+                if link:
+                    if link[0][0] not in lanes:
+                        lanes.append(link[0][0])
+                    if link[0][1] not in outs:
+                        outs.append(link[0][1])
             self._lanes[tls] = lanes[:MAX_LANES]
+            self._out_lanes[tls] = outs[:MAX_LANES]
         t.close()
         self._traci = None
 
@@ -139,7 +145,14 @@ class SumoSignalMultiEnv:
             for j, lane in enumerate(self._lanes[tls]):
                 q[j] = t.lane.getLastStepHaltingNumber(lane) / 10.0
             elapsed = np.float32((now - self._green_start[tls]) / 60.0)
-            out.append(np.concatenate([ph, q, [elapsed], [fc[i]]]))
+            pressure = np.float32(0.0)
+            if self.use_pressure:
+                inn = sum(t.lane.getLastStepHaltingNumber(l)
+                          for l in self._lanes[tls])
+                outn = sum(t.lane.getLastStepHaltingNumber(l)
+                           for l in self._out_lanes[tls])
+                pressure = np.float32((inn - outn) / 10.0)
+            out.append(np.concatenate([ph, q, [elapsed], [fc[i]], [pressure]]))
         return out
 
     def close(self):
