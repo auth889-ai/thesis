@@ -41,20 +41,31 @@ class GWNetForecaster:
         ckpts = sorted(BTS.glob(CKPT_GLOB))
         if not ckpts:
             raise FileNotFoundError(f"no GWNet checkpoint under {BTS}")
-        # Build the arch exactly as the harness does, then load best weights.
-        from baselines.GWNet.arch import gwnet as GWNetArch  # noqa: N813
-        import pickle
-        with open(BTS / "datasets/DhakaR1SensorGraph_legacy/adj_mx.pkl", "rb") as fh:
-            adj = pickle.load(fh)
-        supports = [torch.tensor(np.asarray(adj), dtype=torch.float32)]
-        self.model = GWNetArch(device="cpu", num_nodes=self.n, supports=supports,
-                               in_dim=2, out_dim=12)
-        state = torch.load(ckpts[-1], map_location="cpu",
-                           weights_only=False)
-        self.model.load_state_dict(state if isinstance(state, dict)
-                                   and "model_state_dict" not in state
-                                   else state["model_state_dict"])
+        # Official recipe verbatim (baselines/GWNet/PEMS04.py @ 4c3e2d3):
+        from baselines.GWNet.arch import GraphWaveNet
+        from basicts.utils import load_adj
+        adj_mx, _ = load_adj(str(BTS / "datasets/DhakaR1SensorGraph_legacy/adj_mx.pkl"),
+                             "doubletransition")
+        supports = [torch.tensor(i) for i in adj_mx]
+        self.model = GraphWaveNet(
+            num_nodes=self.n, supports=supports, dropout=0.3, gcn_bool=True,
+            addaptadj=True, aptinit=None, in_dim=2, out_dim=12,
+            residual_channels=32, dilation_channels=32, skip_channels=256,
+            end_channels=512, kernel_size=2, blocks=4, layers=2)
+        state = torch.load(ckpts[-1], map_location="cpu", weights_only=False)
+        self.model.load_state_dict(state["model_state_dict"]
+                                   if isinstance(state, dict)
+                                   and "model_state_dict" in state else state)
         self.model.eval()
+        # ZScore scaler params: train-split mean/std of the speed channel,
+        # exactly what the harness normalized with (NORM_EACH_CHANNEL=False).
+        desc = json.loads((BTS / "datasets/DhakaR1SensorGraph_legacy/desc.json").read_text())
+        shape = tuple(desc["shape"])
+        mm = np.memmap(BTS / "datasets/DhakaR1SensorGraph_legacy/data.dat",
+                       dtype="float32", mode="r", shape=shape)
+        train_len = int(shape[0] * desc["train_val_test_ratio"][0])
+        self.mu = float(mm[:train_len, :, 0].mean())
+        self.sd = float(mm[:train_len, :, 0].std()) or 1.0
         self.vfree = None
 
     # ------------------------------------------------------------------ tls
@@ -86,7 +97,7 @@ class GWNetForecaster:
             if self.vfree is None:
                 self.vfree = np.maximum(speeds, 5.0)
             if len(self.hist) == 12:
-                x = np.stack(self.hist)                       # [12, N]
+                x = (np.stack(self.hist) - self.mu) / self.sd  # z-scored [12, N]
                 tod = ((np.arange(b - 11, b + 1) % 288) / 288.0)[:, None]
                 tod = np.repeat(tod, self.n, axis=1)
                 inp = np.stack([x, tod], axis=-1)[None]       # [1,12,N,2]
@@ -94,7 +105,7 @@ class GWNetForecaster:
                                         ).permute(0, 3, 2, 1)  # [1,2,N,12]
                 with self.torch.no_grad():
                     out = self.model(ten)                     # [1,12,N,1]
-                v15 = out[0, 2, :, 0].numpy()                 # 3rd step = +15 min
+                v15 = out[0, 2, :, 0].numpy() * self.sd + self.mu  # denorm, +15 min
                 drop = 1.0 - np.clip(v15 / self.vfree, 0.0, 1.0)
                 self.pred_drop = drop.astype(np.float32)
         feat = np.zeros(len(tls_ids), dtype=np.float32)
