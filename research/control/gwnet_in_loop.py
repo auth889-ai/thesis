@@ -20,7 +20,9 @@ REPO = Path(__file__).resolve().parents[2]
 WS = Path("/workspace") if Path("/workspace").exists() else REPO
 BTS = WS / "BasicTS_legacy"
 CKPT_GLOB = "checkpoints/GraphWaveNet/**/GraphWaveNet_best_val_MAE.pt"
-SENSORS = WS / "p2_full" / "sensor_nodes.json"
+SENSORS = (WS / "p2_full" / "sensor_nodes.json")
+if not SENSORS.exists():
+    SENSORS = REPO / "artifacts" / "p2_sensor_graph_full" / "sensor_nodes.json"
 STEP_S = 300
 
 
@@ -36,6 +38,10 @@ class GWNetForecaster:
         self.hist: list[np.ndarray] = []
         self.last_bin = -1
         self.pred_drop = np.zeros(self.n, dtype=np.float32)
+        self.pred_speed = {}            # {5|10|15 min: np.ndarray m/s}
+        self.calls = 0                  # availability accounting (Gate 3)
+        self.available = 0
+        self.first_available_s = None
         self._tls_edges: dict[str, list[int]] | None = None
 
         ckpts = sorted(BTS.glob(CKPT_GLOB))
@@ -101,16 +107,29 @@ class GWNetForecaster:
                 tod = ((np.arange(b - 11, b + 1) % 288) / 288.0)[:, None]
                 tod = np.repeat(tod, self.n, axis=1)
                 inp = np.stack([x, tod], axis=-1)[None]       # [1,12,N,2]
-                ten = self.torch.tensor(inp, dtype=self.torch.float32
-                                        ).permute(0, 3, 2, 1)  # [1,2,N,12]
-                with self.torch.no_grad():
-                    out = self.model(ten)                     # [1,12,N,1]
-                v15 = out[0, 2, :, 0].numpy() * self.sd + self.mu  # denorm, +15 min
+                ten = self.torch.tensor(inp, dtype=self.torch.float32)
+                with self.torch.no_grad():                    # legacy API:
+                    out = self.model(ten, future_data=None,   # [B,L,N,C] in,
+                                     batch_seen=0, epoch=0,   # [1,12,N,1] out
+                                     train=False)
+                for mins, k in ((5, 0), (10, 1), (15, 2)):
+                    self.pred_speed[mins] = (out[0, k, :, 0].numpy()
+                                             * self.sd + self.mu)
+                v15 = self.pred_speed[15]
                 drop = 1.0 - np.clip(v15 / self.vfree, 0.0, 1.0)
                 self.pred_drop = drop.astype(np.float32)
+                if self.first_available_s is None:
+                    self.first_available_s = now
+        self.calls += 1
+        if len(self.hist) == 12:
+            self.available += 1
         feat = np.zeros(len(tls_ids), dtype=np.float32)
         for i, tls in enumerate(tls_ids):
             idxs = self._tls_edges.get(tls, [])
             if idxs:
                 feat[i] = float(np.mean(self.pred_drop[idxs]))
         return feat
+
+    @property
+    def forecast_available_fraction(self) -> float:
+        return self.available / self.calls if self.calls else 0.0

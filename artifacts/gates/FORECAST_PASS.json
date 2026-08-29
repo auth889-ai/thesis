@@ -1,0 +1,36 @@
+{
+ "gate": "FORECAST_PASS",
+ "benchmark": {
+  "model": "GraphWaveNet (official BasicTS-legacy @4c3e2d3)",
+  "test_MAE_m_s": 0.852,
+  "test_RMSE": 2.6597,
+  "naive_floor_MAE_m_s": 1.39,
+  "checkpoint": "BasicTS_legacy/checkpoints/GraphWaveNet/DhakaR1SensorGraph_legacy_100_12_12/1ba89b231e6302c7efe36cad85bb2abc/GraphWaveNet_best_val_MAE.pt",
+  "checkpoint_sha256_16": "eee1d55df13450dc",
+  "dataset": "DhakaR1SensorGraph_legacy (twin sensor graph)",
+  "log": "artifacts/p3_results/GWNet_cpu.log"
+ },
+ "scaler": "z-score, train-split mean/std of speed channel (recomputed from data.dat at load \u2014 matches training)",
+ "protocol": {
+  "demand": "fair DUE pulse tiled x8 (declared scenario construction, research/twin/demand.py)",
+  "history_preload_s": 3600.0,
+  "control_interval_s": 600.0,
+  "decide_every_s": 5.0
+ },
+ "forecast_available_fraction": 1.0,
+ "first_available_s": 3300.0,
+ "horizons_exposed_min": [
+  5,
+  10,
+  15
+ ],
+ "separation": "GWNet = data-driven forecast; SUMO A0 branch = do-nothing counterfactual. Never conflated in reports.",
+ "wall_s": 30.5,
+ "checks": {
+  "benchmark_evidence": true,
+  "forecast_available_ge_95pct": true,
+  "available_from_control_start": true,
+  "three_horizons": true
+ },
+ "verdict": "PASS"
+}
