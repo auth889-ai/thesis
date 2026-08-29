@@ -1,0 +1,175 @@
+{
+ "gate": "SIGNAL_CONTROL_PASS",
+ "protocol": {
+  "t0": 3660.0,
+  "horizon_s": 600.0,
+  "seeds": [
+   11,
+   12,
+   13
+  ],
+  "state": "Gate-2 synchronized state"
+ },
+ "summary": {
+  "fixed": {
+   "stopped_veh_s_mean": 1089917.0,
+   "arrived_mean": 743,
+   "teleports_mean": 33.3,
+   "p95_travel_s_mean": 3068.7,
+   "phase_switches_mean": 382
+  },
+  "actuated": {
+   "stopped_veh_s_mean": 1075352,
+   "arrived_mean": 769.3,
+   "teleports_mean": 34,
+   "p95_travel_s_mean": 3100.0,
+   "phase_switches_mean": 1279
+  },
+  "max_pressure": {
+   "stopped_veh_s_mean": 1095269,
+   "arrived_mean": 726.7,
+   "teleports_mean": 35,
+   "p95_travel_s_mean": 3184.7,
+   "phase_switches_mean": 2081
+  }
+ },
+ "detail": {
+  "fixed": {
+   "stopped_veh_s_mean": 1089917.0,
+   "arrived_mean": 743,
+   "teleports_mean": 33.3,
+   "p95_travel_s_mean": 3068.7,
+   "phase_switches_mean": 382,
+   "per_seed": [
+    {
+     "arm": "fixed",
+     "seed": 11,
+     "stopped_veh_s": 1097423,
+     "time_loss_arrivals_s": 585018.3,
+     "arrived": 720,
+     "teleports": 32,
+     "mean_travel_s": 1047.1,
+     "p95_travel_s": 3031.0,
+     "phase_switches": 382
+    },
+    {
+     "arm": "fixed",
+     "seed": 12,
+     "stopped_veh_s": 1083110,
+     "time_loss_arrivals_s": 682688.7,
+     "arrived": 774,
+     "teleports": 30,
+     "mean_travel_s": 1126.4,
+     "p95_travel_s": 3228.0,
+     "phase_switches": 382
+    },
+    {
+     "arm": "fixed",
+     "seed": 13,
+     "stopped_veh_s": 1089219,
+     "time_loss_arrivals_s": 575445.9,
+     "arrived": 735,
+     "teleports": 38,
+     "mean_travel_s": 1025.5,
+     "p95_travel_s": 2947.0,
+     "phase_switches": 382
+    }
+   ]
+  },
+  "actuated": {
+   "stopped_veh_s_mean": 1075352,
+   "arrived_mean": 769.3,
+   "teleports_mean": 34,
+   "p95_travel_s_mean": 3100.0,
+   "phase_switches_mean": 1279,
+   "per_seed": [
+    {
+     "arm": "actuated",
+     "seed": 11,
+     "stopped_veh_s": 1071344,
+     "time_loss_arrivals_s": 635691.2,
+     "arrived": 785,
+     "teleports": 34,
+     "mean_travel_s": 1052.3,
+     "p95_travel_s": 3138.0,
+     "phase_switches": 1274
+    },
+    {
+     "arm": "actuated",
+     "seed": 12,
+     "stopped_veh_s": 1076066,
+     "time_loss_arrivals_s": 586548.0,
+     "arrived": 748,
+     "teleports": 30,
+     "mean_travel_s": 1026.3,
+     "p95_travel_s": 2943.0,
+     "phase_switches": 1276
+    },
+    {
+     "arm": "actuated",
+     "seed": 13,
+     "stopped_veh_s": 1078646,
+     "time_loss_arrivals_s": 682493.2,
+     "arrived": 775,
+     "teleports": 38,
+     "mean_travel_s": 1123.2,
+     "p95_travel_s": 3219.0,
+     "phase_switches": 1287
+    }
+   ]
+  },
+  "max_pressure": {
+   "stopped_veh_s_mean": 1095269,
+   "arrived_mean": 726.7,
+   "teleports_mean": 35,
+   "p95_travel_s_mean": 3184.7,
+   "phase_switches_mean": 2081,
+   "per_seed": [
+    {
+     "arm": "max_pressure",
+     "seed": 11,
+     "stopped_veh_s": 1085629,
+     "time_loss_arrivals_s": 719821.2,
+     "arrived": 746,
+     "teleports": 29,
+     "mean_travel_s": 1209.0,
+     "p95_travel_s": 3276.0,
+     "phase_switches": 2080
+    },
+    {
+     "arm": "max_pressure",
+     "seed": 12,
+     "stopped_veh_s": 1100126,
+     "time_loss_arrivals_s": 629714.8,
+     "arrived": 721,
+     "teleports": 37,
+     "mean_travel_s": 1118.1,
+     "p95_travel_s": 3201.0,
+     "phase_switches": 2077
+    },
+    {
+     "arm": "max_pressure",
+     "seed": 13,
+     "stopped_veh_s": 1100052,
+     "time_loss_arrivals_s": 594350.2,
+     "arrived": 713,
+     "teleports": 39,
+     "mean_travel_s": 1077.7,
+     "p95_travel_s": 3077.0,
+     "phase_switches": 2086
+    }
+   ]
+  }
+ },
+ "checks": {
+  "same_state_same_seeds": true,
+  "actuated_is_stock_sumo": true,
+  "mp_downstream_term": true,
+  "mp_program_safe_transitions": true,
+  "controllers_actually_act": true,
+  "min_green_enforced": true
+ },
+ "honest_note": "results reported as measured; no arm is declared 'inherently bad' \u2014 this protocol replaces the earlier frozen-implementation Max-Pressure claim",
+ "wall_s": 24.0,
+ "verdict": "PASS"
+}
