@@ -1,0 +1,266 @@
+{
+ "gate_stack": [
+  "SAME_STATE_COUNTERFACTUAL",
+  "NETWORK_GUARD",
+  "PREDICTIVE_PLANNER"
+ ],
+ "demand": {
+  "routes": "artifacts/gates/routes_repeat_1h.rou.xml.gz",
+  "label": "OFFLINE fair fixed demand (DUE v200) \u2014 replace via Gate 2 synchronized scenario"
+ },
+ "seeds": [
+  11,
+  12,
+  13
+ ],
+ "t0": 402.0,
+ "horizon_s": 600,
+ "determinism_check_A0_twice_identical": true,
+ "objective": "network stopped-vehicle-seconds over horizon (primary); guards: >=1% improvement, arrivals>=A0-2%, teleports<=A0, neighbor queues <=A0+15%",
+ "branches": {
+  "A0_do_nothing": {
+   "candidate": "A0_do_nothing",
+   "network": {
+    "stopped_veh_s": 282530.0,
+    "time_loss_arrivals_s": 134314.6,
+    "arrived": 880.7,
+    "mean_travel_s": 393.7,
+    "p95_travel_s": 622.7,
+    "teleports": 2.0,
+    "network_stopped_final": 700.0
+   },
+   "target": {
+    "queue_final": 0.7
+   },
+   "neighbors": {
+    "cluster_2320178528_3341584387_3341584388_3341584389": 1.0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0.0,
+    "joinedS_4989674614_cluster_154346107_4967446565_6251877241_6900059588": 0.0
+   },
+   "rerouted": 0.0,
+   "per_seed": {
+    "11": 281078,
+    "12": 288349,
+    "13": 278163
+   }
+  },
+  "A1_green_extend": {
+   "candidate": "A1_green_extend",
+   "network": {
+    "stopped_veh_s": 282530.0,
+    "time_loss_arrivals_s": 134314.6,
+    "arrived": 880.7,
+    "mean_travel_s": 393.7,
+    "p95_travel_s": 622.7,
+    "teleports": 2.0,
+    "network_stopped_final": 700.0
+   },
+   "target": {
+    "queue_final": 0.7
+   },
+   "neighbors": {
+    "cluster_2320178528_3341584387_3341584388_3341584389": 1.0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0.0,
+    "joinedS_4989674614_cluster_154346107_4967446565_6251877241_6900059588": 0.0
+   },
+   "rerouted": 0.0,
+   "per_seed": {
+    "11": 281078,
+    "12": 288349,
+    "13": 278163
+   }
+  },
+  "A2_max_pressure": {
+   "candidate": "A2_max_pressure",
+   "network": {
+    "stopped_veh_s": 270872.7,
+    "time_loss_arrivals_s": 142908.4,
+    "arrived": 923.3,
+    "mean_travel_s": 397.8,
+    "p95_travel_s": 629.7,
+    "teleports": 1.0,
+    "network_stopped_final": 618.7
+   },
+   "target": {
+    "queue_final": 3.7
+   },
+   "neighbors": {
+    "cluster_2320178528_3341584387_3341584388_3341584389": 1.0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0.0,
+    "joinedS_4989674614_cluster_154346107_4967446565_6251877241_6900059588": 0.0
+   },
+   "rerouted": 0.0,
+   "per_seed": {
+    "11": 260242,
+    "12": 284256,
+    "13": 268120
+   }
+  },
+  "A3_ext_reroute10": {
+   "candidate": "A3_ext_reroute10",
+   "network": {
+    "stopped_veh_s": 277461.7,
+    "time_loss_arrivals_s": 143241.3,
+    "arrived": 915.0,
+    "mean_travel_s": 397.6,
+    "p95_travel_s": 653.3,
+    "teleports": 1.3,
+    "network_stopped_final": 673.0
+   },
+   "target": {
+    "queue_final": 0.0
+   },
+   "neighbors": {
+    "cluster_2320178528_3341584387_3341584388_3341584389": 2.0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0.0,
+    "joinedS_4989674614_cluster_154346107_4967446565_6251877241_6900059588": 0.7
+   },
+   "rerouted": 1636.3,
+   "per_seed": {
+    "11": 274983,
+    "12": 274057,
+    "13": 283345
+   }
+  },
+  "A4_ext_reroute20": {
+   "candidate": "A4_ext_reroute20",
+   "network": {
+    "stopped_veh_s": 276090.0,
+    "time_loss_arrivals_s": 137549.2,
+    "arrived": 901.3,
+    "mean_travel_s": 393.6,
+    "p95_travel_s": 626.3,
+    "teleports": 2.0,
+    "network_stopped_final": 672.3
+   },
+   "target": {
+    "queue_final": 0.0
+   },
+   "neighbors": {
+    "cluster_2320178528_3341584387_3341584388_3341584389": 1.3,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0.0,
+    "joinedS_4989674614_cluster_154346107_4967446565_6251877241_6900059588": 0.0
+   },
+   "rerouted": 3139.0,
+   "per_seed": {
+    "11": 274214,
+    "12": 268362,
+    "13": 285694
+   }
+  },
+  "A5_ext_reroute30": {
+   "candidate": "A5_ext_reroute30",
+   "network": {
+    "stopped_veh_s": 279038.7,
+    "time_loss_arrivals_s": 135705.4,
+    "arrived": 885.7,
+    "mean_travel_s": 392.9,
+    "p95_travel_s": 614.0,
+    "teleports": 1.3,
+    "network_stopped_final": 655.7
+   },
+   "target": {
+    "queue_final": 0.0
+   },
+   "neighbors": {
+    "cluster_2320178528_3341584387_3341584388_3341584389": 0.7,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0.0,
+    "joinedS_4989674614_cluster_154346107_4967446565_6251877241_6900059588": 0.0
+   },
+   "rerouted": 5109.3,
+   "per_seed": {
+    "11": 270378,
+    "12": 276361,
+    "13": 290377
+   }
+  },
+  "A6_route10_official": {
+   "candidate": "A6_route10_official",
+   "network": {
+    "stopped_veh_s": 277198.7,
+    "time_loss_arrivals_s": 136807.0,
+    "arrived": 924.0,
+    "mean_travel_s": 389.4,
+    "p95_travel_s": 618.7,
+    "teleports": 1.3,
+    "network_stopped_final": 651.0
+   },
+   "target": {
+    "queue_final": 0.7
+   },
+   "neighbors": {
+    "cluster_2320178528_3341584387_3341584388_3341584389": 1.3,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0.0,
+    "joinedS_4989674614_cluster_154346107_4967446565_6251877241_6900059588": 0.0
+   },
+   "rerouted": 1683.3,
+   "per_seed": {
+    "11": 277333,
+    "12": 288375,
+    "13": 265888
+   }
+  }
+ },
+ "verdicts": {
+  "A1_green_extend": {
+   "guards": {
+    "network_delay_improves": false,
+    "throughput_kept": true,
+    "teleports_not_worse": true,
+    "neighbors_not_flooded": true
+   },
+   "label": "REJECTED"
+  },
+  "A2_max_pressure": {
+   "guards": {
+    "network_delay_improves": true,
+    "throughput_kept": true,
+    "teleports_not_worse": true,
+    "neighbors_not_flooded": true
+   },
+   "label": "ACCEPTED_CANDIDATE"
+  },
+  "A3_ext_reroute10": {
+   "guards": {
+    "network_delay_improves": true,
+    "throughput_kept": true,
+    "teleports_not_worse": true,
+    "neighbors_not_flooded": true
+   },
+   "label": "ACCEPTED_CANDIDATE"
+  },
+  "A4_ext_reroute20": {
+   "guards": {
+    "network_delay_improves": true,
+    "throughput_kept": true,
+    "teleports_not_worse": true,
+    "neighbors_not_flooded": true
+   },
+   "label": "ACCEPTED_CANDIDATE"
+  },
+  "A5_ext_reroute30": {
+   "guards": {
+    "network_delay_improves": true,
+    "throughput_kept": true,
+    "teleports_not_worse": true,
+    "neighbors_not_flooded": true
+   },
+   "label": "ACCEPTED_CANDIDATE"
+  },
+  "A6_route10_official": {
+   "guards": {
+    "network_delay_improves": true,
+    "throughput_kept": true,
+    "teleports_not_worse": true,
+    "neighbors_not_flooded": true
+   },
+   "label": "ACCEPTED_CANDIDATE"
+  }
+ },
+ "decision": "A2_max_pressure",
+ "wall_s": {
+  "warmup_to_t0": 3.5,
+  "total": 77.3
+ },
+ "real_time_factor": 65.0
+}

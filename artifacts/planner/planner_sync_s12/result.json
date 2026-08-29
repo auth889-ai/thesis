@@ -1,0 +1,197 @@
+{
+ "gate_stack": [
+  "SAME_STATE_COUNTERFACTUAL",
+  "NETWORK_GUARD",
+  "PREDICTIVE_PLANNER"
+ ],
+ "demand": {
+  "routes": "/Users/jannatulferdouseva/thesis/artifacts/gates/routes_repeat_1h.rou.xml.gz",
+  "label": "SYNCHRONIZED twin state from real video (Gate 2, t0=3660.0s, scale 0.584); demand: fair DUE pulse tiled x8"
+ },
+ "seed": 12,
+ "t0": 3660.0,
+ "horizon_s": 600,
+ "determinism_check_A0_twice_identical": true,
+ "objective": "network stopped-vehicle-seconds over horizon (primary); guards: >=1% improvement, arrivals>=A0-2%, teleports<=A0, neighbor queues <=A0+15%",
+ "branches": {
+  "A0_do_nothing": {
+   "candidate": "A0_do_nothing",
+   "network": {
+    "stopped_veh_s": 1083110,
+    "time_loss_arrivals_s": 682688.7,
+    "arrived": 774,
+    "mean_travel_s": 1126.4,
+    "p95_travel_s": 3228.0,
+    "teleports": 30,
+    "network_stopped_final": 1742
+   },
+   "target": {
+    "queue_final": 5
+   },
+   "neighbors": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 7,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   },
+   "rerouted": 0
+  },
+  "A1_green_extend": {
+   "candidate": "A1_green_extend",
+   "network": {
+    "stopped_veh_s": 1083818,
+    "time_loss_arrivals_s": 683003.1,
+    "arrived": 773,
+    "mean_travel_s": 1128.2,
+    "p95_travel_s": 3242.0,
+    "teleports": 30,
+    "network_stopped_final": 1785
+   },
+   "target": {
+    "queue_final": 2
+   },
+   "neighbors": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 7,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   },
+   "rerouted": 0
+  },
+  "A2_max_pressure": {
+   "candidate": "A2_max_pressure",
+   "network": {
+    "stopped_veh_s": 1088764,
+    "time_loss_arrivals_s": 651429.1,
+    "arrived": 746,
+    "mean_travel_s": 1117.5,
+    "p95_travel_s": 3204.0,
+    "teleports": 36,
+    "network_stopped_final": 1754
+   },
+   "target": {
+    "queue_final": 7
+   },
+   "neighbors": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 3,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   },
+   "rerouted": 0
+  },
+  "A3_ext_reroute10": {
+   "candidate": "A3_ext_reroute10",
+   "network": {
+    "stopped_veh_s": 1103059,
+    "time_loss_arrivals_s": 603792.9,
+    "arrived": 740,
+    "mean_travel_s": 1057.8,
+    "p95_travel_s": 3099.0,
+    "teleports": 30,
+    "network_stopped_final": 1758
+   },
+   "target": {
+    "queue_final": 0
+   },
+   "neighbors": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 2,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   },
+   "rerouted": 523
+  },
+  "A4_ext_reroute20": {
+   "candidate": "A4_ext_reroute20",
+   "network": {
+    "stopped_veh_s": 1096923,
+    "time_loss_arrivals_s": 621482.7,
+    "arrived": 744,
+    "mean_travel_s": 1078.2,
+    "p95_travel_s": 3115.0,
+    "teleports": 30,
+    "network_stopped_final": 1789
+   },
+   "target": {
+    "queue_final": 11
+   },
+   "neighbors": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 1,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   },
+   "rerouted": 1026
+  },
+  "A5_ext_reroute30": {
+   "candidate": "A5_ext_reroute30",
+   "network": {
+    "stopped_veh_s": 1083591,
+    "time_loss_arrivals_s": 627524.8,
+    "arrived": 749,
+    "mean_travel_s": 1081.3,
+    "p95_travel_s": 3101.0,
+    "teleports": 37,
+    "network_stopped_final": 1804
+   },
+   "target": {
+    "queue_final": 0
+   },
+   "neighbors": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 1,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   },
+   "rerouted": 1676
+  }
+ },
+ "verdicts": {
+  "A1_green_extend": {
+   "guards": {
+    "network_delay_improves": false,
+    "throughput_kept": true,
+    "teleports_not_worse": true,
+    "neighbors_not_flooded": true
+   },
+   "label": "LOCAL_RELIEF_NETWORK_FAIL"
+  },
+  "A2_max_pressure": {
+   "guards": {
+    "network_delay_improves": false,
+    "throughput_kept": false,
+    "teleports_not_worse": false,
+    "neighbors_not_flooded": true
+   },
+   "label": "REJECTED"
+  },
+  "A3_ext_reroute10": {
+   "guards": {
+    "network_delay_improves": false,
+    "throughput_kept": false,
+    "teleports_not_worse": true,
+    "neighbors_not_flooded": true
+   },
+   "label": "LOCAL_RELIEF_NETWORK_FAIL"
+  },
+  "A4_ext_reroute20": {
+   "guards": {
+    "network_delay_improves": false,
+    "throughput_kept": false,
+    "teleports_not_worse": true,
+    "neighbors_not_flooded": true
+   },
+   "label": "REJECTED"
+  },
+  "A5_ext_reroute30": {
+   "guards": {
+    "network_delay_improves": false,
+    "throughput_kept": false,
+    "teleports_not_worse": false,
+    "neighbors_not_flooded": true
+   },
+   "label": "LOCAL_RELIEF_NETWORK_FAIL"
+  }
+ },
+ "decision": "NO_SAFE_INTERVENTION_IMPROVES_THE_NETWORK",
+ "wall_s": {
+  "warmup_to_t0": 1.2,
+  "total": 21.9
+ },
+ "real_time_factor": 203.0
+}

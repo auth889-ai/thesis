@@ -1,0 +1,46 @@
+{
+ "gate": "PREDICTIVE_PLANNER_PASS",
+ "verdict": "PASS",
+ "planner": "scripts/predictive_planner.py \u2014 candidates from ONE saved state (saveState incl. RNG), parallel libsumo branches, paired seeds, network objective + guards; accepts only if network improves, else NO ACTION",
+ "checks": {
+  "same_state_all_branches": true,
+  "determinism_A0_repeat": true,
+  "multi_candidate": true,
+  "paired_seeds": true,
+  "no_action_fallback_demonstrated": true,
+  "accepted_case_demonstrated": true,
+  "planning_latency_acceptable": true
+ },
+ "case_onset": {
+  "t0_s": 402.0,
+  "decision": "A2_max_pressure",
+  "network_delay_improvement_pct_mean": -4.13,
+  "per_seed_pct": {
+   "11": -7.41,
+   "12": -1.42,
+   "13": -3.61
+  },
+  "sign_consistent": true,
+  "arrived": {
+   "A0": 880.7,
+   "A2": 923.3
+  },
+  "run": "artifacts/planner/planner_onset_s111213/result.json"
+ },
+ "case_saturated": {
+  "t0_s": 3660.0,
+  "decision": "NO_SAFE_INTERVENTION_IMPROVES_THE_NETWORK",
+  "note": "at full saturation no rule-based candidate improves the network sign-consistently across paired seeds \u2014 the system chooses restraint and says so",
+  "run": "artifacts/planner/planner_final_s111213/result.json"
+ },
+ "case_calm": {
+  "decision": "A3_ext_reroute10",
+  "run": "artifacts/planner/planner_calm_s11/result.json"
+ },
+ "finding": "THE INTERVENTION WINDOW IS CONGESTION ONSET: max-pressure at the forming jam wins in all 3 paired seeds (-7.4/-1.4/-3.6%, arrivals +4.8%); once saturated, no local candidate safely improves the network. Consistent with max-pressure theory (throughput-optimal pre-saturation).",
+ "runtime": {
+  "planning_wall_s_8cand_3seeds": 77.3,
+  "real_time_factor": 65.0,
+  "gui_not_in_optimization": true
+ }
+}

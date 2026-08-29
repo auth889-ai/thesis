@@ -40,7 +40,7 @@ T0_MAX_S = 7200
 
 CANDIDATES = ["A0_do_nothing", "A0_repeat", "A1_green_extend",
               "A2_max_pressure", "A3_ext_reroute10", "A4_ext_reroute20",
-              "A5_ext_reroute30"]
+              "A5_ext_reroute30", "A6_route10_official"]
 
 
 def _sumo_args(routes: str, seed: int, trip_out: str,
@@ -80,12 +80,20 @@ def make_t0_from_sync(sync: dict, routes: str, seed: int) -> dict:
                           if tls != target}}
 
 
-def make_t0(routes: str, seed: int, out: Path) -> dict:
+def make_t0(routes: str, seed: int, out: Path,
+            t0_fixed: float | None = None,
+            extra: list[str] | None = None) -> dict:
     import libsumo as t
-    t.start(["sumo"] + _sumo_args(routes, seed, str(out / "tripinfo_warm.xml")))
+    t.start(["sumo"] + _sumo_args(routes, seed,
+                                  str(out / "tripinfo_warm.xml"), extra))
     t0 = None
     while t.simulation.getTime() < T0_MAX_S:
         t.simulationStep()
+        if t0_fixed is not None:
+            if t.simulation.getTime() >= t0_fixed:
+                t0 = t.simulation.getTime()
+                break
+            continue
         stopped = sum(t.lane.getLastStepHaltingNumber(l)
                       for l in t.lane.getIDList() if not l.startswith(":"))
         if stopped >= T0_TRIGGER_STOPPED:
@@ -104,7 +112,7 @@ def make_t0(routes: str, seed: int, out: Path) -> dict:
     t.simulation.saveState(state)
     meta = {"t0_s": t0, "state_file": state,
             "target_tls": ranked[0][1], "target_lanes": ranked[0][2],
-            "target_queue_t0": ranked[0][0],
+            "target_queue_t0": ranked[0][0], "extra_args": extra or [],
             "neighbors": {tls: {"lanes": lanes, "queue_t0": q}
                           for q, tls, lanes in ranked[1:4]}}
     t.close()
@@ -115,15 +123,21 @@ def run_branch(job) -> dict:
     """One candidate future in its own process (libsumo is per-process)."""
     cand, meta, routes, seed, horizon, outdir = job
     import libsumo as t
-    trip = str(Path(outdir) / f"tripinfo_{cand}.xml")
-    t.start(["sumo"] + _sumo_args(routes, seed, trip,
-                                   meta.get("extra_args")))
+    trip = str(Path(outdir) / f"tripinfo_{cand}_s{seed}.xml")
+    extra = list(meta.get("extra_args") or [])
+    if cand == "A6_route10_official":       # Gate-7 winner: stock device for
+        extra += ["--device.rerouting.probability", "0.10",   # future demand
+                  "--device.rerouting.period", "60",
+                  "--device.rerouting.adaptation-interval", "10",
+                  "--device.rerouting.adaptation-weight", "0.5"]
+    t.start(["sumo"] + _sumo_args(routes, seed, trip, extra))
     t.simulation.loadState(meta["state_file"])
     t0 = meta["t0_s"]
     tls, tls_lanes = meta["target_tls"], meta["target_lanes"]
     hot = {t.lane.getEdgeID(l) for l in tls_lanes}
     reroute_p = {"A3_ext_reroute10": .10, "A4_ext_reroute20": .20,
-                 "A5_ext_reroute30": .30}.get(cand, 0.0)
+                 "A5_ext_reroute30": .30,
+                 "A6_route10_official": .10}.get(cand, 0.0)
     extend = cand.startswith(("A1", "A3", "A4", "A5"))
     maxp = cand == "A2_max_pressure"
     stopped_vs, tele, rerouted = 0, 0, 0
@@ -177,7 +191,7 @@ def run_branch(job) -> dict:
     root = ET.parse(trip).getroot()
     inh = [x for x in root if float(x.get("arrival", -1)) >= t0]
     durs = sorted(float(x.get("duration")) for x in inh) or [0.0]
-    return {"candidate": cand,
+    return {"candidate": cand, "seed": seed,
             "network": {
                 "stopped_veh_s": stopped_vs,
                 "time_loss_arrivals_s":
@@ -199,11 +213,15 @@ def main() -> None:
     ap.add_argument("--demand-label", default="OFFLINE fair fixed demand "
                     "(DUE v200) — replace via Gate 2 synchronized scenario")
     ap.add_argument("--seed", type=int, default=11)
+    ap.add_argument("--seeds", default=None,
+                    help="comma list: aggregate decision over paired seeds")
     ap.add_argument("--horizon", type=int, default=600)
     ap.add_argument("--name", default="planner_dev")
     ap.add_argument("--sync", default=None,
                     help="TWIN_SYNC_PASS.json: adopt the synchronized state")
     ap.add_argument("--emit-gates", action="store_true")
+    ap.add_argument("--t0-fixed", type=float, default=None)
+    ap.add_argument("--scale", type=float, default=None)
     a = ap.parse_args()
     out = REPO / "artifacts" / "planner" / a.name
     out.mkdir(parents=True, exist_ok=True)
@@ -217,15 +235,38 @@ def main() -> None:
                           "DUE pulse tiled x8")
         meta = make_t0_from_sync(sync, a.routes, a.seed)
     else:
-        meta = make_t0(a.routes, a.seed, out)
+        extra = ["--scale", str(a.scale)] if a.scale else None
+        meta = make_t0(a.routes, a.seed, out, t0_fixed=a.t0_fixed,
+                       extra=extra)
     t_warm = time.time() - wall
-    jobs = [(c, meta, a.routes, a.seed, a.horizon, str(out))
-            for c in CANDIDATES]
+    seeds = ([int(x) for x in a.seeds.split(",")] if a.seeds else [a.seed])
+    jobs = [(c, meta, a.routes, sd, a.horizon, str(out))
+            for c in CANDIDATES for sd in seeds]
     with mp.get_context("spawn").Pool(min(len(jobs), mp.cpu_count() - 1)) as p:
         branches = p.map(run_branch, jobs)
-    res = {b["candidate"]: b for b in branches}
-    a0, a0r = res["A0_do_nothing"], res.pop("A0_repeat")
-    determinism = a0["network"] == a0r["network"]
+    per_seed = {}
+    for b in branches:
+        per_seed.setdefault(b["candidate"], {})[b["seed"]] = b
+    determinism = all(per_seed["A0_do_nothing"][sd]["network"]
+                      == per_seed["A0_repeat"][sd]["network"] for sd in seeds)
+    per_seed.pop("A0_repeat")
+
+    def agg(cand):
+        bs = [per_seed[cand][sd] for sd in seeds]
+        n = len(bs)
+        return {"candidate": cand,
+                "network": {k: round(sum(b["network"][k] for b in bs) / n, 1)
+                            for k in bs[0]["network"]},
+                "target": {"queue_final": round(sum(
+                    b["target"]["queue_final"] for b in bs) / n, 1)},
+                "neighbors": {k: round(sum(
+                    b["neighbors"][k] for b in bs) / n, 1)
+                    for k in bs[0]["neighbors"]},
+                "rerouted": round(sum(b["rerouted"] for b in bs) / n, 1),
+                "per_seed": {sd: per_seed[cand][sd]["network"]["stopped_veh_s"]
+                             for sd in seeds}}
+    res = {c: agg(c) for c in per_seed}
+    a0 = res["A0_do_nothing"]
 
     verdicts = {}
     for c, b in res.items():
@@ -233,7 +274,8 @@ def main() -> None:
             continue
         n, g = b["network"], a0["network"]
         guards = {
-            "network_delay_improves": n["stopped_veh_s"] < g["stopped_veh_s"],
+            "network_delay_improves":
+                n["stopped_veh_s"] < g["stopped_veh_s"] * 0.99,  # >=1% real
             "throughput_kept": n["arrived"] >= g["arrived"] * (1 - ARRIVAL_TOL),
             "teleports_not_worse": n["teleports"] <= g["teleports"],
             "neighbors_not_flooded": all(
@@ -256,11 +298,11 @@ def main() -> None:
         "gate_stack": ["SAME_STATE_COUNTERFACTUAL", "NETWORK_GUARD",
                        "PREDICTIVE_PLANNER"],
         "demand": {"routes": a.routes, "label": a.demand_label},
-        "seed": a.seed, "t0": meta["t0_s"], "horizon_s": a.horizon,
+        "seeds": seeds, "t0": meta["t0_s"], "horizon_s": a.horizon,
         "determinism_check_A0_twice_identical": determinism,
         "objective": "network stopped-vehicle-seconds over horizon (primary); "
-                     "guards: arrivals>=A0-2%, teleports<=A0, neighbor queues "
-                     "<=A0+15%",
+                     "guards: >=1% improvement, arrivals>=A0-2%, "
+                     "teleports<=A0, neighbor queues <=A0+15%",
         "branches": res, "verdicts": verdicts,
         "decision": best or "NO_SAFE_INTERVENTION_IMPROVES_THE_NETWORK",
         "wall_s": {"warmup_to_t0": round(t_warm, 1),
