@@ -1,0 +1,95 @@
+{
+ "gate": "NETWORKED_ACTUATION_PASS",
+ "chain": "AI planner -> ControlMessage -> V2X bus (measured MOSAIC latency, median 1.9ms/p95 7ms) -> delivery+ACK -> setPhaseDuration / rerouteTraveltime -> vehicle physics",
+ "improvement_pct_per_seed": {
+  "11": -4.64,
+  "12": -6.71,
+  "13": -1.43
+ },
+ "mean_improvement_pct": -4.26,
+ "messages": {
+  "sent": 161,
+  "delivered": 161,
+  "delivery_rate": 1.0
+ },
+ "per_seed": {
+  "no_network": {
+   "11": {
+    "branch": "no_network",
+    "seed": 11,
+    "stopped_veh_s": 281078,
+    "arrived": 881,
+    "teleports": 2,
+    "time_loss_arrivals_s": 134296.3
+   },
+   "12": {
+    "branch": "no_network",
+    "seed": 12,
+    "stopped_veh_s": 288349,
+    "arrived": 857,
+    "teleports": 2,
+    "time_loss_arrivals_s": 127387.6
+   },
+   "13": {
+    "branch": "no_network",
+    "seed": 13,
+    "stopped_veh_s": 278163,
+    "arrived": 904,
+    "teleports": 2,
+    "time_loss_arrivals_s": 141260.0
+   }
+  },
+  "networked": {
+   "11": {
+    "branch": "networked",
+    "seed": 11,
+    "stopped_veh_s": 268029,
+    "arrived": 921,
+    "teleports": 2,
+    "time_loss_arrivals_s": 143646.5,
+    "network": {
+     "messages_sent": 52,
+     "delivered": 52,
+     "latency_ms_median": 2.4
+    }
+   },
+   "12": {
+    "branch": "networked",
+    "seed": 12,
+    "stopped_veh_s": 268997,
+    "arrived": 915,
+    "teleports": 2,
+    "time_loss_arrivals_s": 141391.8,
+    "network": {
+     "messages_sent": 56,
+     "delivered": 56,
+     "latency_ms_median": 1.9
+    }
+   },
+   "13": {
+    "branch": "networked",
+    "seed": 13,
+    "stopped_veh_s": 274177,
+    "arrived": 925,
+    "teleports": 2,
+    "time_loss_arrivals_s": 144345.5,
+    "network": {
+     "messages_sent": 53,
+     "delivered": 53,
+     "latency_ms_median": 2.4
+    }
+   }
+  }
+ },
+ "declared_limits": "transport = latency replay of the official SNS ITS-G5 run (no loss model yet); full MOSAIC coupling of the Dhaka scenario is the follow-up",
+ "checks": {
+  "all_actions_via_messages": true,
+  "no_direct_teleport_or_moveTo": true,
+  "latency_from_official_stack_measurement": true,
+  "delivery_logged_with_ack": true,
+  "network_delay_improves_all_seeds": true,
+  "paired_same_state": true
+ },
+ "wall_s": 12.4,
+ "verdict": "PASS"
+}

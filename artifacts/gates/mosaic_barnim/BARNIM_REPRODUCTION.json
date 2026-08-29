@@ -1,0 +1,22 @@
+{
+ "artifact": "OFFICIAL_STACK_REPRODUCTION",
+ "stack": "Eclipse MOSAIC 25.2 (pinned; release bundle), bundled SNS network simulator",
+ "scenario": "Barnim tutorial (WeatherServerApp; DENM hazard warnings via ad-hoc geocast)",
+ "result": {
+  "vehicles": 120,
+  "transmissions": 4658,
+  "receptions": 16612,
+  "sim_duration_s": 1000,
+  "wall_s": 2.6,
+  "rtf": 389,
+  "latency_ms": {
+   "min": 0.4,
+   "median": 1.9,
+   "p95": 7.0,
+   "max": 14.7,
+   "mean": 2.6
+  }
+ },
+ "chain_demonstrated": "application -> V2X message -> network simulator -> delivery to vehicles -> vehicles reroute in SUMO",
+ "log_dir": "~/.dhakaflow/upstream/mosaic/logs/log-20260829-163311-Barnim"
+}

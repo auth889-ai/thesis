@@ -255,3 +255,18 @@ repos:
     why: Newest official RT-DETR family member (VFM distillation); SOTA claims
          over YOLOv10-13. Must be measured on the Bangladesh protocol, not
          assumed best.
+
+  # --------------------------------------------------------------- networking
+  - name: Eclipse-MOSAIC
+    subsystem: networking
+    url: https://github.com/eclipse-mosaic/mosaic.git
+    ref: "25.2"
+    sha: 005fa1f3c39c57642d957af249c0dff1eb3badb1   # main @ pin date; release 25.2 bundle used
+    verified: "2026-08-29"
+    status: FETCHED
+    paper: https://doi.org/10.1109/ACCESS.2022.3193765
+    venue: IEEE Access 2022 (MOSAIC co-simulation)
+    license: EPL-2.0
+    why: Official V2X co-simulation (SUMO + SNS/cell/ns-3). The bundled
+         Barnim example is reproduced as-is; DhakaFlow's message bus uses
+         latency distributions MEASURED from that official run.
