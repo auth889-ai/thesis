@@ -129,10 +129,18 @@ def run(name: str, cam: str, seed: int) -> dict:
         if branch == "no_action":
             t.simulation.saveState(state_file)     # save the exact t0 state
         pre = snapshot(t, tls_lanes)
-        act = pre["target_queue_veh"] >= ACT_MIN_QUEUE
+        # PREDICT-THEN-ACT: branch A (no_action) runs first and IS the twin's
+        # prediction of this junction's next 10 minutes. Act when the queue is
+        # already >= threshold OR predicted to reach it — never on a junction
+        # that is and stays calm (seed-13: acting there makes traffic worse).
+        predicted_q = (results.get("no_action", {}).get("t0_plus_10min", {})
+                       .get("target_queue_veh", 0))
+        act = (pre["target_queue_veh"] >= ACT_MIN_QUEUE
+               or predicted_q >= ACT_MIN_QUEUE)
         if branch == "control" and not act:
-            print(f"t0 target queue {pre['target_queue_veh']} < {ACT_MIN_QUEUE}"
-                  " -> NO_LOCAL_ACTION_WARRANTED (monitoring)")
+            print(f"t0 queue {pre['target_queue_veh']} and predicted +10min "
+                  f"queue {predicted_q} both < {ACT_MIN_QUEUE}"
+                  " -> NO_ACTION_WARRANTED (monitoring)")
 
         green_started = t.simulation.getTime()
         while t.simulation.getTime() < T0_S + HORIZON_S and \
@@ -212,7 +220,8 @@ def run(name: str, cam: str, seed: int) -> dict:
                               f"{out / 'state_t0.xml'}",
         "no_action": a, "control": b,
         "action_taken": results["control"].get("acted", True),
-        "action_rule": f"act only if target queue >= {ACT_MIN_QUEUE} at t0",
+        "action_rule": (f"act if target queue >= {ACT_MIN_QUEUE} at t0 OR "
+                        f"twin-predicted queue >= {ACT_MIN_QUEUE} at +10 min"),
         "four_pane": {
             "queue_no_action": a["t0_plus_10min"]["target_queue_veh"],
             "queue_control": b["t0_plus_10min"]["target_queue_veh"],

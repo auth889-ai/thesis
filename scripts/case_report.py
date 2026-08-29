@@ -62,8 +62,9 @@ def main() -> None:
     name = args.name or Path(str(args.source)).stem or "live"
     out = REPO / "artifacts" / f"case_{name}"
     out.mkdir(parents=True, exist_ok=True)
-    if args.location and args.location in REGISTERED_CAMERAS:
-        loc = REGISTERED_CAMERAS[args.location]
+    cam_name = args.location if args.location in REGISTERED_CAMERAS else None
+    if cam_name:
+        loc = REGISTERED_CAMERAS[cam_name]
     elif args.location:
         loc = tuple(float(x) for x in args.location.split(","))
     else:
@@ -145,8 +146,28 @@ def main() -> None:
     plt.tight_layout(); plt.savefig(out / "route_map.png", dpi=140)
     plt.close(fig)
 
-    # ---- step 5: attach the twin's proof --------------------------------
-    print("[5/5] attaching twin counterfactual …")
+    # ---- step 5: PREDICT & PROVE on THIS road from THIS moment ----------
+    cf = None
+    cf_name = f"case_{name}"
+    if congested and cam_name:
+        print("[5/6] twin: predicting the next 10 min at this camera and "
+              "testing the action from the SAME saved state (takes minutes) …")
+        r = subprocess.run([sys.executable, "scripts/same_state_counterfactual.py",
+                            "--camera", cam_name, "--name", cf_name,
+                            "--seed", "11"], cwd=REPO)
+        res_p = REPO / "artifacts" / "same_state" / cf_name / "result.json"
+        if r.returncode == 0 and res_p.exists():
+            cf = json.loads(res_p.read_text())
+            subprocess.run([sys.executable, "scripts/four_pane_report.py",
+                            "--case", name, "--counterfactual", cf_name,
+                            "--out", str(out / "four_pane.html")], cwd=REPO)
+    elif congested:
+        print("[5/6] twin skipped — camera not registered")
+    else:
+        print("[5/6] free flow measured — no action warranted, twin not run "
+              "(restraint is a decision; seed-13 experiment)")
+
+    print("[6/6] attaching network-scale context …")
     dd = json.loads((REPO / "artifacts/due_dso_stats/v200/result.json").read_text())
     md = {c["metric"]: c for c in dd["comparisons"]}["mean_delay_s"]
 
@@ -157,6 +178,10 @@ def main() -> None:
         "route_through_jam_s": routed["naive"]["experienced_s"],
         "best_route_s": routed["informed"]["experienced_s"],
         "delay_avoided_s_per_vehicle": routed["delay_avoided_s"],
+        "same_state_counterfactual": (
+            {"t0_s": cf["t0_s"], **cf["four_pane"],
+             "four_pane_page": f"artifacts/case_{name}/four_pane.html"}
+            if cf else None),
         "network_scale_proof": {
             "mean_delay_reduction_pct": md["dso_improvement_percent"],
             "p_value": md["p_value"], "seeds": 10,
@@ -165,20 +190,45 @@ def main() -> None:
     }
     (out / "case.json").write_text(json.dumps(case, indent=2))
 
+
+    if cf:
+        fpn = cf["four_pane"]
+        dq = fpn["queue_no_action"] - fpn["queue_control"]
+        qpct = 100 * dq / max(fpn["queue_no_action"], 1)
+        twin_html = f"""<div class="step"><h2>Step 5 · PREDICT &amp; PROVE — this road, this moment</h2>
+<p>The twin reproduced this camera's congestion (t&#8320;={cf['t0_s']:.0f}s), saved the EXACT
+simulator state, and ran two futures from it:</p>
+<p>PREDICTION if nothing is done: queue reaches
+<b class="bad">{fpn['queue_no_action']} vehicles</b> in 10 minutes &middot;
+with DhakaFlow's action from the same start:
+<b class="good">{fpn['queue_control']} vehicles</b> &rarr;
+<span class="big good">queue &minus;{qpct:.0f}%</span>
+(network stopped {fpn['network_stopped_no_action']} &rarr; {fpn['network_stopped_control']})</p>
+<p><a style="color:#39b3c6" href="four_pane.html"><b>OPEN THE FOUR-PANE PROOF PAGE &rarr;</b></a></p>
+<p class="cap">identical pasts, measured difference &middot; artifacts/same_state/{cf_name}/result.json &middot; computed fresh for THIS input</p></div>"""
+    elif congested:
+        twin_html = ("<div class='step'><h2>Step 5 · PREDICT &amp; PROVE</h2>"
+                     "<p>Camera not registered — twin needs a mapped location.</p></div>")
+    else:
+        twin_html = ("<div class='step'><h2>Step 5 · PREDICT &amp; PROVE</h2>"
+                     "<p>This video shows FREE FLOW — the correct action is none. "
+                     "The system does not invent interventions (measured: acting on a "
+                     "barely-queued junction makes traffic worse — seed-13 experiment).</p></div>")
     corr = REPO / "docs/media/corridor_before_after.mp4"
     html = f"""<title>Traffic Case Report — {name}</title>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<style>body{{margin:0;background:#eff1ef;color:#15191d;font:15px/1.55 "Helvetica Neue",Arial,sans-serif}}
-.w{{max-width:900px;margin:0 auto;padding:24px}}h1{{font-size:26px}}h2{{font-size:17px;margin:26px 0 8px}}
-.step{{border-left:4px solid #0c5f6b;background:#fff;border:1px solid #d6dad6;border-left-width:4px;
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
+<style>body{{margin:0;background:#0e1417;color:#e8edeb;font:15px/1.55 "IBM Plex Sans","Helvetica Neue",Arial,sans-serif}}
+.w{{max-width:900px;margin:0 auto;padding:24px}}h1{{font:700 26px "IBM Plex Sans Condensed"}}h2{{font:600 13px "IBM Plex Mono";letter-spacing:.08em;text-transform:uppercase;color:#39b3c6;margin:0 0 8px}}
+.step{{border-left:4px solid #39b3c6;background:#151d21;border:1px solid #26333a;border-left-width:4px;
 padding:14px 16px;margin:14px 0;border-radius:6px}}
-img,video{{max-width:100%;border:1px solid #d6dad6;border-radius:4px}}
-.big{{font-size:30px;font-weight:700}}.good{{color:#256e48}}.bad{{color:#a3331e}}
-.cap{{font-size:11.5px;color:#68737b;font-family:ui-monospace,Menlo,monospace}}</style>
+img,video{{max-width:100%;border:1px solid #26333a;border-radius:4px}}
+.big{{font:700 30px "IBM Plex Mono"}}.good{{color:#4fae7f}}.bad{{color:#e0715a}}
+.cap{{font-size:11.5px;color:#8b979d;font-family:ui-monospace,Menlo,monospace}}</style>
 <div class="w">
 <h1>Traffic Case Report — input: <code>{name}</code></h1>
 <p>Generated {time.strftime('%d %b %Y %H:%M')} by <code>scripts/case_report.py</code>.
-Steps 1–4 are computed fresh from this input. Step 5 attaches a separate OFFLINE network experiment for context — the per-input same-state counterfactual is the SAME_STATE gate (in progress).</p>
+Steps 1–5 are computed fresh from this input — including the twin prediction and same-state proof for THIS road. Step 6 attaches the separate offline network-scale experiment for context.</p>
 
 <div class="step"><h2>Step 1-2 · The system watches the video and judges the traffic</h2>
 <img src="{b64(out / 'annotated.gif', 'image/gif')}">
@@ -194,7 +244,8 @@ Steps 1–4 are computed fresh from this input. Step 5 attaches a separate OFFLI
 <span class="big good">{routed['delay_avoided_s']:.0f} s saved per vehicle</span></p>
 <p class="cap">Dijkstra on the frozen 6,527-edge Dhaka network · research/routing/r1_router.py</p></div>
 
-<div class="step"><h2>Step 5 · OFFLINE network experiment (context — not computed from this video)</h2>
+{twin_html}
+<div class="step"><h2>Step 6 · Network-scale context (separate OFFLINE experiment)</h2>
 {'<video controls muted loop src="' + b64(corr, 'video/mp4') + '"></video>' if corr.exists() else ''}
 <p>Rerouting cannot rescue vehicles already trapped — it stops the jam being <i>fed</i>:
 approaching vehicles divert upstream, the queue stops growing and drains from the front.

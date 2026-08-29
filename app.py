@@ -73,7 +73,7 @@ a.res:hover{border-color:var(--acc)}
 a.res .tag{font:600 10.5px "IBM Plex Mono";letter-spacing:.06em}
 .t-c{color:var(--bad)}.t-f{color:var(--good)}.t-l{color:var(--warn)}
 iframe{width:100%;height:640px;border:1px solid var(--line);border-radius:8px;
-background:#fff}
+background:var(--bg)}
 .cap{font-size:11px;color:var(--mut);font-family:"IBM Plex Mono";margin-top:8px}
 img.gif{width:100%;border-radius:8px;border:1px solid var(--line)}
 </style>
@@ -97,7 +97,7 @@ img.gif{width:100%;border-radius:8px;border:1px solid var(--line)}
 <input type=file name=video accept="video/*" required>
 <label>Registered camera (R1 corridor)</label>
 <select name=camera>[[CAMS]]<option value="">unknown — perception only</option></select>
-<label>Minutes to analyse</label>
+<label>Minutes to analyse (twin proof adds ~10 min when congested)</label>
 <input type=number name=minutes value=1.5 step=0.5 min=0.5 max=5>
 <button>ANALYSE + DECIDE</button>
 </form>
@@ -108,7 +108,7 @@ unknown location → honest LOCATION REQUIRED</p>
 </div>
 <div class=card>
 <h2>Latest proof — same-state counterfactual</h2>
-<iframe src=/artifact/four_pane.html></iframe>
+<iframe src=[[FOURPANE]]></iframe>
 <p class=cap>two futures from ONE saved simulator state · branch difference is
 caused, not correlated · scripts/same_state_counterfactual.py</p>
 </div>
@@ -142,7 +142,13 @@ def result_links():
 @app.get("/")
 def index():
     cams = "".join(f'<option value="{c}">{c}</option>' for c in CAMERAS)
-    return PAGE.replace("[[CAMS]]", cams).replace("[[RESULTS]]", result_links())
+    fps = sorted(REPO.glob("artifacts/case_*/four_pane.html"),
+                 key=lambda p: -p.stat().st_mtime)
+    fp = (f"/artifact/{fps[0].parent.name}/four_pane.html" if fps
+          else "/artifact/four_pane.html")
+    return (PAGE.replace("[[CAMS]]", cams)
+                .replace("[[RESULTS]]", result_links())
+                .replace("[[FOURPANE]]", fp))
 
 
 @app.post("/run")
@@ -156,7 +162,7 @@ def run():
     cam = request.form.get("camera", "")
     if cam:
         cmd += ["--location", cam]
-    subprocess.run(cmd, cwd=REPO, timeout=1800)
+    subprocess.run(cmd, cwd=REPO, timeout=3600)
     return redirect(url_for("index"))
 
 

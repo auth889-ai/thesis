@@ -58,23 +58,24 @@ def main() -> None:
 
     html = f"""<title>Four-Pane Case — {a.case}</title>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600&family=IBM+Plex+Sans:wght@400;600;700&family=IBM+Plex+Sans+Condensed:wght@600;700&display=swap">
 <style>
-body{{margin:0;background:#eef0ee;color:#15191d;font:15px/1.5 "Helvetica Neue",Arial,sans-serif}}
+body{{margin:0;background:#0e1417;color:#e8edeb;font:15px/1.5 "IBM Plex Sans","Helvetica Neue",Arial,sans-serif}}
 .g{{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:1150px;margin:20px auto;padding:0 16px}}
-.p{{background:#fff;border:1px solid #d3d8d3;border-radius:8px;padding:16px}}
-h1{{max-width:1150px;margin:22px auto 4px;padding:0 16px;font-size:24px}}
-.sub{{max-width:1150px;margin:0 auto 6px;padding:0 16px;color:#67727a;font-size:13.5px}}
-h2{{font-size:15px;margin:0 0 10px;color:#0c5f6b}}
-img{{max-width:100%;border-radius:4px;border:1px solid #d3d8d3}}
+.p{{background:#151d21;border:1px solid #26333a;border-radius:8px;padding:16px}}
+h1{{max-width:1150px;margin:22px auto 4px;padding:0 16px;font-size:24px;font-family:"IBM Plex Sans Condensed"}}
+.sub{{max-width:1150px;margin:0 auto 6px;padding:0 16px;color:#8b979d;font-size:13.5px}}
+h2{{font:600 13px "IBM Plex Mono";letter-spacing:.08em;text-transform:uppercase;margin:0 0 10px;color:#39b3c6}}
+img{{max-width:100%;border-radius:4px;border:1px solid #26333a}}
 .k{{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:10px}}
-.k div{{border:1px solid #dfe3df;border-radius:6px;padding:6px 10px}}
-.k b{{display:block;font-size:22px}}
-.k span{{font-size:11.5px;color:#67727a}}
-.bad b{{color:#a3331e}}.good b{{color:#256e48}}
+.k div{{border:1px solid #26333a;border-radius:6px;padding:6px 10px}}
+.k b{{display:block;font:600 22px "IBM Plex Mono"}}
+.k span{{font-size:11.5px;color:#8b979d}}
+.bad b{{color:#e0715a}}.good b{{color:#4fae7f}}
 .verdict{{font-size:26px;font-weight:800}}
-.act{{background:#f2f8f4;border:1px solid #bcd7c6;border-radius:6px;padding:8px 12px;margin-top:10px;font-size:13.5px}}
-.cap{{font-size:11px;color:#8a949b;font-family:ui-monospace,Menlo,monospace;margin-top:8px}}
-.delta{{font-size:30px;font-weight:800;color:#256e48}}
+.act{{background:#14231b;border:1px solid #2c4636;border-radius:6px;padding:8px 12px;margin-top:10px;font-size:13.5px}}
+.cap{{font-size:11px;color:#8b979d;font-family:ui-monospace,Menlo,monospace;margin-top:8px}}
+.delta{{font-size:30px;font-weight:800;color:#4fae7f}}
 </style>
 <h1>One input → measured decision → proven difference</h1>
 <p class="sub">Panes 3 and 4 branch from ONE saved simulator state
@@ -93,14 +94,14 @@ site &amp; trigger (declared in docs/SYSTEM_DESIGN.md).</p>
   <div class="p"><h2>2 · What the system understands</h2>
     {'<img src="' + rmap + '">' if rmap else ''}
     <p class="cap">camera edge {case.get('camera_edge','—')} · route options computed for THIS case</p></div>
-  <div class="p"><h2>3 · Do nothing (twin, +10 min from t₀)</h2>
+  <div class="p"><h2>3 · PREDICTED future — do nothing (+10 min from t₀)</h2>
     <div class="k">
       <div class="bad"><b>{fp['queue_no_action']}</b><span>target queue (veh)</span></div>
       <div class="bad"><b>{fp['network_stopped_no_action']}</b><span>network stopped</span></div>
       <div><b>{fp['arrived_no_action']}</b><span>arrived in horizon</span></div>
     </div>
     <p class="cap">branch A · mean timeLoss of horizon arrivals: {na['mean_time_loss_of_horizon_arrivals_s']} s</p></div>
-  <div class="p"><h2>4 · DhakaFlow action (same t₀, +10 min)</h2>
+  <div class="p"><h2>4 · DhakaFlow acts — same t₀, +10 min</h2>
     {"<div class='k'>"
      f"<div class='good'><b>{fp['queue_control']}</b><span>target queue (veh)</span></div>"
      f"<div><b>{fp['network_stopped_control']}</b><span>network stopped</span></div>"
