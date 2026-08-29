@@ -111,7 +111,7 @@ def synchronize(state: dict, camera: dict, seed: int, out_dir: Path) -> dict:
     while t.simulation.getTime() < t0_mark + SETTLE_S:
         t.simulationStep()
         now = t.simulation.getTime()
-        if now >= next_dep:
+        if target_rate_h >= 1.0 and now >= next_dep:
             vid = f"syncf_{arr_count}"
             try:
                 t.vehicle.add(vid, route_id, departSpeed="max")
