@@ -1,5 +1,7 @@
 # DhakaFlow Nexus
 
+> **New here or lost? Read [`PROJECT_MAP.md`](PROJECT_MAP.md) first — 6 main files, 4 commands, everything else is support.**
+
 **AI traffic management for Dhaka:** observe real traffic → predict congestion
 before it forms → prevent/react with signal control and routing → prove the
 delay reduction inside a SUMO digital twin of the real road network.
