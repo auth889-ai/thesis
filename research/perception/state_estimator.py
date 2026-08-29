@@ -61,7 +61,7 @@ class StateEstimator:
         self.speed_hist = defaultdict(list)    # tid -> [(t, diag/s)]
         self.queued_since = {}                 # tid -> t when queueing began
         self.crossed = {"arrival": set(), "discharge": set()}
-        self.events = {"arrival": [], "discharge": []}   # (t, tid, speed_m_s)
+        self.events = {"arrival": [], "discharge": [], "birth": []}
         self.moves = defaultdict(int)          # (zone,movement) -> count
         self.zone_of = {}                      # tid -> first approach zone
         self.windows = []
@@ -74,6 +74,7 @@ class StateEstimator:
         else:
             self.flags.add("SPEED_HOMOGRAPHY_APPROX_PM30PCT")
         self.world = {}                      # tid -> (t, wx, wy)
+        self.world_speed = {}                # tid -> [(t, m/s)]
         if not self.zones:
             self.flags.add("ZONES_REQUIRED_FOR_APPROACH_METRICS")
 
@@ -102,14 +103,22 @@ class StateEstimator:
                     vm = (((wx - prev[1]) ** 2 + (wy - prev[2]) ** 2) ** 0.5
                           / (t - prev[0]))
                     if vm < 60:                          # plausibility gate
+                        self.world_speed.setdefault(tid, []).append((t, vm))
                         w_cur = self._win
                         if w_cur is not None:
                             w_cur.setdefault("v_ms", []).append(vm)
-            sw = [v for tt, v in self.speed_hist[tid]
-                  if t - tt <= SPEED_WINDOW_S]
+            if self.hom:
+                # physical rule (homography): queued = world speed < 3 m/s
+                sw = [v for tt, v in self.world_speed.get(tid, [])
+                      if t - tt <= SPEED_WINDOW_S]
+                thresh, unit = 3.0, "m/s"
+            else:
+                sw = [v for tt, v in self.speed_hist[tid]
+                      if t - tt <= SPEED_WINDOW_S]
+                thresh, unit = QUEUE_SPEED_DIAG_S, "diag/s"
             if len(sw) >= 3:
                 med = sorted(sw)[len(sw) // 2]
-                if med < QUEUE_SPEED_DIAG_S:
+                if med < thresh:
                     self.queued_since.setdefault(tid, t - SPEED_WINDOW_S)
                     queued_now[tid] = t - self.queued_since[tid]
                 else:
@@ -146,6 +155,7 @@ class StateEstimator:
             if tid not in self._seen:
                 self._seen.add(tid)
                 w["births"] = w.get("births", 0) + 1
+                self.events["birth"].append((round(t, 2), tid))
         in_zone = [tid for tid, _, _ in tracks
                    if not self.zones or self.zone_of.get(tid)]
         q = [tid for tid in in_zone
@@ -195,14 +205,23 @@ class StateEstimator:
         movements = {f"{z}:{m}": c for (z, m), c in self.moves.items()}
         if self.zones and not movements:
             self.flags.add("NO_MOVEMENTS_OBSERVED")
+        # churn filter (TrafficDT-style valid tracks): a birth counts as a
+        # real vehicle only if its track lived >= 2 s with >= 4 samples
+        life = {tid: (h[-1][0] - h[0][0], len(h)) for tid, h in self.hist.items()}
+        valid_births = [(t0, tid) for t0, tid in self.events["birth"]
+                        if life.get(tid, (0, 0))[0] >= 2.0
+                        and life.get(tid, (0, 0))[1] >= 4]
         return {
             "windows": self.windows,
-            "events": {k: v for k, v in self.events.items()},
+            "events": {**{k: v for k, v in self.events.items()},
+                       "valid_birth": valid_births},
             "congestion_detected": bool(cong),
             "first_congested_window_t0": cong[0]["t0"] if cong else None,
             "turning_movements": movements,
             "quality_flags": sorted(self.flags),
-            "rule": (f"QUEUED = median speed < {QUEUE_SPEED_DIAG_S} own-"
+            "rule": (("QUEUED = world speed < 3.0 m/s over 4s (homography "
+                      "sites); else ") +
+                     f"QUEUED = median speed < {QUEUE_SPEED_DIAG_S} own-"
                      f"diagonals/s over {SPEED_WINDOW_S}s (calibration-free "
                      f"~5-10 km/h criterion; no video-relative reference); "
                      f"CONGESTED = >={CONG_MIN_QUEUE} vehicles queued "
