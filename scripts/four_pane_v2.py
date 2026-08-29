@@ -60,7 +60,12 @@ def main():
     <p>Every candidate was simulated from the same t&#8320; and rejected:</p>
     <ul>{''.join(rej)}</ul>
     <p class="cap">Restraint is a measured decision, not a failure — a
-    scripted system would always claim improvement.</p>"""
+    scripted system would always claim improvement.</p>
+    <p>Counterpart case, same corridor at jam ONSET (t&#8320;=402s): candidate
+    <code>A2_max_pressure</code> ACCEPTED in all 3 paired seeds —
+    network delay <b class="goodtxt">−4.1%</b>, arrivals +4.8%
+    (artifacts/planner/planner_onset_s111213/). The intervention window is
+    congestion onset; once saturated, honesty wins.</p>"""
 
     branches_rows = "".join(
         f"<tr><td>{c}</td><td>{b['stopped_veh_s']:.0f}</td>"
@@ -86,6 +91,7 @@ img{{max-width:100%;border-radius:4px;border:1px solid #26333a}}
 .k b{{display:block;font:600 21px "IBM Plex Mono"}}
 .k span{{font-size:11px;color:#8b979d}}
 .bad b{{color:#e0715a}}.good b{{color:#4fae7f}}
+.goodtxt{{color:#4fae7f}}
 .ok-banner{{font:700 20px "IBM Plex Sans";color:#06272c;background:#4fae7f;border-radius:6px;padding:10px 14px}}
 .no-banner{{font:700 18px "IBM Plex Sans";color:#0e1417;background:#d9a23a;border-radius:6px;padding:10px 14px}}
 .cap{{font-size:11px;color:#8b979d;font-family:"IBM Plex Mono";margin-top:8px}}
