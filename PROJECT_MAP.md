@@ -23,7 +23,7 @@ is support, evidence, or frozen history.
 
 | Command | What happens |
 |---|---|
-| `python scripts/case_report.py --source <video> --location farmgate` | Full story for one video: detect → state → route → report page |
+| `python scripts/case_report.py --source <video> --location farmgate` | THE demo: detect → state → route → twin PREDICTS next 10 min on that road → acts from the same saved state → proof page |
 | `python scripts/same_state_counterfactual.py --camera karwanbazar` | The before/after proof from an identical saved state |
 | `python scripts/build_dashboard.py` | Rebuilds the web dashboard from real artifacts |
 | `python scripts/build_results_matrix.py` | Rebuilds the results table from real artifacts |
