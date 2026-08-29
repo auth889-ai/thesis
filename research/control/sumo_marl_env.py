@@ -33,6 +33,7 @@ DEFAULT_ROUTES = "/tmp/due_routes.rou.xml.gz"
 MAX_PHASES = 8
 MAX_LANES = 8
 MIN_GREEN = 10.0
+MAX_GREEN = 60.0
 DECISION_S = 5.0
 
 
@@ -43,7 +44,7 @@ class SumoSignalMultiEnv:
                  label: str = "env"):
         self.use_pressure = use_pressure
         self.routes, self.end_s, self.warmup_s = routes, end_s, warmup_s
-        self._seed0, self._episode = seed, 0
+        self._seed0, self._episode = seed, -1   # first reset -> seed0 exactly
         self._gui = gui
         self.forecast_fn = forecast_fn            # (traci, tls_ids) -> np.array[n]
         self.label = label
@@ -112,7 +113,12 @@ class SumoSignalMultiEnv:
             if int(a) == 1 and elapsed >= MIN_GREEN:
                 t.trafficlight.setPhaseDuration(tls, 0.0)   # advance phase
                 self._green_start[tls] = now
-            # hold: let SUMO's program continue (extend implicitly)
+            elif int(a) == 0 and elapsed < MAX_GREEN:
+                # REAL hold: keep the current phase through this decision
+                # interval (audit fix: the program must not auto-advance
+                # underneath a "hold" action); max-green still enforced
+                if t.trafficlight.getNextSwitch(tls) - now < DECISION_S:
+                    t.trafficlight.setPhaseDuration(tls, DECISION_S)
         target = now + DECISION_S
         while t.simulation.getTime() < target and \
                 t.simulation.getMinExpectedNumber() > 0:
