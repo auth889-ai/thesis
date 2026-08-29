@@ -51,20 +51,22 @@ def main() -> None:
                     str(out / "annotated.gif")], check=False)
     print(f"    congested={state['congestion_detected']} "
           f"road_control={state['road_control']}")
-    if not state["registered"]:
-        verdict = {"case": name, "input": str(a.source),
-                   "perception": "AVAILABLE",
-                   "road_control": "LOCATION_REQUIRED_FOR_ROAD_CONTROL",
-                   "decision": None}
-        (out / "verdict.json").write_text(json.dumps(verdict, indent=1))
-        print("PERCEPTION AVAILABLE — register the camera for road-level "
-              "control. No location was invented.")
-        return
+    generic = not state["registered"]
+    if generic:
+        print("    UNMAPPED SITE — generic mode: decision demo runs on a "
+              "DECLARED reference corridor; road-level routing for the true "
+              "road still needs registration (nothing invented).")
 
     print("[2/4] twin synchronization (Gate-2 protocol, ~1 min) …")
     from research.twin.scenario_sync import synchronize
     registry = json.loads((REPO / "configs/cameras/registry.json").read_text())
-    camera = registry["cameras"][a.camera]
+    camera = (registry["cameras"][a.camera] if not generic else {
+        "label": "UNMAPPED SITE — generic reference corridor (declared)",
+        "approach_lane_count": 2,
+        "sumo_site_transfer": {
+            "declared": "GENERIC SITE_TRANSFER: observed state drives the "
+                        "reference corridor twin; the true road is unmapped.",
+            "edge_hint_camera": "karwanbazar"}})
     sync = synchronize(state, camera, seed=11, out_dir=out)
     sync["gate"] = "TWIN_SYNC(case)"
     sync["verdict"] = "PASS" if all(sync["checks"].values()) else "FAIL"
@@ -109,6 +111,9 @@ def main() -> None:
             "planner_run": f"artifacts/planner/run_{name}/result.json"},
         "perception": {"congested": state["congestion_detected"],
                        "quality_flags": state["quality_flags"]},
+        "site_mode": ("GENERIC_UNMAPPED (declared reference corridor; "
+                      "register the camera for true-road routing)"
+                      if generic else "REGISTERED"),
         "twin_sync": {"verdict": sync["verdict"], "geh": sync["geh_flow"]},
         "forecast": forecast, "network_speed_drop_15min_pct": drop15,
         "decision": plan["decision"],

@@ -1,0 +1,79 @@
+{
+ "case": "any_video_test",
+ "input": "/private/tmp/claude-501/-Users-jannatulferdouseva-thesis/fdc3d95a-9e51-4b32-a390-6d1fbc06a61a/scratchpad/rush_025N19940CAM1NWC.mp4",
+ "camera": null,
+ "traceability": {
+  "project_commit": "79744f9",
+  "seeds": [
+   11,
+   12,
+   13
+  ],
+  "state_file": "/Users/jannatulferdouseva/thesis/artifacts/run_any_video_test/state_sync_t0.xml",
+  "planner_run": "artifacts/planner/run_any_video_test/result.json"
+ },
+ "perception": {
+  "congested": true,
+  "quality_flags": [
+   "QUEUE_METERS_UNAVAILABLE",
+   "SPEED_PIXEL_ONLY_NO_HOMOGRAPHY",
+   "ZONES_REQUIRED_FOR_APPROACH_METRICS"
+  ]
+ },
+ "site_mode": "GENERIC_UNMAPPED (declared reference corridor; register the camera for true-road routing)",
+ "twin_sync": {
+  "verdict": "PASS",
+  "geh": 1.11
+ },
+ "forecast": {
+  "pred5": {
+   "mean_speed_m_s": 19.03
+  },
+  "pred10": {
+   "mean_speed_m_s": 19.07
+  },
+  "pred15": {
+   "mean_speed_m_s": 19.15
+  },
+  "current_mean_speed_m_s": 18.62
+ },
+ "network_speed_drop_15min_pct": -3,
+ "decision": "NO_SAFE_INTERVENTION_IMPROVES_THE_NETWORK",
+ "branches": {
+  "A0_do_nothing": {
+   "stopped_veh_s": 1086315.7,
+   "arrived": 797.7,
+   "label": "BASELINE"
+  },
+  "A1_green_extend": {
+   "stopped_veh_s": 1086284.0,
+   "arrived": 796.7,
+   "label": "LOCAL_RELIEF_NETWORK_FAIL"
+  },
+  "A2_max_pressure": {
+   "stopped_veh_s": 1090838.7,
+   "arrived": 809.7,
+   "label": "LOCAL_RELIEF_NETWORK_FAIL"
+  },
+  "A3_ext_reroute10": {
+   "stopped_veh_s": 1084815.0,
+   "arrived": 803.0,
+   "label": "LOCAL_RELIEF_NETWORK_FAIL"
+  },
+  "A4_ext_reroute20": {
+   "stopped_veh_s": 1093568.3,
+   "arrived": 799.7,
+   "label": "LOCAL_RELIEF_NETWORK_FAIL"
+  },
+  "A5_ext_reroute30": {
+   "stopped_veh_s": 1092237.3,
+   "arrived": 795.7,
+   "label": "LOCAL_RELIEF_NETWORK_FAIL"
+  },
+  "A6_route10_official": {
+   "stopped_veh_s": 1086452.0,
+   "arrived": 789.7,
+   "label": "LOCAL_RELIEF_NETWORK_FAIL"
+  }
+ }
+}

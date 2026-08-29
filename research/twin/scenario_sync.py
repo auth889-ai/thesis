@@ -32,10 +32,18 @@ def observed_summary(state: dict) -> dict:
     ws = state["windows"]
     dur = ws[-1]["t0"] + 5 - ws[0]["t0"]
     arr = sum(w["arrivals"] for w in ws)
+    flag = None
+    if arr == 0:
+        # no registered count line (any-video generic mode): estimate the
+        # arrival rate from newly-appearing tracked vehicles — declared,
+        # approximate (track churn inflates it; median window rate used)
+        rates = sorted(w.get("new_tracks", 0) for w in ws)
+        arr = rates[len(rates) // 2] * len(ws)
+        flag = "ARRIVAL_FROM_TRACK_BIRTHS_APPROX"
     queues = sorted(w["queue_veh"] for w in ws)
     return {"duration_s": dur, "arrival_veh_h": arr * 3600 / dur,
             "queue_median": queues[len(queues) // 2],
-            "queue_max": queues[-1],
+            "queue_max": queues[-1], "flag": flag,
             "classes": {}}
 
 

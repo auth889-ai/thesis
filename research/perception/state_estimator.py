@@ -59,6 +59,7 @@ class StateEstimator:
         self.moves = defaultdict(int)          # (zone,movement) -> count
         self.zone_of = {}                      # tid -> first approach zone
         self.windows = []
+        self._seen = set()
         self._win = None
         self.flags = set()
         if self.hom is None:
@@ -118,6 +119,10 @@ class StateEstimator:
         w = self._win
         w["frames"] += 1
         w["n"].append(len(tracks))
+        for tid, _b, _s2 in tracks:
+            if tid not in self._seen:
+                self._seen.add(tid)
+                w["births"] = w.get("births", 0) + 1
         in_zone = [tid for tid, _, _ in tracks
                    if not self.zones or self.zone_of.get(tid)]
         q = [tid for tid in in_zone
@@ -146,6 +151,7 @@ class StateEstimator:
             "stopped_duration_max_s":
                 round(max(w["stop_durs"]), 1) if w["stop_durs"] else 0.0,
             "arrivals": len(self.crossed["arrival"]) - w["arr0"],
+            "new_tracks": w.get("births", 0),
             "discharges": len(self.crossed["discharge"]) - w["dis0"],
             "occupancy": round(sum(w["occ"]) / len(w["occ"]), 3)
                 if w["occ"] else None,
