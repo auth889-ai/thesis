@@ -1,0 +1,39 @@
+{
+ "observed": {
+  "duration_s": 60.0,
+  "arrival_veh_h": 2340.0,
+  "queue_median": 7,
+  "queue_max": 9,
+  "classes": {}
+ },
+ "per_lane_arrival_h": 780.0,
+ "target_edge": "223101648#0",
+ "target_lanes": 1,
+ "sim_queue_at_t0": 11,
+ "existing_queue_prewarm": 0,
+ "injected_deficit": 7,
+ "sim_arrival_rate_h": 780.0,
+ "target_rate_h": 780.0,
+ "geh_flow": 0.0,
+ "demand_scale_consumed": 0.584,
+ "state_file": "/Users/jannatulferdouseva/thesis/artifacts/gates/twin_sync/state_sync_t0.xml",
+ "t0_s": 360.0,
+ "seed": 11,
+ "checks": {
+  "queue_match": true,
+  "flow_geh_lt_5": true,
+  "calibration_consumed": true
+ },
+ "waived": {
+  "vehicle_mix": "WAIVED_SITE_TRANSFER (foreign camera; Dhaka twin mix retained by design)",
+  "speed": "SPEED_NO_HOMOGRAPHY at camera",
+  "signal_state": "NOT_OBSERVABLE in this feed"
+ },
+ "tolerances": {
+  "queue": "abs diff <= max(5 veh, 30%) [DiTAT-style volume tol]",
+  "flow": "GEH < 5 [standard traffic-engineering acceptance]"
+ },
+ "method": "Geneva DT-GM dynamic flow calibration pattern via TraCI (10.1016/j.aei.2022.101858); SITE_TRANSFER declared",
+ "gate": "TWIN_SYNC_PASS",
+ "verdict": "PASS"
+}
