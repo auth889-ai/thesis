@@ -1,0 +1,19 @@
+{
+ "artifact": "MOSAIC_DHAKA_V2X",
+ "verdict": "PASS",
+ "claim": "The official Eclipse MOSAIC 25.2 stack (unmodified) runs the REGISTERED Dhaka R1 scenario (6,527 edges, scenario-convert) with V2X: hazard at Karwan Bazar -> vehicles SENSE it -> broadcast DENM (SNS ad-hoc, ITS-G5) -> 2,593 vehicles RECEIVE -> NavigationModule switches routes -> trajectories diverge through physics. No moveTo, no teleport.",
+ "numbers": {
+  "equipped_vehicles": 2732,
+  "hazard_detections_senders": 585,
+  "receivers": 2593,
+  "route_switches": 886,
+  "sim_duration_s": 1000,
+  "wall_s": "~35 min (dense ad-hoc load)"
+ },
+ "scenario": "artifacts/mosaic_dhaka/dhaka_r1 (scenario-convert 25.2 from frozen dhaka_r1.net.xml; hazard + mapping configs ours, stack and apps official)",
+ "log_dir": "~/.dhakaflow/upstream/mosaic/logs/log-20260829-193111-dhaka_r1",
+ "official_apps": [
+  "WeatherWarningApp (sense+DENM+reroute)",
+  "SlowDownApp (speed reduction in hazard)"
+ ]
+}
