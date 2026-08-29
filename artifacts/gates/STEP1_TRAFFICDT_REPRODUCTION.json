@@ -1,0 +1,31 @@
+{
+ "record": "STEP1_TRAFFICDT_REPRODUCTION",
+ "repository": "https://github.com/shebywiliamsjr/TrafficDT",
+ "sha": "d11280f352ab41e2c9ddd5f2c02511c55dfbd2c1",
+ "environment": {
+  "python": "3.13",
+  "ultralytics": "8.4.128",
+  "sumo": "1.27.1",
+  "weights": "authors' best_1.pt"
+ },
+ "input_video": "Bellevue_116th_NE12th__2017-09-11_12-08-33.mp4 (authors' hardcoded path; City-of-Bellevue public dataset, Drive id 1c3lvwz7FfTnTEVyLaopPg6NjpJ2pAn7Q, 108.7s)",
+ "command": "python3 script.py   (unmodified, cwd=TrafficDT)",
+ "results": {
+  "vehicles_detected": 105,
+  "valid_tracks": 49,
+  "sumo_files": [
+   "nod.xml",
+   "edg.xml",
+   "type.xml",
+   "route.rou.xml",
+   "simple_nw_se.net.xml",
+   "sumo_config.sumocfg"
+  ],
+  "sumo_inserted_vehicles": 49,
+  "sumo_rc": 0
+ },
+ "deviations": [
+  "none to code; their prebuilt sumo_files/ renamed aside so generation is proven fresh"
+ ],
+ "verdict": "REPRODUCTION_PASS"
+}
