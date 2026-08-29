@@ -55,7 +55,7 @@ routes and proves — live, on this machine.</p>
 <label>Traffic video (any mp4/avi — the examiner's included)</label>
 <input type=file name=video accept="video/*" required>
 <label>Camera location (registered R1 corridor cameras)</label>
-<select name=camera>{cams}<option value="">unknown — perception only
+<select name=camera>[[CAMS]]<option value="">unknown — perception only
 (routing honestly reports LOCATION REQUIRED)</option></select>
 <label>Minutes of video to analyse</label>
 <input type=number name=minutes value=1.5 step=0.5 min=0.5 max=5>
@@ -64,7 +64,7 @@ routes and proves — live, on this machine.</p>
 <p class=cap>Runs scripts/case_report.py — the exact same code as the
 terminal. First run loads the detector (~30 s), then ~real-time.</p>
 </div>
-<div class=card><b>Results</b>{results}</div>
+<div class=card><b>Results</b>[[RESULTS]]</div>
 <div class=card><b>Standing evidence</b>
 <a class=res href=/artifact/four_pane.html>Four-pane proof (same-state twin)</a>
 <a class=res href=/dashboard>Full dashboard</a>
@@ -95,7 +95,7 @@ def result_links():
 @app.get("/")
 def index():
     cams = "".join(f'<option value="{c}">{c}</option>' for c in CAMERAS)
-    return PAGE.format(cams=cams, results=result_links())
+    return PAGE.replace("[[CAMS]]", cams).replace("[[RESULTS]]", result_links())
 
 
 @app.post("/run")
