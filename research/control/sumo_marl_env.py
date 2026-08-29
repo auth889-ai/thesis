@@ -132,7 +132,12 @@ class SumoSignalMultiEnv:
                 or t.simulation.getMinExpectedNumber() == 0)
         rewards = [[reward]] * self.n
         dones = [done] * self.n
-        infos = [{"halting_total": halting} for _ in range(self.n)]
+        src = getattr(self.forecast_fn, "__self__", self.forecast_fn)
+        fafrac = getattr(src, "forecast_available_fraction", None) \
+            if self.forecast_fn else None
+        infos = [{"halting_total": halting,
+                  "forecast_available_fraction": fafrac}
+                 for _ in range(self.n)]
         return obs, rewards, dones, infos
 
     def _obs(self):

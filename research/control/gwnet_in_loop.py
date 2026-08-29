@@ -133,3 +133,13 @@ class GWNetForecaster:
     @property
     def forecast_available_fraction(self) -> float:
         return self.available / self.calls if self.calls else 0.0
+
+    def prime(self, npz_path):
+        """Load canonical warm-run history (same demand/scale) so the
+        forecast exists from t0 of the FIRST episode — the rolling twin
+        always has history; a fresh training episode must not start blind
+        (Gate 3 protocol). Declared, not hidden."""
+        import numpy as np
+        z = np.load(npz_path, allow_pickle=True)
+        self.hist = [h for h in z["hist"]][-12:]
+        self.vfree = z["vfree"]

@@ -43,8 +43,14 @@ PRESSURE_ARMS = {"mappo_pressure", "mappo_fp", "mappo_full"}
 def forecast_fn_factory(arm: str):
     if arm not in FORECAST_ARMS:
         return None
+    import os
     from research.control.gwnet_in_loop import GWNetForecaster
     fc = GWNetForecaster()
+    ctx = os.environ.get("DHAKAFLOW_FC_CONTEXT")
+    if ctx:
+        fc.prime(ctx)
+        print(f"[FA] forecaster primed from {ctx}: "
+              f"{len(fc.hist)}/12 history bins")
     return fc
 
 
