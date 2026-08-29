@@ -75,7 +75,8 @@ def main() -> None:
 
     reg = json.loads((REPO / "configs/cameras/registry.json").read_text())
     cam = reg["cameras"]["070E28355CAM1RP2"]
-    eb = cam["site_model"]["edge_eb_main"]
+    sm = cam["site_model"]
+    entry, eb, exit_e = sm["edge_entry"], sm["edge_camera"], sm["edge_exit"]
 
     print("[2/4] SUMO of the SAME site — assimilation window …")
     import libsumo as t
@@ -84,9 +85,10 @@ def main() -> None:
     t.start(["sumo", "-n", NET, "--no-step-log", "--no-warnings",
              "--seed", str(a.seed), "--save-state.rng",
              "--time-to-teleport", "600"])
-    # route: straight through the EB mainline
-    nxt = cam["site_model"]["edge_eb_next"]
-    t.route.add("eb", [eb, nxt])
+    # travel order: entry -> camera edge -> exit (verified connectivity)
+    t.route.add("eb", [entry, eb, exit_e])
+    t.route.add("eb_cam", [eb, exit_e])
+    nxt = exit_e
     lanes = [f"{eb}_{i}" for i in range(t.edge.getLaneNumber(eb))]
     # boundary INPUT = the real per-vehicle arrival sequence (TrafficDT /
     # Geneva DT-GM pattern: measured inflow drives the twin; interior states
@@ -104,7 +106,7 @@ def main() -> None:
     for j in range(int(round(A["queue_veh_mean"]))):
         vid = f"q{j}"
         try:
-            t.vehicle.add(vid, "eb", typeID="site_veh",
+            t.vehicle.add(vid, "eb_cam", typeID="site_veh",
                           departPos=str(max(200 - 8.0 * j, 5.0)),
                           departLane=str(j % len(lanes)), departSpeed="0")
             t.vehicle.setStop(vid, eb, pos=max(200 - 8.0 * j, 5.0),

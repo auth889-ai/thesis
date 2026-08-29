@@ -1,0 +1,55 @@
+{
+ "gate": "REAL_SITE_TWIN_PASS",
+ "site": "I-70 EB MP 283.55 at Pena Blvd ramp (CDOT road511) \u2014 SITE X",
+ "net": "/Users/jannatulferdouseva/thesis/artifacts/site_i70/i70_pena.net.xml",
+ "video": "/private/tmp/claude-501/-Users-jannatulferdouseva-thesis/fdc3d95a-9e51-4b32-a390-6d1fbc06a61a/scratchpad/rush_070E28355CAM1RP2.mp4",
+ "split": {
+  "assimilation_windows": 7,
+  "held_out_windows": 5
+ },
+ "observed_assimilation": {
+  "arrival_veh_h": 1748.5714285714287,
+  "speed_m_s": 5.7,
+  "queue_veh_mean": 6.857142857142857,
+  "windows": 7
+ },
+ "observed_held_out": {
+  "arrival_veh_h": 3168.0,
+  "speed_m_s": 6.0,
+  "queue_veh_mean": 6.6,
+  "windows": 5,
+  "discharge_veh_h": 2880.0
+ },
+ "sumo_held_out": {
+  "flow_veh_h": 1584.0,
+  "speed_m_s": 9.3,
+  "queue_veh_mean": 0
+ },
+ "errors": {
+  "flow_geh": 27.43,
+  "speed_err_ms": 3.3,
+  "queue_err_veh": 6.6
+ },
+ "tolerances": {
+  "flow_geh": 5.0,
+  "speed_abs_ms": 3.0,
+  "speed_rel": 0.35,
+  "queue_abs": 5,
+  "queue_rel": 0.5
+ },
+ "state_t0": "/Users/jannatulferdouseva/thesis/artifacts/site_i70/twin/state_t0_site.xml",
+ "seed": 11,
+ "teleports": 0,
+ "declared": "assimilation window constructs the state (STATE ASSIMILATION); the held-out comparison above is the validation; speed via approx homography (+/-30%)",
+ "checks": {
+  "boundary_is_input_interior_is_validated": true,
+  "held_out_flow_geh_lt_5": false,
+  "held_out_speed_ok": false,
+  "held_out_queue_ok": false,
+  "assimilation_separated_from_validation": true,
+  "same_physical_site": true,
+  "zero_teleports": true
+ },
+ "wall_s": 69.7,
+ "verdict": "FAIL"
+}

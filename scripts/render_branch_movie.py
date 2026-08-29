@@ -46,17 +46,20 @@ def render(branch: str, state: str, routes: str, scale: float, seed: int,
     _, target, tls_lanes = ranked[0]
     x, y = traci.junction.getPosition(target)
     traci.gui.setOffset(VIEW, x, y)
-    traci.gui.setZoom(VIEW, 1100)
+    traci.gui.setZoom(VIEW, 1500)
     try:
         traci.gui.setSchema(VIEW, "real world")
     except Exception:                              # noqa: BLE001
         pass
+    import traci.constants as tc
     ctrl = None
     if branch == "control":
         ctrl = MaxPressureController(traci, [target])
         ctrl.tls[target]["since"] = t0
     qseries, last_col = [], {}
     RED, ORA, GRN = (230, 60, 40, 255), (235, 160, 40, 255), (90, 200, 90, 255)
+    for v in traci.vehicle.getIDList():          # batch speed reads
+        traci.vehicle.subscribe(v, [tc.VAR_SPEED])
     while traci.simulation.getTime() < t0 + HORIZON and \
             traci.simulation.getMinExpectedNumber() > 0:
         traci.simulationStep()
@@ -64,17 +67,20 @@ def render(branch: str, state: str, routes: str, scale: float, seed: int,
         if ctrl:
             ctrl.step(now)
         i = int(now - t0)
+        for v in traci.simulation.getDepartedIDList():
+            traci.vehicle.subscribe(v, [tc.VAR_SPEED])
+        subs = traci.vehicle.getAllSubscriptionResults()
+        n_stop = 0
         # visible truth: standing = red, crawling = orange, moving = green
-        for v in traci.vehicle.getIDList():
-            sp = traci.vehicle.getSpeed(v)
+        for v, d in subs.items():
+            sp = d.get(tc.VAR_SPEED, 10.0)
+            if sp < 0.5:
+                n_stop += 1
             col = RED if sp < 0.5 else (ORA if sp < 3.0 else GRN)
             if last_col.get(v) != col:
                 traci.vehicle.setColor(v, col)
                 last_col[v] = col
-        net_stopped = sum(traci.lane.getLastStepHaltingNumber(l)
-                          for l in traci.lane.getIDList()
-                          if not l.startswith(":"))
-        qseries.append(net_stopped)
+        qseries.append(n_stop)
         traci.gui.screenshot(VIEW, str(frames / f"f{i:04d}.png"))
     traci.close()
     return frames, target, qseries
