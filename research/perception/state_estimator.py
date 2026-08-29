@@ -61,6 +61,7 @@ class StateEstimator:
         self.speed_hist = defaultdict(list)    # tid -> [(t, diag/s)]
         self.queued_since = {}                 # tid -> t when queueing began
         self.crossed = {"arrival": set(), "discharge": set()}
+        self.events = {"arrival": [], "discharge": []}   # (t, tid, speed_m_s)
         self.moves = defaultdict(int)          # (zone,movement) -> count
         self.zone_of = {}                      # tid -> first approach zone
         self.windows = []
@@ -128,6 +129,7 @@ class StateEstimator:
                     pa, pb = h[-2][1:3], h[-1][1:3]
                     if _side(pa, *line) * _side(pb, *line) < 0:
                         self.crossed[key].add(tid)
+                        self.events[key].append((round(t, 2), tid))
         # ---- 5-s windows ---------------------------------------------------
         if self._win is None or t - self._win["t0"] >= WINDOW_S:
             if self._win is not None:
@@ -195,6 +197,7 @@ class StateEstimator:
             self.flags.add("NO_MOVEMENTS_OBSERVED")
         return {
             "windows": self.windows,
+            "events": {k: v for k, v in self.events.items()},
             "congestion_detected": bool(cong),
             "first_congested_window_t0": cong[0]["t0"] if cong else None,
             "turning_movements": movements,
