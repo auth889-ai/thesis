@@ -19,8 +19,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 NET = str(REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml")
-ROUTES = str(REPO / "artifacts/due_dso_stats/v200/DUE/003/trips_003.rou.xml.gz")
-WARM_S = 300.0
+ROUTES_SRC = REPO / "artifacts/due_dso_stats/v200/DUE/003/trips_003.rou.xml.gz"
+WARM_S = 3600.0   # 12x300s: forecast history is FULL before control t0
 SETTLE_S = 60.0
 
 
@@ -41,8 +41,15 @@ def observed_summary(state: dict) -> dict:
 
 def synchronize(state: dict, camera: dict, seed: int, out_dir: Path) -> dict:
     """Build a twin whose t0 state matches the observation. Returns report."""
+    import numpy as np
     import libsumo as t
     from research.routing.r1_router import R1Router
+    from research.twin.demand import make_repeating_routes
+    from research.control.gwnet_in_loop import GWNetForecaster
+
+    routes = str(make_repeating_routes(
+        ROUTES_SRC, REPO / "artifacts/gates/routes_repeat_1h.rou.xml.gz",
+        cycles=8, period_s=600.0))
 
     out_dir.mkdir(parents=True, exist_ok=True)
     obs = observed_summary(state)
@@ -59,14 +66,20 @@ def synchronize(state: dict, camera: dict, seed: int, out_dir: Path) -> dict:
     router = R1Router()
     edge = router.nearest_edge(*hint_ll)
 
-    t.start(["sumo", "-n", NET, "-r", ROUTES, "--seed", str(seed),
+    t.start(["sumo", "-n", NET, "-r", routes, "--seed", str(seed),
              "--scale", str(scale), "--no-step-log", "--no-warnings",
              "--time-to-teleport", "600", "--save-state.rng"])
     lanes = [f"{edge}_{i}" for i in range(t.edge.getLaneNumber(edge))]
     target_rate_h = per_lane_h * len(lanes)
 
+    fc = GWNetForecaster()
+    tls_all = list(t.trafficlight.getIDList())
+    nxt_fc = 0.0
     while t.simulation.getTime() < WARM_S:
         t.simulationStep()
+        if t.simulation.getTime() >= nxt_fc:      # rolling history ingestion
+            fc(t, tls_all)
+            nxt_fc += 5.0
 
     # --- reconstruct the standing/creeping queue observed at the camera ----
     lane_len = t.lane.getLength(lanes[0])
@@ -115,6 +128,11 @@ def synchronize(state: dict, camera: dict, seed: int, out_dir: Path) -> dict:
     state_file = str(out_dir / "state_sync_t0.xml")
     t.simulation.saveState(state_file)
     t0_s = t.simulation.getTime()
+    np.savez(out_dir / "forecast_context.npz",
+             hist=np.stack(fc.hist), vfree=fc.vfree,
+             pred5=fc.pred_speed.get(5), pred10=fc.pred_speed.get(10),
+             pred15=fc.pred_speed.get(15))
+    forecast_fraction = fc.forecast_available_fraction
     t.close()
 
     checks = {
@@ -133,6 +151,9 @@ def synchronize(state: dict, camera: dict, seed: int, out_dir: Path) -> dict:
         "geh_flow": round(geh(sim_rate_h, target_rate_h), 2),
         "demand_scale_consumed": scale,
         "state_file": state_file, "t0_s": t0_s, "seed": seed,
+        "routes": routes,
+        "forecast_available_fraction_warm": round(forecast_fraction, 4),
+        "forecast_context": str(out_dir / "forecast_context.npz"),
         "checks": checks,
         "waived": {
             "vehicle_mix": "WAIVED_SITE_TRANSFER (foreign camera; Dhaka twin "

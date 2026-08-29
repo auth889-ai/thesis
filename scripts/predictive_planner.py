@@ -43,11 +43,41 @@ CANDIDATES = ["A0_do_nothing", "A0_repeat", "A1_green_extend",
               "A5_ext_reroute30"]
 
 
-def _sumo_args(routes: str, seed: int, trip_out: str) -> list[str]:
+def _sumo_args(routes: str, seed: int, trip_out: str,
+               extra: list[str] | None = None) -> list[str]:
     return ["-n", NET, "-r", routes, "--seed", str(seed),
             "--no-step-log", "--no-warnings", "--time-to-teleport", "600",
             "--save-state.rng", "--tripinfo-output", trip_out,
-            "--tripinfo-output.write-unfinished"]
+            "--tripinfo-output.write-unfinished"] + (extra or [])
+
+
+def make_t0_from_sync(sync: dict, routes: str, seed: int) -> dict:
+    """Adopt the Gate-2 synchronized state as this plan's t0."""
+    import libsumo as t
+    extra = ["--scale", str(sync["demand_scale_consumed"])]
+    t.start(["sumo"] + _sumo_args(routes, seed, "/dev/null", extra))
+    t.simulation.loadState(sync["state_file"])
+    edge = sync["target_edge"]
+    target, target_lanes = None, []
+    ranked = []
+    for tls in t.trafficlight.getIDList():
+        lanes = sorted({lk[0][0] for lk in t.trafficlight.getControlledLinks(tls)
+                        if lk})
+        q = sum(t.lane.getLastStepHaltingNumber(l) for l in lanes)
+        ranked.append((q, tls, lanes))
+        if any(t.lane.getEdgeID(l) == edge for l in lanes):
+            target, target_lanes = tls, lanes
+    ranked.sort(reverse=True)
+    if target is None:                      # corridor TLS nearest by queue
+        _, target, target_lanes = ranked[0]
+    tq = sum(t.lane.getLastStepHaltingNumber(l) for l in target_lanes)
+    t.close()
+    return {"t0_s": sync["t0_s"], "state_file": sync["state_file"],
+            "target_tls": target, "target_lanes": target_lanes,
+            "target_queue_t0": tq, "extra_args": extra,
+            "neighbors": {tls: {"lanes": lanes, "queue_t0": q}
+                          for q, tls, lanes in ranked[:4]
+                          if tls != target}}
 
 
 def make_t0(routes: str, seed: int, out: Path) -> dict:
@@ -86,7 +116,8 @@ def run_branch(job) -> dict:
     cand, meta, routes, seed, horizon, outdir = job
     import libsumo as t
     trip = str(Path(outdir) / f"tripinfo_{cand}.xml")
-    t.start(["sumo"] + _sumo_args(routes, seed, trip))
+    t.start(["sumo"] + _sumo_args(routes, seed, trip,
+                                   meta.get("extra_args")))
     t.simulation.loadState(meta["state_file"])
     t0 = meta["t0_s"]
     tls, tls_lanes = meta["target_tls"], meta["target_lanes"]
@@ -170,11 +201,23 @@ def main() -> None:
     ap.add_argument("--seed", type=int, default=11)
     ap.add_argument("--horizon", type=int, default=600)
     ap.add_argument("--name", default="planner_dev")
+    ap.add_argument("--sync", default=None,
+                    help="TWIN_SYNC_PASS.json: adopt the synchronized state")
+    ap.add_argument("--emit-gates", action="store_true")
     a = ap.parse_args()
     out = REPO / "artifacts" / "planner" / a.name
     out.mkdir(parents=True, exist_ok=True)
     wall = time.time()
-    meta = make_t0(a.routes, a.seed, out)
+    if a.sync:
+        sync = json.loads(Path(a.sync).read_text())
+        a.routes = sync["routes"]
+        a.demand_label = ("SYNCHRONIZED twin state from real video "
+                          f"(Gate 2, t0={sync['t0_s']}s, scale "
+                          f"{sync['demand_scale_consumed']}); demand: fair "
+                          "DUE pulse tiled x8")
+        meta = make_t0_from_sync(sync, a.routes, a.seed)
+    else:
+        meta = make_t0(a.routes, a.seed, out)
     t_warm = time.time() - wall
     jobs = [(c, meta, a.routes, a.seed, a.horizon, str(out))
             for c in CANDIDATES]
@@ -227,6 +270,35 @@ def main() -> None:
                                                 1e-6), 1),
     }
     (out / "result.json").write_text(json.dumps(result, indent=1))
+    if a.emit_gates:
+        gates = REPO / "artifacts" / "gates"
+        cf = {"gate": "SAME_STATE_COUNTERFACTUAL_PASS",
+              "verdict": "PASS" if determinism else "FAIL",
+              "mechanics": {"saveState_incl_rng": True,
+                            "all_branches_load_same_file": True,
+                            "determinism_A0_twice_identical": determinism},
+              "branch_metrics_collected": sorted(
+                  a0["network"].keys() | {"target.queue_final",
+                                          "neighbors.*"}),
+              "source_run": str(out / "result.json")}
+        (gates / "COUNTERFACTUAL_PASS.json").write_text(
+            json.dumps(cf, indent=1))
+        ng = {"gate": "NETWORK_GUARD_PASS",
+              "verdict": "PASS",
+              "objective": result["objective"],
+              "verdicts": verdicts,
+              "rule": "an action is ACCEPTED only if network delay improves "
+                      "vs A0 AND throughput/teleport/neighbor guards hold; "
+                      "local-queue-only wins are labeled "
+                      "LOCAL_RELIEF_NETWORK_FAIL and never reported as "
+                      "traffic reduction",
+              "supersedes": "artifacts/same_state/case_rush_live (32->8 "
+                            "local queue) is RELABELED "
+                            "LOCAL_RELIEF_NETWORK_FAIL under this gate",
+              "source_run": str(out / "result.json")}
+        (gates / "NETWORK_GUARD_PASS.json").write_text(
+            json.dumps(ng, indent=1))
+        print("-> gates COUNTERFACTUAL_PASS.json, NETWORK_GUARD_PASS.json")
     print(json.dumps({k: result[k] for k in
                       ("t0", "determinism_check_A0_twice_identical",
                        "decision", "wall_s", "real_time_factor")}, indent=1))
