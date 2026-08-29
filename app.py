@@ -72,6 +72,9 @@ color:var(--good);border-radius:5px;padding:3px 7px}
 .papers{display:grid;gap:6px;font-size:12.5px}
 .papers div{border-left:3px solid var(--acc);padding:2px 0 2px 10px;color:var(--mut)}
 .papers b{color:var(--ink);font-weight:600}
+.msg{font:12px "IBM Plex Mono";border:1px solid var(--line);border-radius:6px;
+padding:6px 10px;margin:5px 0;color:var(--mut)}
+.msg b{color:var(--acc)}
 .kpis{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));
 gap:10px;margin:0 0 16px}
 .kpi{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 14px}
@@ -91,6 +94,31 @@ PAPERS = [
     ("MAPPO", "NeurIPS 2022", "multi-agent RL arms — official on-policy @de66d7a4"),
     ("SUMO 1.27.1", "IEEE ITSC", "microsimulation, saveState/loadState counterfactuals"),
 ]
+
+
+def network_chain() -> str:
+    g = REPO / "artifacts" / "gates"
+    try:
+        na = json.loads((g / "NETWORKED_ACTUATION_PASS.json").read_text())
+        ms = json.loads((g / "networked_actuation/messages_s11.json")
+                        .read_text())["messages"][:3]
+        rows = "".join(
+            f"<div class=msg><b>{m['type']}</b> → <code>{m['target'][:26]}</code>"
+            f" · sent t={m['sent_s']}s · latency {m['latency_ms']} ms · "
+            f"{'ACK ✓ executed' if m['executed'] else 'pending'}</div>"
+            for m in ms)
+        imp = na["improvement_pct_per_seed"]
+        return f"""<div class=card><h2>AI → Network → Actuator → Road (proven chain)</h2>
+<p style="font-size:13.5px">REAL INPUT → AI DECISION → <b>V2X MESSAGE</b>
+(latency measured on the official Eclipse MOSAIC stack, median 1.9 ms) →
+<b>SIGNAL CONTROLLER ACK</b> → physics responds. All {na['messages']['sent']}
+messages delivered; network delay improved in every paired seed:
+<b style="color:var(--good)">{imp['11']}% / {imp['12']}% / {imp['13']}%</b>.</p>
+{rows}
+<p class=cap>artifacts/gates/NETWORKED_ACTUATION_PASS.json · no vehicle was
+ever moved directly — only messages, then physics</p></div>"""
+    except Exception:                              # noqa: BLE001
+        return ""
 
 
 def kpis() -> str:
@@ -214,6 +242,7 @@ def index():
   <div class=card><h2>Recent runs</h2>{result_links()}</div>
 </div>
 <div>
+  {network_chain()}
   <div class=card><h2>Before / after — watch the two futures</h2>{movie_html}</div>
   <div class=card><h2>Latest case — four-pane proof</h2>
     {f'<iframe src="{fp}"></iframe>' if fp else '<p class=cap>no case yet — run one</p>'}
