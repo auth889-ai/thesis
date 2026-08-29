@@ -1,43 +1,200 @@
 {
-  "_doc": "Camera registration for road-level control. HONESTY: an entry maps a camera to ITS OWN real geometry. A camera is never silently relabeled as a different city's road. sumo_site_transfer, when present, DECLARES that observed state is applied to the Dhaka twin corridor as a scenario trigger (evidence domain stays the camera's own).",
-  "cameras": {
-    "070E28355CAM1RP2": {
-      "label": "I-70 EB at Pena Blvd ramp (CDOT road511) - REAL recorded feed",
-      "latlon": [39.7827, -104.769],
-      "latlon_quality": "approximate",
-      "evidence_domain": "REAL_FOREIGN_CAMERA",
-      "image_size": [352, 240],
-      "homography": null,
-      "approach_zones": {
-        "main_eb": {
-          "polygon": [[0, 58], [300, 52], [312, 132], [0, 145]],
-          "movements": {
-            "through": {"exit_polygon": [[288, 50], [352, 50], [352, 132], [288, 132]]}
-          }
-        }
-      },
-      "arrival_line": [[38, 58], [38, 148]],
-      "discharge_line": [[280, 50], [280, 135]],
-      "sumo_site_transfer": {
-        "declared": "SITE_TRANSFER: observed congestion state triggers the Dhaka R1 twin scenario at the karwanbazar corridor. The video is NOT of Dhaka and is never presented as such.",
-        "edge_hint_camera": "karwanbazar"
+ "_doc": "Camera registration for road-level control. HONESTY: an entry maps a camera to ITS OWN real geometry. A camera is never silently relabeled as a different city's road. sumo_site_transfer, when present, DECLARES that observed state is applied to the Dhaka twin corridor as a scenario trigger (evidence domain stays the camera's own).",
+ "cameras": {
+  "070E28355CAM1RP2": {
+   "label": "I-70 EB MP 283.55 at Pena Blvd ramp (CDOT road511) \u2014 SITE X",
+   "latlon": [
+    39.7716,
+    -104.8189
+   ],
+   "latlon_quality": "verified against OSM exit-284 node + mainline geometry",
+   "evidence_domain": "REAL_FOREIGN_CAMERA",
+   "image_size": [
+    352,
+    240
+   ],
+   "homography": {
+    "matrix": [
+     [
+      0.6277489775313443,
+      0.22274963718854116,
+      -31.306449008498685
+     ],
+     [
+      0.008678146843466463,
+      -0.25166625846052726,
+      29.627193323594483
+     ],
+     [
+      0.00018103626908036734,
+      0.0013636655535459727,
+      1.0
+     ]
+    ],
+    "method": "4-pt road-plane, lane-width anchored (4 x 3.66 m), ~150 m visible run; speed uncertainty declared +/-30%",
+    "img_pts": [
+     [
+      8.0,
+      118.0
+     ],
+     [
+      298.0,
+      128.0
+     ],
+     [
+      300.0,
+      62.0
+     ],
+     [
+      30.0,
+      56.0
+     ]
+    ],
+    "world_pts_m": [
+     [
+      0.0,
+      0.0
+     ],
+     [
+      150.0,
+      0.0
+     ],
+     [
+      150.0,
+      14.600000381469727
+     ],
+     [
+      0.0,
+      14.600000381469727
+     ]
+    ]
+   },
+   "approach_zones": {
+    "main_eb": {
+     "polygon": [
+      [
+       0,
+       58
+      ],
+      [
+       300,
+       52
+      ],
+      [
+       312,
+       132
+      ],
+      [
+       0,
+       145
+      ]
+     ],
+     "movements": {
+      "through": {
+       "exit_polygon": [
+        [
+         288,
+         50
+        ],
+        [
+         352,
+         50
+        ],
+        [
+         352,
+         132
+        ],
+        [
+         288,
+         132
+        ]
+       ]
       }
-    },
-    "025N19940CAM1NWC": {
-      "label": "I-25 NB (CDOT road511) - REAL recorded feed",
-      "latlon": [39.79, -104.98],
-      "latlon_quality": "approximate",
-      "evidence_domain": "REAL_FOREIGN_CAMERA",
-      "image_size": [352, 240],
-      "homography": null,
-      "approach_zones": {},
-      "arrival_line": null,
-      "discharge_line": null,
-      "status": "ZONES_PENDING"
-    },
-    "farmgate":    {"status": "AWAITING_REAL_FEED", "latlon": [23.7573, 90.3854], "evidence_domain": "DHAKA_PLANNED"},
-    "karwanbazar": {"status": "AWAITING_REAL_FEED", "latlon": [23.7529, 90.3944], "evidence_domain": "DHAKA_PLANNED"},
-    "banglamotor": {"status": "AWAITING_REAL_FEED", "latlon": [23.7465, 90.3948], "evidence_domain": "DHAKA_PLANNED"},
-    "shahbagh":    {"status": "AWAITING_REAL_FEED", "latlon": [23.7389, 90.3958], "evidence_domain": "DHAKA_PLANNED"}
+     }
+    }
+   },
+   "arrival_line": [
+    [
+     38,
+     58
+    ],
+    [
+     38,
+     148
+    ]
+   ],
+   "discharge_line": [
+    [
+     280,
+     50
+    ],
+    [
+     280,
+     135
+    ]
+   ],
+   "sumo_site_transfer": {
+    "declared": "APPENDIX cross-site transfer research only \u2014 the PRIMARY chain uses the same-site model above",
+    "edge_hint_camera": "karwanbazar"
+   },
+   "site_model": {
+    "net": "artifacts/site_i70/i70_pena.net.xml",
+    "edge_eb_main": "1341991149",
+    "edge_eb_next": "118357136",
+    "edge_wb": "118357023",
+    "edge_ramp": "16961629",
+    "same_physical_site": true
+   }
+  },
+  "025N19940CAM1NWC": {
+   "label": "I-25 NB (CDOT road511) - REAL recorded feed",
+   "latlon": [
+    39.79,
+    -104.98
+   ],
+   "latlon_quality": "approximate",
+   "evidence_domain": "REAL_FOREIGN_CAMERA",
+   "image_size": [
+    352,
+    240
+   ],
+   "homography": null,
+   "approach_zones": {},
+   "arrival_line": null,
+   "discharge_line": null,
+   "status": "ZONES_PENDING"
+  },
+  "farmgate": {
+   "status": "AWAITING_REAL_FEED",
+   "latlon": [
+    23.7573,
+    90.3854
+   ],
+   "evidence_domain": "DHAKA_PLANNED"
+  },
+  "karwanbazar": {
+   "status": "AWAITING_REAL_FEED",
+   "latlon": [
+    23.7529,
+    90.3944
+   ],
+   "evidence_domain": "DHAKA_PLANNED"
+  },
+  "banglamotor": {
+   "status": "AWAITING_REAL_FEED",
+   "latlon": [
+    23.7465,
+    90.3948
+   ],
+   "evidence_domain": "DHAKA_PLANNED"
+  },
+  "shahbagh": {
+   "status": "AWAITING_REAL_FEED",
+   "latlon": [
+    23.7389,
+    90.3958
+   ],
+   "evidence_domain": "DHAKA_PLANNED"
   }
+ }
 }

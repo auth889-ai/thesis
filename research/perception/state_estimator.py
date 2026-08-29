@@ -48,7 +48,12 @@ class StateEstimator:
     def __init__(self, registration: dict | None, fps_effective: float):
         self.reg = registration or {}
         self.fps = fps_effective
-        self.hom = self.reg.get("homography")
+        hom = self.reg.get("homography")
+        self.H = None
+        if isinstance(hom, dict) and hom.get("matrix"):
+            import numpy as _np
+            self.H = _np.array(hom["matrix"], dtype=float)
+        self.hom = self.H is not None
         self.zones = self.reg.get("approach_zones", {})
         self.arr_line = self.reg.get("arrival_line")
         self.dis_line = self.reg.get("discharge_line")
@@ -62,9 +67,12 @@ class StateEstimator:
         self._seen = set()
         self._win = None
         self.flags = set()
-        if self.hom is None:
+        if not self.hom:
             self.flags.add("SPEED_PIXEL_ONLY_NO_HOMOGRAPHY")
             self.flags.add("QUEUE_METERS_UNAVAILABLE")
+        else:
+            self.flags.add("SPEED_HOMOGRAPHY_APPROX_PM30PCT")
+        self.world = {}                      # tid -> (t, wx, wy)
         if not self.zones:
             self.flags.add("ZONES_REQUIRED_FOR_APPROACH_METRICS")
 
@@ -83,6 +91,19 @@ class StateEstimator:
                     v_px = (((xb - xa) ** 2 + (yb - ya) ** 2) ** 0.5) / (tb - ta)
                     speeds_px.append(v_px)
                     self.speed_hist[tid].append((t, v_px / diag))
+            if self.hom:
+                import numpy as _np
+                v = self.H @ _np.array([cx, y2, 1.0])   # bottom-center point
+                wx, wy = float(v[0] / v[2]), float(v[1] / v[2])
+                prev = self.world.get(tid)
+                self.world[tid] = (t, wx, wy)
+                if prev and t > prev[0]:
+                    vm = (((wx - prev[1]) ** 2 + (wy - prev[2]) ** 2) ** 0.5
+                          / (t - prev[0]))
+                    if vm < 60:                          # plausibility gate
+                        w_cur = self._win
+                        if w_cur is not None:
+                            w_cur.setdefault("v_ms", []).append(vm)
             sw = [v for tt, v in self.speed_hist[tid]
                   if t - tt <= SPEED_WINDOW_S]
             if len(sw) >= 3:
@@ -147,7 +168,7 @@ class StateEstimator:
             "t0": round(w["t0"], 1),
             "tracked_mean": round(sum(w["n"]) / max(len(w["n"]), 1), 1),
             "queue_veh": qv,
-            "queue_m": (round(qv * AVG_VEH_LEN_M, 1) if self.hom else None),
+            "queue_m": (round(qv * 7.5, 1) if self.hom else None),
             "stopped_duration_max_s":
                 round(max(w["stop_durs"]), 1) if w["stop_durs"] else 0.0,
             "arrivals": len(self.crossed["arrival"]) - w["arr0"],
@@ -158,7 +179,8 @@ class StateEstimator:
             "speed_px_s_median":
                 round(sorted(w["speeds"])[len(w["speeds"]) // 2], 1)
                 if w["speeds"] else None,
-            "speed_m_s": None if not self.hom else "TODO_HOMOGRAPHY",
+            "speed_m_s": (round(sorted(w["v_ms"])[len(w["v_ms"]) // 2], 1)
+                          if w.get("v_ms") else None),
             "classes": dict(w["classes"]),
             "state": "CONGESTED" if qv >= CONG_MIN_QUEUE else
                      ("SLOWING" if qv > 0 else "FREE_FLOW"),
