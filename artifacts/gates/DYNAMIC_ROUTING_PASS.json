@@ -1,0 +1,402 @@
+{
+ "gate": "DYNAMIC_ROUTING_PASS",
+ "protocol": {
+  "t0": 3660.0,
+  "horizon_s": 600.0,
+  "seeds": [
+   11,
+   12,
+   13
+  ],
+  "ladder": [
+   0.0,
+   0.1,
+   0.2,
+   0.3,
+   0.4
+  ]
+ },
+ "summary": {
+  "p0": {
+   "stopped_veh_s_mean": 1089917,
+   "arrived_mean": 743,
+   "teleports_mean": 33.3,
+   "rerouted_B_mean": 0,
+   "neighbors_mean": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 6,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   }
+  },
+  "p10": {
+   "stopped_veh_s_mean": 1081586,
+   "arrived_mean": 761.3,
+   "teleports_mean": 34.3,
+   "rerouted_B_mean": 54.7,
+   "neighbors_mean": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 3.7,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   }
+  },
+  "p20": {
+   "stopped_veh_s_mean": 1081703,
+   "arrived_mean": 750,
+   "teleports_mean": 36.3,
+   "rerouted_B_mean": 106.7,
+   "neighbors_mean": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 3,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0.3,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   }
+  },
+  "p30": {
+   "stopped_veh_s_mean": 1075097,
+   "arrived_mean": 747.3,
+   "teleports_mean": 36,
+   "rerouted_B_mean": 168.7,
+   "neighbors_mean": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 4,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   }
+  },
+  "p40": {
+   "stopped_veh_s_mean": 1084374,
+   "arrived_mean": 749,
+   "teleports_mean": 35,
+   "rerouted_B_mean": 244.3,
+   "neighbors_mean": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 0.7,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   }
+  }
+ },
+ "verdicts": {
+  "p10": {
+   "guards": {
+    "network_delay_improves": true,
+    "throughput_kept": true,
+    "teleports_not_worse": true,
+    "neighbors_not_flooded": true
+   },
+   "label": "ACCEPTED"
+  },
+  "p20": {
+   "guards": {
+    "network_delay_improves": true,
+    "throughput_kept": true,
+    "teleports_not_worse": false,
+    "neighbors_not_flooded": true
+   },
+   "label": "REJECTED"
+  },
+  "p30": {
+   "guards": {
+    "network_delay_improves": true,
+    "throughput_kept": true,
+    "teleports_not_worse": false,
+    "neighbors_not_flooded": true
+   },
+   "label": "REJECTED"
+  },
+  "p40": {
+   "guards": {
+    "network_delay_improves": true,
+    "throughput_kept": true,
+    "teleports_not_worse": false,
+    "neighbors_not_flooded": true
+   },
+   "label": "REJECTED"
+  }
+ },
+ "decision": "p10",
+ "checks": {
+  "no_arbitrary_edge_penalty": true,
+  "official_device_for_future_demand": true,
+  "trapped_never_touched": true,
+  "measured_time_dependent_costs": true,
+  "compliance_ladder_run": true,
+  "not_all_traffic_one_road": true
+ },
+ "detail": {
+  "p0": {
+   "stopped_veh_s_mean": 1089917,
+   "arrived_mean": 743,
+   "teleports_mean": 33.3,
+   "rerouted_B_mean": 0,
+   "neighbors_mean": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 6,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   },
+   "per_seed": [
+    {
+     "p": 0.0,
+     "seed": 11,
+     "stopped_veh_s": 1097423,
+     "arrived": 720,
+     "teleports": 32,
+     "p95_travel_s": 3031.0,
+     "rerouted_class_B": 0,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 4,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    },
+    {
+     "p": 0.0,
+     "seed": 12,
+     "stopped_veh_s": 1083110,
+     "arrived": 774,
+     "teleports": 30,
+     "p95_travel_s": 3228.0,
+     "rerouted_class_B": 0,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 7,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    },
+    {
+     "p": 0.0,
+     "seed": 13,
+     "stopped_veh_s": 1089219,
+     "arrived": 735,
+     "teleports": 38,
+     "p95_travel_s": 2947.0,
+     "rerouted_class_B": 0,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 7,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    }
+   ]
+  },
+  "p10": {
+   "stopped_veh_s_mean": 1081586,
+   "arrived_mean": 761.3,
+   "teleports_mean": 34.3,
+   "rerouted_B_mean": 54.7,
+   "neighbors_mean": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 3.7,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   },
+   "per_seed": [
+    {
+     "p": 0.1,
+     "seed": 11,
+     "stopped_veh_s": 1081327,
+     "arrived": 759,
+     "teleports": 34,
+     "p95_travel_s": 3151.0,
+     "rerouted_class_B": 59,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 2,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    },
+    {
+     "p": 0.1,
+     "seed": 12,
+     "stopped_veh_s": 1082560,
+     "arrived": 751,
+     "teleports": 33,
+     "p95_travel_s": 3252.0,
+     "rerouted_class_B": 52,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 4,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    },
+    {
+     "p": 0.1,
+     "seed": 13,
+     "stopped_veh_s": 1080871,
+     "arrived": 774,
+     "teleports": 36,
+     "p95_travel_s": 3081.0,
+     "rerouted_class_B": 53,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 5,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    }
+   ]
+  },
+  "p20": {
+   "stopped_veh_s_mean": 1081703,
+   "arrived_mean": 750,
+   "teleports_mean": 36.3,
+   "rerouted_B_mean": 106.7,
+   "neighbors_mean": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 3,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0.3,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   },
+   "per_seed": [
+    {
+     "p": 0.2,
+     "seed": 11,
+     "stopped_veh_s": 1073774,
+     "arrived": 759,
+     "teleports": 37,
+     "p95_travel_s": 3180.0,
+     "rerouted_class_B": 107,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 0,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    },
+    {
+     "p": 0.2,
+     "seed": 12,
+     "stopped_veh_s": 1081077,
+     "arrived": 746,
+     "teleports": 35,
+     "p95_travel_s": 3093.0,
+     "rerouted_class_B": 104,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 3,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 1,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    },
+    {
+     "p": 0.2,
+     "seed": 13,
+     "stopped_veh_s": 1090258,
+     "arrived": 745,
+     "teleports": 37,
+     "p95_travel_s": 3108.0,
+     "rerouted_class_B": 109,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 6,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    }
+   ]
+  },
+  "p30": {
+   "stopped_veh_s_mean": 1075097,
+   "arrived_mean": 747.3,
+   "teleports_mean": 36,
+   "rerouted_B_mean": 168.7,
+   "neighbors_mean": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 4,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   },
+   "per_seed": [
+    {
+     "p": 0.3,
+     "seed": 11,
+     "stopped_veh_s": 1070430,
+     "arrived": 758,
+     "teleports": 34,
+     "p95_travel_s": 3221.0,
+     "rerouted_class_B": 173,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 4,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    },
+    {
+     "p": 0.3,
+     "seed": 12,
+     "stopped_veh_s": 1069310,
+     "arrived": 742,
+     "teleports": 39,
+     "p95_travel_s": 3091.0,
+     "rerouted_class_B": 170,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 4,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    },
+    {
+     "p": 0.3,
+     "seed": 13,
+     "stopped_veh_s": 1085550,
+     "arrived": 742,
+     "teleports": 35,
+     "p95_travel_s": 3111.0,
+     "rerouted_class_B": 163,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 4,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    }
+   ]
+  },
+  "p40": {
+   "stopped_veh_s_mean": 1084374,
+   "arrived_mean": 749,
+   "teleports_mean": 35,
+   "rerouted_B_mean": 244.3,
+   "neighbors_mean": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 0.7,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+    "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+   },
+   "per_seed": [
+    {
+     "p": 0.4,
+     "seed": 11,
+     "stopped_veh_s": 1080348,
+     "arrived": 770,
+     "teleports": 35,
+     "p95_travel_s": 3073.0,
+     "rerouted_class_B": 248,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 1,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    },
+    {
+     "p": 0.4,
+     "seed": 12,
+     "stopped_veh_s": 1082742,
+     "arrived": 737,
+     "teleports": 36,
+     "p95_travel_s": 3202.0,
+     "rerouted_class_B": 248,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 0,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    },
+    {
+     "p": 0.4,
+     "seed": 13,
+     "stopped_veh_s": 1090031,
+     "arrived": 740,
+     "teleports": 34,
+     "p95_travel_s": 3168.0,
+     "rerouted_class_B": 237,
+     "neighbors": {
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": 1,
+      "cluster_10139575501_2446124135_2446124154_3501293480": 0,
+      "joinedS_6902109290_cluster_10026676374_5445470660_5445470661_6235001291_#1more": 0
+     }
+    }
+   ]
+  }
+ },
+ "wall_s": 41.6,
+ "verdict": "PASS"
+}
