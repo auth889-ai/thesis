@@ -1,0 +1,43 @@
+{
+  "_doc": "Camera registration for road-level control. HONESTY: an entry maps a camera to ITS OWN real geometry. A camera is never silently relabeled as a different city's road. sumo_site_transfer, when present, DECLARES that observed state is applied to the Dhaka twin corridor as a scenario trigger (evidence domain stays the camera's own).",
+  "cameras": {
+    "070E28355CAM1RP2": {
+      "label": "I-70 EB at Pena Blvd ramp (CDOT road511) - REAL recorded feed",
+      "latlon": [39.7827, -104.769],
+      "latlon_quality": "approximate",
+      "evidence_domain": "REAL_FOREIGN_CAMERA",
+      "image_size": [352, 240],
+      "homography": null,
+      "approach_zones": {
+        "main_eb": {
+          "polygon": [[0, 58], [300, 52], [312, 132], [0, 145]],
+          "movements": {
+            "through": {"exit_polygon": [[288, 50], [352, 50], [352, 132], [288, 132]]}
+          }
+        }
+      },
+      "arrival_line": [[38, 58], [38, 148]],
+      "discharge_line": [[280, 50], [280, 135]],
+      "sumo_site_transfer": {
+        "declared": "SITE_TRANSFER: observed congestion state triggers the Dhaka R1 twin scenario at the karwanbazar corridor. The video is NOT of Dhaka and is never presented as such.",
+        "edge_hint_camera": "karwanbazar"
+      }
+    },
+    "025N19940CAM1NWC": {
+      "label": "I-25 NB (CDOT road511) - REAL recorded feed",
+      "latlon": [39.79, -104.98],
+      "latlon_quality": "approximate",
+      "evidence_domain": "REAL_FOREIGN_CAMERA",
+      "image_size": [352, 240],
+      "homography": null,
+      "approach_zones": {},
+      "arrival_line": null,
+      "discharge_line": null,
+      "status": "ZONES_PENDING"
+    },
+    "farmgate":    {"status": "AWAITING_REAL_FEED", "latlon": [23.7573, 90.3854], "evidence_domain": "DHAKA_PLANNED"},
+    "karwanbazar": {"status": "AWAITING_REAL_FEED", "latlon": [23.7529, 90.3944], "evidence_domain": "DHAKA_PLANNED"},
+    "banglamotor": {"status": "AWAITING_REAL_FEED", "latlon": [23.7465, 90.3948], "evidence_domain": "DHAKA_PLANNED"},
+    "shahbagh":    {"status": "AWAITING_REAL_FEED", "latlon": [23.7389, 90.3958], "evidence_domain": "DHAKA_PLANNED"}
+  }
+}
