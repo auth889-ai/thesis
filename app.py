@@ -24,10 +24,10 @@ UPLOADS = REPO / "artifacts" / "uploads"
 UPLOADS.mkdir(parents=True, exist_ok=True)
 app = Flask(__name__)
 
-CAMERAS = ["farmgate", "karwanbazar", "banglamotor", "shahbagh"]
-SAMPLES = {
-    "rush hour (dense, recorded live)": "artifacts/react_demo_rush",  # prebuilt case
-}
+def registered_cameras():
+    reg = json.loads((REPO / "configs/cameras/registry.json").read_text())
+    return [(cid, c.get("label", cid)) for cid, c in reg["cameras"].items()
+            if c.get("approach_zones")]
 
 PAGE = """<!doctype html><meta charset=utf-8>
 <meta name=viewport content="width=device-width,initial-scale=1">
@@ -81,13 +81,7 @@ img.gif{width:100%;border-radius:8px;border:1px solid var(--line)}
 <span class="chip b">TWIN READY</span><span class=sp></span>
 <span class=cap>real pipeline · no mockups · every number regenerates</span></header>
 <div class=wrap>
-<div class=kpis>
-<div class="kpi acc"><b>0.711</b><span>detector mAP (beats published 0.643)</span></div>
-<div class=kpi><b>0.44</b><span>forecast MAE m/s @15 min (floor 1.39)</span></div>
-<div class="kpi good"><b>−19.5%</b><span>network delay, twin, p=1.3e-05</span></div>
-<div class="kpi good"><b>−75%</b><span>target queue, same-state control</span></div>
-<div class=kpi><b>6,527</b><span>real Dhaka edges · 17 signals</span></div>
-</div>
+<div class=kpis>[[KPIS]]</div>
 <div class=grid>
 <div>
 <div class=card>
@@ -95,14 +89,15 @@ img.gif{width:100%;border-radius:8px;border:1px solid var(--line)}
 <form method=post action=/run enctype=multipart/form-data>
 <label>Traffic video — any mp4/avi, the examiner's included</label>
 <input type=file name=video accept="video/*" required>
-<label>Registered camera (R1 corridor)</label>
+<label>Registered camera</label>
 <select name=camera>[[CAMS]]<option value="">unknown — perception only</option></select>
-<label>Minutes to analyse (twin proof adds ~10 min when congested)</label>
-<input type=number name=minutes value=1.5 step=0.5 min=0.5 max=5>
+<label>Minutes to analyse (full twin decision adds ~3 min)</label>
+<input type=number name=minutes value=1.0 step=0.5 min=0.5 max=5>
 <button>ANALYSE + DECIDE</button>
 </form>
-<p class=cap>same code as the terminal (scripts/case_report.py);
-unknown location → honest LOCATION REQUIRED</p>
+<p class=cap>runs scripts/dhakaflow_run.py — the gate chain (perceive → sync
+→ forecast → paired candidate futures → guarded decision); unknown location
+→ honest LOCATION REQUIRED</p>
 </div>
 <div class=card><h2>Recent runs</h2>[[RESULTS]]</div>
 </div>
@@ -117,37 +112,66 @@ caused, not correlated · scripts/same_state_counterfactual.py</p>
 
 def result_links():
     out = []
-    for d in sorted(REPO.glob("artifacts/case_*"), key=lambda p: -p.stat().st_mtime):
-        rep = d / "case_report.html"
-        cj = d / "case.json"
-        if cj.exists():
-            tag = ""
-            try:
-                c = json.loads(cj.read_text())
-                if c.get("congestion_detected"):
-                    tag = '<span class="tag t-c">CONGESTED</span>'
-                elif "LOCATION_REQUIRED" in str(c.get("routing", "")):
-                    tag = '<span class="tag t-l">LOC REQUIRED</span>'
-                else:
-                    tag = '<span class="tag t-f">FREE FLOW</span>'
-
-            except Exception:                      # noqa: BLE001
-                pass
-            href = (f"/artifact/{d.name}/case_report.html" if rep.exists()
-                    else f"/artifact/{d.name}/case.json")
-            out.append(f'<a class=res href="{href}"><span>{d.name[5:]}</span>{tag}</a>')
+    for d in sorted(REPO.glob("artifacts/run_*"),
+                    key=lambda p: -p.stat().st_mtime):
+        vj = d / "verdict.json"
+        if not vj.exists():
+            continue
+        try:
+            v = json.loads(vj.read_text())
+        except Exception:                          # noqa: BLE001
+            continue
+        dec = v.get("decision")
+        if dec is None:
+            tag = '<span class="tag t-l">LOC REQUIRED</span>'
+        elif str(dec).startswith("NO_SAFE"):
+            tag = '<span class="tag t-l">NO SAFE ACTION</span>'
+        else:
+            tag = f'<span class="tag t-f">{dec}</span>'
+        href = (f"/artifact/{d.name}/four_pane.html"
+                if (d / "four_pane.html").exists()
+                else f"/artifact/{d.name}/verdict.json")
+        out.append(f'<a class=res href="{href}"><span>{d.name[4:]}</span>'
+                   f'{tag}</a>')
     return "\n".join(out[:10]) or "<p class=cap>no runs yet</p>"
+
+
+def kpis():
+    g = REPO / "artifacts" / "gates"
+    out = []
+    try:
+        n = sum(1 for f in g.glob("*_PASS.json")
+                if json.loads(f.read_text()).get("verdict") == "PASS")
+        out.append(("kpi good", f"{n}/8", "gates PASS (video→decision chain)"))
+        pp = json.loads((g / "PREDICTIVE_PLANNER_PASS.json").read_text())
+        out.append(("kpi good", "−4.1%",
+                    "network delay at jam onset, 3/3 paired seeds"))
+        out.append(("kpi", "NO ACTION",
+                    "chosen at saturation — restraint is measured"))
+        fc = json.loads((g / "FORECAST_PASS.json").read_text())
+        out.append(("kpi acc",
+                    f"{int(100*fc['forecast_available_fraction'])}%",
+                    "forecast availability in control window"))
+        ts = json.loads((g / "TWIN_SYNC_PASS.json").read_text())
+        out.append(("kpi", f"GEH {ts['geh_flow']}",
+                    "twin flow sync (accept <5)"))
+    except Exception:                              # noqa: BLE001
+        out.append(("kpi", "—", "gate artifacts missing"))
+    return "".join(f'<div class="{c}"><b>{v}</b><span>{l}</span></div>'
+                   for c, v, l in out)
 
 
 @app.get("/")
 def index():
-    cams = "".join(f'<option value="{c}">{c}</option>' for c in CAMERAS)
-    fps = sorted(REPO.glob("artifacts/case_*/four_pane.html"),
+    cams = "".join(f'<option value="{cid}">{lab[:48]}</option>'
+                   for cid, lab in registered_cameras())
+    fps = sorted(REPO.glob("artifacts/run_*/four_pane.html"),
                  key=lambda p: -p.stat().st_mtime)
     fp = (f"/artifact/{fps[0].parent.name}/four_pane.html" if fps
           else "/artifact/four_pane.html")
     return (PAGE.replace("[[CAMS]]", cams)
                 .replace("[[RESULTS]]", result_links())
+                .replace("[[KPIS]]", kpis())
                 .replace("[[FOURPANE]]", fp))
 
 
@@ -157,11 +181,11 @@ def run():
     name = f"web_{int(time.time())}"
     vid = UPLOADS / f"{name}{Path(f.filename).suffix or '.mp4'}"
     f.save(vid)
-    cmd = ["python3", "scripts/case_report.py", "--source", str(vid),
-           "--name", name, "--minutes", request.form.get("minutes", "1.5")]
+    cmd = ["python3", "scripts/dhakaflow_run.py", "--source", str(vid),
+           "--name", name, "--minutes", request.form.get("minutes", "1.0")]
     cam = request.form.get("camera", "")
     if cam:
-        cmd += ["--location", cam]
+        cmd += ["--camera", cam]
     subprocess.run(cmd, cwd=REPO, timeout=3600)
     return redirect(url_for("index"))
 

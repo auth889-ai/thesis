@@ -24,77 +24,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
-from research.perception.bytetrack_adapter import ByteTrackAdapter  # noqa
-from research.perception.state_estimator import (StateEstimator,     # noqa
-                                                 load_registration)
-
-WEIGHTS = REPO / "artifacts/p1_winner/rtdetr_r50_poribohon_best.pth"
-RTDETR_PY = str(Path.home() / "miniconda3/envs/rtdetr/bin/python")
-STRIDE = 5
-
-
-def perceive(video: str, camera_id: str | None, minutes: float) -> dict:
-    import cv2
-    reg = load_registration(camera_id) if camera_id else None
-    bridge = subprocess.Popen(
-        [RTDETR_PY, "research/perception/rtdetr_bridge.py",
-         str(WEIGHTS), "0.4"],
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE, text=True,
-        bufsize=1, cwd=REPO)
-
-    def rj():
-        for _ in range(200):
-            line = bridge.stdout.readline()
-            if not line:
-                raise SystemExit("bridge died")
-            try:
-                return json.loads(line)
-            except json.JSONDecodeError:
-                continue
-        raise SystemExit("no JSON from bridge")
-
-    rj()   # ready line
-    cap = cv2.VideoCapture(video)
-    fps = cap.get(cv2.CAP_PROP_FPS) or 15.0
-    h = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)) or 240
-    w = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)) or 352
-    eff_fps = fps / STRIDE
-    trk = ByteTrackAdapter(frame_rate=eff_fps)
-    est = StateEstimator(reg, eff_fps)
-    classes: dict[int, str] = {}
-    tmp = tempfile.NamedTemporaryFile(suffix=".jpg", delete=False).name
-    i, max_frames = 0, int(minutes * 60 * fps)
-    t_wall = time.time()
-    while i < max_frames:
-        ok, frame = cap.read()
-        if not ok:
-            break
-        if i % STRIDE == 0:
-            cv2.imwrite(tmp, frame)
-            bridge.stdin.write(tmp + "\n")
-            dets = rj().get("dets", [])
-            tracks = trk.update(dets, (h, w))
-            # nearest-det class per track (IoU-free, center distance)
-            for tid, (x1, y1, x2, y2), _ in tracks:
-                cx, cy = (x1+x2)/2, (y1+y2)/2
-                best = min(dets, key=lambda d: (((d["box"][0]+d["box"][2])/2-cx)**2
-                                                + ((d["box"][1]+d["box"][3])/2-cy)**2),
-                           default=None)
-                if best:
-                    classes[tid] = best.get("name", "vehicle")
-            est.ingest(i / fps, tracks, classes)
-        i += 1
-    bridge.stdin.close(); bridge.terminate()
-    state = est.finalize()
-    state["video"] = video
-    state["camera_id"] = camera_id
-    state["registered"] = bool(reg and reg.get("approach_zones"))
-    state["road_control"] = ("AVAILABLE" if state["registered"]
-                             else "LOCATION_REQUIRED_FOR_ROAD_CONTROL")
-    state["wall_s"] = round(time.time() - t_wall, 1)
-    state["tracker"] = "ByteTrack official @d1bf019 (detections supplied)"
-    return state
-
+from research.perception.pipeline import perceive  # noqa
 
 def main() -> None:
     sp = ("/private/tmp/claude-501/-Users-jannatulferdouseva-thesis/"

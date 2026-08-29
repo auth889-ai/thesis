@@ -1,55 +1,59 @@
 # PROJECT MAP — read this first (5 minutes)
 
-You do not need to understand every file. The project has **6 main source
-files** (the brain), **4 command scripts** (what you run), and everything else
-is support, evidence, or frozen history.
+The project is a GATED CAUSAL CHAIN: a real video goes in, a network-guarded
+decision comes out, and every stage has a PASS artifact you can open.
 
----
+## THE command (the whole system, one line)
 
-## The 6 main source files (the brain)
+    python scripts/dhakaflow_run.py --source <video> --camera 070E28355CAM1RP2
 
-| # | File | What it is, in one line |
-|---|------|--------------------------|
-| 1 | `research/perception/rtdetr_dhaka.py` | The EYES — loads our trained Dhaka detector (rickshaw/CNG/easy-bike) |
-| 2 | `scripts/demo_react.py` | The WATCHER — any video in → vehicles tracked → FREE/SLOWING/CONGESTED |
-| 3 | `research/routing/r1_router.py` | The NAVIGATOR — best route on the real 6,527-edge Dhaka map under congestion |
-| 4 | `research/forecasting/basicts_adapter.py` | The PROPHET's data feed — twin sensors → the forecasting models (GWNet etc.) |
-| 5 | `research/control/sumo_marl_env.py` | The SIGNAL BRAIN — 17 traffic lights as learning agents (MAPPO trains on this) |
-| 6 | `scripts/same_state_counterfactual.py` | The JUDGE — saves the exact traffic state, runs "do nothing" vs "our control", measures the difference |
+video -> detect+track -> physical state -> synchronized SUMO twin ->
+GWNet forecast -> candidate futures from ONE saved t0 (paired seeds) ->
+network guards -> decision (sometimes honestly NO ACTION) -> four-pane page.
 
-**If sir asks "where is your system?" — open these six files.**
+## The 7 main source files (the brain)
 
-## The 4 commands you actually run
+| # | File | What it is |
+|---|------|------------|
+| 1 | `research/perception/pipeline.py` | EYES — RT-DETR + official ByteTrack -> tracks |
+| 2 | `research/perception/state_estimator.py` | JUDGE OF STATE — physical queue/stops/flows (works on stationary-start video) |
+| 3 | `research/twin/scenario_sync.py` | TWIN SYNC — observed state CONFIGURES SUMO (Geneva DT-GM pattern, GEH accept) |
+| 4 | `research/control/gwnet_in_loop.py` | PROPHET — GWNet +5/10/15 min, history preloaded, availability logged |
+| 5 | `scripts/predictive_planner.py` | BRAIN — candidate futures from one saved state, network objective + guards |
+| 6 | `research/control/signal_baselines.py` | SIGNALS — stock actuated + Varaiya max-pressure, correct semantics |
+| 7 | `research/routing/r1_router.py` | MAP — the frozen 6,527-edge Dhaka network |
 
-| Command | What happens |
-|---|---|
-| `python scripts/case_report.py --source <video> --location farmgate` | THE demo: detect → state → route → twin PREDICTS next 10 min on that road → acts from the same saved state → proof page |
-| `python scripts/same_state_counterfactual.py --camera karwanbazar` | The before/after proof from an identical saved state |
-| `python scripts/build_dashboard.py` | Rebuilds the web dashboard from real artifacts |
-| `python scripts/build_results_matrix.py` | Rebuilds the results table from real artifacts |
+## The gates (each is a command + a PASS artifact)
 
-## The evidence (never edited by hand — always produced by runs)
+| Gate | Command | Artifact |
+|---|---|---|
+| 1 REAL_STATE | `python scripts/gate1_real_state.py` | artifacts/gates/REAL_STATE_PASS.json |
+| 2 TWIN_SYNC | `python scripts/gate2_twin_sync.py` | artifacts/gates/TWIN_SYNC_PASS.json |
+| 3 FORECAST | `python scripts/gate3_forecast.py` | artifacts/gates/FORECAST_PASS.json |
+| 4+5+8 PLANNER | `python scripts/predictive_planner.py --sync … --emit-gates` | COUNTERFACTUAL / NETWORK_GUARD / PREDICTIVE_PLANNER _PASS.json |
+| 6 SIGNALS | `python scripts/gate6_signal_control.py` | SIGNAL_CONTROL_PASS.json |
+| 7 ROUTING | `python scripts/gate7_dynamic_routing.py` | DYNAMIC_ROUTING_PASS.json |
 
-- `docs/RESULTS_MATRIX.md` — every number, with protocol and domain
-- `artifacts/` — raw outputs of every experiment (JSON/logs/checkpoints)
-- `docs/media/` — the videos and figures (all rendered from runs)
+## The two headline findings (memorize these)
 
-## Your presentation documents
+1. **The intervention window is congestion ONSET**: at the forming jam,
+   max-pressure wins in all 3 paired seeds (−4.1% network delay, +4.8%
+   arrivals). At saturation, NO candidate safely improves the network and
+   the system says NO ACTION — proof it is not scripted.
+2. **Local relief is not success**: candidates that clear one queue while
+   the network worsens are labeled LOCAL_RELIEF_NETWORK_FAIL and rejected.
 
-- `docs/PRESENTER_GUIDE.md` — what to SAY (memorize the blocks)
-- `docs/INTERVIEW_CARDS.md` — answers to hard questions, incl. weaknesses
-- `docs/DATA_INVENTORY.md` — where the 22 GB of datasets physically live
+## Evidence & docs
 
-## Safe to IGNORE (support & history — not "the project")
+- `docs/RESULTS_MATRIX.md` — every number + the gate table (generated)
+- `docs/RESEARCH_ARCHITECTURE_REVIEW.md` — the published systems each part follows
+- `docs/CURRENT_SYSTEM_GAP_AUDIT.md` — 28 defects found and adjudicated
+- `docs/PRESENTER_GUIDE.md`, `docs/INTERVIEW_CARDS.md` — what to say
+- `app.py` -> http://localhost:8080 — upload a video, watch the chain run
 
-- `paper_labs/` — frozen foundations from earlier phases (never edited)
-- `dhakaflow/` — platform plumbing (types, providers, safety contracts)
-- `dashboard/index.html` — a GENERATED export, like a PDF; the source is
-  `scripts/build_dashboard.py`
-- `upstream/` pins, `tests/`, notebooks — infrastructure
-- anything in `artifacts/` you don't recognize — run outputs
+## Safe to IGNORE
 
-## The flow, in one line
-
-**video → (1 eyes) → (2 state) → (4 forecast) → (3 route) + (5 signals) →
-(6 judge proves the difference)** — six files, one causal chain.
+`paper_labs/` (frozen foundations) · `dhakaflow/` (plumbing) · `upstream/`
+pins · old `scripts/case_report.py` / `demo_react.py` era files (superseded
+by the gate chain; kept for history) · anything in artifacts/ you don't
+recognize (run outputs).

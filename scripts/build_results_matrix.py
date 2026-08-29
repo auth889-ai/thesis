@@ -92,6 +92,49 @@ def main() -> None:
                 "|---|---|---|---|---|"]
     for r in rows:
         md_lines.append("| " + " | ".join(r) + " |")
+    # ---- gate stack (research-architecture rebuild, Aug 29) --------------
+    import json as _json
+    gd = REPO / "artifacts" / "gates"
+    md_lines.append("")
+    md_lines.append("## Gate stack (video -> decision, rebuilt on published "
+                    "architectures)")
+    md_lines.append("")
+    md_lines.append("| Gate | Verdict | Headline | Evidence |")
+    md_lines.append("|---|---|---|---|")
+    for f, head in [
+        ("REAL_STATE_PASS.json", "stationary-start video CONGESTED from t=0; "
+         "official ByteTrack; honest LOCATION_REQUIRED"),
+        ("TWIN_SYNC_PASS.json", "observed queue+flow construct the twin; "
+         "GEH=0.0; calibration 0.584 consumed"),
+        ("FORECAST_PASS.json", "GWNet history preloaded; availability 100%; "
+         "official pipeline evidence"),
+        ("COUNTERFACTUAL_PASS.json", "same saved state incl. RNG; A0==A0 "
+         "determinism proven"),
+        ("NETWORK_GUARD_PASS.json", "local-only wins labeled "
+         "LOCAL_RELIEF_NETWORK_FAIL; old 32->8 claim retracted"),
+        ("SIGNAL_CONTROL_PASS.json", "fixed/actuated/Varaiya-MP, correct "
+         "semantics, 3 seeds; actuated best at saturation"),
+        ("DYNAMIC_ROUTING_PASS.json", "official device + measured costs; "
+         "ladder 0-40%; p10 accepted; no x5 penalties"),
+        ("PREDICTIVE_PLANNER_PASS.json", "onset: A2 max-pressure -4.1% "
+         "network delay 3/3 seeds; saturation: NO SAFE INTERVENTION"),
+    ]:
+        p = gd / f
+        if p.exists():
+            v = _json.loads(p.read_text()).get("verdict", "?")
+            md_lines.append(f"| {f[:-5]} | **{v}** | {head} | "
+                            f"artifacts/gates/{f} |")
+    md_lines.append("")
+    md_lines.append("Research grounding: docs/RESEARCH_ARCHITECTURE_REVIEW.md"
+                    " · defect ledger: docs/CURRENT_SYSTEM_GAP_AUDIT.md")
+    md_lines.append("")
+    md_lines.append("RL research arms (Gate 9): mappo + mappo_pressure "
+                    "trained (cloud, DONE markers); FA arms (forecast/fp/"
+                    "full) FAILED AT STARTUP on the VMs (missing dataset "
+                    "path) and are reported as NOT COMPLETED — no FA-MAPPO "
+                    "claim is made. Known env defects (hold no-op, seed "
+                    "off-by-one) documented in the gap audit; fixes are "
+                    "future work.")
     (REPO / "docs/RESULTS_MATRIX.md").write_text("\n".join(md_lines) + "\n")
     print("\n".join(md_lines))
 
