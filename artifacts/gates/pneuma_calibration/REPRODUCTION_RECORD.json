@@ -1,0 +1,47 @@
+{
+ "gate": "PNEUMA_PUBLISHED_CALIBRATION (authors'-example reproduction stage)",
+ "paper": "Tsioutis, Pourgourides, Timotheou \u2014 Cycle-Level Distribution-Based Calibration of Microscopic Intersection Models Using UAV Trajectories, SUMO UC 2026 (pre-print-3289)",
+ "official_code": {
+  "found": true,
+  "repo": "github.com/TsioutisCh/phase-relative-sumo-calibration",
+  "sha": "9e25290",
+  "aux": "KPourgourides/UAVTrafficPy @af2807b"
+ },
+ "run": {
+  "optimizer": "NGOpt (nevergrad 1.0.12), budget 700, num_workers 4, seed 42, x0 = bounds midpoint (authors' script)",
+  "objective_best_J": 17.72,
+  "convergence": "53.2 (first) -> 17.72 (best) -> 21.5 (last-50 mean)",
+  "authors_history": "696.8 -> 62.5 (their full multi-period data)"
+ },
+ "nABC_eq12": {
+  "dominant_p1d3": {
+   "default_pct": 53.09,
+   "calibrated_pct": 25.74,
+   "improvement": "-52%",
+   "authors_reported_pct": 0.46
+  },
+  "p1d4": {
+   "default": 150.05,
+   "calibrated": 153.06
+  },
+  "p2d3": {
+   "default": 652.07,
+   "calibrated": 377.11
+  },
+  "p2d4": {
+   "default": 42.91,
+   "calibrated": 79.21
+  },
+  "note": "volume-weighted behavior matches the paper (low-volume pairs improve less); absolute levels far above the paper's"
+ },
+ "objective_arithmetic_verified": "weighted sum of per-pair deltas reproduces optimizer J to 0.01 \u2014 pipeline exact",
+ "deviations": [
+  "authors' osm.net.xml NOT shipped -> reconstructed from OSM (split 23182965#0@13m, lane counts to detector layout, junctions.join to their single-junction topology)",
+  "InfoProcess.py NOT shipped -> reimplemented from the data contract",
+  "Data/TrafficLightCycles.csv NOT shipped -> in-code fallback windows (0-60/60-90) used",
+  "detector positions clamped to reconstructed lane lengths",
+  "condensed 2-edge routes expanded to connected paths (endpoints unchanged)",
+  "their history vector includes more parameters than the shipped script -> shipped script taken as the authoritative artifact"
+ ],
+ "verdict": "METHOD_REPRODUCED / RESULT_PARTIAL \u2014 calibration improves the dominant movement 53->26% nABC on the reconstruction, but the paper's 0.46% level requires their exact unshipped network and signal table. Our-site (d8) application: NOT YET RUN."
+}
