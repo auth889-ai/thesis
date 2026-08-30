@@ -256,10 +256,12 @@ table{{font-size:12px}}
 networked execution → PROOF · every number from artifacts</span></header>
 <div class=wrap>
 <div class=p7>
-  <div class=panel><h3>1 · Real traffic (LIVE via API)</h3>
+  <div class=panel><h3>1 · Real traffic — REAL CARS, tracked live</h3>
     <img id=live src="/live/070E28355CAM1RP2.png">
-    <p class=cap>I-70 EB MP 283.55 at Peña Blvd, Denver — CDOT road511 API ·
-    refreshes 5 s</p></div>
+    <img src="/artifact/run_examiner_rush/annotated.gif" style="margin-top:6px">
+    <p class=cap>top: LIVE camera via API (refreshes 5 s) · bottom: the SAME
+    road's rush video with the AI tracking every real vehicle (boxes = real
+    cars, red = queued)</p></div>
   <div class=panel><h3>2 · Digital twin (SUMO, same road)</h3>
     <img src="/pres/img/twin_view.png">
     <p class=cap ><span class=ok>✓</span> {d['twin']}</p></div>
