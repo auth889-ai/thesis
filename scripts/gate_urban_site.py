@@ -28,8 +28,8 @@ DRIVABLE = {"motorway", "trunk", "primary", "secondary", "tertiary",
             "unclassified", "residential", "living_street", "primary_link",
             "secondary_link", "tertiary_link", "trunk_link", "motorway_link"}
 MATCH_T0, MATCH_T1 = 300.0, 480.0        # 3-minute matching interval (in A)
-SPLITS = {"A_calibration": [0, 600], "B_validation": [600, 1200],
-          "C_sealed_test": [1200, 1800]}
+SPLITS_FRAC = {"A_calibration": (0.0, 0.45), "B_validation": (0.45, 0.70),
+               "C_sealed_test": (0.70, 1.001)}   # of ACTUAL data duration
 
 
 def load_osm():
@@ -178,8 +178,12 @@ def main() -> None:
                 if t0 <= s.t < t1:
                     h.update(f"{tr.vid}:{s.t}:{s.lat}:{s.lon}".encode())
         return h.hexdigest()
-    splits = {k: {"t_range_s": v, "sha256": interval_hash(*v)}
-              for k, v in SPLITS.items()}
+    splits = {}
+    for k, (f0, f1) in SPLITS_FRAC.items():
+        t0s, t1s = round(f0 * dur, 1), round(f1 * dur, 1)
+        h = interval_hash(t0s, t1s)
+        assert h != hashlib.sha256(b"").hexdigest(), f"empty split {k}"
+        splits[k] = {"t_range_s": [t0s, t1s], "sha256": h}
 
     print("[4/5] visualization (evidence, not UI) …")
     import matplotlib
