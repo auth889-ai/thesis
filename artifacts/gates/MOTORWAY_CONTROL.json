@@ -1,32 +1,76 @@
 {
  "gate": "MOTORWAY_CONTROL",
- "t0_provenance": "real I-70 rush video -> validated twin (REAL_SITE_TWIN_PASS) -> physical mainline+ramp split (85/15 declared) -> re-validated -> state_t0_motorway.xml",
- "revalidation_after_split": null,
+ "t0_provenance": "real I-70 rush video -> validated twin (REAL_SITE_TWIN_PASS) -> same construction with physical mainline+ramp split -> re-validated here -> /Users/jannatulferdouseva/thesis/artifacts/site_i70/twin/state_t0_motorway.xml",
+ "revalidation_after_split": {
+  "obs_density": 14.5,
+  "sim_density": 0,
+  "density_rel_err": 1.0,
+  "obs_speed": 6.0,
+  "sim_speed": 0,
+  "speed_err_ms": 6.0
+ },
  "papers": {
-  "ALINEA": "Papageorgiou et al. 1991: r(k)=r(k-1)+K_R*(O_hat-o_out)",
-  "VSL": "Carlson/Hegyi integrated control (reactive step simplification - recorded deviation)"
+  "ALINEA": "Papageorgiou et al. 1991 (r(k)=r(k-1)+K_R*(O_hat-o_out))",
+  "VSL": "Carlson/Hegyi integrated motorway control (reactive step simplification \u2014 deviation)"
  },
  "parameters": {
-  "K_R": 70,
-  "T_s": 40,
-  "O_hat_pct": 21,
+  "K_R_veh_h_per_pct": 70.0,
+  "T_s": 40.0,
+  "O_hat_pct": 21.0,
   "r_bounds": [
-   240,
-   1800
+   240.0,
+   1800.0
   ],
-  "vsl_steps": [
+  "vsl_steps_ms": [
    25.0,
    16.7,
    11.1
   ],
-  "split_declared": 0.85
+  "demand_split_declared": 0.85
  },
  "seeds": [
   11,
   12,
   13
  ],
+ "horizon_s": 300.0,
  "summary": {
+  "A0_nothing": {
+   "total_time_loss_vs": 31315.9,
+   "total_travel_time_vs": 41587.7,
+   "stopped_veh_s": 0.0,
+   "mainline_speed_end": 6.0,
+   "mainline_density_end": 17.3,
+   "ramp_queue_peak": 0,
+   "throughput_midview": 111,
+   "spillback_veh_s": 0.0,
+   "teleports": 0,
+   "mean_occupancy_pct": 0.1
+  },
+  "A1_alinea": {
+   "total_time_loss_vs": 31619.9,
+   "total_travel_time_vs": 41758.3,
+   "stopped_veh_s": 697.3,
+   "mainline_speed_end": 6.6,
+   "mainline_density_end": 14.3,
+   "ramp_queue_peak": 12,
+   "throughput_midview": 104.3,
+   "spillback_veh_s": 0.0,
+   "teleports": 0,
+   "mean_occupancy_pct": 0.1
+  },
+  "A2_vsl": {
+   "total_time_loss_vs": 31424.8,
+   "total_travel_time_vs": 41588.0,
+   "stopped_veh_s": 0.0,
+   "mainline_speed_end": 6.2,
+   "mainline_density_end": 17,
+   "ramp_queue_peak": 0,
+   "throughput_midview": 112,
+   "spillback_veh_s": 0.0,
+   "teleports": 0,
+   "mean_occupancy_pct": 0.1
+  },
   "A3_integrated": {
    "total_time_loss_vs": 31732.2,
    "total_travel_time_vs": 41761.0,
@@ -40,9 +84,35 @@
    "mean_occupancy_pct": 0.1
   }
  },
- "decision": "NO_CONTROLLER_BEATS_A0_AT_THIS_STATE",
  "verdicts": {
-  "A3_integrated": "REJECTED"
+  "A1_alinea": {
+   "guards": {
+    "network_time_loss_improves": false,
+    "throughput_kept": false,
+    "no_teleports": true,
+    "seed_wins": "0/3"
+   },
+   "label": "REJECTED"
+  },
+  "A2_vsl": {
+   "guards": {
+    "network_time_loss_improves": false,
+    "throughput_kept": true,
+    "no_teleports": true,
+    "seed_wins": "0/3"
+   },
+   "label": "REJECTED"
+  },
+  "A3_integrated": {
+   "guards": {
+    "network_time_loss_improves": false,
+    "throughput_kept": false,
+    "no_teleports": true,
+    "seed_wins": "0/3"
+   },
+   "label": "REJECTED"
+  }
  },
- "recovered_from": "run log b0s7s386k after third artifacts wipe"
+ "decision": "NO_CONTROLLER_BEATS_A0_AT_THIS_STATE",
+ "wall_s": 1.1
 }
