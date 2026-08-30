@@ -1,0 +1,48 @@
+{
+ "gate": "MOTORWAY_CONTROL",
+ "t0_provenance": "real I-70 rush video -> validated twin (REAL_SITE_TWIN_PASS) -> physical mainline+ramp split (85/15 declared) -> re-validated -> state_t0_motorway.xml",
+ "revalidation_after_split": null,
+ "papers": {
+  "ALINEA": "Papageorgiou et al. 1991: r(k)=r(k-1)+K_R*(O_hat-o_out)",
+  "VSL": "Carlson/Hegyi integrated control (reactive step simplification - recorded deviation)"
+ },
+ "parameters": {
+  "K_R": 70,
+  "T_s": 40,
+  "O_hat_pct": 21,
+  "r_bounds": [
+   240,
+   1800
+  ],
+  "vsl_steps": [
+   25.0,
+   16.7,
+   11.1
+  ],
+  "split_declared": 0.85
+ },
+ "seeds": [
+  11,
+  12,
+  13
+ ],
+ "summary": {
+  "A3_integrated": {
+   "total_time_loss_vs": 31732.2,
+   "total_travel_time_vs": 41761.0,
+   "stopped_veh_s": 697.0,
+   "mainline_speed_end": 6.4,
+   "mainline_density_end": 13.7,
+   "ramp_queue_peak": 12,
+   "throughput_midview": 104,
+   "spillback_veh_s": 0.0,
+   "teleports": 0,
+   "mean_occupancy_pct": 0.1
+  }
+ },
+ "decision": "NO_CONTROLLER_BEATS_A0_AT_THIS_STATE",
+ "verdicts": {
+  "A3_integrated": "REJECTED"
+ },
+ "recovered_from": "run log b0s7s386k after third artifacts wipe"
+}
