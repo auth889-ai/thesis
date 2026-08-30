@@ -40,7 +40,7 @@ MAIN_IN, RAMP, MERGE = "118357029", "16961629", "118357136"
 CAM, EXIT = "1341991149", "1340464367"
 SITE_EDGES = [MAIN_IN, RAMP, MERGE, CAM]
 SPLIT_MAIN = 0.85
-WARM, ASM, HORIZON = 60.0, 35.0, 300.0
+WARM, ASM, HORIZON = 240.0, 35.0, 300.0   # warm > 145s upstream transit
 SEEDS = [11, 12, 13]
 # ALINEA
 KR, T_C, O_HAT, R_MIN, R_MAX = 70.0, 40.0, 21.0, 240.0, 1800.0
@@ -82,7 +82,7 @@ def build_t0(rate, vsp, obs_b, seed):
     pm, pr = feeder(rate)
     nm = nr = 0
     dens_b, spd_b = [], []
-    total = WARM + ASM + 25.0                     # includes held-out check
+    total = WARM + ASM + 60.0                     # includes held-out check
     while t.simulation.getTime() < total:
         t.simulationStep()
         now = t.simulation.getTime()
@@ -169,7 +169,7 @@ def run_branch(job):
             except Exception:                      # noqa: BLE001
                 pass
             nr += 1
-        o_out = t.edge.getLastStepOccupancy(CAM)   # [%]
+        o_out = t.edge.getLastStepOccupancy(CAM) * 100.0  # ->[%] (TraCI returns fraction)
         occ_hist.append(o_out)
         if now >= next_ctrl:
             next_ctrl += T_C
@@ -230,6 +230,10 @@ def main() -> None:
           f"split {SPLIT_MAIN:.0%}/{1-SPLIT_MAIN:.0%}) + re-validate …")
     val = build_t0(rate, vsp, obs_b, SEEDS[0])
     print("    re-validation:", val)
+    if val["density_rel_err"] > 0.35 or val["speed_err_ms"] > 3.0:
+        print("T0 REVALIDATION FAILED — refusing to run branches on an "
+              "unvalidated state.")
+        sys.exit(1)
     print("[2/2] A0/A1_ALINEA/A2_VSL/A3 from the SAME t0, paired seeds …")
     branches = ["A0_nothing", "A1_alinea", "A2_vsl", "A3_integrated"]
     jobs = [(b, s, rate, vsp) for b in branches for s in SEEDS]
