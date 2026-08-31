@@ -13,6 +13,7 @@ No control. No moveTo. No teleport tolerance.
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import math
@@ -110,7 +111,20 @@ def route_from_states(net, rows):
                 e = cand.getID()
                 break
         if e is None:
-            continue                                # gap: skip pair
+            # bridge matching gap via the network's own path between the
+            # REAL matched junctions (endpoints unchanged)
+            try:
+                outs = net.getNode(u).getOutgoing()
+                ins = net.getNode(v).getIncoming()
+                if outs and ins:
+                    p, _ = net.getShortestPath(outs[0], ins[0])
+                    if p and len(p) <= 3:          # small gaps only
+                        for pe in p:
+                            if not edges or edges[-1] != pe.getID():
+                                edges.append(pe.getID())
+            except Exception:
+                pass
+            continue
         if not edges or edges[-1] != e:
             edges.append(e)
     # ensure connectivity of the final list
@@ -153,28 +167,56 @@ def main() -> None:
                      "vclass": VCLASS.get(d["type"], "passenger"),
                      "type": d["type"], "v0": round(v0, 1)})
     vehs.sort(key=lambda v: v["depart"])
-    # A-fitted continuation stats for B (rate + route distribution)
-    a_rate = len(vehs) / (A1 - A0)
+    # A-fitted continuation stats for B: rate from LATE A only (drone
+    # coverage ramps up early; last 150 s is the steady estimate — still
+    # A-only, no B information)
+    late = [v for v in vehs if v["depart"] >= A1 - 150.0]
+    a_rate = len(late) / 150.0
+    # per-entry-edge inflow (each boundary street has its own real rate)
+    from collections import defaultdict as _dd
+    by_entry = _dd(list)
+    for v in late:
+        by_entry[v["route"][0]].append(v)
     routes_pool = [v["route"] for v in vehs]
     print(f"    A demand: {len(vehs)} vehicles ({rejected} rejected), "
           f"entry rate {a_rate*3600:.0f}/h")
 
     rou = SP / "athens_demand.rou.xml"
+    # calibrated behavior (STEP 1 output, authors' method) if present
+    import xml.etree.ElementTree as _ET
+    calib = {}
+    cal_path = REPO / "artifacts/gates/d8_calibration/calibrated_types_d8.xml"
+    if cal_path.exists():
+        for v in _ET.parse(cal_path).getroot().findall(".//vType"):
+            calib[v.get("id")] = {k: v.get(k) for k in
+                ("speedFactor", "speedDev", "minGap", "accel", "sigma", "tau",
+                 "lcPushy", "lcAssertive", "lcImpatience", "lcSigma",
+                 "minGapLat", "lcCooperativeSpeed") if v.get(k)}
+        print(f"    calibrated types loaded: {list(calib)}")
+    PN2CAL = {"Car": "Car", "Taxi": "Taxi", "Motorcycle": "Motorcycle",
+              "Bus": "Bus", "Medium Vehicle": "Medium",
+              "Heavy Vehicle": "Heavy"}
     with open(rou, "w") as f:
         f.write("<routes>\n")
         for cls, vc in (("Car", "passenger"), ("Taxi", "passenger"),
                         ("Motorcycle", "motorcycle"), ("Bus", "bus"),
                         ("Medium Vehicle", "delivery"),
                         ("Heavy Vehicle", "truck")):
+            extra = "".join(f' {k}="{val}"' for k, val in
+                            calib.get(PN2CAL.get(cls, ""), {}).items())
             f.write(f'<vType id="t_{vc}_{cls.replace(" ","_")}" '
-                    f'vClass="{vc}"/>\n')
+                    f'vClass="{vc}"{extra}/>\n')
         k = 0
-        cont, tt = [], A1
+        cont = []
         import random
         rng = random.Random(7)
-        while tt < B1:
-            tt += rng.expovariate(a_rate)
-            cont.append((tt, rng.choice(routes_pool)))
+        for entry, group in by_entry.items():
+            rate_e = len(group) / 150.0
+            tt = A1
+            while tt < B1:
+                tt += rng.expovariate(max(rate_e, 1e-6))
+                if tt < B1:
+                    cont.append((tt, rng.choice([g["route"] for g in group])))
         allv = ([(v["depart"], v["route"], v["type"], v["id"]) for v in vehs]
                 + [(t, r, "Car", f"cont{i}") for i, (t, r) in enumerate(cont)])
         allv.sort(key=lambda x: x[0])
