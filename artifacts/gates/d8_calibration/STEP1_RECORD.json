@@ -1,0 +1,29 @@
+{
+ "step": "STEP1_D8_SITE_CALIBRATION",
+ "site": "pNEUMA d8 Athens, junction 6694885345 (single-approach signal on one-way corridor; trajectory-inferred ~90s cycle)",
+ "method": "Tsioutis et al. SUMO UC 2026, authors' optimizer UNMODIFIED (@9e25290), NGOpt 700 evals",
+ "data": "A-window only [0,372.5s]; 2 full cycles; real initial states + real mid-cycle arrivals (corridor-scoped); real exit times (48/53 per cycle)",
+ "results": {
+  "J": {
+   "start": 6.0,
+   "best": 2.37,
+   "last50_mean": 2.79
+  },
+  "dominant_p1d3_nABC_pct": {
+   "default": 16.23,
+   "calibrated": 11.78,
+   "improvement": "-27%"
+  },
+  "context": {
+   "authors_own_site": 0.46,
+   "our_reproduction_of_their_site": 25.7,
+   "our_d8_site": 11.78
+  }
+ },
+ "bringup_iterations": "vicinity too small -> too large -> corridor-scoped; truncated matched routes -> physically-true corridor chain (one-way street; measured exits 165 through, 0 diverging) \u2014 all evidence-driven, algorithm untouched",
+ "artifacts": [
+  "optimization_history_nevergrad.csv",
+  "nabc_results.json",
+  "calibrated_types_d8.xml"
+ ]
+}
