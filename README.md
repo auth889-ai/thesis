@@ -1,5 +1,14 @@
 # DhakaFlow Nexus
 
+**Real UAV trajectories → same-street SUMO twin → published cycle-level
+calibration (−27% discharge error, authors' code) → held-out validation
+(speed MAE 3.0 m/s, 0 teleports) → causal same-state control experiments
+under network-honesty guards.**
+
+See `REPRODUCE.md` for the one-command path to every number, and
+`PROJECT_MAP.md` for the tour.
+
+
 > **New here or lost? Read [`PROJECT_MAP.md`](PROJECT_MAP.md) first — 6 main files, 4 commands, everything else is support.**
 
 **AI traffic management for Dhaka:** observe real traffic → predict congestion
