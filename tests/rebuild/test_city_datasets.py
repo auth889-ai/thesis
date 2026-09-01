@@ -81,3 +81,36 @@ def test_simulated_city_is_labelled_and_cannot_pass_as_real():
     cd = load_city("DHAKA-TWIN")
     assert cd.reality == "SIMULATED"
     assert "DHAKA_SIMULATED_SENSOR_GRAPH" in str(cd.meta.values())
+
+
+# --------------------------------------------------------------------- floors / protocol
+@pytest.mark.skipif("METR-LA" not in PRESENT, reason="METR-LA not fetched")
+def test_floors_reproduce_the_published_protocol():
+    """Our historical-average floor must match DCRNN's published HA, or our evaluation differs."""
+    from predict.benchmark_floors import floors_for_city
+    rec = floors_for_city("METR-LA", [3, 6, 12])
+    ha = rec["floors"][3]["historical_average"]
+    assert abs(ha["mae"] - 4.16) / 4.16 < 0.05, f"HA MAE {ha['mae']} vs published 4.16"
+    assert abs(ha["rmse"] - 7.80) / 7.80 < 0.05
+
+
+@pytest.mark.skipif("METR-LA" not in PRESENT, reason="METR-LA not fetched")
+def test_floors_behave_like_forecasters_should():
+    from predict.benchmark_floors import floors_for_city
+    f = floors_for_city("METR-LA", [3, 6, 12])["floors"]
+    assert f[3]["persistence"]["mae"] < f[6]["persistence"]["mae"] < f[12]["persistence"]["mae"], \
+        "persistence must degrade as the horizon grows"
+    for h in (3, 6, 12):
+        assert f[h]["persistence"]["mae"] < f[h]["global_mean"]["mae"], "any floor must beat the mean"
+        assert f[h]["historical_average"]["mae"] < f[h]["global_mean"]["mae"]
+    ha = [f[h]["historical_average"]["mae"] for h in (3, 6, 12)]
+    assert max(ha) - min(ha) < 0.01, "historical average is horizon-independent by construction"
+
+
+@pytest.mark.skipif("METR-LA" not in PRESENT, reason="METR-LA not fetched")
+def test_no_future_leakage_in_the_historical_average():
+    """The HA table must be built from the training region only."""
+    import inspect
+    from predict import benchmark_floors as bf
+    src = inspect.getsource(bf.floors_for_city)
+    assert "[:n_train]" in src, "the slot table must be accumulated over the train split only"

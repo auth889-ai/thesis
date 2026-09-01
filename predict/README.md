@@ -1,5 +1,10 @@
 # predict/ — twin sensor data, floors, forecast → SUMO weights
 
+Read `predict/REAL_DYNAMIC_PHASE1.md` first. The first priority is real dynamic
+traffic prediction on public sensor benchmarks (`METR-LA`, `PEMS-BAY`, then
+PeMS flow datasets), trained on Colab. Dhaka SUMO data is appendix simulation,
+not the main real-data claim.
+
 Everything here is **DHAKA_SIMULATED_SENSOR_GRAPH**: simulation on the real frozen R1 network (sha256-checked), never a real measurement. Heavy training (BasicTS GWNet/STID/…) runs on Colab from `data/dhaka_twin/basicts_legacy/`.
 
 | command | output |

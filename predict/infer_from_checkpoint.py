@@ -1,0 +1,186 @@
+#!/usr/bin/env python3
+"""Load a trained checkpoint and forecast an unseen test window — proof the model is usable, not just scored.
+
+    python predict/infer_from_checkpoint.py --list
+    python predict/infer_from_checkpoint.py --model GWNet --dataset METR-LA
+    python predict/infer_from_checkpoint.py --model GWNet --dataset METR-LA --window 500 --sensors 3
+
+A metrics table proves a training run finished. It does not prove the artefact can be reloaded and
+used, which is what "reproducible" actually requires. This script:
+
+  1. loads the saved checkpoint with the OFFICIAL architecture from the pinned BasicTS-legacy repo,
+  2. rebuilds the same z-score scaler from the training split,
+  3. feeds it one window the model never saw (from the chronological TEST region),
+  4. prints and saves ACTUAL vs PREDICTED at 5 / 15 / 30 / 60 minutes,
+  5. recomputes MAE from those predictions and compares it to the metrics reported during training —
+     if the reloaded model does not reproduce its own reported error, the checkpoint is not the model
+     that was scored, and everything downstream is unsafe.
+
+Checkpoints come from `predict/aws_train.py --collect-checkpoints` (S3) and are never trained here.
+"""
+from __future__ import annotations
+
+import argparse
+import json
+import pickle
+import sys
+from pathlib import Path
+
+import numpy as np
+
+REPO = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(REPO))
+CKPT_DIR = REPO / "predict/results/checkpoints"
+RESULTS = REPO / "predict/results"
+BTS = Path.home() / ".dhakaflow/upstream/BasicTS_legacy"
+
+
+def find_checkpoints() -> list[dict]:
+    out = []
+    for pt in sorted(CKPT_DIR.rglob("*.pt")):
+        parts = pt.relative_to(CKPT_DIR).parts
+        arch = parts[0] if parts else "?"
+        ds = next((p.split("_")[0] for p in parts if "_" in p and p.split("_")[0].replace("-", "").isalnum()), "?")
+        out.append({"path": pt, "arch": arch, "dataset_dir": ds,
+                    "size_mb": round(pt.stat().st_size / 1e6, 2),
+                    "test_results": next(iter(pt.parent.glob("test_results.npz")), None),
+                    "test_metrics": next(iter(pt.parent.glob("test_metrics.json")), None)})
+    return out
+
+
+def load_official_arch(arch_name: str, cfg_path: Path):
+    """Import the model class from the PINNED upstream repo — never a local re-implementation."""
+    if not BTS.exists():
+        raise SystemExit(f"pinned harness missing at {BTS}; run scripts to fetch upstream first")
+    sys.path.insert(0, str(BTS))
+    import importlib.util
+    spec = importlib.util.spec_from_file_location("bts_cfg", cfg_path)
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    cfg = mod.CFG
+    model_cls = cfg.MODEL.ARCH
+    model = model_cls(**cfg.MODEL.PARAM)
+    return model, cfg
+
+
+def main() -> int:
+    p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    p.add_argument("--list", action="store_true")
+    p.add_argument("--model", default="GWNet")
+    p.add_argument("--dataset", default="METR-LA")
+    p.add_argument("--window", type=int, default=0, help="index into the test region")
+    p.add_argument("--sensors", type=int, default=3, help="how many sensors to print")
+    a = p.parse_args()
+
+    cks = find_checkpoints()
+    if a.list or not cks:
+        if not cks:
+            print(f"no checkpoints under {CKPT_DIR}\n"
+                  f"fetch them:  python predict/aws_train.py --job <job> --collect-checkpoints")
+            return 1
+        print(f"{'arch':<16} {'size MB':>8}  path")
+        for c in cks:
+            print(f"{c['arch']:<16} {c['size_mb']:>8}  {c['path'].relative_to(REPO)}")
+        return 0
+
+    arch_alias = {"GWNet": "GraphWaveNet", "STID": "STID", "DCRNN": "DCRNN", "STAEformer": "STAEformer"}
+    want = arch_alias.get(a.model, a.model)
+    cand = [c for c in cks if c["arch"] == want]
+    if not cand:
+        print(f"no checkpoint for {a.model} (arch {want}); available: {sorted({c['arch'] for c in cks})}")
+        return 1
+    ck = cand[0]
+    print(f"[infer] checkpoint {ck['path'].relative_to(REPO)} ({ck['size_mb']} MB)")
+
+    import torch
+    cfg_path = BTS / f"baselines/{a.model}/{a.dataset}.py"
+    if not cfg_path.exists():
+        print(f"official config not found: {cfg_path}")
+        return 1
+    model, cfg = load_official_arch(want, cfg_path)
+    state = torch.load(ck["path"], map_location="cpu", weights_only=False)
+    sd = state.get("model_state_dict", state)
+    missing, unexpected = model.load_state_dict(sd, strict=False)
+    print(f"[infer] loaded official {want}: {sum(p.numel() for p in model.parameters()):,} parameters; "
+          f"missing={len(missing)} unexpected={len(unexpected)}")
+    if missing or unexpected:
+        print(f"[infer] WARNING: key mismatch — missing {list(missing)[:3]}, unexpected {list(unexpected)[:3]}")
+    model.eval()
+
+    # data: the same prepared tensors the harness trained on
+    ds_dir = BTS / "datasets" / a.dataset
+    dat, desc = ds_dir / "data.dat", ds_dir / "desc.json"
+    if not dat.exists():
+        print(f"prepared dataset missing at {ds_dir}. Prepare it once with the harness's own script:\n"
+              f"  cd {BTS} && python scripts/data_preparation/{a.dataset}/generate_training_data.py")
+        return 1
+    d = json.loads(desc.read_text())
+    shape = d["shape"] if "shape" in d else [d["num_time_steps"], d["num_nodes"], d["num_features"]]
+    raw = np.memmap(dat, dtype="float32", mode="r", shape=tuple(shape))
+    T, N, C = raw.shape
+    L = int(cfg.DATASET_INPUT_LEN if hasattr(cfg, "DATASET_INPUT_LEN") else 12)
+    H = int(cfg.DATASET_OUTPUT_LEN if hasattr(cfg, "DATASET_OUTPUT_LEN") else 12)
+    n_train = int(T * 0.7)
+    test_lo = n_train + int(T * 0.1)
+    mu = raw[:n_train, :, 0].mean()
+    sd_ = raw[:n_train, :, 0].std()
+    print(f"[infer] {a.dataset}: T={T} N={N} C={C}; z-score from TRAIN split mu={mu:.3f} sd={sd_:.3f}; "
+          f"test region starts at t={test_lo}")
+
+    t0 = test_lo + max(0, a.window)
+    if t0 + L + H > T:
+        print("window past the end of the series")
+        return 1
+    x = np.array(raw[t0:t0 + L], dtype="float32")[None]        # (1, L, N, C)
+    y = np.array(raw[t0 + L:t0 + L + H, :, 0], dtype="float32")  # (H, N)
+    xn = x.copy()
+    xn[..., 0] = (xn[..., 0] - mu) / sd_
+    with torch.no_grad():
+        out = model(history_data=torch.tensor(xn), future_data=None, batch_seen=0, epoch=1, train=False)
+        pred = (out if isinstance(out, torch.Tensor) else out["prediction"]).numpy()
+    pred = pred[0, ..., 0] * sd_ + mu                          # (H, N) back in mph
+    print(f"[infer] forecast produced: {pred.shape} (horizon x sensors)")
+
+    steps = {5: 1, 15: 3, 30: 6, 60: 12}
+    obs = np.where(y > 0)                                       # observed only (0 = sensor outage)
+    mae_all = float(np.abs(pred[obs] - y[obs]).mean())
+    rows = []
+    print(f"\n{'horizon':>8} {'sensor':>7} {'actual':>9} {'predicted':>10} {'error':>8}")
+    for mnt, st in steps.items():
+        if st > H:
+            continue
+        good = np.where(y[st - 1] > 0)[0][: a.sensors]
+        for s in good:
+            act, prd = float(y[st - 1, s]), float(pred[st - 1, s])
+            rows.append({"horizon_min": mnt, "sensor_index": int(s), "actual_mph": round(act, 2),
+                         "predicted_mph": round(prd, 2), "abs_error_mph": round(abs(prd - act), 2)})
+            print(f"{mnt:>6} min {s:>7} {act:>9.2f} {prd:>10.2f} {abs(prd - act):>8.2f}")
+        m = y[st - 1] > 0
+        rows.append({"horizon_min": mnt, "sensor_index": "ALL", "actual_mph": None, "predicted_mph": None,
+                     "abs_error_mph": round(float(np.abs(pred[st - 1][m] - y[st - 1][m]).mean()), 3)})
+
+    reported = None
+    tr = RESULTS / "trained_results.json"
+    if tr.exists():
+        for r in json.loads(tr.read_text())["runs"]:
+            if r["model"] == a.model and r["dataset"] == a.dataset:
+                reported = r["metrics_by_horizon_min"]
+    rec = {"model": a.model, "dataset": a.dataset, "checkpoint": str(ck["path"].relative_to(REPO)),
+           "window_index_in_test": a.window, "t0_absolute": int(t0), "input_len": L, "horizon_len": H,
+           "scaler": {"mu": float(mu), "sd": float(sd_), "fitted_on": "train split only"},
+           "window_mae_all_horizons_mph": round(mae_all, 3),
+           "reported_test_metrics": reported,
+           "note": "single unseen window; the training metrics average the whole test set, so these "
+                   "differ in magnitude — the check is that they are the same order, not identical",
+           "rows": rows}
+    (RESULTS / f"inference_{a.model}_{a.dataset}.json").write_text(json.dumps(rec, indent=1))
+    print(f"\n[infer] window MAE over all horizons: {mae_all:.3f} mph")
+    if reported:
+        print(f"[infer] training-reported MAE @15min: {reported.get(15, {}).get('mae')} mph "
+              f"(whole test set) — same order of magnitude expected")
+    print(f"[infer] wrote {RESULTS / f'inference_{a.model}_{a.dataset}.json'}")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

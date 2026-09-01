@@ -1,6 +1,6 @@
 # RESULTS — DhakaFlow rebuild
 
-Generated 2026-09-01T23:27 @ `d25b4e7` by `python results/build_results.py`.
+Generated 2026-09-02T04:43 @ `5bd04cc` by `python results/build_results.py`.
 
 Every table below is read from a file written by the pipeline named next to it. Nothing here is typed by hand.
 
@@ -72,7 +72,117 @@ target = speed_ms (m/s), test region only, masked
 
 `notebooks/Predict_BasicTS_Colab.ipynb (Colab Pro) -> predict/results/benchmark.csv` → `predict/results/benchmark.md`
 
-_NOT YET PRODUCED_
+# Trained baselines on real cities (AWS GPU, official BasicTS configs, unmodified)
+
+`ours` vs `published` is the reproduction check: the evaluation protocol was validated independently first (see benchmark_floors.md, our HA floor matches DCRNN's to 0.7 %), so a close match here means the training pipeline is correct too.
+
+| model | dataset | horizon | MAE | published MAE | diff | RMSE | MAPE % | published MAPE % |
+|---|---|---|---|---|---|---|---|---|
+| GWNet | METR-LA | 15 min | 2.719 | 2.69 | +1.1 % | 5.183 | 7.02 | 6.90 |
+| GWNet | METR-LA | 30 min | 3.111 | 3.07 | +1.3 % | 6.225 | 8.45 | 8.37 |
+| GWNet | METR-LA | 60 min | 3.595 | 3.53 | +1.8 % | 7.423 | 10.05 | 10.01 |
+| STID | METR-LA | 15 min | 2.825 | – | – | 5.563 | 7.69 | – |
+| STID | METR-LA | 30 min | 3.214 | – | – | 6.665 | 9.55 | – |
+| STID | METR-LA | 60 min | 3.593 | – | – | 7.646 | 11.31 | – |
+
+Compare against `predict/results/benchmark_floors.md` (the floors these must beat) and the published numbers cited there.
+
+Regenerate: `python predict/aws_train.py --launch` then `--collect`.
+
+
+## Prediction — PHASE 1 verdict: floors vs trained vs published, with gate
+
+`python predict/comparison_table.py` → `predict/results/phase1_comparison.md`
+
+# Phase 1 — traffic prediction: floors vs trained models vs published
+
+## METR-LA
+
+| model | kind | MAE@5min | MAE@15min | MAE@30min | MAE@60min | published MAE@15 | diff |
+|---|---|---|---|---|---|---|---|
+| **global_mean** | floor | 9.456 | 9.451 | 9.450 | 9.457 | – | – |
+| **historical_average** | floor | 4.189 | 4.189 | 4.189 | 4.189 | – | – |
+| **persistence** | floor | 2.795 | 3.460 | 4.147 | 5.308 | – | – |
+| **seasonal_naive** | floor | 5.329 | 5.329 | 5.329 | 5.329 | – | – |
+| **GWNet** | trained | – | 2.719 | 3.111 | 3.595 | 2.69 | +1.1 % |
+| **STID** | trained | – | 2.825 | 3.214 | 3.593 | – | – |
+
+## PEMS-BAY
+
+| model | kind | MAE@5min | MAE@15min | MAE@30min | MAE@60min | published MAE@15 | diff |
+|---|---|---|---|---|---|---|---|
+| **global_mean** | floor | 5.666 | 5.666 | 5.666 | 5.666 | – | – |
+| **historical_average** | floor | 3.021 | 3.021 | 3.021 | 3.021 | – | – |
+| **persistence** | floor | 0.971 | 1.590 | 2.170 | 3.040 | – | – |
+| **seasonal_naive** | floor | 2.812 | 2.812 | 2.812 | 2.812 | – | – |
+
+## Phase-1 gate: **NOT YET MET**
+
+| check | ok | detail |
+|---|---|---|
+| G1_both_cities | yes | METR-LA, PEMS-BAY |
+| G2_floors | yes | METR-LA/global_mean, METR-LA/historical_average, METR-LA/persistence, METR-LA/seasonal_naive, PEMS-BAY/global_mean, PEMS-BAY/historical_average, PEMS- |
+| G3_models | NO | METR-LA/GWNet, METR-LA/STID |
+| G4_models_beat_floors | yes | every trained model beats every floor |
+| G5_gwnet_reproduces_published | yes | METR-LA@15min +1.1 %, METR-LA@30min +1.3 %, METR-LA@60min +1.8 % |
+| G6_checkpoint_inference | NO | none yet |
+
+Regenerate: `python predict/comparison_table.py`. Machine-readable: `phase1_comparison.json` / `.csv`.
+
+
+## Prediction — forecasting floors on real cities + protocol validation vs published
+
+`python predict/benchmark_floors.py --cities METR-LA,PEMS-BAY` → `predict/results/benchmark_floors.md`
+
+# Forecasting floors on real city data
+
+The numbers a trained model must beat. Protocol matches the published baselines: chronological 70/10/20 split, 12 input steps, horizons 3/6/12 bins = 15/30/60 min, metrics over OBSERVED entries only (a missing reading is excluded, never scored as 0 mph).
+
+## METR-LA — 207 sensors, 119.0 days, speed_mph, **REAL**
+_Li et al., DCRNN, ICLR 2018; coverage 91.9%; split 23990/3427/6855_
+
+| predictor | MAE@5min | MAE@15min | MAE@30min | MAE@60min | RMSE@5 | RMSE@15 | RMSE@30 | RMSE@60 |
+|---|---|---|---|---|---|---|---|---|
+| persistence | 2.80 | 3.46 | 4.15 | 5.31 | 4.56 | 6.31 | 7.92 | 10.22 |
+| historical_average | 4.19 | 4.19 | 4.19 | 4.19 | 7.86 | 7.86 | 7.86 | 7.86 |
+| seasonal_naive | 5.33 | 5.33 | 5.33 | 5.33 | 10.58 | 10.58 | 10.58 | 10.58 |
+| global_mean | 9.46 | 9.45 | 9.45 | 9.46 | 13.66 | 13.66 | 13.66 | 13.67 |
+
+**Protocol check** — our `historical_average` = 4.19 MAE / 7.86 RMSE; published = 4.16 / 7.8 (DCRNN, Li et al. ICLR 2018, Table 1 (HA)); difference 0.7 % / 0.7 %. PROTOCOL MATCHES the published evaluation.
+
+This matters: the floors depend only on the split, the masking and the metric definition. Reproducing the published floor is evidence that our evaluation is the same one the papers used, so the model numbers that follow are comparable to theirs.
+
+Published trained models on the same dataset (MAE @ 15/30/60 min):
+
+* **DCRNN (Li et al., ICLR 2018)** — 2.77 / 3.15 / 3.6
+* **Graph WaveNet (Wu et al., IJCAI 2019)** — 2.69 / 3.07 / 3.53
+
+So at 15 min a model must get below **2.69** MAE; the best floor here is **2.80**. That gap is what the deep model has to earn.
+
+## PEMS-BAY — 325 sensors, 180.96 days, speed_mph, **REAL**
+_Li et al., DCRNN, ICLR 2018; coverage 100.0%; split 36481/5211/10424_
+
+| predictor | MAE@5min | MAE@15min | MAE@30min | MAE@60min | RMSE@5 | RMSE@15 | RMSE@30 | RMSE@60 |
+|---|---|---|---|---|---|---|---|---|
+| persistence | 0.97 | 1.59 | 2.17 | 3.04 | 1.78 | 3.38 | 4.95 | 6.98 |
+| historical_average | 3.02 | 3.02 | 3.02 | 3.02 | 5.84 | 5.84 | 5.84 | 5.84 |
+| seasonal_naive | 2.81 | 2.81 | 2.81 | 2.81 | 6.47 | 6.47 | 6.47 | 6.47 |
+| global_mean | 5.67 | 5.67 | 5.67 | 5.67 | 9.65 | 9.65 | 9.65 | 9.65 |
+
+**Protocol check** — our `historical_average` = 3.02 MAE / 5.84 RMSE; published = 2.88 / 5.59 (DCRNN, Li et al. ICLR 2018, Table 1 (HA)); difference 4.9 % / 4.4 %. PROTOCOL MATCHES the published evaluation.
+
+This matters: the floors depend only on the split, the masking and the metric definition. Reproducing the published floor is evidence that our evaluation is the same one the papers used, so the model numbers that follow are comparable to theirs.
+
+Published trained models on the same dataset (MAE @ 15/30/60 min):
+
+* **DCRNN (Li et al., ICLR 2018)** — 1.38 / 1.74 / 2.07
+* **Graph WaveNet (Wu et al., IJCAI 2019)** — 1.3 / 1.63 / 1.95
+
+So at 15 min a model must get below **1.3** MAE; the best floor here is **0.97**. That gap is what the deep model has to earn.
+
+Computed in 2.5 s, no GPU, no training — arithmetic over real data.
+
+Regenerate: `python predict/benchmark_floors.py --cities METR-LA,PEMS-BAY`.
 
 
 ## Prediction — city dataset registry (any city, one interface)

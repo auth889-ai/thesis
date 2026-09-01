@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Train official BasicTS(-legacy) baselines on the Dhaka twin dataset — locally, on CPU.
+"""RETIRED — violates the project policy that all model training runs on Colab/GPU, never this machine.
+
+Kept only for history. Use notebooks/Predict_Twin_Colab.ipynb instead.
+
+Original docstring follows.
+
+Train official BasicTS(-legacy) baselines on the Dhaka twin dataset — locally, on CPU.
 
     python predict/train_twin_local.py --models STID,GWNet
     python predict/train_twin_local.py --models AGCRN,DCRNN,STAEformer,STGCN --epochs 100

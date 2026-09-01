@@ -19,6 +19,8 @@ SECTIONS = [  # (title, markdown produced by the pipeline, command that produces
     ("Prediction — LIVE Dhaka congestion floors (real Google-derived stream)", "predict/results/live_floors.md", "python predict/record_live.py --live --yes  (recorder) && python predict/live_state.py --report"),
     ("Prediction — twin floors (persistence / historical average)", "predict/results/twin_floors.md", "make data && python predict/baselines_twin.py"),
     ("Prediction — BasicTS benchmark (METR-LA / PEMS-BAY / PEMS08)", "predict/results/benchmark.md", "notebooks/Predict_BasicTS_Colab.ipynb (Colab Pro) -> predict/results/benchmark.csv"),
+    ("Prediction — PHASE 1 verdict: floors vs trained vs published, with gate", "predict/results/phase1_comparison.md", "python predict/comparison_table.py"),
+    ("Prediction — forecasting floors on real cities + protocol validation vs published", "predict/results/benchmark_floors.md", "python predict/benchmark_floors.py --cities METR-LA,PEMS-BAY"),
     ("Prediction — city dataset registry (any city, one interface)", "predict/results/cities.md", "python predict/city_datasets.py --list"),
     ("Prediction × Networking — federated forecasting under the MEASURED V2X link", "predict/results/federated.md", "notebooks/Federated_V2X_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results predict/results --include federated*"),
     ("Routing — arms × paired seeds on Dhaka R1", "route/results/stats.md", "make route"),
