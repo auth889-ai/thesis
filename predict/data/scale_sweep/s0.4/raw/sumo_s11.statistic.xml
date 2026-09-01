@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-09-01T10:24:05.092447+06:00 by Eclipse SUMO sumo 1.27.1
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="/Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"/>
+        <route-files value="/Users/jannatulferdouseva/thesis/predict/data/scale_sweep/s0.4/raw/routes_12x600s.rou.xml.gz"/>
+        <additional-files value="/Users/jannatulferdouseva/thesis/predict/data/scale_sweep/s0.4/raw/sensors_s11.add.xml"/>
+    </input>
+
+    <output>
+        <statistic-output value="/Users/jannatulferdouseva/thesis/predict/data/scale_sweep/s0.4/raw/sumo_s11.statistic.xml"/>
+    </output>
+
+    <time>
+        <end value="7200.0"/>
+    </time>
+
+    <processing>
+        <ignore-route-errors value="true"/>
+        <scale value="0.4"/>
+        <time-to-teleport value="300"/>
+    </processing>
+
+    <routing>
+        <device.rerouting.probability value="0"/>
+    </routing>
+
+    <report>
+        <no-warnings value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <random_number>
+        <seed value="11"/>
+    </random_number>
+
+</sumoConfiguration>
+-->
+
+<statistics xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/statistic_file.xsd">
+    <performance clockBegin="1788236645.19" clockEnd="1788236702.36" clockDuration="57.17" traciDuration="0.00" realTimeFactor="125.95" vehicleUpdatesPerSecond="206997.80" personUpdatesPerSecond="0.00" begin="0.00" end="7200.00" duration="7200.00"/>
+    <vehicles loaded="36000" inserted="7565" running="2933" waiting="6835"/>
+    <teleports total="710" jam="541" yield="138" wrongLane="31"/>
+    <safety collisions="0" emergencyStops="0" emergencyBraking="1"/>
+    <persons loaded="0" running="0" jammed="0"/>
+    <personTeleports total="0" abortWait="0" wrongDest="0"/>
+</statistics>

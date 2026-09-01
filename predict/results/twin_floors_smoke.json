@@ -1,0 +1,68 @@
+{
+  "split": {
+    "train_end": 16,
+    "val_end": 19,
+    "n_timesteps": 24,
+    "sha256": "f2320c70f8147840c360b416b3e3e99dcf16ce10c1bd5d8b901a41174cd15083"
+  },
+  "models": {
+    "persistence": {
+      "5min": {
+        "mae": 1.2891961832929306,
+        "rmse": 2.7738998402894155,
+        "mape_pct": 63.314755151982794,
+        "mape_validity_fraction": 1.0,
+        "n_scored": 423
+      },
+      "15min": {
+        "mae": 2.17899530810069,
+        "rmse": 4.803836207232067,
+        "mape_pct": 470.5818166446742,
+        "mape_validity_fraction": 1.0,
+        "n_scored": 428
+      },
+      "30min": null,
+      "60min": null
+    },
+    "historical_average": {
+      "5min": {
+        "mae": 3.6311244801914526,
+        "rmse": 6.5009584647800756,
+        "mape_pct": 2749.1324596173345,
+        "mape_validity_fraction": 1.0,
+        "n_scored": 441
+      },
+      "15min": {
+        "mae": 3.6311244801914526,
+        "rmse": 6.5009584647800756,
+        "mape_pct": 2749.1324596173345,
+        "mape_validity_fraction": 1.0,
+        "n_scored": 441
+      },
+      "30min": null,
+      "60min": null
+    }
+  },
+  "evidence_domain": "DHAKA_SIMULATED_SENSOR_GRAPH",
+  "reality_label": "SIMULATED",
+  "dataset": "predict/data/dhaka_twin_smoke",
+  "dataset_data_sha256": "9d857c71dc8740d45c5dfcea823c146d63f6476e92c2f1e4838f8590b4c5b21f",
+  "channel": "speed_ms",
+  "unit": "m/s",
+  "horizons_min": [
+    5,
+    15,
+    30,
+    60
+  ],
+  "period_steps_for_historical_average": 24,
+  "shape": [
+    24,
+    250,
+    5
+  ],
+  "mask_coverage_pct": 36.4,
+  "sensors_with_any_valid_bin": 96,
+  "sensors_with_ge50pct_valid_bins": 93,
+  "scoring": "test region, validity mask, no cross-seed (t, t+h) pairs"
+}

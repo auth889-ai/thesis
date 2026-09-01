@@ -1,7 +1,32 @@
 # PROJECT MAP — read this first (5 minutes)
 
-The project is a GATED CAUSAL CHAIN: a real video goes in, a network-guarded
-decision comes out, and every stage has a PASS artifact you can open.
+The active thesis path is the **120-hour rebuild layer**: predict traffic on the
+Dhaka R1 SUMO twin, route vehicles on predicted travel times, evaluate paired
+seeds, then present the evidence in one results file. It reuses the existing
+DhakaFlow source code; it is not a second project.
+
+Read `docs/PROJECT_STRUCTURE.md` for the folder contract.
+
+## Active rebuild path
+
+| Folder | What it is |
+|---|---|
+| `predict/` | twin sensor data, forecasting floors, BasicTS/Graph WaveNet outputs, forecast-to-weight XML |
+| `route/` | static/reactive/predictive/DUE/DSO routing harness and paired-seed stats |
+| `network/` | MOSAIC V2X penetration and latency/loss sweeps |
+| `nlp/` | incident text classifier and event-to-edge weight injection |
+| `demo/` | Streamlit/presentation viewer for generated evidence |
+| `results/` | single source for final tables and reproducibility links |
+
+Main command for the rebuild layer:
+
+    make results
+
+## Existing gate chain
+
+The older DhakaFlow gate chain is still useful for appendix evidence: a real
+video goes in, a network-guarded decision comes out, and each stage has a PASS
+artifact you can open.
 
 ## THE command (the whole system, one line)
 
@@ -11,7 +36,7 @@ video -> detect+track -> physical state -> synchronized SUMO twin ->
 GWNet forecast -> candidate futures from ONE saved t0 (paired seeds) ->
 network guards -> decision (sometimes honestly NO ACTION) -> four-pane page.
 
-## The 7 main source files (the brain)
+## Existing source files reused by the rebuild
 
 | # | File | What it is |
 |---|------|------------|
@@ -45,15 +70,17 @@ network guards -> decision (sometimes honestly NO ACTION) -> four-pane page.
 
 ## Evidence & docs
 
+- `docs/PROJECT_STRUCTURE.md` — active layout and what each folder owns
+- `docs/REBUILD_120H_PLAN.md` — current 5-day execution plan
+- `results/RESULTS.md` — active result table index
 - `docs/RESULTS_MATRIX.md` — every number + the gate table (generated)
 - `docs/RESEARCH_ARCHITECTURE_REVIEW.md` — the published systems each part follows
 - `docs/CURRENT_SYSTEM_GAP_AUDIT.md` — 28 defects found and adjudicated
 - `docs/PRESENTER_GUIDE.md`, `docs/INTERVIEW_CARDS.md` — what to say
 - `app.py` -> http://localhost:8080 — upload a video, watch the chain run
 
-## Safe to IGNORE
+## What not to edit first
 
-`paper_labs/` (frozen foundations) · `dhakaflow/` (plumbing) · `upstream/`
-pins · old `scripts/case_report.py` / `demo_react.py` era files (superseded
-by the gate chain; kept for history) · anything in artifacts/ you don't
-recognize (run outputs).
+Do not mass-move source folders into `legacy/` before the rebuild path passes.
+Treat `paper_labs/` as frozen foundations, `archive/` as historical material,
+and large `artifacts/` outputs as evidence or regenerated run products.

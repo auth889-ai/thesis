@@ -1,15 +1,35 @@
 # DhakaFlow Nexus
 
-**Real UAV trajectories → same-street SUMO twin → published cycle-level
+**Current active thesis path:** traffic prediction + predictive route
+optimization on the real Dhaka R1 SUMO network. The clean execution layer is
+`predict/`, `route/`, `network/`, `nlp/`, `demo/`, and `results/`; it reuses the
+existing `dhakaflow/`, `research/`, `scripts/`, and `paper_labs/` code instead
+of starting a new project.
+
+Start here:
+
+1. `docs/PROJECT_STRUCTURE.md` — what each folder means and what is active.
+2. `docs/REBUILD_120H_PLAN.md` — 5-day rebuild plan.
+3. `results/RESULTS.md` — every result, command, and evidence file.
+4. `PROJECT_MAP.md` — quick code map.
+
+Main verification:
+
+```bash
+PYTHONPATH=. pytest tests/platform/test_interfaces.py tests/platform/test_repo_architecture.py -q
+make results
+```
+
+---
+
+**Existing evidence chain kept from the earlier DhakaFlow build:** real UAV
+trajectories → same-street SUMO twin → published cycle-level
 calibration (−27% discharge error, authors' code) → held-out validation
 (speed MAE 3.0 m/s, 0 teleports) → causal same-state control experiments
-under network-honesty guards.**
+under network-honesty guards.
 
 See `REPRODUCE.md` for the one-command path to every number, and
 `PROJECT_MAP.md` for the tour.
-
-
-> **New here or lost? Read [`PROJECT_MAP.md`](PROJECT_MAP.md) first — 6 main files, 4 commands, everything else is support.**
 
 **AI traffic management for Dhaka:** observe real traffic → predict congestion
 before it forms → prevent/react with signal control and routing → prove the
@@ -17,7 +37,7 @@ delay reduction inside a SUMO digital twin of the real road network.
 
 ---
 
-## Live demo — any video in, traffic intelligence out
+## Appendix Demo — any video in, traffic intelligence out
 
 ![REACT demo — dense rush-hour traffic detected as CONGESTED](docs/media/react_demo_rush.gif)
 
