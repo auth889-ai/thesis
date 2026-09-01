@@ -1,0 +1,55 @@
+{
+ "gate": "GATE1_DATA_PROVENANCE",
+ "verdict": "PASS",
+ "dataset": "pNEUMA (Barmpounakis & Geroliminis 2020, TR-C, DOI 10.1016/j.trc.2019.11.023)",
+ "acquisition": {
+  "endpoint": "https://open-traffic.epfl.ch/wp-content/uploads/mydownloads.php",
+  "protocol_repo": "EPFL-ENAC/pNEUMA @f56f941",
+  "request": "fpLocation=d8&fpDate=20181029&fpTime=0800_0830",
+  "downloaded_by_us": true
+ },
+ "recording": {
+  "city": "Athens, Greece",
+  "drone_zone": "d8",
+  "date": "2018-10-29",
+  "slot": "08:00-08:30 local",
+  "actual_flight_coverage_s": 827.8
+ },
+ "file": {
+  "bytes": 234666117,
+  "sha256": "93bfbae89af0ce178a8cc857852561976d10f1217ae336cf9bfcb2a0e9d9a4e2",
+  "header_fields": "track_id; type; traveled_d; avg_speed; lat; lon; speed; lon_acc; lat_acc; time"
+ },
+ "contents": {
+  "vehicles": 2110,
+  "types": {
+   "Motorcycle": 543,
+   "Car": 1110,
+   "Bus": 53,
+   "Medium Vehicle": 80,
+   "Taxi": 286,
+   "Heavy Vehicle": 38
+  },
+  "native_rate_hz": 25,
+  "bbox": [
+   37.989583,
+   23.730233,
+   37.992731,
+   23.736454
+  ],
+  "fields_per_sample": [
+   "lat",
+   "lon",
+   "speed_kmh",
+   "lon_acc",
+   "lat_acc",
+   "time_s"
+  ]
+ },
+ "reality_checks": {
+  "coordinates_inside_central_athens": true,
+  "speeds_physical": true,
+  "timestamps_monotone_sampled": true,
+  "hash_matches_first_recorded": true
+ }
+}
