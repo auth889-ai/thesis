@@ -16,7 +16,9 @@ REPO = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(REPO))
 SP = Path("/private/tmp/claude-501/-Users-jannatulferdouseva-thesis/"
           "fdc3d95a-9e51-4b32-a390-6d1fbc06a61a/scratchpad/urban")
-A1 = 372.5
+import os
+T_LO = float(os.environ.get("WIN_LO", 0.0))
+T_HI = float(os.environ.get("WIN_HI", 372.5))
 
 def main() -> None:
     import sumolib
@@ -34,7 +36,7 @@ def main() -> None:
     cross_times = defaultdict(list)     # junction node -> [(t, vid, from_node)]
     matched = 0
     for tr in tracks:
-        pts = [(s.t, s.lat, s.lon) for s in tr.samples if s.t <= A1]
+        pts = [(s.t, s.lat, s.lon) for s in tr.samples if T_LO <= s.t <= T_HI]
         if len(pts) < 20:
             continue
         if matched >= 500:
