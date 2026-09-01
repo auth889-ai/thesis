@@ -1,0 +1,426 @@
+{
+ "horizon_s": 7200,
+ "source": "/Users/jannatulferdouseva/thesis/route/results/arms_h7200.json",
+ "reference_arm": "reactive",
+ "decision": "ACT",
+ "selected_arm": "predictive_persistence",
+ "selected_mean_total_vehicle_hours_benefit_pct": 32.42411218615388,
+ "acceptance_rule": {
+  "minimum_paired_seeds": 3,
+  "required": [
+   "total_vehicle_hours improves on every paired seed",
+   "arrivals do not decrease on any paired seed",
+   "teleports do not increase on any paired seed"
+  ],
+  "reference": "reactive"
+ },
+ "deployable_evaluations": [
+  {
+   "arm": "predictive_persistence",
+   "paired_seeds": [
+    11,
+    12,
+    13
+   ],
+   "n": 3,
+   "accepted": true,
+   "reason": "improves total vehicle-hours, arrivals, and teleports on every paired seed",
+   "mean_benefit_pct": {
+    "total_vehicle_hours": 32.42411218615388,
+    "mean_travel_time_all": 33.83009255694927,
+    "total_waiting_s": 35.31491437971485,
+    "arrived": 8.49976617527953,
+    "teleports": 83.3509046360452
+   },
+   "per_seed": [
+    {
+     "seed": 11,
+     "arrived": {
+      "candidate": 6000,
+      "reference": 5536,
+      "delta": 464,
+      "benefit_pct": 8.38150289017341,
+      "improved": true
+     },
+     "mean_travel_time_all": {
+      "candidate": 536.8818333333334,
+      "reference": 709.3769348528662,
+      "delta": -172.4951015195328,
+      "benefit_pct": 24.31642375788698,
+      "improved": true
+     },
+     "teleports": {
+      "candidate": 100,
+      "reference": 351,
+      "delta": -251,
+      "benefit_pct": 71.5099715099715,
+      "improved": true
+     },
+     "total_vehicle_hours": {
+      "candidate": 894.8030555555556,
+      "reference": 1158.4519444444445,
+      "delta": -263.6488888888889,
+      "benefit_pct": 22.758724706127214,
+      "improved": true
+     },
+     "total_waiting_s": {
+      "candidate": 1137858.0,
+      "reference": 1146491.0,
+      "delta": -8633.0,
+      "benefit_pct": 0.7529932637936102,
+      "improved": true
+     }
+    },
+    {
+     "seed": 12,
+     "arrived": {
+      "candidate": 6000,
+      "reference": 5543,
+      "delta": 457,
+      "benefit_pct": 8.244632870286848,
+      "improved": true
+     },
+     "mean_travel_time_all": {
+      "candidate": 427.784,
+      "reference": 750.3909569947306,
+      "delta": -322.6069569947306,
+      "benefit_pct": 42.99185031316895,
+      "improved": true
+     },
+     "teleports": {
+      "candidate": 10,
+      "reference": 415,
+      "delta": -405,
+      "benefit_pct": 97.59036144578313,
+      "improved": true
+     },
+     "total_vehicle_hours": {
+      "candidate": 712.9733333333334,
+      "reference": 1226.263888888889,
+      "delta": -513.2905555555556,
+      "benefit_pct": 41.85808293031,
+      "improved": true
+     },
+     "total_waiting_s": {
+      "candidate": 529160.0,
+      "reference": 1620620.0,
+      "delta": -1091460.0,
+      "benefit_pct": 67.34829879922499,
+      "improved": true
+     }
+    },
+    {
+     "seed": 13,
+     "arrived": {
+      "candidate": 6000,
+      "reference": 5511,
+      "delta": 489,
+      "benefit_pct": 8.873162765378334,
+      "improved": true
+     },
+     "mean_travel_time_all": {
+      "candidate": 473.6835,
+      "reference": 719.68690313779,
+      "delta": -246.00340313778997,
+      "benefit_pct": 34.18200359979187,
+      "improved": true
+     },
+     "teleports": {
+      "candidate": 68,
+      "reference": 357,
+      "delta": -289,
+      "benefit_pct": 80.95238095238095,
+      "improved": true
+     },
+     "total_vehicle_hours": {
+      "candidate": 789.4725,
+      "reference": 1172.29,
+      "delta": -382.8175,
+      "benefit_pct": 32.655528922024416,
+      "improved": true
+     },
+     "total_waiting_s": {
+      "candidate": 798468.0,
+      "reference": 1284608.0,
+      "delta": -486140.0,
+      "benefit_pct": 37.843451076125945,
+      "improved": true
+     }
+    }
+   ]
+  }
+ ],
+ "upper_bound_not_deployable": [
+  {
+   "arm": "predictive_oracle",
+   "paired_seeds": [
+    11,
+    12,
+    13
+   ],
+   "n": 3,
+   "accepted": true,
+   "reason": "improves total vehicle-hours, arrivals, and teleports on every paired seed",
+   "mean_benefit_pct": {
+    "total_vehicle_hours": 25.37259414679812,
+    "mean_travel_time_all": 26.656544977465387,
+    "total_waiting_s": 20.25800742558995,
+    "arrived": 7.1736010681142846,
+    "teleports": 65.8590194049679
+   },
+   "per_seed": [
+    {
+     "seed": 11,
+     "arrived": {
+      "candidate": 5835,
+      "reference": 5536,
+      "delta": 299,
+      "benefit_pct": 5.401011560693641,
+      "improved": true
+     },
+     "mean_travel_time_all": {
+      "candidate": 620.3352396972246,
+      "reference": 709.3769348528662,
+      "delta": -89.0416951556416,
+      "benefit_pct": 12.552099001373648,
+      "improved": true
+     },
+     "teleports": {
+      "candidate": 199,
+      "reference": 351,
+      "delta": -152,
+      "benefit_pct": 43.3048433048433,
+      "improved": true
+     },
+     "total_vehicle_hours": {
+      "candidate": 1024.4147222222223,
+      "reference": 1158.4519444444445,
+      "delta": -134.03722222222223,
+      "benefit_pct": 11.570373968900546,
+      "improved": true
+     },
+     "total_waiting_s": {
+      "candidate": 1414229.0,
+      "reference": 1146491.0,
+      "delta": 267738.0,
+      "benefit_pct": -23.352821784034937,
+      "improved": false
+     }
+    },
+    {
+     "seed": 12,
+     "arrived": {
+      "candidate": 6000,
+      "reference": 5543,
+      "delta": 457,
+      "benefit_pct": 8.244632870286848,
+      "improved": true
+     },
+     "mean_travel_time_all": {
+      "candidate": 464.9945,
+      "reference": 750.3909569947306,
+      "delta": -285.39645699473056,
+      "benefit_pct": 38.0330352244283,
+      "improved": true
+     },
+     "teleports": {
+      "candidate": 34,
+      "reference": 415,
+      "delta": -381,
+      "benefit_pct": 91.80722891566265,
+      "improved": true
+     },
+     "total_vehicle_hours": {
+      "candidate": 774.9908333333333,
+      "reference": 1226.263888888889,
+      "delta": -451.27305555555563,
+      "benefit_pct": 36.80064785765254,
+      "improved": true
+     },
+     "total_waiting_s": {
+      "candidate": 736609.0,
+      "reference": 1620620.0,
+      "delta": -884011.0,
+      "benefit_pct": 54.54770396514914,
+      "improved": true
+     }
+    },
+    {
+     "seed": 13,
+     "arrived": {
+      "candidate": 5945,
+      "reference": 5511,
+      "delta": 434,
+      "benefit_pct": 7.875158773362366,
+      "improved": true
+     },
+     "mean_travel_time_all": {
+      "candidate": 508.2105,
+      "reference": 719.68690313779,
+      "delta": -211.47640313778993,
+      "benefit_pct": 29.384500706594217,
+      "improved": true
+     },
+     "teleports": {
+      "candidate": 134,
+      "reference": 357,
+      "delta": -223,
+      "benefit_pct": 62.46498599439776,
+      "improved": true
+     },
+     "total_vehicle_hours": {
+      "candidate": 847.0175,
+      "reference": 1172.29,
+      "delta": -325.2724999999999,
+      "benefit_pct": 27.74676061384128,
+      "improved": true
+     },
+     "total_waiting_s": {
+      "candidate": 904632.0,
+      "reference": 1284608.0,
+      "delta": -379976.0,
+      "benefit_pct": 29.57914009565564,
+      "improved": true
+     }
+    }
+   ]
+  }
+ ],
+ "offline_benchmarks_not_runtime_actions": [
+  {
+   "arm": "due",
+   "paired_seeds": [
+    11,
+    12,
+    13
+   ],
+   "n": 3,
+   "accepted": true,
+   "reason": "improves total vehicle-hours, arrivals, and teleports on every paired seed",
+   "mean_benefit_pct": {
+    "total_vehicle_hours": 46.65666804899913,
+    "mean_travel_time_all": 47.76225531115201,
+    "total_waiting_s": 68.61678248699906,
+    "arrived": 8.49976617527953,
+    "teleports": 91.27397857849076
+   },
+   "per_seed": [
+    {
+     "seed": 11,
+     "arrived": {
+      "candidate": 6000,
+      "reference": 5536,
+      "delta": 464,
+      "benefit_pct": 8.38150289017341,
+      "improved": true
+     },
+     "mean_travel_time_all": {
+      "candidate": 418.0195,
+      "reference": 709.3769348528662,
+      "delta": -291.35743485286616,
+      "benefit_pct": 41.07230169716435,
+      "improved": true
+     },
+     "teleports": {
+      "candidate": 65,
+      "reference": 351,
+      "delta": -286,
+      "benefit_pct": 81.48148148148148,
+      "improved": true
+     },
+     "total_vehicle_hours": {
+      "candidate": 696.6991666666667,
+      "reference": 1158.4519444444445,
+      "delta": -461.75277777777785,
+      "benefit_pct": 39.8594676276554,
+      "improved": true
+     },
+     "total_waiting_s": {
+      "candidate": 587557.0,
+      "reference": 1146491.0,
+      "delta": -558934.0,
+      "benefit_pct": 48.751712835076766,
+      "improved": true
+     }
+    },
+    {
+     "seed": 12,
+     "arrived": {
+      "candidate": 6000,
+      "reference": 5543,
+      "delta": 457,
+      "benefit_pct": 8.244632870286848,
+      "improved": true
+     },
+     "mean_travel_time_all": {
+      "candidate": 372.294,
+      "reference": 750.3909569947306,
+      "delta": -378.0969569947306,
+      "benefit_pct": 50.38666224190461,
+      "improved": true
+     },
+     "teleports": {
+      "candidate": 19,
+      "reference": 415,
+      "delta": -396,
+      "benefit_pct": 95.42168674698796,
+      "improved": true
+     },
+     "total_vehicle_hours": {
+      "candidate": 620.49,
+      "reference": 1226.263888888889,
+      "delta": -605.7738888888889,
+      "benefit_pct": 49.3999614909787,
+      "improved": true
+     },
+     "total_waiting_s": {
+      "candidate": 379639.0,
+      "reference": 1620620.0,
+      "delta": -1240981.0,
+      "benefit_pct": 76.57445915760634,
+      "improved": true
+     }
+    },
+    {
+     "seed": 13,
+     "arrived": {
+      "candidate": 6000,
+      "reference": 5511,
+      "delta": 489,
+      "benefit_pct": 8.873162765378334,
+      "improved": true
+     },
+     "mean_travel_time_all": {
+      "candidate": 346.689,
+      "reference": 719.68690313779,
+      "delta": -372.99790313778993,
+      "benefit_pct": 51.82780199438705,
+      "improved": true
+     },
+     "teleports": {
+      "candidate": 11,
+      "reference": 357,
+      "delta": -346,
+      "benefit_pct": 96.9187675070028,
+      "improved": true
+     },
+     "total_vehicle_hours": {
+      "candidate": 577.815,
+      "reference": 1172.29,
+      "delta": -594.4749999999999,
+      "benefit_pct": 50.71057502836329,
+      "improved": true
+     },
+     "total_waiting_s": {
+      "candidate": 250188.0,
+      "reference": 1284608.0,
+      "delta": -1034420.0,
+      "benefit_pct": 80.52417546831407,
+      "improved": true
+     }
+    }
+   ]
+  }
+ ],
+ "honesty_label": "DHAKA_SIMULATED_SENSOR_GRAPH"
+}

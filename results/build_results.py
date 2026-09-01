@@ -13,9 +13,12 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 SECTIONS = [  # (title, markdown produced by the pipeline, command that produces it)
+    ("Evidence audit — reality labels and missing work", "results/evidence_audit.md", "python results/evidence_audit.py"),
     ("Prediction — twin floors (persistence / historical average)", "predict/results/twin_floors.md", "make data && python predict/baselines_twin.py"),
     ("Prediction — BasicTS benchmark (METR-LA / PEMS-BAY / PEMS08)", "predict/results/benchmark.md", "notebooks/Predict_BasicTS_Colab.ipynb (Colab Pro) -> predict/results/benchmark.csv"),
     ("Routing — arms × paired seeds on Dhaka R1", "route/results/stats.md", "make route"),
+    ("Routing — network-wide decision guard", "route/results/decision_guard.md", "python route/decision_guard.py --horizon 7200 --reference reactive"),
+    ("Live reference — Google Routes derived congestion states", "artifacts/p_live/live_reference_summary.md", "python scripts/run_live_capture.py && python scripts/summarize_live_reference.py"),
     ("Networking — V2X penetration sweep (Eclipse MOSAIC)", "network/results/penetration.md", "make network"),
     ("Networking — latency / loss vs advisory delivery", "network/results/latency.md", "python network/latency_injection.py"),
     ("NLP — incident-text classifier", "nlp/results/classifier.md", "make nlp"),

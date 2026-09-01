@@ -1,0 +1,118 @@
+{
+ "point": {
+  "p": 0.0,
+  "seed": 22,
+  "duration_s": 600,
+  "scenario": "network/scenarios/dhaka_r1_p0_s22",
+  "log_dir": "/Users/jannatulferdouseva/.dhakaflow/upstream/mosaic/logs/log-20260901-104200-dhaka_r1"
+ },
+ "wall_s": 37.878,
+ "wall_total_s": 47.372742891311646,
+ "sim_ended_s": 600,
+ "vehicles": {
+  "registered": 2161,
+  "equipped": 0,
+  "unequipped": 2161,
+  "equipped_fraction": 0.0,
+  "mapping_log_total": 2161,
+  "mapping_log_with_wwa": 0
+ },
+ "v2x": {
+  "denm_sent": 0,
+  "message_types": {},
+  "senders": 0,
+  "first_denm_s": null,
+  "receptions": 0,
+  "receivers": 0,
+  "receivers_equipped": 0,
+  "delivery_ratio_veh": null,
+  "receptions_per_denm": null,
+  "receptions_per_receiver": null,
+  "latency": {
+   "n": 0,
+   "mean_ms": null,
+   "min_ms": null,
+   "p50_ms": null,
+   "p95_ms": null,
+   "p99_ms": null,
+   "max_ms": null,
+   "hist_10us_bins": {}
+  }
+ },
+ "routing": {
+  "route_switches": 0,
+  "vehicles_switched": 0,
+  "switch_fraction_of_receivers": null,
+  "switch_fraction_of_equipped": null
+ },
+ "sumo": {
+  "tripinfo": {
+   "available": true,
+   "id_map_entries": 2161,
+   "finished": {
+    "n": 549,
+    "duration_mean_s": 337.89071038251365,
+    "duration_p50_s": 331.0,
+    "duration_p95_s": 490.0,
+    "timeLoss_mean_s": 120.69936247723132,
+    "timeLoss_p95_s": 220.512,
+    "waitingTime_mean_s": 33.48087431693989,
+    "routeLength_mean_m": 3439.470746812386
+   },
+   "finished_equipped": {
+    "n": 0
+   },
+   "finished_unequipped": {
+    "n": 549,
+    "duration_mean_s": 337.89071038251365,
+    "duration_p50_s": 331.0,
+    "duration_p95_s": 490.0,
+    "timeLoss_mean_s": 120.69936247723132,
+    "timeLoss_p95_s": 220.512,
+    "waitingTime_mean_s": 33.48087431693989,
+    "routeLength_mean_m": 3439.470746812386
+   },
+   "unfinished": 1612
+  },
+  "summary": {
+   "available": true,
+   "final_step": {
+    "time": "599.00",
+    "loaded": "3000",
+    "inserted": "2161",
+    "running": "1612",
+    "waiting": "839",
+    "ended": "549",
+    "arrived": "549",
+    "collisions": "0",
+    "teleports": "0",
+    "halting": "631",
+    "stopped": "0",
+    "meanWaitingTime": "34.11",
+    "meanTravelTime": "337.89",
+    "meanSpeed": "5.62",
+    "meanSpeedRelative": "0.33",
+    "discarded": "0",
+    "duration": "21"
+   },
+   "meanSpeed_avg_over_steps_m_s": 8.038983333333329,
+   "halting_avg_over_steps": 283.245
+  }
+ },
+ "time_to_hazard": {
+  "model": "analytic: straight-line distance from the vehicle's position at its FIRST DENM reception to the hazard rectangle boundary, divided by max(current speed, 0.3*mean trip speed, 1 m/s); vehicles = those that actually switched route",
+  "n": 0,
+  "tth_s_p10": null,
+  "tth_s_p50": null,
+  "tth_s_p90": null,
+  "rows": []
+ },
+ "definitions": {
+  "equipped": "VEHICLE_REGISTRATION rows whose application list contains WeatherWarningApp",
+  "delivery_ratio_veh": "distinct DENM receivers / equipped vehicles",
+  "receptions_per_denm": "V2X_MESSAGE_RECEPTION rows / V2X_MESSAGE_TRANSMISSION rows",
+  "latency": "reception time - transmission time of the same MessageId (SNS ad-hoc ITS-G5, multi-hop)",
+  "route_switches": "CentralNavigationComponent 'Change to route' lines in Navigation.log",
+  "travel_time": "SUMO tripinfo (finished trips only; unfinished counted separately)"
+ }
+}

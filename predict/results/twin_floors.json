@@ -1,76 +1,76 @@
 {
   "split": {
-    "train_end": 100,
-    "val_end": 115,
-    "n_timesteps": 144,
-    "sha256": "e7fa8b260329f2ad801ae2b492a42d9b156b37a9adb5283c5d9379baed7d5bcc"
+    "train_end": 201,
+    "val_end": 230,
+    "n_timesteps": 288,
+    "sha256": "86b7b5e336f307d22a232c9f240e2e9fcb2d1fe0948b11698fa3fb91ff1c1ba0"
   },
   "models": {
     "persistence": {
       "5min": {
-        "mae": 0.844337732361078,
-        "rmse": 1.3697911963088707,
-        "mape_pct": 6.196707668286043,
+        "mae": 0.7188581581629756,
+        "rmse": 1.1596282732156205,
+        "mape_pct": 6.504728267684798,
         "mape_validity_fraction": 1.0,
-        "n_scored": 2114
+        "n_scored": 12217
       },
       "15min": {
-        "mae": 0.8721296401933308,
-        "rmse": 1.5298845056560146,
-        "mape_pct": 6.963604204438882,
+        "mae": 0.7239502453565929,
+        "rmse": 1.240957088546409,
+        "mape_pct": 6.986578001750505,
         "mape_validity_fraction": 1.0,
-        "n_scored": 2113
+        "n_scored": 12217
       },
       "30min": {
-        "mae": 0.7707006150681747,
-        "rmse": 1.429904885448587,
-        "mape_pct": 6.314865274246012,
+        "mae": 0.6527944770257036,
+        "rmse": 1.2007188932540893,
+        "mape_pct": 6.809473922679975,
         "mape_validity_fraction": 1.0,
-        "n_scored": 2141
+        "n_scored": 12217
       },
       "60min": {
-        "mae": 0.7569682792162717,
-        "rmse": 1.3028844128932744,
-        "mape_pct": 5.9270574556220055,
+        "mae": 0.6467648842582746,
+        "rmse": 1.2482393997433698,
+        "mape_pct": 6.877261410937549,
         "mape_validity_fraction": 1.0,
-        "n_scored": 2144
+        "n_scored": 12219
       }
     },
     "historical_average": {
       "5min": {
-        "mae": 0.6646342668094061,
-        "rmse": 1.2042805979096711,
-        "mape_pct": 5.408729917165387,
+        "mae": 0.5697722103554587,
+        "rmse": 1.1432236710166894,
+        "mape_pct": 6.173374251038283,
         "mape_validity_fraction": 1.0,
-        "n_scored": 2145
+        "n_scored": 12226
       },
       "15min": {
-        "mae": 0.6646342668094061,
-        "rmse": 1.2042805979096711,
-        "mape_pct": 5.408729917165387,
+        "mae": 0.5697722103554587,
+        "rmse": 1.1432236710166894,
+        "mape_pct": 6.173374251038283,
         "mape_validity_fraction": 1.0,
-        "n_scored": 2145
+        "n_scored": 12226
       },
       "30min": {
-        "mae": 0.6646342668094061,
-        "rmse": 1.2042805979096711,
-        "mape_pct": 5.408729917165387,
+        "mae": 0.5697722103554587,
+        "rmse": 1.1432236710166894,
+        "mape_pct": 6.173374251038283,
         "mape_validity_fraction": 1.0,
-        "n_scored": 2145
+        "n_scored": 12226
       },
       "60min": {
-        "mae": 0.6646342668094061,
-        "rmse": 1.2042805979096711,
-        "mape_pct": 5.408729917165387,
+        "mae": 0.5697722103554587,
+        "rmse": 1.1432236710166894,
+        "mape_pct": 6.173374251038283,
         "mape_validity_fraction": 1.0,
-        "n_scored": 2145
+        "n_scored": 12226
       }
     }
   },
   "evidence_domain": "DHAKA_SIMULATED_SENSOR_GRAPH",
   "reality_label": "SIMULATED",
   "dataset": "predict/data/dhaka_twin",
-  "dataset_data_sha256": "32802da21ec9a4cd8970346faa142a3acf0147bbc9880f3b1a82f4012476c8d3",
+  "dataset_data_sha256": "c26bf808f9dad200feaff3b67ea837d215689a45596c03fbea441df3c93e2ae7",
   "channel": "speed_ms",
   "unit": "m/s",
   "horizons_min": [
@@ -79,14 +79,14 @@
     30,
     60
   ],
-  "period_steps_for_historical_average": 48,
+  "period_steps_for_historical_average": 96,
   "shape": [
-    144,
+    288,
     250,
     5
   ],
-  "mask_coverage_pct": 29.5,
-  "sensors_with_any_valid_bin": 75,
-  "sensors_with_ge50pct_valid_bins": 75,
+  "mask_coverage_pct": 84.3,
+  "sensors_with_any_valid_bin": 211,
+  "sensors_with_ge50pct_valid_bins": 211,
   "scoring": "test region, validity mask, no cross-seed (t, t+h) pairs"
 }

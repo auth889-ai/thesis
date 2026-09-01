@@ -103,11 +103,13 @@ nlp/        train_classifier.py, event_feed.py, copilot.py, results/
 demo/       streamlit app (map · forecast · before/after · event feed)
 results/RESULTS.md   ONE file: every number → one command → one evidence file
 paper/      thesis chapters + slides
-Makefile    make data · make predict · make route · make network · make nlp · make results
+Makefile    make data · make predict · make route · make network · make nlp · make live-summary · make results
 ```
 
-Examiner test we design for: **clone → `make results` (with `download_assets.sh` pulling
-checkpoints from Drive by sha256) → all four tables regenerate in < 30 min.**
+Examiner test we design for: **clone → `bash download_assets.sh` → `make results`**
+aggregates every checked-in evidence table quickly. Local non-billed
+regeneration uses `make local-results`. Live Google reference capture is
+separate as `make live-capture` so quota is never spent accidentally.
 
 ---
 
@@ -145,7 +147,7 @@ Daily 15-min sync at 09:00 and 21:00. Every deliverable = a command + a JSON/CSV
 | A | 8–10 | Collect Day-1 results into `predict/results/benchmark.csv` (model × dataset × horizon: MAE/RMSE/MAPE) next to published numbers | table has 2 models × 2 datasets |
 | A | 10–13 | Launch **STAEformer + AGCRN + DCRNN** (METR-LA, PEMS-BAY, PEMS08) — overnight compute | 9 runs queued (~10 GPU-h) |
 | A | 13–16 | **Chronos-Bolt zero-shot** on the same test windows; add row to benchmark | MAE row for Chronos |
-| B | 8–12 | Generate twin sensor data on R1 with `sensor_graph.py`: 24 h × 3 seeds × 250 sensors at the calibrated demand scale; export BasicTS format; hand to A (Drive) | `predict/data/dhaka_twin/` + sha256 |
+| B | 8–12 | Generate twin sensor data on R1 with `sensor_graph.py`: 8 h × 3 seeds × 250 sensors at the SAME demand scale as the routing arms (`route/results/SCALE_CHOICE.json` = 0.25), sensors placed by observed flow (`--place-by-flow`, 84 % coverage); export BasicTS format; hand to A (Drive) | `predict/data/dhaka_twin/` + sha256, `MANIFEST.acceptance.verdict = PASS` |
 | B | 12–16 | **Arm P (predictive)**: `predict/forecast_to_weights.py` converts a forecast (start with the *oracle*: next-interval true edge times from the twin, then the real model) into SUMO `--weight-files` `<interval>` XML; TraCI loop every 60 s: `setAdaptedTraveltime` + `rerouteTraveltime(currentTravelTime=False)` for equipped vehicles, staggered | Arm P runs with oracle forecast, 1 seed |
 | C | 8–11 | `nlp/event_feed.py`: classifier + spaCy/regex location → JSON event; map named places to R1 edges (Karwan Bazar, Shahbagh, Farmgate…); event ⇒ edge slowdown factor in the weight table | 20 test tweets → correct edges |
 | C | 11–16 | `network/penetration_sweep.py`: parametrise MOSAIC mapping config for p ∈ {0,10,25,50,100} %, 3 seeds; parse MOSAIC output for **delivery ratio, mean latency, route switches, travel time** | 1 sweep point runs end-to-end |
@@ -176,7 +178,7 @@ Daily 15-min sync at 09:00 and 21:00. Every deliverable = a command + a JSON/CSV
 
 | Person | Hours | Task | Done when |
 |---|---|---|---|
-| ALL | 32–34 | **Fresh-clone test** on a clean machine/Colab: `bash download_assets.sh && make results` must regenerate all tables | passes, timed |
+| ALL | 32–34 | **Fresh-clone test** on a clean machine/Colab: `bash download_assets.sh && make results` must rebuild the evidence index; `make local-results` regenerates non-billed tables where local dependencies are installed | passes, timed |
 | A | 34–38 | Slides 1–8 (problem, data, prediction results) + speaker notes | deck |
 | B | 34–38 | Slides 9–14 (routing proof, movie, stats) + live demo rehearsal | deck |
 | C | 34–38 | Slides 15–20 (V2X, NLP, architecture, limitations, future work); README rewrite (1 page: what, how to run, results table, figures) | README |
@@ -202,7 +204,7 @@ Daily 15-min sync at 09:00 and 21:00. Every deliverable = a command + a JSON/CSV
 2. **Routing table**: 5 arms × 10 paired seeds on real Dhaka R1; predictive arm beats reactive on mean *and* p95 travel time with p < 0.05 (Wilcoxon) — or an honest negative result with the horizon ablation explaining why.
 3. **Networking curve**: delivery ratio and routing benefit vs penetration rate (5 points × 3 seeds) and vs injected latency (3 points).
 4. **NLP**: classifier F1 on held-out test vs TF-IDF baseline; 1 end-to-end incident scenario (text → edge → reroute → measured delay change).
-5. **Reproducibility**: fresh clone + `make results` regenerates every table in < 30 min.
+5. **Reproducibility**: fresh clone + `make results` rebuilds the evidence index in < 30 min; `make local-results` regenerates local non-billed tables where dependencies are installed.
 6. **Demo**: 3-minute live run in Streamlit + a 60-second movie.
 
 ## 7. Risks & fallbacks

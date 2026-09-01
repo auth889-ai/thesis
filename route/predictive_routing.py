@@ -30,6 +30,7 @@ import argparse
 import hashlib
 import json
 import os
+import socket
 import statistics
 import subprocess
 import sys
@@ -88,38 +89,52 @@ def run_static(a, out: Path) -> dict:
     return {"rerouted_calls": 0, "equipped": 0}
 
 
+def free_port() -> int:
+    """Reserve and release a local port for TraCI startup.
+
+    Some SUMO/TraCI installs fail to auto-pick a port under Python 3.13 and pass
+    None through to socket.connect. Supplying the port explicitly keeps the
+    harness deterministic enough for local and CI smoke runs.
+    """
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        s.bind(("127.0.0.1", 0))
+        return int(s.getsockname()[1])
+
+
 def run_traci(a, out: Path) -> dict:
     import traci
     cmd = base_cmd(a, out)
-    traci.start(cmd, label=f"{a.arm}-{a.seed}")
+    traci.start(cmd, port=free_port(), label=f"{a.arm}-{a.seed}")
     n_calls, eq_seen = 0, set()
-    if a.arm == "predictive":
-        rows = load_weights(Path(a.weights))
-        for b, e, edge, tt in rows:
-            try:
-                traci.edge.adaptTraveltime(edge, tt, b, e)
-            except traci.TraCIException:
-                pass
-        print(f"[predictive] loaded {len(rows)} (edge, interval) forecast entries from {a.weights}")
-    current = a.arm == "reactive"
-    t = 0
-    while t < a.horizon:
-        traci.simulationStep()
-        t = int(traci.simulation.getTime())
-        if traci.simulation.getMinExpectedNumber() == 0:
-            break
-        for vid in traci.vehicle.getIDList():
-            if not equipped(vid, a.compliance):
-                continue
-            eq_seen.add(vid)
-            # stagger: each equipped vehicle reroutes once per period at its own offset
-            if (int(hashlib.md5(vid.encode()).hexdigest()[8:12], 16) + t) % a.period == 0:
+    try:
+        if a.arm == "predictive":
+            rows = load_weights(Path(a.weights))
+            for b, e, edge, tt in rows:
                 try:
-                    traci.vehicle.rerouteTraveltime(vid, currentTravelTimes=current)
-                    n_calls += 1
+                    traci.edge.adaptTraveltime(edge, tt, b, e)
                 except traci.TraCIException:
                     pass
-    traci.close()
+            print(f"[predictive] loaded {len(rows)} (edge, interval) forecast entries from {a.weights}")
+        current = a.arm == "reactive"
+        t = 0
+        while t < a.horizon:
+            traci.simulationStep()
+            t = int(traci.simulation.getTime())
+            if traci.simulation.getMinExpectedNumber() == 0:
+                break
+            for vid in traci.vehicle.getIDList():
+                if not equipped(vid, a.compliance):
+                    continue
+                eq_seen.add(vid)
+                # stagger: each equipped vehicle reroutes once per period at its own offset
+                if (int(hashlib.md5(vid.encode()).hexdigest()[8:12], 16) + t) % a.period == 0:
+                    try:
+                        traci.vehicle.rerouteTraveltime(vid, currentTravelTimes=current)
+                        n_calls += 1
+                    except traci.TraCIException:
+                        pass
+    finally:
+        traci.close()
     return {"rerouted_calls": n_calls, "equipped": len(eq_seen)}
 
 

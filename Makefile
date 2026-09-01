@@ -1,9 +1,13 @@
-# DhakaFlow rebuild — every result is one target. `make results` regenerates all tables.
+# DhakaFlow rebuild command surface.
+#
+# `make results` only aggregates existing evidence into results/RESULTS.md.
+# `make local-results` regenerates local, non-billed evidence.
+# `make live-capture` deliberately spends a small number of Google API requests.
 PY ?= python
 SEEDS ?= 11,12,13
-HORIZON ?= 3600
+HORIZON ?= 7200
 
-.PHONY: all data predict route network nlp results clean
+.PHONY: all data predict route network nlp live-summary live-capture results local-results clean
 
 all: results
 
@@ -15,7 +19,8 @@ predict:         ## forecast -> SUMO weight tables (route/weights/*.xml)
 
 route:           ## all routing arms x paired seeds -> route/results/arms.json
 	$(PY) route/run_arms.py --seeds $(SEEDS) --horizon $(HORIZON)
-	$(PY) route/stats.py
+	$(PY) route/stats.py --horizon $(HORIZON)
+	$(PY) route/decision_guard.py --horizon $(HORIZON)
 
 network:         ## MOSAIC V2X penetration sweep -> network/results/penetration.csv
 	$(PY) network/penetration_sweep.py
@@ -24,8 +29,18 @@ nlp:             ## incident-text classifier + event feed -> nlp/results/
 	$(PY) nlp/train_classifier.py
 	$(PY) nlp/event_feed.py --demo
 
-results: route nlp ## collect every table into results/RESULTS.md
+live-summary:    ## summarize compliant runtime-reference records; no API calls
+	$(PY) scripts/summarize_live_reference.py
+
+live-capture:    ## deliberate billed live reference capture, then summarize
+	$(PY) scripts/run_live_capture.py
+	$(PY) scripts/summarize_live_reference.py
+
+results:         ## audit and collect existing tables into results/RESULTS.md; no simulations/API calls
+	$(PY) results/evidence_audit.py
 	$(PY) results/build_results.py
+
+local-results: data predict route network nlp live-summary results
 
 clean:
 	rm -rf route/results/*_s*_h* predict/results/* network/results/* nlp/results/*

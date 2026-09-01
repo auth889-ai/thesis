@@ -10,15 +10,21 @@ Start here:
 
 1. `docs/PROJECT_STRUCTURE.md` — what each folder means and what is active.
 2. `docs/REBUILD_120H_PLAN.md` — 5-day rebuild plan.
-3. `results/RESULTS.md` — every result, command, and evidence file.
-4. `PROJECT_MAP.md` — quick code map.
+3. `docs/KEYS_AND_COMPUTE.md` — required keys and Colab/Drive/AWS setup.
+4. `results/RESULTS.md` — every result, command, and evidence file.
+5. `PROJECT_MAP.md` — quick code map.
 
 Main verification:
 
 ```bash
+bash download_assets.sh
 PYTHONPATH=. pytest tests/platform/test_interfaces.py tests/platform/test_repo_architecture.py -q
 make results
 ```
+
+`make results` only aggregates existing evidence. Use `make local-results` to
+regenerate local non-billed evidence, and `make live-capture` only when you
+intentionally want to spend a small number of Google API requests.
 
 ---
 
@@ -79,24 +85,24 @@ p = 1.3×10⁻⁵ (`artifacts/due_dso_stats/v200/result.json`).*
 
 ![Where the traffic moved](docs/media/fig_traffic_moved.png)
 
-## Results so far (sprint in progress — updated 26 Aug 2026)
+## Active Rebuild Status (updated 1 Sep 2026)
 
 | Component | Method (official code, pinned) | Result | Comparison |
 |---|---|---|---|
-| **Detection** | RT-DETR r50 (CVPR 2024) fine-tuned on Poribohon-BD | **mAP50:95 0.711** · AP50 rickshaw 0.904 / CNG 0.961 / easy-bike 0.965 | beats the dataset paper's best published model (YOLOv8, 0.643) |
-| **Forecasting** | Graph WaveNet (IJCAI 2019) via BasicTS harness | **MAE 0.44 m/s @ 15 min** *(simulated domain)* | 3× better than persistence floor (1.39) |
-| | STID (CIKM 2022) | MAE 1.09 @ 15 min *(simulated domain)* | beats floor |
-| **Routing** | SUMO DUE vs DSO, 10 seeds | **19.5–22.2 % total delay reduction**, p ≤ 1.3×10⁻³ | on the real 6,527-edge Dhaka R1 network |
-| **Digital twin** | Eclipse SUMO 1.27.1, real OSM network | 24 h × 3 seeds × 250 sensors generated; 7/7 acceptance checks | evidence-gated PASS |
+| **Prediction data** | Eclipse SUMO 1.27.1 on frozen Dhaka R1 + 250 virtual sensors | 8 h × 3 seeds, 288 timesteps, 84.3 % valid speed coverage | `predict/data/dhaka_twin/MANIFEST.json` acceptance PASS |
+| **Forecasting floors** | Persistence + historical average | MAE@15 min: 0.724 / 0.570 m/s | `predict/results/twin_floors.md` |
+| **Deep forecasting** | BasicTS STID/GWNet/STAEformer on Colab Pro | pending | `notebooks/Predict_BasicTS_Colab.ipynb` then `predict/pull_colab_results.py` |
+| **Routing** | SUMO paired seeds, static/reactive/DUE/predictive arms | decision guard selects `predictive_persistence`, 32.4 % total vehicle-hours benefit vs reactive | `route/results/decision_guard.md` |
+| **Live reference** | Google Routes runtime-reference capture | 6 Dhaka corridors captured; Google route content is not persisted | `artifacts/p_live/live_reference_summary.md` |
+| **Evidence audit** | machine-readable artifact check | PASS with Colab benchmark pending | `results/evidence_audit.md` |
 
 ## Architecture
 
 ```
-video/stream ─► RT-DETR (Dhaka) ─► tracking ─► traffic state ─┐
-                                                              ├─► forecast (GWNet/…) ─► signals (FA-MAPPO*) + routing ─► delay ↓
-live refs (Google Routes/Weather, road511) ─► calibration ────┘         proven in the SUMO twin (counterfactual, multi-seed)
+twin sensors + live refs ─► forecast (BasicTS STGNN / floors) ─► edge travel-time weights
+incident text ─► NLP event feed ───────────────────────────────┘
+weights ─► SUMO routing arms + MOSAIC V2X advisories ─► paired-seed evidence + decision guard
 ```
-\* control gate in progress — ablation ladder `MAPPO → +forecast → +pressure → full`.
 
 ## Honesty labels (enforced in code, not prose)
 

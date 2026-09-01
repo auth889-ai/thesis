@@ -22,6 +22,10 @@ Main command for the rebuild layer:
 
     make results
 
+This aggregates existing evidence into `results/RESULTS.md`. To regenerate
+local non-billed evidence, run `make local-results`. To call Google live
+reference APIs, run `make live-capture` deliberately.
+
 ## Existing gate chain
 
 The older DhakaFlow gate chain is still useful for appendix evidence: a real

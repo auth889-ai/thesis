@@ -18,7 +18,9 @@ the existing project so the thesis can be understood and reproduced quickly.
 | `README.md` | one-page project overview |
 | `PROJECT_MAP.md` | fast map of active code paths |
 | `docs/REBUILD_120H_PLAN.md` | 5-day execution plan |
+| `docs/KEYS_AND_COMPUTE.md` | required keys, Colab/Drive/AWS setup, and secret rules |
 | `results/RESULTS.md` | every result, command, and evidence file |
+| `docs/ASSET_MANIFEST.md` | checksums for evidence assets restored by `download_assets.sh` |
 | `docs/CURRENT_SYSTEM_GAP_AUDIT.md` | known weaknesses and honesty limits |
 
 ## Canonical Source Trees
@@ -84,15 +86,33 @@ Do not track:
 
 Large assets belong in Drive/S3/GCS with a checksum and a download step.
 
+## Asset Bootstrap
+
+`download_assets.sh` is the safe restore/check entrypoint. It never calls Google
+Routes or spends API quota. With no environment variables it verifies the assets
+already present in the clone. With `DHAKAFLOW_ASSET_ROOT=/path/to/DhakaFlow-assets`
+it copies missing files from a local Drive/S3/GCS export that mirrors repository
+relative paths, then verifies sha256 checksums from `docs/ASSET_MANIFEST.json`.
+
+Regenerate the manifest only after producing a new accepted evidence set:
+
+```bash
+python scripts/build_asset_manifest.py
+```
+
 ## Main Commands
 
 ```bash
+python scripts/build_asset_manifest.py
+bash download_assets.sh
 PYTHONPATH=. pytest tests/platform/test_interfaces.py tests/platform/test_repo_architecture.py -q
 make route
 make nlp
 make results
 ```
 
-For the 5-day rebuild, `make results` is the main examiner command. Older gate
-commands under `scripts/` remain available for appendix evidence.
-
+For the 5-day rebuild, `make results` is the main evidence index command. It
+does not run simulations or spend API quota. Use `make local-results` for local
+non-billed regeneration, and `make live-capture` only when a live Google
+reference capture is intended. Older gate commands under `scripts/` remain
+available for appendix evidence.

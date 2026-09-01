@@ -1,0 +1,62 @@
+{
+ "generated_utc": "2026-09-01T10:04:02.546077+00:00",
+ "overall_status": "PASS_WITH_PENDING_ITEMS",
+ "rows": [
+  {
+   "name": "Dhaka twin prediction data",
+   "status": "PASS",
+   "artifact": "/Users/jannatulferdouseva/thesis/predict/data/dhaka_twin/MANIFEST.json",
+   "check": "PASS manifest, labelled simulated, >=3 seeds",
+   "details": "label=DHAKA_SIMULATED_SENSOR_GRAPH; acceptance=PASS; seeds=3; shape=[288, 250, 5]"
+  },
+  {
+   "name": "Prediction floors",
+   "status": "PASS",
+   "artifact": "/Users/jannatulferdouseva/thesis/predict/results/twin_floors.json",
+   "check": "persistence and historical-average at 4 horizons",
+   "details": "models=['historical_average', 'persistence']; horizons_min=[5, 15, 30, 60]"
+  },
+  {
+   "name": "Colab BasicTS benchmark",
+   "status": "PENDING",
+   "artifact": "/Users/jannatulferdouseva/thesis/predict/results/benchmark.csv",
+   "check": "real benchmark table copied from Drive",
+   "details": "run the Colab notebook, then pull results"
+  },
+  {
+   "name": "Routing decision guard",
+   "status": "PASS",
+   "artifact": "/Users/jannatulferdouseva/thesis/route/results/decision_guard.json",
+   "check": "deployable arm improves required metrics on paired seeds",
+   "details": "decision=ACT; selected=predictive_persistence; benefit_total_vehicle_hours=32.42411218615388"
+  },
+  {
+   "name": "Live Google reference",
+   "status": "PASS",
+   "artifact": "/Users/jannatulferdouseva/thesis/artifacts/p_live/live_reference_summary.json",
+   "check": "live/reference only, no Google route content persisted",
+   "details": "corridors=6; states={'CONGESTED': 2, 'FREE_FLOW': 1, 'SLOW': 3}; route_content_persisted=False"
+  },
+  {
+   "name": "Asset bootstrap manifest",
+   "status": "PASS",
+   "artifact": "/Users/jannatulferdouseva/thesis/docs/ASSET_MANIFEST.json",
+   "check": "manifest has assets and no missing entries",
+   "details": "assets=50; missing_when_built=0"
+  },
+  {
+   "name": "V2X networking sweep",
+   "status": "PASS",
+   "artifact": "/Users/jannatulferdouseva/thesis/network/results/penetration.csv",
+   "check": "non-empty penetration table",
+   "details": "rows=15"
+  },
+  {
+   "name": "NLP incident classifier",
+   "status": "PASS",
+   "artifact": "/Users/jannatulferdouseva/thesis/nlp/results/classifier.json",
+   "check": "classifier metrics JSON exists",
+   "details": "metric_keys=['distilbert', 'tfidf_lr', 'tfidf_lr_dhaka_aug']"
+  }
+ ]
+}

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-09-01T11:17:39.930808+06:00 by Eclipse SUMO sumo 1.27.1
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="/Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"/>
+        <route-files value="/Users/jannatulferdouseva/thesis/predict/data/dhaka_twin/raw/routes_48x600s.rou.xml.gz"/>
+        <additional-files value="/Users/jannatulferdouseva/thesis/predict/data/dhaka_twin/raw/sensors_s13.add.xml"/>
+    </input>
+
+    <output>
+        <statistic-output value="/Users/jannatulferdouseva/thesis/predict/data/dhaka_twin/raw/sumo_s13.statistic.xml"/>
+    </output>
+
+    <time>
+        <end value="28800.0"/>
+    </time>
+
+    <processing>
+        <ignore-route-errors value="true"/>
+        <scale value="0.15"/>
+        <time-to-teleport value="300"/>
+    </processing>
+
+    <routing>
+        <device.rerouting.probability value="0"/>
+    </routing>
+
+    <report>
+        <no-warnings value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <random_number>
+        <seed value="13"/>
+    </random_number>
+
+</sumoConfiguration>
+-->
+
+<statistics xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/statistic_file.xsd">
+    <performance clockBegin="1788239860.02" clockEnd="1788239884.03" clockDuration="24.02" traciDuration="0.00" realTimeFactor="1199.20" vehicleUpdatesPerSecond="345683.71" personUpdatesPerSecond="0.00" begin="0.00" end="28800.00" duration="28800.00"/>
+    <vehicles loaded="144000" inserted="21600" running="312" waiting="0"/>
+    <teleports total="75" jam="40" yield="35" wrongLane="0"/>
+    <safety collisions="0" emergencyStops="0" emergencyBraking="5"/>
+    <persons loaded="0" running="0" jammed="0"/>
+    <personTeleports total="0" abortWait="0" wrongDest="0"/>
+</statistics>

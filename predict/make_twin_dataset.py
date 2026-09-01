@@ -2,7 +2,7 @@
 """METR-LA-shaped Dhaka twin sensor dataset on the frozen R1 network.
 
     python predict/make_twin_dataset.py --seeds 11 --hours 2                 # smoke
-    python predict/make_twin_dataset.py --seeds 11,12,13 --hours 8 --scale 0.25 --place-by-flow
+    python predict/make_twin_dataset.py --seeds 11,12,13 --hours 8 --scale 0.15 --place-by-flow
 
 Wraps the existing (unchanged) sensor-graph pipeline in research/twin/sensor_graph.py:
 250 virtual sensors = SUMO edgeData aggregates at 5-min bins on the frozen network
@@ -11,9 +11,10 @@ Wraps the existing (unchanged) sensor-graph pipeline in research/twin/sensor_gra
 Demand = the SAME scenario the routing arms use (route/predictive_routing.py): the
 audited DUE pulse artifacts/due_dso_stats/v200/DUE/003/trips_003.rou.xml.gz tiled every
 600 s by research/twin/demand.make_repeating_routes (routes_repeat_1h is cycles=8 of it),
-run at --scale 0.25 = route/results/SCALE_CHOICE.json, the ONE scale the routing arms and the
-sensor data share. The calibrated ROUTING scale 0.584 (TWIN_SYNC_PASS) gridlocks R1 over 4 h
-(see REJECTED_RUNS / MANIFEST "scale_sweep_note"). The gate (every seed: insertion >= 0.95,
+run at --scale 0.15 for the 8-hour sensor replay. The routing experiments use the separate
+2-hour route scale from route/results/SCALE_CHOICE.json; using that route scale for 8-hour
+sensor generation gridlocks R1 (see REJECTED_RUNS / MANIFEST "scale_sweep_note"). The gate
+(every seed: insertion >= 0.95,
 teleports <= --max-teleport-frac of inserted) marks the run PASS/FAIL in MANIFEST.json and
 exits 2 on FAIL. --place-by-flow puts the 250 sensors on the top-250 edges by vehicle count
 in the longest complete route/results/static_s11_h*/edgedata.xml (coverage ~100% instead of
@@ -69,8 +70,8 @@ DEFAULT_NET = REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.
 FROZEN_NET_SHA256 = "06194df039740fa2ceb0bcb2c438444efd755f26e0f863327f0e1d6524775dcb"
 DUE_PULSE = REPO / "artifacts/due_dso_stats/v200/DUE/003/trips_003.rou.xml.gz"
 PULSE_PERIOD_S = 600.0            # routes_repeat_1h = this pulse x 8 cycles
-DEFAULT_SCALE = 0.25              # route/results/SCALE_CHOICE.json (routing + sensor data share one
-                                  # scale); the calibrated 0.584 gridlocks over 4 h (see REJECTED_RUNS)
+DEFAULT_SCALE = 0.15              # accepted 8-hour sensor-data scale; the route harness has its own
+                                  # 2-hour calibrated scale in route/results/SCALE_CHOICE.json
 DEFAULT_OUT = REPO / "predict/data/dhaka_twin"
 OUT_CHANNELS = ("speed_ms", "flow_veh", "occupancy_pct", "tod_fraction", "dow_fraction")
 

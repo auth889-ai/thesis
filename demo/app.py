@@ -2,20 +2,22 @@
 """DhakaFlow demo — `streamlit run demo/app.py`
 
 Four panels, all read from pipeline outputs (nothing typed by hand):
-  1. Map      — the real Dhaka R1 network (sumolib -> lon/lat), sensor nodes, NLP incident edges
-  2. Predict  — twin floors + BasicTS benchmark tables
-  3. Route    — arms x seeds: mean / p95 travel time, waiting, teleports (route/results/arms_h*.json)
-  4. Network  — V2X penetration sweep + latency table
+  1. Map      — the real Dhaka R1 network, sensor nodes, NLP incident edges
+  2. Live     — Google live/reference derived congestion states
+  3. Predict  — twin floors + BasicTS benchmark tables
+  4. Route    — arms x seeds + network-wide decision guard
+  5. Network  — V2X penetration sweep + latency table
 Missing outputs are shown as "not produced yet" with the command that produces them.
 """
 from __future__ import annotations
 
-import glob
 import json
 from pathlib import Path
 
 import pandas as pd
 import streamlit as st
+
+from demo.evidence import latest_arms_file, read_jsonl
 
 REPO = Path(__file__).resolve().parents[1]
 NET = REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"
@@ -43,7 +45,9 @@ def net_paths(max_edges: int = 7000):
     return paths
 
 
-tab_map, tab_pred, tab_route, tab_net, tab_nlp = st.tabs(["Map", "Predict", "Route", "Network", "NLP events"])
+tab_map, tab_live, tab_pred, tab_route, tab_net, tab_nlp = st.tabs([
+    "Map", "Live reference", "Predict", "Route", "Network", "NLP events"
+])
 
 with tab_map:
     try:
@@ -52,7 +56,7 @@ with tab_map:
         layers = [pdk.Layer("PathLayer", paths, get_path="path", get_color=[120, 130, 140], width_min_pixels=1)]
         ev = REPO / "nlp/results/events.jsonl"
         if ev.exists():
-            events = [json.loads(l) for l in ev.read_text().splitlines() if l.strip()]
+            events = read_jsonl(ev)
             hot = {e for x in events for e in x.get("edges", [])}
             layers.append(pdk.Layer("PathLayer", [p for p in paths if p["id"] in hot], get_path="path",
                                     get_color=[220, 80, 40], width_min_pixels=4))
@@ -74,22 +78,29 @@ with tab_map:
     except Exception as ex:  # keep the demo alive without the net
         st.warning(f"map unavailable: {ex}")
 
+with tab_live:
+    md_or_missing("artifacts/p_live/live_reference_summary.md",
+                  "make live-capture or python scripts/summarize_live_reference.py")
+
 with tab_pred:
     md_or_missing("predict/results/twin_floors.md", "make data && python predict/baselines_twin.py")
     md_or_missing("predict/results/benchmark.md", "notebooks/Predict_BasicTS_Colab.ipynb")
 
 with tab_route:
-    files = sorted(glob.glob(str(REPO / "route/results/arms_h*.json")))
-    if not files:
+    arms_file = latest_arms_file(REPO)
+    if not arms_file:
         st.info("no `route/results/arms_h*.json` yet — run `make route`")
     else:
-        arms = json.loads(Path(files[-1]).read_text())
+        st.caption(f"routing source: `{arms_file.relative_to(REPO)}`")
+        arms = json.loads(arms_file.read_text())
         rows = [{"arm": a, "seed": s, **m.get("metrics", m)} for a, seeds in arms.items() for s, m in seeds.items()]
         df = pd.DataFrame(rows)
-        cols = [c for c in ["mean_travel_time_s", "p95_travel_time_s", "total_waiting_s", "mean_time_loss_s", "arrived", "teleports"] if c in df]
-        st.dataframe(df.groupby("arm")[cols].mean().round(1), use_container_width=True)
-        st.bar_chart(df.groupby("arm")["mean_travel_time_s"].mean())
-        md_or_missing("route/results/stats.md", "python route/stats.py")
+        cols = [c for c in ["total_vehicle_hours", "mean_travel_time_all", "mean_travel_time_s", "p95_travel_time_s", "total_waiting_s", "mean_time_loss_s", "arrived", "teleports"] if c in df]
+        st.dataframe(df.groupby("arm")[cols].mean().round(1), width="stretch")
+        chart_col = "total_vehicle_hours" if "total_vehicle_hours" in df else "mean_travel_time_s"
+        st.bar_chart(df.groupby("arm")[chart_col].mean())
+        md_or_missing("route/results/decision_guard.md", "python route/decision_guard.py --horizon 7200")
+        md_or_missing("route/results/stats.md", "python route/stats.py --horizon 7200")
 
 with tab_net:
     md_or_missing("network/results/penetration.md", "make network")
@@ -99,7 +110,7 @@ with tab_nlp:
     md_or_missing("nlp/results/classifier.md", "make nlp")
     ev = REPO / "nlp/results/events.jsonl"
     if ev.exists():
-        st.dataframe(pd.DataFrame([json.loads(l) for l in ev.read_text().splitlines() if l.strip()]), use_container_width=True)
+        st.dataframe(pd.DataFrame(read_jsonl(ev)), width="stretch")
     txt = st.text_input("Try a traffic post", "Heavy jam at Karwan Bazar after a bus breakdown")
     if txt and (REPO / "nlp/event_feed.py").exists():
         import subprocess, sys
