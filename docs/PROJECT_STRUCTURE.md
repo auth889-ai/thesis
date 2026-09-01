@@ -5,8 +5,8 @@ This repository has two layers:
 1. **Existing DhakaFlow source code**: reusable package code, research modules,
    scripts, frozen network assets, tests, and evidence.
 2. **120-hour rebuild layer**: a small, clear execution surface for the current
-   thesis goal: traffic prediction + predictive route optimization + V2X/NLP
-   evidence.
+   thesis goal: real-time route advice, traffic prediction benchmarks, a
+   real-user pilot, and V2X/NLP/SUMO appendix evidence.
 
 The rebuild layer does not replace the existing project. It imports and reuses
 the existing project so the thesis can be understood and reproduced quickly.
@@ -43,9 +43,10 @@ There must be no top-level `src/`. The source package is `dhakaflow/`.
 
 | Path | Owns | Reuses |
 |---|---|---|
+| `live/` | no-fixed-seed route advisor and real user-pilot logging | `dhakaflow/live/google_providers.py`, `dhakaflow/live/providers.py` |
 | `predict/` | twin sensor dataset, forecasting floors, forecast-to-SUMO weights | `research/twin/sensor_graph.py`, `research/forecasting/*`, BasicTS pins |
-| `route/` | static/reactive/predictive/DUE/DSO routing arms and paired-seed stats | `research/routing/r1_router.py`, SUMO, `artifacts/gates/routes_repeat_1h.rou.xml.gz` |
-| `network/` | MOSAIC V2X penetration and latency/loss sweeps | `artifacts/mosaic_dhaka/dhaka_r1`, `research/networking/v2x_bus.py` |
+| `route/` | static/reactive/predictive/DUE/DSO routing arms and paired-seed appendix stats | `research/routing/r1_router.py`, SUMO, `artifacts/gates/routes_repeat_1h.rou.xml.gz` |
+| `network/` | MOSAIC V2X penetration and latency/loss appendix sweeps | `artifacts/mosaic_dhaka/dhaka_r1`, `research/networking/v2x_bus.py` |
 | `nlp/` | incident text classifier and event-to-edge weight injection | `dhakaflow/nlp`, R1 edge mapping, routing weight format |
 | `demo/` | presentation demo using generated results | `predict/`, `route/`, `network/`, `nlp/` outputs |
 | `results/` | final result index and generated summary tables | all active modules |
@@ -97,13 +98,13 @@ relative paths, then verifies sha256 checksums from `docs/ASSET_MANIFEST.json`.
 Regenerate the manifest only after producing a new accepted evidence set:
 
 ```bash
-python scripts/build_asset_manifest.py
+python results/build_asset_manifest.py
 ```
 
 ## Main Commands
 
 ```bash
-python scripts/build_asset_manifest.py
+python results/build_asset_manifest.py
 bash download_assets.sh
 PYTHONPATH=. pytest tests/platform/test_interfaces.py tests/platform/test_repo_architecture.py -q
 make route

@@ -1,10 +1,11 @@
 # DhakaFlow Nexus
 
-**Current active thesis path:** traffic prediction + predictive route
-optimization on the real Dhaka R1 SUMO network. The clean execution layer is
-`predict/`, `route/`, `network/`, `nlp/`, `demo/`, and `results/`; it reuses the
-existing `dhakaflow/`, `research/`, `scripts/`, and `paper_labs/` code instead
-of starting a new project.
+**Current active thesis path:** real-time Dhaka route advice plus prediction
+benchmarks. The clean execution layer is `live/`, `predict/`, `route/`,
+`network/`, `nlp/`, `demo/`, and `results/`; it reuses the existing
+`dhakaflow/`, `research/`, `scripts/`, and `paper_labs/` code instead of
+starting a new project. `live/` is the no-fixed-seed real pilot path; SUMO and
+MOSAIC are repeatable appendix stress tests.
 
 Start here:
 
@@ -19,6 +20,7 @@ Main verification:
 ```bash
 bash download_assets.sh
 PYTHONPATH=. pytest tests/platform/test_interfaces.py tests/platform/test_repo_architecture.py -q
+python live/route_advisor.py --dry-run --corridor farmgate_to_shahbagh
 make results
 ```
 
@@ -92,16 +94,18 @@ p = 1.3×10⁻⁵ (`artifacts/due_dso_stats/v200/result.json`).*
 | **Prediction data** | Eclipse SUMO 1.27.1 on frozen Dhaka R1 + 250 virtual sensors | 8 h × 3 seeds, 288 timesteps, 84.3 % valid speed coverage | `predict/data/dhaka_twin/MANIFEST.json` acceptance PASS |
 | **Forecasting floors** | Persistence + historical average | MAE@15 min: 0.724 / 0.570 m/s | `predict/results/twin_floors.md` |
 | **Deep forecasting** | BasicTS STID/GWNet/STAEformer on Colab Pro | pending | `notebooks/Predict_BasicTS_Colab.ipynb` then `predict/pull_colab_results.py` |
-| **Routing** | SUMO paired seeds, static/reactive/DUE/predictive arms | decision guard selects `predictive_persistence`, 32.4 % total vehicle-hours benefit vs reactive | `route/results/decision_guard.md` |
+| **Real route advice** | Google Routes live runtime call, route scoring in memory only | 1 real Dhaka advisory written; no Google route content persisted | `live/results/route_advice.jsonl` |
+| **Real user pilot** | 3 users record start/arrival around advisories | pending | `live/user_trip_logger.py` |
+| **Routing appendix** | SUMO paired seeds, static/reactive/DUE/predictive arms | decision guard can select an arm or honestly block unsafe action | `route/results/decision_guard.md` |
 | **Live reference** | Google Routes runtime-reference capture | 6 Dhaka corridors captured; Google route content is not persisted | `artifacts/p_live/live_reference_summary.md` |
 | **Evidence audit** | machine-readable artifact check | PASS with Colab benchmark pending | `results/evidence_audit.md` |
 
 ## Architecture
 
 ```
-twin sensors + live refs ─► forecast (BasicTS STGNN / floors) ─► edge travel-time weights
-incident text ─► NLP event feed ───────────────────────────────┘
-weights ─► SUMO routing arms + MOSAIC V2X advisories ─► paired-seed evidence + decision guard
+live OD request ─► Google Routes runtime options ─► route advisor ─► 3-user pilot log
+real benchmark datasets ─► Colab STGNN benchmark ─► model comparison table
+Dhaka twin sensors ─► forecast-to-weights ─► SUMO/MOSAIC appendix stress tests
 ```
 
 ## Honesty labels (enforced in code, not prose)

@@ -1,9 +1,9 @@
 # PROJECT MAP — read this first (5 minutes)
 
-The active thesis path is the **120-hour rebuild layer**: predict traffic on the
-Dhaka R1 SUMO twin, route vehicles on predicted travel times, evaluate paired
-seeds, then present the evidence in one results file. It reuses the existing
-DhakaFlow source code; it is not a second project.
+The active thesis path is the **120-hour rebuild layer**: real-time Dhaka route
+advice, real benchmark forecasting on Colab, a small user pilot, and SUMO/MOSAIC
+as repeatable appendix stress tests. It reuses the existing DhakaFlow source
+code; it is not a second project.
 
 Read `docs/PROJECT_STRUCTURE.md` for the folder contract.
 
@@ -11,9 +11,10 @@ Read `docs/PROJECT_STRUCTURE.md` for the folder contract.
 
 | Folder | What it is |
 |---|---|
+| `live/` | no-fixed-seed route advisor and 3-user real pilot logger |
 | `predict/` | twin sensor data, forecasting floors, BasicTS/Graph WaveNet outputs, forecast-to-weight XML |
-| `route/` | static/reactive/predictive/DUE/DSO routing harness and paired-seed stats |
-| `network/` | MOSAIC V2X penetration and latency/loss sweeps |
+| `route/` | SUMO static/reactive/predictive/DUE/DSO appendix harness and paired-seed stats |
+| `network/` | MOSAIC V2X penetration and latency/loss appendix sweeps |
 | `nlp/` | incident text classifier and event-to-edge weight injection |
 | `demo/` | Streamlit/presentation viewer for generated evidence |
 | `results/` | single source for final tables and reproducibility links |
@@ -25,6 +26,12 @@ Main command for the rebuild layer:
 This aggregates existing evidence into `results/RESULTS.md`. To regenerate
 local non-billed evidence, run `make local-results`. To call Google live
 reference APIs, run `make live-capture` deliberately.
+
+No-fixed-seed real path:
+
+    python live/route_advisor.py --live --yes --corridor farmgate_to_shahbagh
+    python live/user_trip_logger.py start --participant p1 --advice-id <id> --corridor farmgate_to_shahbagh
+    python live/user_trip_logger.py complete --trip-id <trip_id>
 
 ## Existing gate chain
 

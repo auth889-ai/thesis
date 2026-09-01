@@ -1,0 +1,41 @@
+# secrets
+.env
+.env.*
+!.env.example
+secrets/*
+!secrets/README.md
+
+# large data / Drive mounts
+datasets/raw/
+datasets/processed/
+datasets/cache/
+data/
+*.csv.part
+*.parquet
+*.duckdb
+*.db
+*.sqlite
+*.pbf
+
+# model weights / large checkpoints
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.h5
+checkpoints/
+
+# caches
+__pycache__/
+*.pyc
+.pytest_cache/
+.ipynb_checkpoints/
+.DS_Store
+
+# generated large outputs
+**/outputs/large/
+**/cache/
+
+# Colab temp mounts
+content/
+gdrive/

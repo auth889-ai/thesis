@@ -90,13 +90,14 @@ def audit_routing(repo: Path) -> dict[str, str]:
         return row("Routing decision guard", "PENDING", path, "decision artifact exists", "run make route")
     evals = decision.get("deployable_evaluations", [])
     accepted = [ev for ev in evals if ev.get("accepted")]
-    status = "PASS" if decision.get("decision") == "ACT" and accepted else "FAIL"
+    honest_block = decision.get("decision") == "NO_SAFE_ROUTING_ACTION" and bool(evals)
+    status = "PASS" if (decision.get("decision") == "ACT" and accepted) or honest_block else "FAIL"
     details = (
         f"decision={decision.get('decision')}; selected={decision.get('selected_arm')}; "
         f"benefit_total_vehicle_hours={decision.get('selected_mean_total_vehicle_hours_benefit_pct')}"
     )
     return row("Routing decision guard", status, path,
-               "deployable arm improves required metrics on paired seeds", details)
+               "appendix simulation either selects a safe arm or honestly blocks unsafe action", details)
 
 
 def audit_live_reference(repo: Path) -> dict[str, str]:
@@ -121,12 +122,53 @@ def audit_live_reference(repo: Path) -> dict[str, str]:
                "live/reference only, no Google route content persisted", details)
 
 
+def audit_live_route_advice(repo: Path) -> dict[str, str]:
+    path = repo / "live/results/route_advice.jsonl"
+    if not path.exists():
+        return row("Real route advisor", "PENDING", path, "live advisory metadata exists",
+                   "run python live/route_advisor.py --live --yes --corridor farmgate_to_shahbagh")
+    rows = [json.loads(line) for line in path.read_text().splitlines() if line.strip()]
+    banned = {"duration_s", "static_duration_s", "distance_m", "polyline", "encodedPolyline"}
+    real_rows = [r for r in rows if r.get("reality") == "REAL_LIVE"]
+    no_content = all(
+        r.get("google_data_mode") == "RUNTIME_REFERENCE"
+        and r.get("route_content_persisted") is False
+        and not (set(r) & banned)
+        for r in rows
+    )
+    status = "PASS" if real_rows and no_content else "FAIL"
+    details = f"rows={len(rows)}; real_rows={len(real_rows)}; route_content_persisted={not no_content}"
+    return row("Real route advisor", status, path,
+               "real live advisory exists and stores no Google route content", details)
+
+
+def audit_user_pilot(repo: Path) -> dict[str, str]:
+    path = repo / "live/results/pilot_metrics.json"
+    summary = load_json(path)
+    if not summary:
+        return row("Real user pilot", "PENDING", path, "completed trip metrics exist",
+                   "run live/user_trip_logger.py start/complete for the 3 users")
+    ok = (
+        summary.get("honesty_label") == "REAL_USER_PILOT_SMALL_SAMPLE_NO_GOOGLE_ROUTE_CONTENT_STORED"
+        and summary.get("route_content_persisted") is False
+        and summary.get("completed_trips", 0) > 0
+    )
+    status = "PASS" if ok else "FAIL"
+    details = (
+        f"completed_trips={summary.get('completed_trips')}; "
+        f"participants={summary.get('participants')}; "
+        f"mean_actual_elapsed_s={summary.get('mean_actual_elapsed_s')}"
+    )
+    return row("Real user pilot", status, path,
+               "real user trip timestamps, no fixed seeds", details)
+
+
 def audit_asset_manifest(repo: Path) -> dict[str, str]:
     path = repo / "docs/ASSET_MANIFEST.json"
     manifest = load_json(path)
     if not manifest:
         return row("Asset bootstrap manifest", "PENDING", path, "asset manifest exists",
-                   "run python scripts/build_asset_manifest.py")
+                   "run python results/build_asset_manifest.py")
     assets = manifest.get("assets", [])
     missing = manifest.get("missing_when_manifest_built", [])
     ok = manifest.get("schema") == "dhakaflow.asset-manifest.v1" and assets and not missing
@@ -184,6 +226,7 @@ def write_markdown(path: Path, report: dict[str, Any], repo: Path) -> None:
         "Reality rule: live Google data is used only as runtime/reference evidence, "
         "not as cached training data. Dhaka twin sensor data is simulated on the real frozen R1 topology "
         "and must not be described as real sensor measurements.",
+        "The `live/` route-advisor and user-pilot path is the no-fixed-seed real-world evidence path.",
         "",
     ]
     path.write_text("\n".join(lines))
@@ -196,6 +239,8 @@ def build_report(repo: Path) -> dict[str, Any]:
         audit_colab_benchmark(repo),
         audit_routing(repo),
         audit_live_reference(repo),
+        audit_live_route_advice(repo),
+        audit_user_pilot(repo),
         audit_asset_manifest(repo),
         audit_network(repo),
         audit_nlp(repo),

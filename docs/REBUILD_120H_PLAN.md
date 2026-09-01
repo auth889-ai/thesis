@@ -24,7 +24,7 @@ Dhaka roads with paired seeds, that vehicles wait less.*
 * `paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml` — real Dhaka R1 SUMO network, 6,527 edges, left-hand, frozen.
 * `research/twin/sensor_graph.py` — 250 virtual sensors + DCRNN-recipe adjacency → METR-LA-shaped dataset from the twin.
 * `research/forecasting/basicts_adapter.py`, `notebooks/P3_forecasting_colab.ipynb` — BasicTS export + Colab path (already ran once).
-* `scripts/run_due_dso.py` (duaIterate DUE/DSO), `scripts/gate7_dynamic_routing.py` (TraCI compliance ladder), `research/routing/r1_router.py` (TD-Dijkstra on R1), `artifacts/gates/routes_repeat_1h.rou.xml.gz` (1 h demand).
+* `route/run_due_dso.py` (duaIterate DUE/DSO), `scripts/gate7_dynamic_routing.py` (TraCI compliance ladder), `research/routing/r1_router.py` (TD-Dijkstra on R1), `artifacts/gates/routes_repeat_1h.rou.xml.gz` (1 h demand).
 * `artifacts/mosaic_dhaka/dhaka_r1` — **official Eclipse MOSAIC 25.2 already runs on the Dhaka net** (DENM broadcast → 886 route switches). `research/networking/v2x_bus.py` latency injector.
 * `dhakaflow/live/google_providers.py` + Google Routes key — live Dhaka *reference verdicts* (Google ToS forbids caching/ML-training on their content; keep it as validation only).
 * Upstream pins in `~/.dhakaflow/upstream`: BasicTS, Graph-WaveNet, DCRNN, STID, STAEformer, sumo-rl, mosaic, chronos-forecasting.

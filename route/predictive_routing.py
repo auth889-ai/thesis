@@ -15,7 +15,7 @@ Arms (identical network, demand, seed and horizon; only the routing rule differs
               is loaded with traci.edge.adaptTraveltime(edge, tt, begin, end); equipped
               vehicles reroute with rerouteTraveltime(v, currentTravelTimes=False), so
               SUMO's time-dependent Dijkstra costs each edge at its predicted arrival time.
-  due / dso   offline duaIterate.py (see scripts/run_due_dso.py; --marginal-cost = DSO)  -> B3 / B4
+  due / dso   offline duaIterate.py (see route/run_due_dso.py; --marginal-cost = DSO)  -> B3 / B4
 
 Outputs (one directory per run): tripinfo.xml, statistic.xml, edgedata.xml (5-min mean
 travel time per edge = the oracle weight table for the next predictive run) and

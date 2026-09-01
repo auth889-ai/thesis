@@ -1,6 +1,6 @@
 # RESULTS — DhakaFlow rebuild
 
-Generated 2026-09-01T22:23 @ `226d412` by `python results/build_results.py`.
+Generated 2026-09-01T23:27 @ `d25b4e7` by `python results/build_results.py`.
 
 Every table below is read from a file written by the pipeline named next to it. Nothing here is typed by hand.
 
@@ -11,7 +11,7 @@ Every table below is read from a file written by the pipeline named next to it. 
 
 # Evidence Audit
 
-Generated UTC: `2026-09-01T10:04:02.546077+00:00`.
+Generated UTC: `2026-09-01T16:42:42.301399+00:00`.
 Overall status: **PASS_WITH_PENDING_ITEMS**.
 
 | area | status | artifact | check | details |
@@ -19,13 +19,30 @@ Overall status: **PASS_WITH_PENDING_ITEMS**.
 | Dhaka twin prediction data | PASS | `predict/data/dhaka_twin/MANIFEST.json` | PASS manifest, labelled simulated, >=3 seeds | label=DHAKA_SIMULATED_SENSOR_GRAPH; acceptance=PASS; seeds=3; shape=[288, 250, 5] |
 | Prediction floors | PASS | `predict/results/twin_floors.json` | persistence and historical-average at 4 horizons | models=['historical_average', 'persistence']; horizons_min=[5, 15, 30, 60] |
 | Colab BasicTS benchmark | PENDING | `predict/results/benchmark.csv` | real benchmark table copied from Drive | run the Colab notebook, then pull results |
-| Routing decision guard | PASS | `route/results/decision_guard.json` | deployable arm improves required metrics on paired seeds | decision=ACT; selected=predictive_persistence; benefit_total_vehicle_hours=32.42411218615388 |
+| Routing decision guard | PASS | `route/results/decision_guard.json` | appendix simulation either selects a safe arm or honestly blocks unsafe action | decision=NO_SAFE_ROUTING_ACTION; selected=None; benefit_total_vehicle_hours=None |
 | Live Google reference | PASS | `artifacts/p_live/live_reference_summary.json` | live/reference only, no Google route content persisted | corridors=6; states={'CONGESTED': 2, 'FREE_FLOW': 1, 'SLOW': 3}; route_content_persisted=False |
+| Real route advisor | PASS | `live/results/route_advice.jsonl` | real live advisory exists and stores no Google route content | rows=1; real_rows=1; route_content_persisted=False |
+| Real user pilot | PENDING | `live/results/pilot_metrics.json` | completed trip metrics exist | run live/user_trip_logger.py start/complete for the 3 users |
 | Asset bootstrap manifest | PASS | `docs/ASSET_MANIFEST.json` | manifest has assets and no missing entries | assets=50; missing_when_built=0 |
 | V2X networking sweep | PASS | `network/results/penetration.csv` | non-empty penetration table | rows=15 |
 | NLP incident classifier | PASS | `nlp/results/classifier.json` | classifier metrics JSON exists | metric_keys=['distilbert', 'tfidf_lr', 'tfidf_lr_dhaka_aug'] |
 
 Reality rule: live Google data is used only as runtime/reference evidence, not as cached training data. Dhaka twin sensor data is simulated on the real frozen R1 topology and must not be described as real sensor measurements.
+The `live/` route-advisor and user-pilot path is the no-fixed-seed real-world evidence path.
+
+
+## Real route advisor — live Dhaka advisory without fixed seeds
+
+`python live/route_advisor.py --live --yes --corridor farmgate_to_shahbagh` → `live/results/route_advice.md`
+
+_NOT YET PRODUCED_
+
+
+## Real user pilot — 3-user trip timestamp evidence
+
+`python live/user_trip_logger.py start ... && python live/user_trip_logger.py complete ...` → `live/results/pilot_metrics.md`
+
+_NOT YET PRODUCED_
 
 
 ## Prediction — LIVE Dhaka congestion floors (real Google-derived stream)
@@ -54,6 +71,35 @@ target = speed_ms (m/s), test region only, masked
 ## Prediction — BasicTS benchmark (METR-LA / PEMS-BAY / PEMS08)
 
 `notebooks/Predict_BasicTS_Colab.ipynb (Colab Pro) -> predict/results/benchmark.csv` → `predict/results/benchmark.md`
+
+_NOT YET PRODUCED_
+
+
+## Prediction — city dataset registry (any city, one interface)
+
+`python predict/city_datasets.py --list` → `predict/results/cities.md`
+
+# City dataset registry — the forecasting stack is not Dhaka-specific
+
+Every city resolves to the same object (values, mask, adjacency, coords, reality label), so the models, the floors and the federated experiment take a `--city` flag and nothing else changes.
+
+| city | present | sensors | bins | span (days) | coverage | quantity | reality | source paper |
+|---|---|---|---|---|---|---|---|---|
+| METR-LA | yes | 207 | 34272 | 119.0 | 91.9% | speed_mph | **REAL** | Li et al., DCRNN, ICLR 2018 |
+| PEMS-BAY | yes | 325 | 52116 | 180.96 | 100.0% | speed_mph | **REAL** | Li et al., DCRNN, ICLR 2018 |
+| PEMS04 | no | 307 (expected) | | | | | | Guo et al., ASTGCN, AAAI 2019 |
+| PEMS08 | no | 170 (expected) | | | | | | Guo et al., ASTGCN, AAAI 2019 |
+| DHAKA-TWIN | yes | 250 | 288 | 1.0 | 84.3% | speed_ms | **SIMULATED** | this project (simulated) |
+| DHAKA-LIVE | yes | 6 | 3 | 0.01 | 66.7% | congestion_level | **REAL** | this project (live API) |
+
+Add a city by registering a loader in `predict/city_datasets.py`; no model code changes.
+
+Regenerate: `python predict/city_datasets.py --list`.
+
+
+## Prediction × Networking — federated forecasting under the MEASURED V2X link
+
+`notebooks/Federated_V2X_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results predict/results --include federated*` → `predict/results/federated.md`
 
 _NOT YET PRODUCED_
 
@@ -146,7 +192,7 @@ Honesty label: `DHAKA_SIMULATED_SENSOR_GRAPH`.
 
 ## Live reference — Google Routes derived congestion states
 
-`python scripts/run_live_capture.py && python scripts/summarize_live_reference.py` → `artifacts/p_live/live_reference_summary.md`
+`python predict/run_live_capture.py && python predict/summarize_live_reference.py` → `artifacts/p_live/live_reference_summary.md`
 
 # Live Reference Summary
 
@@ -373,6 +419,52 @@ advised improves total vehicle-hours on every paired seed without cost to arriva
 Rule: ACT iff total vehicle-hours improves on EVERY paired seed and mean arrivals do not fall and mean teleports do not rise
 
 Regenerate: `python route/live_chain.py --seeds 11,12,13`.
+
+
+## Routing — REAL MEASURED demand (Athens pNEUMA d8, 697 drone-observed vehicles)
+
+`python route/real_demand_arms.py --seeds 11,12,13 --compliance 0.05,0.1,0.3` → `route/results/real_demand.md`
+
+# Routing arms on REAL MEASURED demand (Athens pNEUMA d8)
+
+**697 vehicles, drone-measured** — origins, destinations and departure times are observed, not generated. Network: OSM extract of the same streets. Vehicle types: calibrated with the authors' published optimizer. Twin validated at speed MAE 3.0 m/s, 0 teleports (`artifacts/urban_real_site/STEP2_RECORD.json`). Horizon 900s; 3 paired seeds (seeds vary SUMO's driver noise only — the trips are fixed and measured).
+
+| arm | total_vehicle_hours | mean_travel_time_s | p95_travel_time_s | mean_time_loss_s | arrived | teleports |
+|---|---|---|---|---|---|---|
+| static | 27.63 ± 9.69 | 144.23 ± 50.67 | 427.67 ± 120.65 | 129.54 ± 50.78 | 685.00 ± 8.52 | 17.67 ± 13.12 |
+| static_traci | 27.63 ± 9.69 | 144.23 ± 50.67 | 427.67 ± 120.65 | 129.54 ± 50.78 | 685.00 ± 8.52 | 17.67 ± 13.12 |
+| reactive_c0.05 | 21.06 ± 3.01 | 108.80 ± 15.53 | 340.33 ± 68.75 | 94.09 ± 15.52 | 697.00 ± 0.00 | 11.00 ± 3.56 |
+| predeparture_oracle_c0.05 | 30.98 ± 17.91 | 124.98 ± 43.05 | 431.67 ± 189.90 | 111.04 ± 44.25 | 624.67 ± 102.29 | 23.33 ± 20.98 |
+| reactive_c0.1 | 21.06 ± 3.01 | 108.80 ± 15.53 | 340.33 ± 68.75 | 94.09 ± 15.52 | 697.00 ± 0.00 | 11.00 ± 3.56 |
+| predeparture_oracle_c0.1 | 30.78 ± 10.21 | 155.62 ± 49.93 | 476.67 ± 107.25 | 140.59 ± 49.94 | 691.00 ± 6.48 | 17.67 ± 6.94 |
+| reactive_c0.3 | 21.24 ± 3.61 | 109.68 ± 18.66 | 357.00 ± 97.50 | 94.96 ± 18.64 | 697.00 ± 0.00 | 11.33 ± 4.50 |
+| predeparture_oracle_c0.3 | 23.82 ± 12.14 | 123.02 ± 62.73 | 381.67 ± 165.01 | 107.45 ± 62.69 | 697.00 ± 0.00 | 9.33 ± 6.34 |
+
+## Paired change vs the LIKE-FOR-LIKE baseline (per-seed, then mean)
+
+`reactive_*` is compared against `static_traci` (same TraCI stepping, no advice); the pre-departure arms against `static` (both launched standalone). Comparing a TraCI arm to a standalone baseline would measure the harness as well as the treatment.
+
+| arm | veh-h per seed % | mean % | arrivals Δ | teleports Δ | seeds improved |
+|---|---|---|---|---|---|
+| reactive_c0.05 | [-38.46, -0.7, -16.21] | -18.46 | +36 | -20 | 3/3 |
+| predeparture_oracle_c0.05 | [-57.51, 204.93, -17.91] | +43.17 | -181 | +17 | 2/3 |
+| reactive_c0.1 | [-38.46, -0.7, -16.21] | -18.46 | +36 | -20 | 3/3 |
+| predeparture_oracle_c0.1 | [-59.49, 118.37, 51.3] | +36.73 | +18 | +0 | 1/3 |
+| reactive_c0.3 | [-36.08, -3.51, -15.99] | -18.53 | +36 | -19 | 3/3 |
+| predeparture_oracle_c0.3 | [-62.89, 122.07, -34.93] | +8.09 | +36 | -25 | 2/3 |
+
+## Caveats an examiner will ask about — stated here, not buried
+
+1. **The free-running twin gridlocks, and the headline gain is mostly deadlock relief.** In the drone data all 697 vehicles completed within the 827.8 s observation window. In the static twin arm 9 are unfinished at 900 s and 18 teleport (SUMO's deadlock escape). Diagnostic: at 10 % compliance only SIX vehicle routes actually change, yet vehicle-hours fall ~38 % and teleports drop 36 -> 13. A handful of vehicles cannot make a network 38 % more efficient; they can unlock a jammed junction. So this number measures the release of a SIMULATION deadlock, not a transport effect, and must not be quoted as a routing benefit.
+1b. **The baseline is not a harness artifact** — `static_traci` (stepped by TraCI, no advice) reproduces standalone `static` exactly, so arms are compared like for like.
+1c. **Compliance sets are nested by construction** (the md5 rule means the 5 % set is a subset of the 10 % set), which is why an unchanged critical vehicle can give identical results at two shares.
+2. **This exceeds the twin's validated regime.** `STEP2_RECORD.json` validated it for per-cycle, short-horizon experiments with real per-cycle initialisation, and states explicitly that free-running long-horizon network behaviour is NOT validated. A 900 s free-running run is outside that envelope.
+3. **The measured routes are not strawmen.** Their free-flow travel time is a median 1.00x (mean 1.09x) of the shortest path, so the improvement does not come from fixing bad map-matched routes; it comes from spreading load once the network congests.
+4. **Athens is not Dhaka.** This site removes the synthetic-demand weakness, at the cost of answering the question on a different city than the one the thesis is about.
+
+Data provenance: `route/data/athens_d8/MANIFEST.json` — REAL_MEASURED_DEMAND — vehicles and their routes come from drone-measured trajectories, map-matched to the OSM network (368/401 matched, GATE2_SAME_ROAD_TWIN PASS)
+
+Regenerate: `python route/real_demand_arms.py --seeds 11,12,13 --compliance 0.05,0.1,0.3` (wall 29s).
 
 
 ## Routing — NLP incident scenario (text → reroute → measured delay)

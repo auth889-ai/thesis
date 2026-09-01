@@ -79,7 +79,7 @@ Google Routes is billed per request, so the verifier reports it as present but
 does not spend quota. Run the live Google capture deliberately:
 
 ```bash
-python scripts/run_live_capture.py
+python predict/run_live_capture.py
 ```
 
 ## Colab Workflow

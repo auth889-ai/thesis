@@ -7,7 +7,7 @@ PY ?= python
 SEEDS ?= 11,12,13
 HORIZON ?= 7200
 
-.PHONY: all data predict route network nlp live-summary live-capture results local-results clean
+.PHONY: all data predict route network nlp live-advice live-advice-real live-summary live-capture results local-results clean
 
 all: results
 
@@ -29,12 +29,18 @@ nlp:             ## incident-text classifier + event feed -> nlp/results/
 	$(PY) nlp/train_classifier.py
 	$(PY) nlp/event_feed.py --demo
 
+live-advice:     ## free fixture route-advisor smoke; no API calls
+	$(PY) live/route_advisor.py --dry-run --corridor farmgate_to_shahbagh --out live/results/route_advice_fixture.jsonl
+
+live-advice-real: ## one real Google Routes advisory; stores compliant metadata only
+	$(PY) live/route_advisor.py --live --yes --corridor farmgate_to_shahbagh --out live/results/route_advice.jsonl
+
 live-summary:    ## summarize compliant runtime-reference records; no API calls
-	$(PY) scripts/summarize_live_reference.py
+	$(PY) predict/summarize_live_reference.py
 
 live-capture:    ## deliberate billed live reference capture, then summarize
-	$(PY) scripts/run_live_capture.py
-	$(PY) scripts/summarize_live_reference.py
+	$(PY) predict/run_live_capture.py
+	$(PY) predict/summarize_live_reference.py
 
 results:         ## audit and collect existing tables into results/RESULTS.md; no simulations/API calls
 	$(PY) results/evidence_audit.py

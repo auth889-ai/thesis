@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-09-01T10:04:02.546077+00:00",
+ "generated_utc": "2026-09-01T16:42:42.301399+00:00",
  "overall_status": "PASS_WITH_PENDING_ITEMS",
  "rows": [
   {
@@ -27,8 +27,8 @@
    "name": "Routing decision guard",
    "status": "PASS",
    "artifact": "/Users/jannatulferdouseva/thesis/route/results/decision_guard.json",
-   "check": "deployable arm improves required metrics on paired seeds",
-   "details": "decision=ACT; selected=predictive_persistence; benefit_total_vehicle_hours=32.42411218615388"
+   "check": "appendix simulation either selects a safe arm or honestly blocks unsafe action",
+   "details": "decision=NO_SAFE_ROUTING_ACTION; selected=None; benefit_total_vehicle_hours=None"
   },
   {
    "name": "Live Google reference",
@@ -36,6 +36,20 @@
    "artifact": "/Users/jannatulferdouseva/thesis/artifacts/p_live/live_reference_summary.json",
    "check": "live/reference only, no Google route content persisted",
    "details": "corridors=6; states={'CONGESTED': 2, 'FREE_FLOW': 1, 'SLOW': 3}; route_content_persisted=False"
+  },
+  {
+   "name": "Real route advisor",
+   "status": "PASS",
+   "artifact": "/Users/jannatulferdouseva/thesis/live/results/route_advice.jsonl",
+   "check": "real live advisory exists and stores no Google route content",
+   "details": "rows=1; real_rows=1; route_content_persisted=False"
+  },
+  {
+   "name": "Real user pilot",
+   "status": "PENDING",
+   "artifact": "/Users/jannatulferdouseva/thesis/live/results/pilot_metrics.json",
+   "check": "completed trip metrics exist",
+   "details": "run live/user_trip_logger.py start/complete for the 3 users"
   },
   {
    "name": "Asset bootstrap manifest",

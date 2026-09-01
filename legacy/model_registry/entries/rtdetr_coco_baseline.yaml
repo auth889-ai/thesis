@@ -1,0 +1,23 @@
+# Perception candidate. Metrics are deliberately absent because this baseline is
+# not the selected Dhaka model.
+key: rtdetr_coco_baseline
+subsystem: perception
+architecture: RT-DETR (Real-Time DEtection TRansformer), COCO-pretrained
+status: CANDIDATE
+
+paper: https://arxiv.org/abs/2304.08069
+official_repo: https://github.com/lyuwenyu/RT-DETR
+official_sha: ""
+config: configs/perception/detector.yaml
+
+trained_on: COCO 2017 upstream pretrained weights
+checkpoint_uri: ""
+benchmark: ""
+metrics: []
+
+extra:
+  role: >
+    Baseline for the vertical slice before Dhaka-specific fine tuning. Expected
+    to detect common COCO vehicle classes and miss local classes such as
+    rickshaw, CNG, and easybike.
+

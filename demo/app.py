@@ -45,9 +45,50 @@ def net_paths(max_edges: int = 7000):
     return paths
 
 
-tab_map, tab_live, tab_pred, tab_route, tab_net, tab_nlp = st.tabs([
-    "Map", "Live reference", "Predict", "Route", "Network", "NLP events"
+tab_chain, tab_map, tab_live, tab_pred, tab_route, tab_net, tab_nlp = st.tabs([
+    "Live chain", "Map", "Live reference", "Predict", "Route", "Network", "NLP events"
 ])
+
+with tab_chain:
+    st.markdown("#### live Dhaka APIs → state → forecast → edge times → router → SUMO counterfactual → decision")
+    man = REPO / "artifacts/live_dhaka/RECORDER_MANIFEST.json"
+    series_man = REPO / "predict/data/live_dhaka/MANIFEST.json"
+    c1, c2, c3, c4 = st.columns(4)
+    if man.exists():
+        m = json.loads(man.read_text())
+        c1.metric("Live captures", m["rows_ok"], f"{m['rows_failed']} failed" if m["rows_failed"] else "0 failed")
+        c2.metric("Recorder", m["reality"], f"every {m['interval_s']}s")
+    if series_man.exists():
+        sm = json.loads(series_man.read_text())
+        c3.metric("History", f"{sm['span_hours']:.1f} h", f"{sm['bins']} bins x {len(sm['corridors'])} corridors")
+        c4.metric("Coverage", f"{sm['coverage']:.0%}", sm["reality"])
+    lc = REPO / "route/results/live_chain.json"
+    if lc.exists():
+        d = json.loads(lc.read_text())
+        dec = d["decision"]["decision"]
+        (st.success if dec == "ACT" else st.warning)(f"**{dec}** — {d['decision']['reason']}")
+        st.caption(f"source {d['source']['reality']} · {d['edges_congested']} congested edges · "
+                   f"demand {d['demand']}")
+        lv = d["source"].get("levels", {})
+        if lv:
+            st.dataframe(pd.DataFrame([{"corridor": k, "level": v,
+                                        "state": ["FREE_FLOW", "SLOW", "CONGESTED", "SEVERE"][int(min(3, max(0, round(v))))]}
+                                       for k, v in sorted(lv.items())]), width="stretch", hide_index=True)
+    else:
+        st.info("no live-chain run yet — `python route/live_chain.py --seeds 11,12,13`")
+    sweep = sorted(REPO.glob("route/results/live_chain_c*.json"))
+    if sweep:
+        st.markdown("**Advised-share sweep** — the decision rule is not one-sided:")
+        rows = []
+        for f in sweep:
+            d = json.loads(f.read_text())
+            rows.append({"advised share": d["compliance"], "decision": d["decision"]["decision"],
+                         "mean veh-h change %": d["decision"].get("mean_pct"),
+                         "seeds improved": f"{sum(1 for x in d['decision'].get('vehicle_hours_pct_per_seed', []) if x < 0)}"
+                                           f"/{len(d['decision'].get('vehicle_hours_pct_per_seed', []))}",
+                         "source": d["source"]["reality"]})
+        st.dataframe(pd.DataFrame(rows), width="stretch", hide_index=True)
+    md_or_missing("route/results/live_chain.md", "python route/live_chain.py --seeds 11,12,13")
 
 with tab_map:
     try:
@@ -80,10 +121,23 @@ with tab_map:
 
 with tab_live:
     md_or_missing("artifacts/p_live/live_reference_summary.md",
-                  "make live-capture or python scripts/summarize_live_reference.py")
+                  "make live-capture or python predict/summarize_live_reference.py")
 
 with tab_pred:
+    md_or_missing("predict/results/live_floors.md",
+                  "python predict/record_live.py --live --yes  (recorder) && python predict/live_state.py --report")
+    sf = REPO / "predict/data/live_dhaka/series.npz"
+    if sf.exists():
+        import numpy as np
+        z = np.load(sf, allow_pickle=True)
+        vals, mask, corridors = z["values"], z["mask"], [str(c) for c in z["corridors"]]
+        if vals.shape[0] > 1:
+            st.markdown("**Live Dhaka congestion level** (0 free-flow → 3 severe)")
+            st.line_chart(pd.DataFrame(np.where(mask, vals, np.nan), columns=corridors))
+        else:
+            st.caption(f"live series: {vals.shape[0]} bin so far — the recorder needs ~2 h for a chart")
     md_or_missing("predict/results/twin_floors.md", "make data && python predict/baselines_twin.py")
+    md_or_missing("predict/results/twin_models.md", "notebooks/Predict_Twin_Colab.ipynb (Colab GPU)")
     md_or_missing("predict/results/benchmark.md", "notebooks/Predict_BasicTS_Colab.ipynb")
 
 with tab_route:
@@ -101,8 +155,11 @@ with tab_route:
         st.bar_chart(df.groupby("arm")[chart_col].mean())
         md_or_missing("route/results/decision_guard.md", "python route/decision_guard.py --horizon 7200")
         md_or_missing("route/results/stats.md", "python route/stats.py --horizon 7200")
+    md_or_missing("route/results/incident.md", "python route/incident_scenario.py --seeds 11,12,13")
+    md_or_missing("route/results/gridlock_check.md", "see route/results/gridlock_check.md")
 
 with tab_net:
+    md_or_missing("network/results/event_sweep.md", "python network/event_sweep.py --source nlp_event --p 0.25")
     md_or_missing("network/results/penetration.md", "make network")
     md_or_missing("network/results/latency.md", "python network/latency_injection.py")
 

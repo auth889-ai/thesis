@@ -1,0 +1,669 @@
+{
+ "site": {
+  "rescued_utc": "2026-09-01T16:43:19.984194+00:00",
+  "why": "these files lived only in a previous session's scratchpad and would have been lost; the pNEUMA-derived twin is the project's only REAL-DEMAND scenario",
+  "site": "Athens pNEUMA drone dataset d8, 2018-10-29 08:00-08:30 (Barmpounakis & Geroliminis 2020, TR-C)",
+  "reality": "REAL_MEASURED_DEMAND \u2014 vehicles and their routes come from drone-measured trajectories, map-matched to the OSM network (368/401 matched, GATE2_SAME_ROAD_TWIN PASS)",
+  "validated": "STEP2_RECORD.json: speed MAE 3.0 m/s, 0 teleports, calibrated vehicle types (published optimizer, repo @9e25290)",
+  "contrast": "the Dhaka R1 scenario uses SYNTHETIC demand; this one does not",
+  "files": {
+   "athens_d8.net.xml": {
+    "bytes": 1021632,
+    "sha256": "216019318886db226e01dfcb505e30a9fd9604d200f577fb49819723ec7f5ee5"
+   },
+   "athens_demand.rou.xml": {
+    "bytes": 211720,
+    "sha256": "50a8336937012eb137a7b3869b15b8d41588aa7fd2e924836869598c78cda9ad"
+   },
+   "calibrated_types_d8.xml": {
+    "bytes": 9217,
+    "sha256": "454d47a03bf4c66348d9ca6492d8fdcb882722c4cf6e046d005413fbdbffce50"
+   }
+  },
+  "source_scratchpad": "/private/tmp/claude-501/-Users-jannatulferdouseva-thesis/fdc3d95a-9e51-4b32-a390-6d1fbc06a61a/scratchpad/urban"
+ },
+ "vehicles": 697,
+ "horizon_s": 900,
+ "seeds": [
+  11,
+  12,
+  13
+ ],
+ "compliance": [
+  0.05,
+  0.1,
+  0.3
+ ],
+ "results": {
+  "static": {
+   "11": {
+    "arrived": 678,
+    "unfinished_at_horizon": 11,
+    "unfinished": 11,
+    "total_vehicle_hours": 41.03527777777778,
+    "mean_travel_time_all": 214.4078374455733,
+    "mean_travel_time_s": 214.03687315634218,
+    "p95_travel_time_s": 590.0,
+    "mean_waiting_s": 159.95722713864308,
+    "total_waiting_s": 108451.0,
+    "mean_time_loss_s": 199.53578171091448,
+    "mean_depart_delay_s": 55.56253687315635,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 36,
+    "loaded": 697,
+    "inserted": 689,
+    "running_at_end": 11,
+    "waiting_to_insert_at_end": 8
+   },
+   "12": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 18.45861111111111,
+    "mean_travel_time_all": 95.33859397417504,
+    "mean_travel_time_s": 95.33859397417504,
+    "p95_travel_time_s": 301.0,
+    "mean_waiting_s": 47.71736011477762,
+    "total_waiting_s": 33259.0,
+    "mean_time_loss_s": 80.66329985652797,
+    "mean_depart_delay_s": 28.27566714490674,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 6,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0
+   },
+   "13": {
+    "arrived": 680,
+    "unfinished_at_horizon": 16,
+    "unfinished": 16,
+    "total_vehicle_hours": 23.407777777777778,
+    "mean_travel_time_all": 121.07471264367815,
+    "mean_travel_time_s": 123.30294117647058,
+    "p95_travel_time_s": 392.0,
+    "mean_waiting_s": 72.28970588235295,
+    "total_waiting_s": 49157.0,
+    "mean_time_loss_s": 108.41354411764706,
+    "mean_depart_delay_s": 39.234911764705885,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 11,
+    "loaded": 697,
+    "inserted": 696,
+    "running_at_end": 16,
+    "waiting_to_insert_at_end": 1
+   }
+  },
+  "static_traci": {
+   "11": {
+    "arrived": 678,
+    "unfinished_at_horizon": 11,
+    "unfinished": 11,
+    "total_vehicle_hours": 41.03527777777778,
+    "mean_travel_time_all": 214.4078374455733,
+    "mean_travel_time_s": 214.03687315634218,
+    "p95_travel_time_s": 590.0,
+    "mean_waiting_s": 159.95722713864308,
+    "total_waiting_s": 108451.0,
+    "mean_time_loss_s": 199.53578171091448,
+    "mean_depart_delay_s": 55.56253687315635,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 36,
+    "loaded": 697,
+    "inserted": 689,
+    "running_at_end": 11,
+    "waiting_to_insert_at_end": 8,
+    "reroute_calls": 0,
+    "routes_changed": 0
+   },
+   "12": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 18.45861111111111,
+    "mean_travel_time_all": 95.33859397417504,
+    "mean_travel_time_s": 95.33859397417504,
+    "p95_travel_time_s": 301.0,
+    "mean_waiting_s": 47.71736011477762,
+    "total_waiting_s": 33259.0,
+    "mean_time_loss_s": 80.66329985652797,
+    "mean_depart_delay_s": 28.27566714490674,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 6,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "reroute_calls": 0,
+    "routes_changed": 0
+   },
+   "13": {
+    "arrived": 680,
+    "unfinished_at_horizon": 16,
+    "unfinished": 16,
+    "total_vehicle_hours": 23.407777777777778,
+    "mean_travel_time_all": 121.07471264367815,
+    "mean_travel_time_s": 123.30294117647058,
+    "p95_travel_time_s": 392.0,
+    "mean_waiting_s": 72.28970588235295,
+    "total_waiting_s": 49157.0,
+    "mean_time_loss_s": 108.41354411764706,
+    "mean_depart_delay_s": 39.234911764705885,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 11,
+    "loaded": 697,
+    "inserted": 696,
+    "running_at_end": 16,
+    "waiting_to_insert_at_end": 1,
+    "reroute_calls": 0,
+    "routes_changed": 0
+   }
+  },
+  "reactive_c0.05": {
+   "11": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 25.25111111111111,
+    "mean_travel_time_all": 130.42180774748923,
+    "mean_travel_time_s": 130.42180774748923,
+    "p95_travel_time_s": 437.0,
+    "mean_waiting_s": 80.2080344332855,
+    "total_waiting_s": 55905.0,
+    "mean_time_loss_s": 115.69680057388808,
+    "mean_depart_delay_s": 34.50235294117647,
+    "vehicles_rerouted_at_least_once": 6,
+    "teleports": 13,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "reroute_calls": 118,
+    "routes_changed": 6
+   },
+   "12": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 18.32888888888889,
+    "mean_travel_time_all": 94.66857962697274,
+    "mean_travel_time_s": 94.66857962697274,
+    "p95_travel_time_s": 283.0,
+    "mean_waiting_s": 48.17790530846485,
+    "total_waiting_s": 33580.0,
+    "mean_time_loss_s": 79.9661262553802,
+    "mean_depart_delay_s": 36.23262553802009,
+    "vehicles_rerouted_at_least_once": 6,
+    "teleports": 14,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "reroute_calls": 84,
+    "routes_changed": 6
+   },
+   "13": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 19.614166666666666,
+    "mean_travel_time_all": 101.30703012912483,
+    "mean_travel_time_s": 101.30703012912483,
+    "p95_travel_time_s": 301.0,
+    "mean_waiting_s": 50.20373027259684,
+    "total_waiting_s": 34992.0,
+    "mean_time_loss_s": 86.6099856527977,
+    "mean_depart_delay_s": 19.15945480631277,
+    "vehicles_rerouted_at_least_once": 6,
+    "teleports": 6,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "reroute_calls": 82,
+    "routes_changed": 6
+   }
+  },
+  "predeparture_oracle_c0.05": {
+   "11": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 17.43722222222222,
+    "mean_travel_time_all": 90.06312769010043,
+    "mean_travel_time_s": 90.06312769010043,
+    "p95_travel_time_s": 288.0,
+    "mean_waiting_s": 45.91535150645624,
+    "total_waiting_s": 32003.0,
+    "mean_time_loss_s": 75.26733142037303,
+    "mean_depart_delay_s": 19.084849354375894,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 9,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "routes_changed": 20,
+    "equipped": 48
+   },
+   "12": {
+    "arrived": 480,
+    "unfinished_at_horizon": 192,
+    "unfinished": 192,
+    "total_vehicle_hours": 56.285555555555554,
+    "mean_travel_time_all": 301.5297619047619,
+    "mean_travel_time_s": 185.62291666666667,
+    "p95_travel_time_s": 700.0,
+    "mean_waiting_s": 148.53333333333333,
+    "total_waiting_s": 71296.0,
+    "mean_time_loss_s": 173.397875,
+    "mean_depart_delay_s": 75.75941666666667,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 53,
+    "loaded": 697,
+    "inserted": 672,
+    "running_at_end": 192,
+    "waiting_to_insert_at_end": 25,
+    "routes_changed": 17,
+    "equipped": 48
+   },
+   "13": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 19.21527777777778,
+    "mean_travel_time_all": 99.2467718794835,
+    "mean_travel_time_s": 99.2467718794835,
+    "p95_travel_time_s": 307.0,
+    "mean_waiting_s": 51.33715925394548,
+    "total_waiting_s": 35782.0,
+    "mean_time_loss_s": 84.45529411764706,
+    "mean_depart_delay_s": 15.648694404591105,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 8,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "routes_changed": 16,
+    "equipped": 48
+   }
+  },
+  "reactive_c0.1": {
+   "11": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 25.25111111111111,
+    "mean_travel_time_all": 130.42180774748923,
+    "mean_travel_time_s": 130.42180774748923,
+    "p95_travel_time_s": 437.0,
+    "mean_waiting_s": 80.2080344332855,
+    "total_waiting_s": 55905.0,
+    "mean_time_loss_s": 115.69680057388808,
+    "mean_depart_delay_s": 34.50235294117647,
+    "vehicles_rerouted_at_least_once": 6,
+    "teleports": 13,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "reroute_calls": 192,
+    "routes_changed": 6
+   },
+   "12": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 18.32888888888889,
+    "mean_travel_time_all": 94.66857962697274,
+    "mean_travel_time_s": 94.66857962697274,
+    "p95_travel_time_s": 283.0,
+    "mean_waiting_s": 48.17790530846485,
+    "total_waiting_s": 33580.0,
+    "mean_time_loss_s": 79.9661262553802,
+    "mean_depart_delay_s": 36.23262553802009,
+    "vehicles_rerouted_at_least_once": 6,
+    "teleports": 14,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "reroute_calls": 141,
+    "routes_changed": 6
+   },
+   "13": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 19.614166666666666,
+    "mean_travel_time_all": 101.30703012912483,
+    "mean_travel_time_s": 101.30703012912483,
+    "p95_travel_time_s": 301.0,
+    "mean_waiting_s": 50.20373027259684,
+    "total_waiting_s": 34992.0,
+    "mean_time_loss_s": 86.6099856527977,
+    "mean_depart_delay_s": 19.15945480631277,
+    "vehicles_rerouted_at_least_once": 6,
+    "teleports": 6,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "reroute_calls": 140,
+    "routes_changed": 6
+   }
+  },
+  "predeparture_oracle_c0.1": {
+   "11": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 16.6225,
+    "mean_travel_time_all": 85.85509325681492,
+    "mean_travel_time_s": 85.85509325681492,
+    "p95_travel_time_s": 325.0,
+    "mean_waiting_s": 44.318507890961264,
+    "total_waiting_s": 30890.0,
+    "mean_time_loss_s": 70.77098995695839,
+    "mean_depart_delay_s": 40.37609756097561,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 8,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "routes_changed": 33,
+    "equipped": 77
+   },
+   "12": {
+    "arrived": 682,
+    "unfinished_at_horizon": 15,
+    "unfinished": 15,
+    "total_vehicle_hours": 40.308055555555555,
+    "mean_travel_time_all": 208.19081779053084,
+    "mean_travel_time_s": 199.93401759530792,
+    "p95_travel_time_s": 554.0,
+    "mean_waiting_s": 144.3357771260997,
+    "total_waiting_s": 98437.0,
+    "mean_time_loss_s": 184.72629032258064,
+    "mean_depart_delay_s": 76.3466275659824,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 21,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 15,
+    "waiting_to_insert_at_end": 0,
+    "routes_changed": 32,
+    "equipped": 77
+   },
+   "13": {
+    "arrived": 694,
+    "unfinished_at_horizon": 3,
+    "unfinished": 3,
+    "total_vehicle_hours": 35.41694444444445,
+    "mean_travel_time_all": 182.92826398852225,
+    "mean_travel_time_s": 181.06195965417868,
+    "p95_travel_time_s": 551.0,
+    "mean_waiting_s": 126.72190201729107,
+    "total_waiting_s": 87945.0,
+    "mean_time_loss_s": 166.2592507204611,
+    "mean_depart_delay_s": 21.019020172910665,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 24,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 3,
+    "waiting_to_insert_at_end": 0,
+    "routes_changed": 29,
+    "equipped": 77
+   }
+  },
+  "reactive_c0.3": {
+   "11": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 26.230833333333333,
+    "mean_travel_time_all": 135.48206599713055,
+    "mean_travel_time_s": 135.48206599713055,
+    "p95_travel_time_s": 494.0,
+    "mean_waiting_s": 85.86657101865136,
+    "total_waiting_s": 59849.0,
+    "mean_time_loss_s": 120.73423242467717,
+    "mean_depart_delay_s": 32.50665710186514,
+    "vehicles_rerouted_at_least_once": 8,
+    "teleports": 17,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "reroute_calls": 503,
+    "routes_changed": 8
+   },
+   "12": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 17.810277777777777,
+    "mean_travel_time_all": 91.98995695839311,
+    "mean_travel_time_s": 91.98995695839311,
+    "p95_travel_time_s": 275.0,
+    "mean_waiting_s": 45.296987087517934,
+    "total_waiting_s": 31572.0,
+    "mean_time_loss_s": 77.28362984218077,
+    "mean_depart_delay_s": 36.27423242467719,
+    "vehicles_rerouted_at_least_once": 8,
+    "teleports": 11,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "reroute_calls": 324,
+    "routes_changed": 8
+   },
+   "13": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 19.664722222222224,
+    "mean_travel_time_all": 101.56814921090387,
+    "mean_travel_time_s": 101.56814921090387,
+    "p95_travel_time_s": 302.0,
+    "mean_waiting_s": 50.57819225251076,
+    "total_waiting_s": 35253.0,
+    "mean_time_loss_s": 86.8732137733142,
+    "mean_depart_delay_s": 19.13219512195122,
+    "vehicles_rerouted_at_least_once": 8,
+    "teleports": 6,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "reroute_calls": 354,
+    "routes_changed": 8
+   }
+  },
+  "predeparture_oracle_c0.3": {
+   "11": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 15.2275,
+    "mean_travel_time_all": 78.64992826398853,
+    "mean_travel_time_s": 78.64992826398853,
+    "p95_travel_time_s": 262.0,
+    "mean_waiting_s": 35.67144906743185,
+    "total_waiting_s": 24863.0,
+    "mean_time_loss_s": 63.12895265423242,
+    "mean_depart_delay_s": 20.005939741750357,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 3,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "routes_changed": 79,
+    "equipped": 213
+   },
+   "12": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 40.99194444444444,
+    "mean_travel_time_all": 211.72309899569584,
+    "mean_travel_time_s": 211.72309899569584,
+    "p95_travel_time_s": 615.0,
+    "mean_waiting_s": 150.2883787661406,
+    "total_waiting_s": 104751.0,
+    "mean_time_loss_s": 196.11025824964133,
+    "mean_depart_delay_s": 47.81942611190818,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 18,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "routes_changed": 80,
+    "equipped": 213
+   },
+   "13": {
+    "arrived": 697,
+    "unfinished_at_horizon": 0,
+    "unfinished": 0,
+    "total_vehicle_hours": 15.2325,
+    "mean_travel_time_all": 78.67575322812051,
+    "mean_travel_time_s": 78.67575322812051,
+    "p95_travel_time_s": 268.0,
+    "mean_waiting_s": 37.259684361549496,
+    "total_waiting_s": 25970.0,
+    "mean_time_loss_s": 63.11426111908178,
+    "mean_depart_delay_s": 34.38040172166428,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 7,
+    "loaded": 697,
+    "inserted": 697,
+    "running_at_end": 0,
+    "waiting_to_insert_at_end": 0,
+    "routes_changed": 73,
+    "equipped": 213
+   }
+  }
+ },
+ "summary": {
+  "reactive_c0.05": {
+   "veh_h_pct": [
+    -38.46,
+    -0.7,
+    -16.21
+   ],
+   "mean_pct": -18.46,
+   "arrivals_delta": [
+    19,
+    0,
+    17
+   ],
+   "teleports_delta": [
+    -23,
+    8,
+    -5
+   ],
+   "seeds_improved": 3
+  },
+  "predeparture_oracle_c0.05": {
+   "veh_h_pct": [
+    -57.51,
+    204.93,
+    -17.91
+   ],
+   "mean_pct": 43.17,
+   "arrivals_delta": [
+    19,
+    -217,
+    17
+   ],
+   "teleports_delta": [
+    -27,
+    47,
+    -3
+   ],
+   "seeds_improved": 2
+  },
+  "reactive_c0.1": {
+   "veh_h_pct": [
+    -38.46,
+    -0.7,
+    -16.21
+   ],
+   "mean_pct": -18.46,
+   "arrivals_delta": [
+    19,
+    0,
+    17
+   ],
+   "teleports_delta": [
+    -23,
+    8,
+    -5
+   ],
+   "seeds_improved": 3
+  },
+  "predeparture_oracle_c0.1": {
+   "veh_h_pct": [
+    -59.49,
+    118.37,
+    51.3
+   ],
+   "mean_pct": 36.73,
+   "arrivals_delta": [
+    19,
+    -15,
+    14
+   ],
+   "teleports_delta": [
+    -28,
+    15,
+    13
+   ],
+   "seeds_improved": 1
+  },
+  "reactive_c0.3": {
+   "veh_h_pct": [
+    -36.08,
+    -3.51,
+    -15.99
+   ],
+   "mean_pct": -18.53,
+   "arrivals_delta": [
+    19,
+    0,
+    17
+   ],
+   "teleports_delta": [
+    -19,
+    5,
+    -5
+   ],
+   "seeds_improved": 3
+  },
+  "predeparture_oracle_c0.3": {
+   "veh_h_pct": [
+    -62.89,
+    122.07,
+    -34.93
+   ],
+   "mean_pct": 8.09,
+   "arrivals_delta": [
+    19,
+    0,
+    17
+   ],
+   "teleports_delta": [
+    -33,
+    12,
+    -4
+   ],
+   "seeds_improved": 2
+  }
+ }
+}
