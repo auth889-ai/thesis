@@ -22,7 +22,7 @@ from __future__ import annotations
 
 import argparse
 import json
-import pickle
+import os
 import sys
 from pathlib import Path
 
@@ -48,19 +48,37 @@ def find_checkpoints() -> list[dict]:
     return out
 
 
-def load_official_arch(arch_name: str, cfg_path: Path):
-    """Import the model class from the PINNED upstream repo — never a local re-implementation."""
-    if not BTS.exists():
-        raise SystemExit(f"pinned harness missing at {BTS}; run scripts to fetch upstream first")
-    sys.path.insert(0, str(BTS))
+def load_official_cfg(model_dir: str, dataset: str):
+    """Load the OFFICIAL config from the pinned upstream repo — never a local re-implementation.
+
+    Three things the upstream layout requires, each found by running it:
+      1. the config does `from .arch import ...`, so it must be executed with a real parent package;
+      2. it reads `datasets/<name>/desc.json` by RELATIVE path, so the CWD must be the harness root;
+      3. the model consumes only `MODEL.FORWARD_FEATURES` (GWNet: [speed, time-of-day]), not every
+         channel — feeding all three raises "expected input to have 2 channels, but got 3".
+    """
+    import importlib
     import importlib.util
-    spec = importlib.util.spec_from_file_location("bts_cfg", cfg_path)
+    if not BTS.exists():
+        raise SystemExit(f"pinned harness missing at {BTS}")
+    cfg_path = BTS / f"baselines/{model_dir}/{dataset}.py"
+    if not cfg_path.exists():
+        raise SystemExit(f"official config not found: {cfg_path}")
+    sys.path.insert(0, str(BTS))
+    pkg = f"baselines.{model_dir}"
+    importlib.import_module(pkg)                                   # (1) parent package
+    name = f"{pkg}.cfg_{dataset.replace('-', '_')}"
+    spec = importlib.util.spec_from_file_location(name, cfg_path)
     mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    cfg = mod.CFG
-    model_cls = cfg.MODEL.ARCH
-    model = model_cls(**cfg.MODEL.PARAM)
-    return model, cfg
+    mod.__package__ = pkg
+    sys.modules[name] = mod
+    cwd = os.getcwd()
+    os.chdir(BTS)                                                  # (2) relative desc.json
+    try:
+        spec.loader.exec_module(mod)
+    finally:
+        os.chdir(cwd)
+    return mod.CFG, cfg_path
 
 
 def main() -> int:
@@ -93,15 +111,15 @@ def main() -> int:
     print(f"[infer] checkpoint {ck['path'].relative_to(REPO)} ({ck['size_mb']} MB)")
 
     import torch
-    cfg_path = BTS / f"baselines/{a.model}/{a.dataset}.py"
-    if not cfg_path.exists():
-        print(f"official config not found: {cfg_path}")
-        return 1
-    model, cfg = load_official_arch(want, cfg_path)
+    cfg, cfg_path = load_official_cfg(a.model, a.dataset)
+    model = cfg.MODEL.ARCH(**cfg.MODEL.PARAM)
+    fwd = list(cfg.MODEL.get("FORWARD_FEATURES", [0]))             # (3) channels the model expects
     state = torch.load(ck["path"], map_location="cpu", weights_only=False)
     sd = state.get("model_state_dict", state)
     missing, unexpected = model.load_state_dict(sd, strict=False)
-    print(f"[infer] loaded official {want}: {sum(p.numel() for p in model.parameters()):,} parameters; "
+    print(f"[infer] official {cfg.MODEL.ARCH.__name__} from {cfg_path.relative_to(BTS)}, "
+          f"forward_features={fwd}")
+    print(f"[infer] loaded weights: {sum(p.numel() for p in model.parameters()):,} parameters; "
           f"missing={len(missing)} unexpected={len(unexpected)}")
     if missing or unexpected:
         print(f"[infer] WARNING: key mismatch — missing {list(missing)[:3]}, unexpected {list(unexpected)[:3]}")
@@ -118,8 +136,8 @@ def main() -> int:
     shape = d["shape"] if "shape" in d else [d["num_time_steps"], d["num_nodes"], d["num_features"]]
     raw = np.memmap(dat, dtype="float32", mode="r", shape=tuple(shape))
     T, N, C = raw.shape
-    L = int(cfg.DATASET_INPUT_LEN if hasattr(cfg, "DATASET_INPUT_LEN") else 12)
-    H = int(cfg.DATASET_OUTPUT_LEN if hasattr(cfg, "DATASET_OUTPUT_LEN") else 12)
+    L = int(cfg.DATASET.PARAM.input_len)
+    H = int(cfg.DATASET.PARAM.output_len)
     n_train = int(T * 0.7)
     test_lo = n_train + int(T * 0.1)
     mu = raw[:n_train, :, 0].mean()
@@ -135,8 +153,9 @@ def main() -> int:
     y = np.array(raw[t0 + L:t0 + L + H, :, 0], dtype="float32")  # (H, N)
     xn = x.copy()
     xn[..., 0] = (xn[..., 0] - mu) / sd_
+    xt = torch.tensor(xn)[..., fwd]                                # only FORWARD_FEATURES
     with torch.no_grad():
-        out = model(history_data=torch.tensor(xn), future_data=None, batch_seen=0, epoch=1, train=False)
+        out = model(history_data=xt, future_data=None, batch_seen=0, epoch=1, train=False)
         pred = (out if isinstance(out, torch.Tensor) else out["prediction"]).numpy()
     pred = pred[0, ..., 0] * sd_ + mu                          # (H, N) back in mph
     print(f"[infer] forecast produced: {pred.shape} (horizon x sensors)")

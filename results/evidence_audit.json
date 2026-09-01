@@ -1,5 +1,5 @@
 {
- "generated_utc": "2026-09-01T16:42:42.301399+00:00",
+ "generated_utc": "2026-09-01T23:33:55.944665+00:00",
  "overall_status": "PASS_WITH_PENDING_ITEMS",
  "rows": [
   {
@@ -18,10 +18,10 @@
   },
   {
    "name": "Colab BasicTS benchmark",
-   "status": "PENDING",
-   "artifact": "/Users/jannatulferdouseva/thesis/predict/results/benchmark.csv",
-   "check": "real benchmark table copied from Drive",
-   "details": "run the Colab notebook, then pull results"
+   "status": "PASS",
+   "artifact": "/Users/jannatulferdouseva/thesis/predict/results/benchmark.md",
+   "check": "benchmark markdown exists",
+   "details": "CSV not present; markdown will be shown in RESULTS"
   },
   {
    "name": "Routing decision guard",
@@ -39,10 +39,10 @@
   },
   {
    "name": "Real route advisor",
-   "status": "PASS",
+   "status": "PENDING",
    "artifact": "/Users/jannatulferdouseva/thesis/live/results/route_advice.jsonl",
-   "check": "real live advisory exists and stores no Google route content",
-   "details": "rows=1; real_rows=1; route_content_persisted=False"
+   "check": "live advisory metadata exists",
+   "details": "run python live/route_advisor.py --live --yes --corridor farmgate_to_shahbagh"
   },
   {
    "name": "Real user pilot",

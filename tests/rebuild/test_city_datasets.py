@@ -25,11 +25,13 @@ def test_unknown_city_fails_loudly():
         load_city("ATLANTIS")
 
 
-def test_absent_city_explains_how_to_fetch_it():
+def test_absent_city_tries_the_drive_then_explains_the_failure():
+    """A missing city is fetched from the 2 TB Drive; only if that fails does it raise, and the
+    message must name the remote it tried so the user can check it."""
     absent = next((c for c in REGISTRY if not available(c)), None)
     if absent is None:
         pytest.skip("every registered city is present")
-    with pytest.raises(SystemExit, match="not present"):
+    with pytest.raises(SystemExit, match="could not be fetched"):
         load_city(absent)
 
 

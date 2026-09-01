@@ -144,6 +144,28 @@ def main() -> int:
               f"Keep the recorder running: {a.min_bins} bins = {a.min_bins * BIN_S / 3600:.1f} h.")
         return 2
     hs = [int(x) for x in a.horizons.split(",")]
+    # A constant target makes every predictor look perfect (MAE 0.000). Dhaka is genuinely FREE_FLOW
+    # overnight, so this is a property of the WINDOW, not of any model — say so instead of printing
+    # a table of zeros that reads like a flawless forecaster.
+    obs = vals[mask]
+    n_levels = len(np.unique(obs))
+    local_h = ((bins + 6 * 3600) % 86400) / 3600
+    if n_levels < 2:
+        lvl = ["FREE_FLOW", "SLOW", "CONGESTED", "SEVERE"][int(obs[0])] if obs.size else "?"
+        msg = (f"DEGENERATE WINDOW: every observation is {lvl} ({obs.size} readings, "
+               f"Dhaka local {local_h.min():.1f}h-{local_h.max():.1f}h). Floors are undefined here — "
+               f"a constant series is predicted perfectly by anything. Keep recording through a rush "
+               f"hour (Dhaka peaks ~08:00-11:00 and ~17:00-21:00 local) before reporting live floors.")
+        print(f"[live_state] {msg}")
+        (OUT_RES / "live_floors.md").parent.mkdir(parents=True, exist_ok=True)
+        (OUT_RES / "live_floors.md").write_text(
+            "# Live Dhaka congestion floors — NOT YET MEANINGFUL\n\n" + msg + "\n\n"
+            f"Series so far: {T} bins x {vals.shape[1]} corridors, coverage {mask.mean():.0%}, "
+            f"span {span_h:.1f} h.\n")
+        (OUT_RES / "live_floors.json").write_text(json.dumps(
+            {"status": "DEGENERATE_WINDOW", "distinct_levels": int(n_levels), "reason": msg,
+             "manifest": man}, indent=1))
+        return 3
     fl = floors(vals, mask, bins, hs)
     OUT_RES.mkdir(parents=True, exist_ok=True)
     (OUT_RES / "live_floors.json").write_text(json.dumps({"manifest": man, "floors": fl}, indent=1))
