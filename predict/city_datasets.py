@@ -168,6 +168,36 @@ REGISTRY: dict[str, dict] = {
 }
 
 
+DRIVE_REMOTE = "gdrive2tb:dhakaflow/predict/raw_data"     # the 2 TB Drive is the source of truth
+
+
+def fetch_from_drive(city: str) -> bool:
+    """Pull a city from the 2 TB Drive. Datasets live there, not on the laptop; a local copy is a
+    transient working cache that `--purge-local` removes."""
+    import subprocess
+    e = REGISTRY.get(city)
+    if not e:
+        return False
+    e["dir"].mkdir(parents=True, exist_ok=True)
+    print(f"[fetch] {DRIVE_REMOTE}/{city} -> {e['dir'].relative_to(REPO)}")
+    r = subprocess.run(["rclone", "copy", f"{DRIVE_REMOTE}/{city}", str(e["dir"])],
+                       capture_output=True, text=True)
+    if r.returncode:
+        print(f"[fetch] failed: {r.stderr.strip()[-300:]}")
+    return available(city)
+
+
+def purge_local(city: str) -> int:
+    """Delete the local working copy (the Drive keeps the data)."""
+    import shutil
+    e = REGISTRY.get(city)
+    if not e or not e["dir"].exists() or "data/cities" not in str(e["dir"]):
+        return 0
+    n = sum(f.stat().st_size for f in e["dir"].rglob("*") if f.is_file())
+    shutil.rmtree(e["dir"])
+    return n
+
+
 def available(city: str) -> bool:
     e = REGISTRY.get(city)
     if not e or not e["dir"].exists():
@@ -179,9 +209,9 @@ def load_city(city: str) -> CityData:
     if city not in REGISTRY:
         raise SystemExit(f"unknown city {city!r}; registered: {', '.join(REGISTRY)}")
     e = REGISTRY[city]
-    if not available(city):
-        raise SystemExit(f"{city} not present in {e['dir']}. Fetch it (e.g. "
-                         f"`rclone copy gdrive2tb:dhakaflow/predict/raw_data/{city} {e['dir']}`) and retry.")
+    if not available(city) and not fetch_from_drive(city):
+        raise SystemExit(f"{city} is not on this machine and could not be fetched from "
+                         f"{DRIVE_REMOTE}/{city}. Check `rclone lsf {DRIVE_REMOTE}/`.")
     cd = e["loader"](city, e["dir"], e["quantity"])
     cd.meta |= {"paper": e["paper"], "expected_sensors": e["sensors"]}
     return cd
@@ -192,7 +222,18 @@ def main() -> int:
     p.add_argument("--list", action="store_true")
     p.add_argument("--city")
     p.add_argument("--export", type=Path, help="write a standard .npz the models consume")
+    p.add_argument("--fetch", action="store_true", help="pull the city from the 2 TB Drive")
+    p.add_argument("--purge-local", action="store_true",
+                   help="delete local working copies; the Drive keeps the data")
     a = p.parse_args()
+    if a.purge_local:
+        freed = sum(purge_local(c) for c in (([a.city] if a.city else list(REGISTRY))))
+        print(f"freed {freed / 1e6:.0f} MB of local working copies; source of truth stays at {DRIVE_REMOTE}")
+        return 0
+    if a.fetch and a.city:
+        ok = fetch_from_drive(a.city)
+        print(f"{a.city}: {'available' if ok else 'FETCH FAILED'}")
+        return 0 if ok else 1
     if a.list or not a.city:
         print(f"{'city':<12} {'present':<8} {'sensors':>8}  paper / source")
         for k, e in REGISTRY.items():
