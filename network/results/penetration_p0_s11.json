@@ -2,19 +2,19 @@
  "point": {
   "p": 0.0,
   "seed": 11,
-  "duration_s": 600,
-  "scenario": "network/scenarios/dhaka_r1_p0_s11",
-  "log_dir": "/Users/jannatulferdouseva/.dhakaflow/upstream/mosaic/logs/log-20260901-102451-dhaka_r1"
+  "duration_s": 900,
+  "scenario": "network/scenarios/event_nlp_event_dhaka_r1_p0_s11",
+  "log_dir": "/Users/jannatulferdouseva/.dhakaflow/upstream/mosaic/logs/log-20260901-195332-dhaka_r1"
  },
- "wall_s": 16.012,
- "wall_total_s": 20.61060929298401,
- "sim_ended_s": 600,
+ "wall_s": 25.477,
+ "wall_total_s": 30.608371019363403,
+ "sim_ended_s": 900,
  "vehicles": {
-  "registered": 2147,
+  "registered": 2555,
   "equipped": 0,
-  "unequipped": 2147,
+  "unequipped": 2555,
   "equipped_fraction": 0.0,
-  "mapping_log_total": 2147,
+  "mapping_log_total": 2555,
   "mapping_log_with_wwa": 0
  },
  "v2x": {
@@ -48,60 +48,61 @@
  "sumo": {
   "tripinfo": {
    "available": true,
-   "id_map_entries": 2147,
+   "id_map_entries": 2555,
    "finished": {
-    "n": 543,
-    "duration_mean_s": 332.0184162062615,
-    "duration_p50_s": 321.0,
-    "duration_p95_s": 484.9,
-    "timeLoss_mean_s": 119.61036832412523,
-    "timeLoss_p95_s": 235.538,
-    "waitingTime_mean_s": 31.152854511970535,
-    "routeLength_mean_m": 3406.9774769797423
+    "n": 1022,
+    "duration_mean_s": 387.0489236790607,
+    "duration_p50_s": 372.0,
+    "duration_p95_s": 643.8999999999999,
+    "timeLoss_mean_s": 157.60071428571428,
+    "timeLoss_p95_s": 341.54149999999987,
+    "waitingTime_mean_s": 58.41585127201566,
+    "routeLength_mean_m": 3585.3946086105675
    },
    "finished_equipped": {
     "n": 0
    },
    "finished_unequipped": {
-    "n": 543,
-    "duration_mean_s": 332.0184162062615,
-    "duration_p50_s": 321.0,
-    "duration_p95_s": 484.9,
-    "timeLoss_mean_s": 119.61036832412523,
-    "timeLoss_p95_s": 235.538,
-    "waitingTime_mean_s": 31.152854511970535,
-    "routeLength_mean_m": 3406.9774769797423
+    "n": 1022,
+    "duration_mean_s": 387.0489236790607,
+    "duration_p50_s": 372.0,
+    "duration_p95_s": 643.8999999999999,
+    "timeLoss_mean_s": 157.60071428571428,
+    "timeLoss_p95_s": 341.54149999999987,
+    "waitingTime_mean_s": 58.41585127201566,
+    "routeLength_mean_m": 3585.3946086105675
    },
-   "unfinished": 1604
+   "unfinished": 1533
   },
   "summary": {
    "available": true,
    "final_step": {
-    "time": "599.00",
+    "time": "899.00",
     "loaded": "3000",
-    "inserted": "2147",
-    "running": "1604",
-    "waiting": "853",
-    "ended": "543",
-    "arrived": "543",
-    "collisions": "0",
-    "teleports": "0",
-    "halting": "629",
+    "inserted": "2555",
+    "running": "1533",
+    "waiting": "445",
+    "ended": "1022",
+    "arrived": "1022",
+    "collisions": "1",
+    "teleports": "1",
+    "halting": "754",
     "stopped": "0",
-    "meanWaitingTime": "33.28",
-    "meanTravelTime": "332.02",
-    "meanSpeed": "5.61",
-    "meanSpeedRelative": "0.33",
+    "meanWaitingTime": "72.52",
+    "meanTravelTime": "387.05",
+    "meanSpeed": "4.58",
+    "meanSpeedRelative": "0.32",
     "discarded": "0",
-    "duration": "8"
+    "duration": "7"
    },
-   "meanSpeed_avg_over_steps_m_s": 8.156333333333338,
-   "halting_avg_over_steps": 276.12166666666667
+   "meanSpeed_avg_over_steps_m_s": 7.1504333333333285,
+   "halting_avg_over_steps": 394.6111111111111
   }
  },
  "time_to_hazard": {
   "model": "analytic: straight-line distance from the vehicle's position at its FIRST DENM reception to the hazard rectangle boundary, divided by max(current speed, 0.3*mean trip speed, 1 m/s); vehicles = those that actually switched route",
   "n": 0,
+  "tth_zero_fraction": null,
   "tth_s_p10": null,
   "tth_s_p50": null,
   "tth_s_p90": null,

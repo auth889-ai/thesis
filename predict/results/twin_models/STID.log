@@ -1,0 +1,1422 @@
+2026-09-01 20:36:00,418 - easytorch-launcher - INFO - Launching EasyTorch training.
+2026-09-01 20:36:00,425 - easytorch-launcher - INFO - Initializing runner "<class 'basicts.runners.runner_zoo.simple_tsf_runner.SimpleTimeSeriesForecastingRunner'>"
+2026-09-01 20:36:00,425 - easytorch - INFO - Set ckpt save dir: 'checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366'
+2026-09-01 20:36:00,425 - easytorch - INFO - Building model.
+2026-09-01 20:36:00,449 - easytorch-training - INFO - Initializing training.
+2026-09-01 20:36:00,450 - easytorch-training - INFO - Set clip grad, param: {'max_norm': 5.0}
+2026-09-01 20:36:00,450 - easytorch-training - INFO - Building training data loader.
+2026-09-01 20:36:00,455 - easytorch-training - INFO - Train dataset length: 180
+2026-09-01 20:36:01,137 - easytorch-training - INFO - Set optim: Adam (
+Parameter Group 0
+    amsgrad: False
+    betas: (0.9, 0.999)
+    capturable: False
+    decoupled_weight_decay: False
+    differentiable: False
+    eps: 1e-08
+    foreach: None
+    fused: None
+    lr: 0.002
+    maximize: False
+    weight_decay: 0.0001
+)
+2026-09-01 20:36:01,137 - easytorch-training - INFO - Set lr_scheduler: <torch.optim.lr_scheduler.MultiStepLR object at 0x1277cc6e0>
+2026-09-01 20:36:01,138 - easytorch-training - INFO - Initializing validation.
+2026-09-01 20:36:01,138 - easytorch-training - INFO - Building val data loader.
+2026-09-01 20:36:01,144 - easytorch-training - INFO - Validation dataset length: 5
+2026-09-01 20:36:01,152 - easytorch-training - INFO - Test dataset length: 34
+2026-09-01 20:36:01,152 - easytorch-training - INFO - Number of parameters: 119244
+2026-09-01 20:36:01,152 - easytorch-training - INFO - Epoch 1 / 100
+DESCRIPTION: An Example Config
+GPU_NUM: 0
+RUNNER: <class 'basicts.runners.runner_zoo.simple_tsf_runner.SimpleTimeSeriesForecastingRunner'>
+DATASET:
+  NAME: DhakaR1SensorGraph_legacy
+  TYPE: <class 'basicts.data.simple_tsf_dataset.TimeSeriesForecastingDataset'>
+  PARAM:
+    dataset_name: DhakaR1SensorGraph_legacy
+    train_val_test_ratio: [0.7, 0.1, 0.2]
+    input_len: 12
+    output_len: 12
+SCALER:
+  TYPE: <class 'basicts.scaler.z_score_scaler.ZScoreScaler'>
+  PARAM:
+    dataset_name: DhakaR1SensorGraph_legacy
+    train_ratio: 0.7
+    norm_each_channel: False
+    rescale: True
+MODEL:
+  NAME: STID
+  ARCH: <class 'baselines.STID.arch.stid_arch.STID'>
+  PARAM:
+    num_nodes: 250
+    input_len: 12
+    input_dim: 3
+    embed_dim: 32
+    output_len: 12
+    num_layer: 3
+    if_node: True
+    node_dim: 32
+    if_T_i_D: True
+    if_D_i_W: True
+    temp_dim_tid: 32
+    temp_dim_diw: 32
+    time_of_day_size: 288
+    day_of_week_size: 7
+  FORWARD_FEATURES: [0, 1, 2]
+  TARGET_FEATURES: [0]
+METRICS:
+  FUNCS:
+    MAE: masked_mae
+    MAPE: masked_mape
+    RMSE: masked_rmse
+  TARGET: MAE
+  NULL_VAL: 0.0
+TRAIN:
+  NUM_EPOCHS: 100
+  CKPT_SAVE_DIR: checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12
+  LOSS: masked_mae
+  OPTIM:
+    TYPE: Adam
+    PARAM:
+      lr: 0.002
+      weight_decay: 0.0001
+  LR_SCHEDULER:
+    TYPE: MultiStepLR
+    PARAM:
+      milestones: [1, 50, 80]
+      gamma: 0.5
+  CLIP_GRAD_PARAM:
+    max_norm: 5.0
+  DATA:
+    BATCH_SIZE: 64
+    SHUFFLE: True
+VAL:
+  INTERVAL: 1
+  DATA:
+    BATCH_SIZE: 64
+TEST:
+  INTERVAL: 1
+  DATA:
+    BATCH_SIZE: 64
+EVAL:
+  HORIZONS: [3, 6, 12]
+  USE_GPU: True
+
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.35it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.45it/s]100%|██████████| 3/3 [00:01<00:00,  1.62it/s]100%|██████████| 3/3 [00:01<00:00,  1.56it/s]
+2026-09-01 20:36:03,091 - easytorch-training - INFO - Result <train>: [train/time: 1.94 (s), train/lr: 2.00e-03, train/loss: 3.8547, train/MAE: 3.8547, train/MAPE: 0.3135, train/RMSE: 5.5986]
+2026-09-01 20:36:03,092 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 168.21it/s]
+2026-09-01 20:36:03,098 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 2.7758, val/MAE: 2.7758, val/MAPE: 0.2452, val/RMSE: 3.9304]
+2026-09-01 20:36:03,104 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_best_val_MAE.pt saved
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.04it/s]100%|██████████| 1/1 [00:00<00:00,  3.04it/s]
+2026-09-01 20:36:03,434 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 3.2158, Test MAPE: 0.2684, Test RMSE: 4.7050
+2026-09-01 20:36:03,434 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 2.6082, Test MAPE: 0.2735, Test RMSE: 3.2334
+2026-09-01 20:36:03,434 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 2.2805, Test MAPE: 0.2341, Test RMSE: 2.8902
+2026-09-01 20:36:03,447 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 2.7732, test/MAE: 2.7732, test/MAPE: 0.2617, test/RMSE: 3.8390]
+2026-09-01 20:36:03,451 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_001.pt saved
+2026-09-01 20:36:03,451 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:51
+2026-09-01 20:36:03,451 - easytorch-training - INFO - Epoch 2 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.27it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.37it/s]100%|██████████| 3/3 [00:02<00:00,  1.51it/s]100%|██████████| 3/3 [00:02<00:00,  1.46it/s]
+2026-09-01 20:36:05,506 - easytorch-training - INFO - Result <train>: [train/time: 2.06 (s), train/lr: 1.00e-03, train/loss: 2.2095, train/MAE: 2.2095, train/MAPE: 0.2090, train/RMSE: 3.1817]
+2026-09-01 20:36:05,507 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 258.59it/s]
+2026-09-01 20:36:05,511 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 1.4301, val/MAE: 1.4301, val/MAPE: 0.1460, val/RMSE: 2.1029]
+2026-09-01 20:36:05,514 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_best_val_MAE.pt saved
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.04it/s]100%|██████████| 1/1 [00:00<00:00,  3.04it/s]
+2026-09-01 20:36:05,844 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 1.3895, Test MAPE: 0.1416, Test RMSE: 2.0370
+2026-09-01 20:36:05,845 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 1.1072, Test MAPE: 0.1444, Test RMSE: 1.5861
+2026-09-01 20:36:05,845 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0758, Test MAPE: 0.1180, Test RMSE: 1.6417
+2026-09-01 20:36:05,850 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 1.4665, test/MAE: 1.4665, test/MAPE: 0.1600, test/RMSE: 2.1416]
+2026-09-01 20:36:05,853 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_002.pt saved
+2026-09-01 20:36:05,853 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:56
+2026-09-01 20:36:05,853 - easytorch-training - INFO - Epoch 3 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.52it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.41it/s]100%|██████████| 3/3 [00:02<00:00,  1.43it/s]100%|██████████| 3/3 [00:02<00:00,  1.44it/s]
+2026-09-01 20:36:07,940 - easytorch-training - INFO - Result <train>: [train/time: 2.09 (s), train/lr: 1.00e-03, train/loss: 1.3406, train/MAE: 1.3406, train/MAPE: 0.1266, train/RMSE: 1.8948]
+2026-09-01 20:36:07,941 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 189.32it/s]
+2026-09-01 20:36:07,946 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 1.1971, val/MAE: 1.1971, val/MAPE: 0.1086, val/RMSE: 1.5883]
+2026-09-01 20:36:07,950 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_best_val_MAE.pt saved
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.42it/s]100%|██████████| 1/1 [00:00<00:00,  2.42it/s]
+2026-09-01 20:36:08,365 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 1.0933, Test MAPE: 0.0982, Test RMSE: 1.5309
+2026-09-01 20:36:08,365 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 1.5671, Test MAPE: 0.1291, Test RMSE: 2.2106
+2026-09-01 20:36:08,365 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.3162, Test MAPE: 0.1107, Test RMSE: 1.9855
+2026-09-01 20:36:08,369 - easytorch-training - INFO - Result <test>: [test/time: 0.42 (s), test/loss: 1.2594, test/MAE: 1.2594, test/MAPE: 0.1210, test/RMSE: 1.7948]
+2026-09-01 20:36:08,373 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_003.pt saved
+2026-09-01 20:36:08,373 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:01
+2026-09-01 20:36:08,373 - easytorch-training - INFO - Epoch 4 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.33it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.33it/s]100%|██████████| 3/3 [00:02<00:00,  1.41it/s]100%|██████████| 3/3 [00:02<00:00,  1.39it/s]
+2026-09-01 20:36:10,532 - easytorch-training - INFO - Result <train>: [train/time: 2.16 (s), train/lr: 1.00e-03, train/loss: 1.2641, train/MAE: 1.2641, train/MAPE: 0.1115, train/RMSE: 1.6151]
+2026-09-01 20:36:10,534 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 87.48it/s]
+2026-09-01 20:36:10,545 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.8850, val/MAE: 0.8850, val/MAPE: 0.0994, val/RMSE: 1.2046]
+2026-09-01 20:36:10,554 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_best_val_MAE.pt saved
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.64it/s]100%|██████████| 1/1 [00:00<00:00,  2.64it/s]
+2026-09-01 20:36:10,933 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6310, Test MAPE: 0.0841, Test RMSE: 1.0620
+2026-09-01 20:36:10,933 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.6798, Test MAPE: 0.0961, Test RMSE: 1.1846
+2026-09-01 20:36:10,934 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.7504, Test MAPE: 0.1027, Test RMSE: 1.3443
+2026-09-01 20:36:10,943 - easytorch-training - INFO - Result <test>: [test/time: 0.39 (s), test/loss: 0.8644, test/MAE: 0.8644, test/MAPE: 0.1048, test/RMSE: 1.3411]
+2026-09-01 20:36:10,949 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_004.pt saved
+2026-09-01 20:36:10,950 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:06
+2026-09-01 20:36:10,950 - easytorch-training - INFO - Epoch 5 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.43it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.44it/s]100%|██████████| 3/3 [00:01<00:00,  1.55it/s]100%|██████████| 3/3 [00:01<00:00,  1.52it/s]
+2026-09-01 20:36:12,929 - easytorch-training - INFO - Result <train>: [train/time: 1.98 (s), train/lr: 1.00e-03, train/loss: 0.8825, train/MAE: 0.8825, train/MAPE: 0.0966, train/RMSE: 1.2447]
+2026-09-01 20:36:12,930 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 253.82it/s]
+2026-09-01 20:36:12,934 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 1.0611, val/MAE: 1.0611, val/MAPE: 0.1216, val/RMSE: 1.4188]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.54it/s]100%|██████████| 1/1 [00:00<00:00,  2.53it/s]
+2026-09-01 20:36:13,330 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 1.1148, Test MAPE: 0.1235, Test RMSE: 1.5475
+2026-09-01 20:36:13,331 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 1.2003, Test MAPE: 0.1616, Test RMSE: 1.6579
+2026-09-01 20:36:13,331 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.4849, Test MAPE: 0.1863, Test RMSE: 1.9378
+2026-09-01 20:36:13,338 - easytorch-training - INFO - Result <test>: [test/time: 0.40 (s), test/loss: 1.0899, test/MAE: 1.0899, test/MAPE: 0.1356, test/RMSE: 1.5696]
+2026-09-01 20:36:13,341 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_005.pt saved
+2026-09-01 20:36:13,342 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:04
+2026-09-01 20:36:13,342 - easytorch-training - INFO - Epoch 6 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.37it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.33it/s]100%|██████████| 3/3 [00:02<00:00,  1.42it/s]100%|██████████| 3/3 [00:02<00:00,  1.40it/s]
+2026-09-01 20:36:15,490 - easytorch-training - INFO - Result <train>: [train/time: 2.15 (s), train/lr: 1.00e-03, train/loss: 0.9015, train/MAE: 0.9015, train/MAPE: 0.1048, train/RMSE: 1.2678]
+2026-09-01 20:36:15,491 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 255.36it/s]
+2026-09-01 20:36:15,495 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.9463, val/MAE: 0.9463, val/MAPE: 0.1032, val/RMSE: 1.2737]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.73it/s]100%|██████████| 1/1 [00:00<00:00,  2.73it/s]
+2026-09-01 20:36:15,863 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.9228, Test MAPE: 0.0852, Test RMSE: 1.4088
+2026-09-01 20:36:15,863 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 1.2264, Test MAPE: 0.1595, Test RMSE: 1.6629
+2026-09-01 20:36:15,863 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.2437, Test MAPE: 0.1567, Test RMSE: 1.7118
+2026-09-01 20:36:15,868 - easytorch-training - INFO - Result <test>: [test/time: 0.37 (s), test/loss: 0.9459, test/MAE: 0.9459, test/MAPE: 0.1129, test/RMSE: 1.4163]
+2026-09-01 20:36:15,871 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_006.pt saved
+2026-09-01 20:36:15,871 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:06
+2026-09-01 20:36:15,871 - easytorch-training - INFO - Epoch 7 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.47it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.46it/s]100%|██████████| 3/3 [00:02<00:00,  1.46it/s]100%|██████████| 3/3 [00:02<00:00,  1.46it/s]
+2026-09-01 20:36:17,923 - easytorch-training - INFO - Result <train>: [train/time: 2.05 (s), train/lr: 1.00e-03, train/loss: 0.7775, train/MAE: 0.7775, train/MAPE: 0.0812, train/RMSE: 1.1081]
+2026-09-01 20:36:17,924 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 193.24it/s]
+2026-09-01 20:36:17,930 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7561, val/MAE: 0.7561, val/MAPE: 0.0765, val/RMSE: 1.0271]
+2026-09-01 20:36:17,933 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_best_val_MAE.pt saved
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.45it/s]100%|██████████| 1/1 [00:00<00:00,  2.43it/s]
+2026-09-01 20:36:18,346 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6189, Test MAPE: 0.0597, Test RMSE: 1.0011
+2026-09-01 20:36:18,346 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.9892, Test MAPE: 0.1198, Test RMSE: 1.4380
+2026-09-01 20:36:18,346 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.8424, Test MAPE: 0.1007, Test RMSE: 1.3971
+2026-09-01 20:36:18,354 - easytorch-training - INFO - Result <test>: [test/time: 0.42 (s), test/loss: 0.7705, test/MAE: 0.7705, test/MAPE: 0.0860, test/RMSE: 1.2250]
+2026-09-01 20:36:18,358 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_007.pt saved
+2026-09-01 20:36:18,358 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:06
+2026-09-01 20:36:18,358 - easytorch-training - INFO - Epoch 8 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.33it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.24it/s]100%|██████████| 3/3 [00:02<00:00,  1.37it/s]100%|██████████| 3/3 [00:02<00:00,  1.34it/s]
+2026-09-01 20:36:20,595 - easytorch-training - INFO - Result <train>: [train/time: 2.24 (s), train/lr: 1.00e-03, train/loss: 0.7426, train/MAE: 0.7426, train/MAPE: 0.0698, train/RMSE: 1.0510]
+2026-09-01 20:36:20,597 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 213.14it/s]
+2026-09-01 20:36:20,602 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7349, val/MAE: 0.7349, val/MAPE: 0.0736, val/RMSE: 1.0070]
+2026-09-01 20:36:20,608 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_best_val_MAE.pt saved
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.65it/s]100%|██████████| 1/1 [00:00<00:00,  2.64it/s]
+2026-09-01 20:36:20,987 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.5764, Test MAPE: 0.0611, Test RMSE: 0.9776
+2026-09-01 20:36:20,988 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7577, Test MAPE: 0.0958, Test RMSE: 1.2126
+2026-09-01 20:36:20,988 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.7931, Test MAPE: 0.0955, Test RMSE: 1.3396
+2026-09-01 20:36:20,999 - easytorch-training - INFO - Result <test>: [test/time: 0.39 (s), test/loss: 0.7358, test/MAE: 0.7358, test/MAPE: 0.0833, test/RMSE: 1.1926]
+2026-09-01 20:36:21,003 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_008.pt saved
+2026-09-01 20:36:21,003 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:09
+2026-09-01 20:36:21,003 - easytorch-training - INFO - Epoch 9 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.49it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.47it/s]100%|██████████| 3/3 [00:01<00:00,  1.62it/s]100%|██████████| 3/3 [00:01<00:00,  1.58it/s]
+2026-09-01 20:36:22,902 - easytorch-training - INFO - Result <train>: [train/time: 1.90 (s), train/lr: 1.00e-03, train/loss: 0.6727, train/MAE: 0.6727, train/MAPE: 0.0653, train/RMSE: 0.9941]
+2026-09-01 20:36:22,902 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 215.98it/s]
+2026-09-01 20:36:22,907 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.8232, val/MAE: 0.8232, val/MAPE: 0.0797, val/RMSE: 1.0951]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.99it/s]100%|██████████| 1/1 [00:00<00:00,  2.99it/s]
+2026-09-01 20:36:23,244 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7622, Test MAPE: 0.0819, Test RMSE: 1.1331
+2026-09-01 20:36:23,244 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7852, Test MAPE: 0.0884, Test RMSE: 1.2149
+2026-09-01 20:36:23,245 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9973, Test MAPE: 0.1138, Test RMSE: 1.4781
+2026-09-01 20:36:23,252 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 0.8592, test/MAE: 0.8592, test/MAPE: 0.0941, test/RMSE: 1.2888]
+2026-09-01 20:36:23,256 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_009.pt saved
+2026-09-01 20:36:23,256 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:06
+2026-09-01 20:36:23,256 - easytorch-training - INFO - Epoch 10 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.48it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.41it/s]100%|██████████| 3/3 [00:02<00:00,  1.49it/s]100%|██████████| 3/3 [00:02<00:00,  1.47it/s]
+2026-09-01 20:36:25,293 - easytorch-training - INFO - Result <train>: [train/time: 2.04 (s), train/lr: 1.00e-03, train/loss: 0.6684, train/MAE: 0.6684, train/MAPE: 0.0635, train/RMSE: 0.9846]
+2026-09-01 20:36:25,293 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 171.41it/s]
+2026-09-01 20:36:25,300 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7821, val/MAE: 0.7821, val/MAPE: 0.0691, val/RMSE: 1.0576]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.72it/s]100%|██████████| 1/1 [00:00<00:00,  2.72it/s]
+2026-09-01 20:36:25,668 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6775, Test MAPE: 0.0638, Test RMSE: 1.0750
+2026-09-01 20:36:25,669 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.8189, Test MAPE: 0.0810, Test RMSE: 1.2940
+2026-09-01 20:36:25,669 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9189, Test MAPE: 0.0972, Test RMSE: 1.4281
+2026-09-01 20:36:25,678 - easytorch-training - INFO - Result <test>: [test/time: 0.38 (s), test/loss: 0.8066, test/MAE: 0.8066, test/MAPE: 0.0821, test/RMSE: 1.2455]
+2026-09-01 20:36:25,682 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_010.pt saved
+2026-09-01 20:36:25,686 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:06
+2026-09-01 20:36:25,686 - easytorch-training - INFO - Epoch 11 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.36it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.44it/s]100%|██████████| 3/3 [00:01<00:00,  1.57it/s]100%|██████████| 3/3 [00:01<00:00,  1.52it/s]
+2026-09-01 20:36:27,657 - easytorch-training - INFO - Result <train>: [train/time: 1.97 (s), train/lr: 1.00e-03, train/loss: 0.6473, train/MAE: 0.6473, train/MAPE: 0.0586, train/RMSE: 0.9703]
+2026-09-01 20:36:27,658 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 142.98it/s]
+2026-09-01 20:36:27,665 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7250, val/MAE: 0.7250, val/MAPE: 0.0646, val/RMSE: 1.0031]
+2026-09-01 20:36:27,668 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_best_val_MAE.pt saved
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.91it/s]100%|██████████| 1/1 [00:00<00:00,  2.91it/s]
+2026-09-01 20:36:28,013 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.5569, Test MAPE: 0.0562, Test RMSE: 0.9604
+2026-09-01 20:36:28,013 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7987, Test MAPE: 0.0785, Test RMSE: 1.2785
+2026-09-01 20:36:28,014 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.8648, Test MAPE: 0.0909, Test RMSE: 1.3987
+2026-09-01 20:36:28,018 - easytorch-training - INFO - Result <test>: [test/time: 0.35 (s), test/loss: 0.7492, test/MAE: 0.7492, test/MAPE: 0.0775, test/RMSE: 1.2011]
+2026-09-01 20:36:28,022 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_011.pt saved
+2026-09-01 20:36:28,022 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:05
+2026-09-01 20:36:28,022 - easytorch-training - INFO - Epoch 12 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.46it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.48it/s]100%|██████████| 3/3 [00:01<00:00,  1.59it/s]100%|██████████| 3/3 [00:01<00:00,  1.56it/s]
+2026-09-01 20:36:29,948 - easytorch-training - INFO - Result <train>: [train/time: 1.93 (s), train/lr: 1.00e-03, train/loss: 0.6199, train/MAE: 0.6199, train/MAPE: 0.0559, train/RMSE: 0.9403]
+2026-09-01 20:36:29,949 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 256.41it/s]
+2026-09-01 20:36:29,953 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7271, val/MAE: 0.7271, val/MAPE: 0.0689, val/RMSE: 0.9902]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.88it/s]100%|██████████| 1/1 [00:00<00:00,  2.88it/s]
+2026-09-01 20:36:30,301 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6442, Test MAPE: 0.0731, Test RMSE: 1.0317
+2026-09-01 20:36:30,301 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.8299, Test MAPE: 0.0955, Test RMSE: 1.2502
+2026-09-01 20:36:30,302 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9833, Test MAPE: 0.1098, Test RMSE: 1.4746
+2026-09-01 20:36:30,310 - easytorch-training - INFO - Result <test>: [test/time: 0.36 (s), test/loss: 0.7715, test/MAE: 0.7715, test/MAPE: 0.0831, test/RMSE: 1.2152]
+2026-09-01 20:36:30,313 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_012.pt saved
+2026-09-01 20:36:30,313 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:04
+2026-09-01 20:36:30,313 - easytorch-training - INFO - Epoch 13 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.48it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.43it/s]100%|██████████| 3/3 [00:01<00:00,  1.55it/s]100%|██████████| 3/3 [00:01<00:00,  1.52it/s]
+2026-09-01 20:36:32,282 - easytorch-training - INFO - Result <train>: [train/time: 1.97 (s), train/lr: 1.00e-03, train/loss: 0.6101, train/MAE: 0.6101, train/MAPE: 0.0582, train/RMSE: 0.9279]
+2026-09-01 20:36:32,283 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 203.29it/s]
+2026-09-01 20:36:32,288 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7507, val/MAE: 0.7507, val/MAPE: 0.0708, val/RMSE: 1.0162]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.95it/s]100%|██████████| 1/1 [00:00<00:00,  2.95it/s]
+2026-09-01 20:36:32,629 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6317, Test MAPE: 0.0731, Test RMSE: 1.0224
+2026-09-01 20:36:32,629 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.8876, Test MAPE: 0.1050, Test RMSE: 1.3008
+2026-09-01 20:36:32,629 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0009, Test MAPE: 0.1130, Test RMSE: 1.4879
+2026-09-01 20:36:32,636 - easytorch-training - INFO - Result <test>: [test/time: 0.35 (s), test/loss: 0.7972, test/MAE: 0.7972, test/MAPE: 0.0851, test/RMSE: 1.2403]
+2026-09-01 20:36:32,640 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_013.pt saved
+2026-09-01 20:36:32,640 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:03
+2026-09-01 20:36:32,640 - easytorch-training - INFO - Epoch 14 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.54it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.53it/s]100%|██████████| 3/3 [00:01<00:00,  1.65it/s]100%|██████████| 3/3 [00:01<00:00,  1.62it/s]
+2026-09-01 20:36:34,495 - easytorch-training - INFO - Result <train>: [train/time: 1.86 (s), train/lr: 1.00e-03, train/loss: 0.6019, train/MAE: 0.6019, train/MAPE: 0.0564, train/RMSE: 0.9198]
+2026-09-01 20:36:34,496 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 203.66it/s]
+2026-09-01 20:36:34,501 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7142, val/MAE: 0.7142, val/MAPE: 0.0636, val/RMSE: 0.9837]
+2026-09-01 20:36:34,504 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_best_val_MAE.pt saved
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.24it/s]100%|██████████| 1/1 [00:00<00:00,  3.24it/s]
+2026-09-01 20:36:34,816 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.5675, Test MAPE: 0.0603, Test RMSE: 0.9685
+2026-09-01 20:36:34,817 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.8683, Test MAPE: 0.0927, Test RMSE: 1.2921
+2026-09-01 20:36:34,817 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9352, Test MAPE: 0.1021, Test RMSE: 1.4422
+2026-09-01 20:36:34,823 - easytorch-training - INFO - Result <test>: [test/time: 0.32 (s), test/loss: 0.7541, test/MAE: 0.7541, test/MAPE: 0.0773, test/RMSE: 1.2029]
+2026-09-01 20:36:34,827 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_014.pt saved
+2026-09-01 20:36:34,827 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:01
+2026-09-01 20:36:34,827 - easytorch-training - INFO - Epoch 15 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.59it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.55it/s]100%|██████████| 3/3 [00:01<00:00,  1.65it/s]100%|██████████| 3/3 [00:01<00:00,  1.62it/s]
+2026-09-01 20:36:36,674 - easytorch-training - INFO - Result <train>: [train/time: 1.85 (s), train/lr: 1.00e-03, train/loss: 0.5945, train/MAE: 0.5945, train/MAPE: 0.0539, train/RMSE: 0.9122]
+2026-09-01 20:36:36,675 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 165.42it/s]
+2026-09-01 20:36:36,683 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.6911, val/MAE: 0.6911, val/MAPE: 0.0618, val/RMSE: 0.9626]
+2026-09-01 20:36:36,688 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_best_val_MAE.pt saved
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.04it/s]100%|██████████| 1/1 [00:00<00:00,  3.04it/s]
+2026-09-01 20:36:37,018 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6100, Test MAPE: 0.0631, Test RMSE: 0.9983
+2026-09-01 20:36:37,018 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.8174, Test MAPE: 0.0852, Test RMSE: 1.2495
+2026-09-01 20:36:37,018 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9870, Test MAPE: 0.1058, Test RMSE: 1.4761
+2026-09-01 20:36:37,028 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 0.7429, test/MAE: 0.7429, test/MAPE: 0.0767, test/RMSE: 1.1920]
+2026-09-01 20:36:37,031 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_015.pt saved
+2026-09-01 20:36:37,031 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:00
+2026-09-01 20:36:37,031 - easytorch-training - INFO - Epoch 16 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.63it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.50it/s]100%|██████████| 3/3 [00:01<00:00,  1.58it/s]100%|██████████| 3/3 [00:01<00:00,  1.57it/s]
+2026-09-01 20:36:38,944 - easytorch-training - INFO - Result <train>: [train/time: 1.91 (s), train/lr: 1.00e-03, train/loss: 0.5827, train/MAE: 0.5827, train/MAPE: 0.0527, train/RMSE: 0.9010]
+2026-09-01 20:36:38,945 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 290.18it/s]
+2026-09-01 20:36:38,948 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7118, val/MAE: 0.7118, val/MAPE: 0.0646, val/RMSE: 0.9805]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.40it/s]100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+2026-09-01 20:36:39,368 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6596, Test MAPE: 0.0694, Test RMSE: 1.0308
+2026-09-01 20:36:39,368 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7919, Test MAPE: 0.0845, Test RMSE: 1.2221
+2026-09-01 20:36:39,369 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0251, Test MAPE: 0.1104, Test RMSE: 1.5007
+2026-09-01 20:36:39,379 - easytorch-training - INFO - Result <test>: [test/time: 0.43 (s), test/loss: 0.7724, test/MAE: 0.7724, test/MAPE: 0.0800, test/RMSE: 1.2151]
+2026-09-01 20:36:39,383 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_016.pt saved
+2026-09-01 20:36:39,383 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:00
+2026-09-01 20:36:39,383 - easytorch-training - INFO - Epoch 17 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.55it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.50it/s]100%|██████████| 3/3 [00:02<00:00,  1.49it/s]100%|██████████| 3/3 [00:02<00:00,  1.50it/s]
+2026-09-01 20:36:41,390 - easytorch-training - INFO - Result <train>: [train/time: 2.01 (s), train/lr: 1.00e-03, train/loss: 0.5750, train/MAE: 0.5750, train/MAPE: 0.0524, train/RMSE: 0.8932]
+2026-09-01 20:36:41,390 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 116.12it/s]
+2026-09-01 20:36:41,399 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7141, val/MAE: 0.7141, val/MAPE: 0.0645, val/RMSE: 0.9832]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.67it/s]100%|██████████| 1/1 [00:00<00:00,  2.67it/s]
+2026-09-01 20:36:41,777 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6243, Test MAPE: 0.0655, Test RMSE: 1.0051
+2026-09-01 20:36:41,777 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7701, Test MAPE: 0.0819, Test RMSE: 1.2127
+2026-09-01 20:36:41,777 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9443, Test MAPE: 0.1020, Test RMSE: 1.4454
+2026-09-01 20:36:41,783 - easytorch-training - INFO - Result <test>: [test/time: 0.38 (s), test/loss: 0.7654, test/MAE: 0.7654, test/MAPE: 0.0788, test/RMSE: 1.2096]
+2026-09-01 20:36:41,788 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_017.pt saved
+2026-09-01 20:36:41,788 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:00
+2026-09-01 20:36:41,788 - easytorch-training - INFO - Epoch 18 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.61it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.50it/s]100%|██████████| 3/3 [00:01<00:00,  1.66it/s]100%|██████████| 3/3 [00:01<00:00,  1.62it/s]
+2026-09-01 20:36:43,637 - easytorch-training - INFO - Result <train>: [train/time: 1.85 (s), train/lr: 1.00e-03, train/loss: 0.5704, train/MAE: 0.5704, train/MAPE: 0.0516, train/RMSE: 0.8875]
+2026-09-01 20:36:43,638 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 153.75it/s]
+2026-09-01 20:36:43,645 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7064, val/MAE: 0.7064, val/MAPE: 0.0654, val/RMSE: 0.9738]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.95it/s]100%|██████████| 1/1 [00:00<00:00,  2.95it/s]
+2026-09-01 20:36:43,986 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6304, Test MAPE: 0.0667, Test RMSE: 1.0116
+2026-09-01 20:36:43,986 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7797, Test MAPE: 0.0853, Test RMSE: 1.2174
+2026-09-01 20:36:43,986 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9348, Test MAPE: 0.1016, Test RMSE: 1.4413
+2026-09-01 20:36:43,994 - easytorch-training - INFO - Result <test>: [test/time: 0.35 (s), test/loss: 0.7552, test/MAE: 0.7552, test/MAPE: 0.0791, test/RMSE: 1.2003]
+2026-09-01 20:36:43,998 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_018.pt saved
+2026-09-01 20:36:43,998 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:59
+2026-09-01 20:36:43,998 - easytorch-training - INFO - Epoch 19 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.39it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.51it/s]100%|██████████| 3/3 [00:01<00:00,  1.63it/s]100%|██████████| 3/3 [00:01<00:00,  1.58it/s]
+2026-09-01 20:36:45,894 - easytorch-training - INFO - Result <train>: [train/time: 1.90 (s), train/lr: 1.00e-03, train/loss: 0.5646, train/MAE: 0.5646, train/MAPE: 0.0525, train/RMSE: 0.8822]
+2026-09-01 20:36:45,895 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 216.30it/s]
+2026-09-01 20:36:45,900 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7106, val/MAE: 0.7106, val/MAPE: 0.0679, val/RMSE: 0.9779]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.78it/s]100%|██████████| 1/1 [00:00<00:00,  2.77it/s]
+2026-09-01 20:36:46,261 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6750, Test MAPE: 0.0729, Test RMSE: 1.0438
+2026-09-01 20:36:46,262 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.8165, Test MAPE: 0.0915, Test RMSE: 1.2388
+2026-09-01 20:36:46,262 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0122, Test MAPE: 0.1101, Test RMSE: 1.4958
+2026-09-01 20:36:46,273 - easytorch-training - INFO - Result <test>: [test/time: 0.37 (s), test/loss: 0.7643, test/MAE: 0.7643, test/MAPE: 0.0816, test/RMSE: 1.2085]
+2026-09-01 20:36:46,277 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_019.pt saved
+2026-09-01 20:36:46,277 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:58
+2026-09-01 20:36:46,277 - easytorch-training - INFO - Epoch 20 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.45it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.49it/s]100%|██████████| 3/3 [00:01<00:00,  1.57it/s]100%|██████████| 3/3 [00:01<00:00,  1.55it/s]
+2026-09-01 20:36:48,218 - easytorch-training - INFO - Result <train>: [train/time: 1.94 (s), train/lr: 1.00e-03, train/loss: 0.5603, train/MAE: 0.5603, train/MAPE: 0.0522, train/RMSE: 0.8784]
+2026-09-01 20:36:48,218 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 169.38it/s]
+2026-09-01 20:36:48,225 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7043, val/MAE: 0.7043, val/MAPE: 0.0654, val/RMSE: 0.9738]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.98it/s]100%|██████████| 1/1 [00:00<00:00,  2.97it/s]
+2026-09-01 20:36:48,562 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6554, Test MAPE: 0.0690, Test RMSE: 1.0281
+2026-09-01 20:36:48,563 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.8018, Test MAPE: 0.0869, Test RMSE: 1.2295
+2026-09-01 20:36:48,563 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9828, Test MAPE: 0.1073, Test RMSE: 1.4707
+2026-09-01 20:36:48,567 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 0.7573, test/MAE: 0.7573, test/MAPE: 0.0793, test/RMSE: 1.2033]
+2026-09-01 20:36:48,571 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_020.pt saved
+2026-09-01 20:36:48,574 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:58
+2026-09-01 20:36:48,575 - easytorch-training - INFO - Epoch 21 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.51it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.36it/s]100%|██████████| 3/3 [00:02<00:00,  1.43it/s]100%|██████████| 3/3 [00:02<00:00,  1.42it/s]
+2026-09-01 20:36:50,683 - easytorch-training - INFO - Result <train>: [train/time: 2.11 (s), train/lr: 1.00e-03, train/loss: 0.5557, train/MAE: 0.5557, train/MAPE: 0.0507, train/RMSE: 0.8727]
+2026-09-01 20:36:50,685 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 136.97it/s]
+2026-09-01 20:36:50,693 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.6975, val/MAE: 0.6975, val/MAPE: 0.0639, val/RMSE: 0.9660]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.37it/s]100%|██████████| 1/1 [00:00<00:00,  2.37it/s]
+2026-09-01 20:36:51,115 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6381, Test MAPE: 0.0662, Test RMSE: 1.0139
+2026-09-01 20:36:51,116 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7627, Test MAPE: 0.0825, Test RMSE: 1.1969
+2026-09-01 20:36:51,116 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9575, Test MAPE: 0.1049, Test RMSE: 1.4484
+2026-09-01 20:36:51,127 - easytorch-training - INFO - Result <test>: [test/time: 0.43 (s), test/loss: 0.7456, test/MAE: 0.7456, test/MAPE: 0.0776, test/RMSE: 1.1918]
+2026-09-01 20:36:51,131 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_021.pt saved
+2026-09-01 20:36:51,131 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:59
+2026-09-01 20:36:51,131 - easytorch-training - INFO - Epoch 22 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.23it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.26it/s]100%|██████████| 3/3 [00:02<00:00,  1.41it/s]100%|██████████| 3/3 [00:02<00:00,  1.36it/s]
+2026-09-01 20:36:53,335 - easytorch-training - INFO - Result <train>: [train/time: 2.20 (s), train/lr: 1.00e-03, train/loss: 0.5511, train/MAE: 0.5511, train/MAPE: 0.0508, train/RMSE: 0.8695]
+2026-09-01 20:36:53,336 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 239.01it/s]
+2026-09-01 20:36:53,340 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7012, val/MAE: 0.7012, val/MAPE: 0.0649, val/RMSE: 0.9698]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.94it/s]100%|██████████| 1/1 [00:00<00:00,  2.94it/s]
+2026-09-01 20:36:53,682 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6695, Test MAPE: 0.0699, Test RMSE: 1.0390
+2026-09-01 20:36:53,682 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7882, Test MAPE: 0.0859, Test RMSE: 1.2138
+2026-09-01 20:36:53,683 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0151, Test MAPE: 0.1090, Test RMSE: 1.4943
+2026-09-01 20:36:53,689 - easytorch-training - INFO - Result <test>: [test/time: 0.35 (s), test/loss: 0.7539, test/MAE: 0.7539, test/MAPE: 0.0787, test/RMSE: 1.2007]
+2026-09-01 20:36:53,692 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_022.pt saved
+2026-09-01 20:36:53,693 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:59
+2026-09-01 20:36:53,693 - easytorch-training - INFO - Epoch 23 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.45it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.46it/s]100%|██████████| 3/3 [00:01<00:00,  1.54it/s]100%|██████████| 3/3 [00:01<00:00,  1.52it/s]
+2026-09-01 20:36:55,667 - easytorch-training - INFO - Result <train>: [train/time: 1.97 (s), train/lr: 1.00e-03, train/loss: 0.5458, train/MAE: 0.5458, train/MAPE: 0.0503, train/RMSE: 0.8642]
+2026-09-01 20:36:55,668 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 153.31it/s]
+2026-09-01 20:36:55,675 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.6993, val/MAE: 0.6993, val/MAPE: 0.0644, val/RMSE: 0.9699]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.62it/s]100%|██████████| 1/1 [00:00<00:00,  2.62it/s]
+2026-09-01 20:36:56,057 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6594, Test MAPE: 0.0687, Test RMSE: 1.0337
+2026-09-01 20:36:56,059 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7798, Test MAPE: 0.0845, Test RMSE: 1.2111
+2026-09-01 20:36:56,059 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9909, Test MAPE: 0.1060, Test RMSE: 1.4786
+2026-09-01 20:36:56,064 - easytorch-training - INFO - Result <test>: [test/time: 0.39 (s), test/loss: 0.7506, test/MAE: 0.7506, test/MAPE: 0.0780, test/RMSE: 1.1990]
+2026-09-01 20:36:56,068 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_023.pt saved
+2026-09-01 20:36:56,068 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:59
+2026-09-01 20:36:56,068 - easytorch-training - INFO - Epoch 24 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.22it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.28it/s]100%|██████████| 3/3 [00:02<00:00,  1.45it/s]100%|██████████| 3/3 [00:02<00:00,  1.39it/s]
+2026-09-01 20:36:58,223 - easytorch-training - INFO - Result <train>: [train/time: 2.16 (s), train/lr: 1.00e-03, train/loss: 0.5442, train/MAE: 0.5442, train/MAPE: 0.0500, train/RMSE: 0.8629]
+2026-09-01 20:36:58,224 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 36.52it/s]
+2026-09-01 20:36:58,251 - easytorch-training - INFO - Result <val>: [val/time: 0.03 (s), val/loss: 0.6982, val/MAE: 0.6982, val/MAPE: 0.0644, val/RMSE: 0.9676]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.17it/s]100%|██████████| 1/1 [00:00<00:00,  2.17it/s]
+2026-09-01 20:36:58,715 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6504, Test MAPE: 0.0683, Test RMSE: 1.0243
+2026-09-01 20:36:58,716 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7662, Test MAPE: 0.0836, Test RMSE: 1.1993
+2026-09-01 20:36:58,716 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9616, Test MAPE: 0.1045, Test RMSE: 1.4524
+2026-09-01 20:36:58,723 - easytorch-training - INFO - Result <test>: [test/time: 0.47 (s), test/loss: 0.7455, test/MAE: 0.7455, test/MAPE: 0.0779, test/RMSE: 1.1919]
+2026-09-01 20:36:58,731 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_024.pt saved
+2026-09-01 20:36:58,731 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:01
+2026-09-01 20:36:58,731 - easytorch-training - INFO - Epoch 25 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.40it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.44it/s]100%|██████████| 3/3 [00:01<00:00,  1.63it/s]100%|██████████| 3/3 [00:01<00:00,  1.57it/s]
+2026-09-01 20:37:00,648 - easytorch-training - INFO - Result <train>: [train/time: 1.92 (s), train/lr: 1.00e-03, train/loss: 0.5398, train/MAE: 0.5398, train/MAPE: 0.0498, train/RMSE: 0.8584]
+2026-09-01 20:37:00,648 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 217.82it/s]
+2026-09-01 20:37:00,653 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7001, val/MAE: 0.7001, val/MAPE: 0.0650, val/RMSE: 0.9690]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.91it/s]100%|██████████| 1/1 [00:00<00:00,  2.91it/s]
+2026-09-01 20:37:00,998 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6740, Test MAPE: 0.0707, Test RMSE: 1.0417
+2026-09-01 20:37:00,999 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7646, Test MAPE: 0.0840, Test RMSE: 1.1959
+2026-09-01 20:37:00,999 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0011, Test MAPE: 0.1080, Test RMSE: 1.4819
+2026-09-01 20:37:01,006 - easytorch-training - INFO - Result <test>: [test/time: 0.35 (s), test/loss: 0.7502, test/MAE: 0.7502, test/MAPE: 0.0787, test/RMSE: 1.1961]
+2026-09-01 20:37:01,012 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_025.pt saved
+2026-09-01 20:37:01,013 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:00
+2026-09-01 20:37:01,013 - easytorch-training - INFO - Epoch 26 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.54it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.46it/s]100%|██████████| 3/3 [00:01<00:00,  1.62it/s]100%|██████████| 3/3 [00:01<00:00,  1.58it/s]
+2026-09-01 20:37:02,911 - easytorch-training - INFO - Result <train>: [train/time: 1.90 (s), train/lr: 1.00e-03, train/loss: 0.5372, train/MAE: 0.5372, train/MAPE: 0.0497, train/RMSE: 0.8564]
+2026-09-01 20:37:02,912 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 224.98it/s]
+2026-09-01 20:37:02,916 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7008, val/MAE: 0.7008, val/MAPE: 0.0639, val/RMSE: 0.9725]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.39it/s]100%|██████████| 1/1 [00:00<00:00,  2.39it/s]
+2026-09-01 20:37:03,337 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6792, Test MAPE: 0.0693, Test RMSE: 1.0477
+2026-09-01 20:37:03,338 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7629, Test MAPE: 0.0820, Test RMSE: 1.1984
+2026-09-01 20:37:03,338 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0120, Test MAPE: 0.1075, Test RMSE: 1.4932
+2026-09-01 20:37:03,344 - easytorch-training - INFO - Result <test>: [test/time: 0.43 (s), test/loss: 0.7526, test/MAE: 0.7526, test/MAPE: 0.0779, test/RMSE: 1.2010]
+2026-09-01 20:37:03,348 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_026.pt saved
+2026-09-01 20:37:03,348 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:00
+2026-09-01 20:37:03,348 - easytorch-training - INFO - Epoch 27 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.43it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.43it/s]100%|██████████| 3/3 [00:01<00:00,  1.57it/s]100%|██████████| 3/3 [00:01<00:00,  1.53it/s]
+2026-09-01 20:37:05,310 - easytorch-training - INFO - Result <train>: [train/time: 1.96 (s), train/lr: 1.00e-03, train/loss: 0.5337, train/MAE: 0.5337, train/MAPE: 0.0491, train/RMSE: 0.8527]
+2026-09-01 20:37:05,311 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 203.58it/s]
+2026-09-01 20:37:05,316 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.6975, val/MAE: 0.6975, val/MAPE: 0.0639, val/RMSE: 0.9691]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.00it/s]100%|██████████| 1/1 [00:00<00:00,  3.00it/s]
+2026-09-01 20:37:05,651 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6758, Test MAPE: 0.0693, Test RMSE: 1.0421
+2026-09-01 20:37:05,651 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7742, Test MAPE: 0.0834, Test RMSE: 1.2052
+2026-09-01 20:37:05,651 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9995, Test MAPE: 0.1074, Test RMSE: 1.4797
+2026-09-01 20:37:05,656 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 0.7481, test/MAE: 0.7481, test/MAPE: 0.0777, test/RMSE: 1.1964]
+2026-09-01 20:37:05,661 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_027.pt saved
+2026-09-01 20:37:05,661 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:00
+2026-09-01 20:37:05,661 - easytorch-training - INFO - Epoch 28 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.62it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.40it/s]100%|██████████| 3/3 [00:01<00:00,  1.53it/s]100%|██████████| 3/3 [00:01<00:00,  1.51it/s]
+2026-09-01 20:37:07,642 - easytorch-training - INFO - Result <train>: [train/time: 1.98 (s), train/lr: 1.00e-03, train/loss: 0.5317, train/MAE: 0.5317, train/MAPE: 0.0492, train/RMSE: 0.8509]
+2026-09-01 20:37:07,643 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 230.19it/s]
+2026-09-01 20:37:07,647 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.6969, val/MAE: 0.6969, val/MAPE: 0.0642, val/RMSE: 0.9682]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.49it/s]100%|██████████| 1/1 [00:00<00:00,  2.49it/s]
+2026-09-01 20:37:08,052 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6815, Test MAPE: 0.0698, Test RMSE: 1.0472
+2026-09-01 20:37:08,053 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7567, Test MAPE: 0.0831, Test RMSE: 1.1897
+2026-09-01 20:37:08,054 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0230, Test MAPE: 0.1090, Test RMSE: 1.4993
+2026-09-01 20:37:08,061 - easytorch-training - INFO - Result <test>: [test/time: 0.41 (s), test/loss: 0.7444, test/MAE: 0.7444, test/MAPE: 0.0776, test/RMSE: 1.1929]
+2026-09-01 20:37:08,065 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_028.pt saved
+2026-09-01 20:37:08,066 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:00
+2026-09-01 20:37:08,066 - easytorch-training - INFO - Epoch 29 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.57it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.49it/s]100%|██████████| 3/3 [00:01<00:00,  1.54it/s]100%|██████████| 3/3 [00:01<00:00,  1.53it/s]
+2026-09-01 20:37:10,022 - easytorch-training - INFO - Result <train>: [train/time: 1.96 (s), train/lr: 1.00e-03, train/loss: 0.5288, train/MAE: 0.5288, train/MAPE: 0.0489, train/RMSE: 0.8479]
+2026-09-01 20:37:10,023 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 219.59it/s]
+2026-09-01 20:37:10,028 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.6950, val/MAE: 0.6950, val/MAPE: 0.0642, val/RMSE: 0.9666]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.50it/s]100%|██████████| 1/1 [00:00<00:00,  2.50it/s]
+2026-09-01 20:37:10,430 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6637, Test MAPE: 0.0683, Test RMSE: 1.0335
+2026-09-01 20:37:10,430 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7434, Test MAPE: 0.0820, Test RMSE: 1.1810
+2026-09-01 20:37:10,431 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0043, Test MAPE: 0.1081, Test RMSE: 1.4839
+2026-09-01 20:37:10,435 - easytorch-training - INFO - Result <test>: [test/time: 0.41 (s), test/loss: 0.7399, test/MAE: 0.7399, test/MAPE: 0.0773, test/RMSE: 1.1891]
+2026-09-01 20:37:10,442 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_029.pt saved
+2026-09-01 20:37:10,442 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:00
+2026-09-01 20:37:10,442 - easytorch-training - INFO - Epoch 30 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.54it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.47it/s]100%|██████████| 3/3 [00:01<00:00,  1.50it/s]100%|██████████| 3/3 [00:01<00:00,  1.50it/s]
+2026-09-01 20:37:12,441 - easytorch-training - INFO - Result <train>: [train/time: 2.00 (s), train/lr: 1.00e-03, train/loss: 0.5259, train/MAE: 0.5259, train/MAPE: 0.0486, train/RMSE: 0.8451]
+2026-09-01 20:37:12,442 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 232.89it/s]
+2026-09-01 20:37:12,447 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7028, val/MAE: 0.7028, val/MAPE: 0.0652, val/RMSE: 0.9755]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.64it/s]100%|██████████| 1/1 [00:00<00:00,  2.64it/s]
+2026-09-01 20:37:12,828 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7053, Test MAPE: 0.0719, Test RMSE: 1.0669
+2026-09-01 20:37:12,828 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7725, Test MAPE: 0.0839, Test RMSE: 1.2044
+2026-09-01 20:37:12,829 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0352, Test MAPE: 0.1111, Test RMSE: 1.5068
+2026-09-01 20:37:12,836 - easytorch-training - INFO - Result <test>: [test/time: 0.39 (s), test/loss: 0.7538, test/MAE: 0.7538, test/MAPE: 0.0787, test/RMSE: 1.2028]
+2026-09-01 20:37:12,840 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_030.pt saved
+2026-09-01 20:37:12,851 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:00
+2026-09-01 20:37:12,851 - easytorch-training - INFO - Epoch 31 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.38it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.18it/s]100%|██████████| 3/3 [00:02<00:00,  1.31it/s]100%|██████████| 3/3 [00:02<00:00,  1.29it/s]
+2026-09-01 20:37:15,174 - easytorch-training - INFO - Result <train>: [train/time: 2.32 (s), train/lr: 1.00e-03, train/loss: 0.5243, train/MAE: 0.5243, train/MAPE: 0.0486, train/RMSE: 0.8435]
+2026-09-01 20:37:15,175 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 174.61it/s]
+2026-09-01 20:37:15,181 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7037, val/MAE: 0.7037, val/MAPE: 0.0646, val/RMSE: 0.9768]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.46it/s]100%|██████████| 1/1 [00:00<00:00,  2.46it/s]
+2026-09-01 20:37:15,589 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6986, Test MAPE: 0.0711, Test RMSE: 1.0616
+2026-09-01 20:37:15,589 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7619, Test MAPE: 0.0819, Test RMSE: 1.1985
+2026-09-01 20:37:15,590 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0410, Test MAPE: 0.1099, Test RMSE: 1.5139
+2026-09-01 20:37:15,601 - easytorch-training - INFO - Result <test>: [test/time: 0.42 (s), test/loss: 0.7527, test/MAE: 0.7527, test/MAPE: 0.0780, test/RMSE: 1.2023]
+2026-09-01 20:37:15,605 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_031.pt saved
+2026-09-01 20:37:15,605 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:01
+2026-09-01 20:37:15,605 - easytorch-training - INFO - Epoch 32 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.42it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.36it/s]100%|██████████| 3/3 [00:02<00:00,  1.40it/s]100%|██████████| 3/3 [00:02<00:00,  1.40it/s]
+2026-09-01 20:37:17,754 - easytorch-training - INFO - Result <train>: [train/time: 2.15 (s), train/lr: 1.00e-03, train/loss: 0.5221, train/MAE: 0.5221, train/MAPE: 0.0482, train/RMSE: 0.8421]
+2026-09-01 20:37:17,755 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 192.08it/s]
+2026-09-01 20:37:17,760 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7019, val/MAE: 0.7019, val/MAPE: 0.0647, val/RMSE: 0.9761]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.27it/s]100%|██████████| 1/1 [00:00<00:00,  2.27it/s]
+2026-09-01 20:37:18,202 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7042, Test MAPE: 0.0719, Test RMSE: 1.0663
+2026-09-01 20:37:18,202 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7624, Test MAPE: 0.0825, Test RMSE: 1.1980
+2026-09-01 20:37:18,202 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0520, Test MAPE: 0.1107, Test RMSE: 1.5223
+2026-09-01 20:37:18,211 - easytorch-training - INFO - Result <test>: [test/time: 0.45 (s), test/loss: 0.7521, test/MAE: 0.7521, test/MAPE: 0.0781, test/RMSE: 1.2032]
+2026-09-01 20:37:18,215 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_032.pt saved
+2026-09-01 20:37:18,215 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:01
+2026-09-01 20:37:18,215 - easytorch-training - INFO - Epoch 33 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.31it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.35it/s]100%|██████████| 3/3 [00:02<00:00,  1.48it/s]100%|██████████| 3/3 [00:02<00:00,  1.44it/s]
+2026-09-01 20:37:20,300 - easytorch-training - INFO - Result <train>: [train/time: 2.09 (s), train/lr: 1.00e-03, train/loss: 0.5209, train/MAE: 0.5209, train/MAPE: 0.0483, train/RMSE: 0.8405]
+2026-09-01 20:37:20,301 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 201.73it/s]
+2026-09-01 20:37:20,306 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.6997, val/MAE: 0.6997, val/MAPE: 0.0644, val/RMSE: 0.9738]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.70it/s]100%|██████████| 1/1 [00:00<00:00,  2.70it/s]
+2026-09-01 20:37:20,678 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7014, Test MAPE: 0.0715, Test RMSE: 1.0645
+2026-09-01 20:37:20,679 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7592, Test MAPE: 0.0827, Test RMSE: 1.1940
+2026-09-01 20:37:20,679 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0424, Test MAPE: 0.1103, Test RMSE: 1.5126
+2026-09-01 20:37:20,690 - easytorch-training - INFO - Result <test>: [test/time: 0.38 (s), test/loss: 0.7480, test/MAE: 0.7480, test/MAPE: 0.0778, test/RMSE: 1.1984]
+2026-09-01 20:37:20,695 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_033.pt saved
+2026-09-01 20:37:20,696 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:37:20,696 - easytorch-training - INFO - Epoch 34 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.30it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.38it/s]100%|██████████| 3/3 [00:02<00:00,  1.52it/s]100%|██████████| 3/3 [00:02<00:00,  1.47it/s]
+2026-09-01 20:37:22,737 - easytorch-training - INFO - Result <train>: [train/time: 2.04 (s), train/lr: 1.00e-03, train/loss: 0.5191, train/MAE: 0.5191, train/MAPE: 0.0480, train/RMSE: 0.8401]
+2026-09-01 20:37:22,738 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 151.98it/s]
+2026-09-01 20:37:22,745 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7031, val/MAE: 0.7031, val/MAPE: 0.0646, val/RMSE: 0.9779]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.53it/s]100%|██████████| 1/1 [00:00<00:00,  2.53it/s]
+2026-09-01 20:37:23,143 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7142, Test MAPE: 0.0729, Test RMSE: 1.0748
+2026-09-01 20:37:23,143 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7617, Test MAPE: 0.0824, Test RMSE: 1.1974
+2026-09-01 20:37:23,143 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0652, Test MAPE: 0.1121, Test RMSE: 1.5313
+2026-09-01 20:37:23,151 - easytorch-training - INFO - Result <test>: [test/time: 0.40 (s), test/loss: 0.7531, test/MAE: 0.7531, test/MAPE: 0.0781, test/RMSE: 1.2039]
+2026-09-01 20:37:23,155 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_034.pt saved
+2026-09-01 20:37:23,155 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:37:23,155 - easytorch-training - INFO - Epoch 35 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.38it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.40it/s]100%|██████████| 3/3 [00:02<00:00,  1.50it/s]100%|██████████| 3/3 [00:02<00:00,  1.47it/s]
+2026-09-01 20:37:25,197 - easytorch-training - INFO - Result <train>: [train/time: 2.04 (s), train/lr: 1.00e-03, train/loss: 0.5170, train/MAE: 0.5170, train/MAPE: 0.0482, train/RMSE: 0.8379]
+2026-09-01 20:37:25,198 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 263.79it/s]
+2026-09-01 20:37:25,202 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.6978, val/MAE: 0.6978, val/MAPE: 0.0648, val/RMSE: 0.9711]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.91it/s]100%|██████████| 1/1 [00:00<00:00,  2.91it/s]
+2026-09-01 20:37:25,547 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7146, Test MAPE: 0.0733, Test RMSE: 1.0739
+2026-09-01 20:37:25,547 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7512, Test MAPE: 0.0818, Test RMSE: 1.1879
+2026-09-01 20:37:25,547 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0347, Test MAPE: 0.1114, Test RMSE: 1.5036
+2026-09-01 20:37:25,559 - easytorch-training - INFO - Result <test>: [test/time: 0.36 (s), test/loss: 0.7453, test/MAE: 0.7453, test/MAPE: 0.0780, test/RMSE: 1.1952]
+2026-09-01 20:37:25,563 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_035.pt saved
+2026-09-01 20:37:25,563 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:37:25,563 - easytorch-training - INFO - Epoch 36 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.51it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.46it/s]100%|██████████| 3/3 [00:01<00:00,  1.59it/s]100%|██████████| 3/3 [00:01<00:00,  1.56it/s]
+2026-09-01 20:37:27,485 - easytorch-training - INFO - Result <train>: [train/time: 1.92 (s), train/lr: 1.00e-03, train/loss: 0.5147, train/MAE: 0.5147, train/MAPE: 0.0476, train/RMSE: 0.8363]
+2026-09-01 20:37:27,486 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 191.24it/s]
+2026-09-01 20:37:27,491 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.6983, val/MAE: 0.6983, val/MAPE: 0.0644, val/RMSE: 0.9715]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.61it/s]100%|██████████| 1/1 [00:00<00:00,  2.61it/s]
+2026-09-01 20:37:27,876 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6910, Test MAPE: 0.0707, Test RMSE: 1.0553
+2026-09-01 20:37:27,876 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7313, Test MAPE: 0.0799, Test RMSE: 1.1724
+2026-09-01 20:37:27,876 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0414, Test MAPE: 0.1107, Test RMSE: 1.5110
+2026-09-01 20:37:27,884 - easytorch-training - INFO - Result <test>: [test/time: 0.39 (s), test/loss: 0.7417, test/MAE: 0.7417, test/MAPE: 0.0772, test/RMSE: 1.1920]
+2026-09-01 20:37:27,890 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_036.pt saved
+2026-09-01 20:37:27,890 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:37:27,890 - easytorch-training - INFO - Epoch 37 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.28it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.27it/s]100%|██████████| 3/3 [00:02<00:00,  1.43it/s]100%|██████████| 3/3 [00:02<00:00,  1.38it/s]
+2026-09-01 20:37:30,061 - easytorch-training - INFO - Result <train>: [train/time: 2.17 (s), train/lr: 1.00e-03, train/loss: 0.5129, train/MAE: 0.5129, train/MAPE: 0.0476, train/RMSE: 0.8343]
+2026-09-01 20:37:30,061 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 135.19it/s]
+2026-09-01 20:37:30,069 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.6987, val/MAE: 0.6987, val/MAPE: 0.0650, val/RMSE: 0.9733]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.40it/s]100%|██████████| 1/1 [00:00<00:00,  2.40it/s]
+2026-09-01 20:37:30,487 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7201, Test MAPE: 0.0734, Test RMSE: 1.0790
+2026-09-01 20:37:30,487 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7546, Test MAPE: 0.0821, Test RMSE: 1.1907
+2026-09-01 20:37:30,487 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0428, Test MAPE: 0.1113, Test RMSE: 1.5109
+2026-09-01 20:37:30,504 - easytorch-training - INFO - Result <test>: [test/time: 0.43 (s), test/loss: 0.7456, test/MAE: 0.7456, test/MAPE: 0.0780, test/RMSE: 1.1968]
+2026-09-01 20:37:30,508 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_037.pt saved
+2026-09-01 20:37:30,508 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:37:30,508 - easytorch-training - INFO - Epoch 38 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.23it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.24it/s]100%|██████████| 3/3 [00:02<00:00,  1.32it/s]100%|██████████| 3/3 [00:02<00:00,  1.30it/s]
+2026-09-01 20:37:32,819 - easytorch-training - INFO - Result <train>: [train/time: 2.31 (s), train/lr: 1.00e-03, train/loss: 0.5113, train/MAE: 0.5113, train/MAPE: 0.0475, train/RMSE: 0.8324]
+2026-09-01 20:37:32,819 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 91.44it/s]
+2026-09-01 20:37:32,831 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7034, val/MAE: 0.7034, val/MAPE: 0.0646, val/RMSE: 0.9793]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.42it/s]100%|██████████| 1/1 [00:00<00:00,  2.42it/s]
+2026-09-01 20:37:33,245 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7221, Test MAPE: 0.0730, Test RMSE: 1.0812
+2026-09-01 20:37:33,246 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7549, Test MAPE: 0.0811, Test RMSE: 1.1934
+2026-09-01 20:37:33,246 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0602, Test MAPE: 0.1115, Test RMSE: 1.5263
+2026-09-01 20:37:33,255 - easytorch-training - INFO - Result <test>: [test/time: 0.42 (s), test/loss: 0.7508, test/MAE: 0.7508, test/MAPE: 0.0778, test/RMSE: 1.2030]
+2026-09-01 20:37:33,259 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_038.pt saved
+2026-09-01 20:37:33,259 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:03
+2026-09-01 20:37:33,259 - easytorch-training - INFO - Epoch 39 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.26it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.35it/s]100%|██████████| 3/3 [00:02<00:00,  1.51it/s]100%|██████████| 3/3 [00:02<00:00,  1.45it/s]
+2026-09-01 20:37:35,324 - easytorch-training - INFO - Result <train>: [train/time: 2.07 (s), train/lr: 1.00e-03, train/loss: 0.5101, train/MAE: 0.5101, train/MAPE: 0.0473, train/RMSE: 0.8324]
+2026-09-01 20:37:35,325 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 177.75it/s]
+2026-09-01 20:37:35,331 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7058, val/MAE: 0.7058, val/MAPE: 0.0656, val/RMSE: 0.9821]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.09it/s]100%|██████████| 1/1 [00:00<00:00,  3.09it/s]
+2026-09-01 20:37:35,656 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7397, Test MAPE: 0.0751, Test RMSE: 1.0950
+2026-09-01 20:37:35,656 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7639, Test MAPE: 0.0826, Test RMSE: 1.1998
+2026-09-01 20:37:35,656 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0852, Test MAPE: 0.1141, Test RMSE: 1.5453
+2026-09-01 20:37:35,663 - easytorch-training - INFO - Result <test>: [test/time: 0.33 (s), test/loss: 0.7550, test/MAE: 0.7550, test/MAPE: 0.0786, test/RMSE: 1.2072]
+2026-09-01 20:37:35,667 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_039.pt saved
+2026-09-01 20:37:35,667 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:03
+2026-09-01 20:37:35,667 - easytorch-training - INFO - Epoch 40 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.47it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.49it/s]100%|██████████| 3/3 [00:01<00:00,  1.68it/s]100%|██████████| 3/3 [00:01<00:00,  1.62it/s]
+2026-09-01 20:37:37,521 - easytorch-training - INFO - Result <train>: [train/time: 1.85 (s), train/lr: 1.00e-03, train/loss: 0.5087, train/MAE: 0.5087, train/MAPE: 0.0473, train/RMSE: 0.8308]
+2026-09-01 20:37:37,521 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 218.01it/s]
+2026-09-01 20:37:37,526 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7012, val/MAE: 0.7012, val/MAPE: 0.0647, val/RMSE: 0.9780]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.15it/s]100%|██████████| 1/1 [00:00<00:00,  3.15it/s]
+2026-09-01 20:37:37,846 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7338, Test MAPE: 0.0740, Test RMSE: 1.0910
+2026-09-01 20:37:37,846 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7552, Test MAPE: 0.0815, Test RMSE: 1.1938
+2026-09-01 20:37:37,847 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0780, Test MAPE: 0.1133, Test RMSE: 1.5395
+2026-09-01 20:37:37,854 - easytorch-training - INFO - Result <test>: [test/time: 0.33 (s), test/loss: 0.7501, test/MAE: 0.7501, test/MAPE: 0.0779, test/RMSE: 1.2035]
+2026-09-01 20:37:37,858 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_040.pt saved
+2026-09-01 20:37:37,860 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:37:37,860 - easytorch-training - INFO - Epoch 41 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.52it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.51it/s]100%|██████████| 3/3 [00:01<00:00,  1.64it/s]100%|██████████| 3/3 [00:01<00:00,  1.60it/s]
+2026-09-01 20:37:39,734 - easytorch-training - INFO - Result <train>: [train/time: 1.87 (s), train/lr: 1.00e-03, train/loss: 0.5066, train/MAE: 0.5066, train/MAPE: 0.0471, train/RMSE: 0.8289]
+2026-09-01 20:37:39,734 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 158.68it/s]
+2026-09-01 20:37:39,741 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7055, val/MAE: 0.7055, val/MAPE: 0.0651, val/RMSE: 0.9829]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.14it/s]100%|██████████| 1/1 [00:00<00:00,  3.14it/s]
+2026-09-01 20:37:40,062 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7482, Test MAPE: 0.0751, Test RMSE: 1.1034
+2026-09-01 20:37:40,062 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7617, Test MAPE: 0.0822, Test RMSE: 1.1991
+2026-09-01 20:37:40,063 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0934, Test MAPE: 0.1147, Test RMSE: 1.5518
+2026-09-01 20:37:40,071 - easytorch-training - INFO - Result <test>: [test/time: 0.33 (s), test/loss: 0.7565, test/MAE: 0.7565, test/MAPE: 0.0785, test/RMSE: 1.2098]
+2026-09-01 20:37:40,074 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_041.pt saved
+2026-09-01 20:37:40,074 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:37:40,074 - easytorch-training - INFO - Epoch 42 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.30it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.44it/s]100%|██████████| 3/3 [00:01<00:00,  1.60it/s]100%|██████████| 3/3 [00:01<00:00,  1.54it/s]
+2026-09-01 20:37:42,025 - easytorch-training - INFO - Result <train>: [train/time: 1.95 (s), train/lr: 1.00e-03, train/loss: 0.5050, train/MAE: 0.5050, train/MAPE: 0.0469, train/RMSE: 0.8271]
+2026-09-01 20:37:42,026 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 200.93it/s]
+2026-09-01 20:37:42,032 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7046, val/MAE: 0.7046, val/MAPE: 0.0647, val/RMSE: 0.9829]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.46it/s]100%|██████████| 1/1 [00:00<00:00,  2.46it/s]
+2026-09-01 20:37:42,439 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7443, Test MAPE: 0.0746, Test RMSE: 1.1004
+2026-09-01 20:37:42,440 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7656, Test MAPE: 0.0819, Test RMSE: 1.2035
+2026-09-01 20:37:42,440 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0909, Test MAPE: 0.1140, Test RMSE: 1.5506
+2026-09-01 20:37:42,451 - easytorch-training - INFO - Result <test>: [test/time: 0.42 (s), test/loss: 0.7542, test/MAE: 0.7542, test/MAPE: 0.0781, test/RMSE: 1.2083]
+2026-09-01 20:37:42,458 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_042.pt saved
+2026-09-01 20:37:42,458 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:37:42,458 - easytorch-training - INFO - Epoch 43 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.18it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.21it/s]100%|██████████| 3/3 [00:02<00:00,  1.30it/s]100%|██████████| 3/3 [00:02<00:00,  1.27it/s]
+2026-09-01 20:37:44,815 - easytorch-training - INFO - Result <train>: [train/time: 2.36 (s), train/lr: 1.00e-03, train/loss: 0.5048, train/MAE: 0.5048, train/MAPE: 0.0470, train/RMSE: 0.8284]
+2026-09-01 20:37:44,816 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 145.50it/s]
+2026-09-01 20:37:44,823 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7149, val/MAE: 0.7149, val/MAPE: 0.0655, val/RMSE: 0.9945]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.42it/s]100%|██████████| 1/1 [00:00<00:00,  2.42it/s]
+2026-09-01 20:37:45,239 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7589, Test MAPE: 0.0760, Test RMSE: 1.1126
+2026-09-01 20:37:45,239 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7760, Test MAPE: 0.0828, Test RMSE: 1.2123
+2026-09-01 20:37:45,240 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1137, Test MAPE: 0.1156, Test RMSE: 1.5701
+2026-09-01 20:37:45,247 - easytorch-training - INFO - Result <test>: [test/time: 0.42 (s), test/loss: 0.7639, test/MAE: 0.7639, test/MAPE: 0.0789, test/RMSE: 1.2191]
+2026-09-01 20:37:45,252 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_043.pt saved
+2026-09-01 20:37:45,252 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:03
+2026-09-01 20:37:45,252 - easytorch-training - INFO - Epoch 44 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.10it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.18it/s]100%|██████████| 3/3 [00:02<00:00,  1.35it/s]100%|██████████| 3/3 [00:02<00:00,  1.29it/s]
+2026-09-01 20:37:47,576 - easytorch-training - INFO - Result <train>: [train/time: 2.32 (s), train/lr: 1.00e-03, train/loss: 0.5040, train/MAE: 0.5040, train/MAPE: 0.0467, train/RMSE: 0.8277]
+2026-09-01 20:37:47,577 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 133.76it/s]
+2026-09-01 20:37:47,584 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7072, val/MAE: 0.7072, val/MAPE: 0.0654, val/RMSE: 0.9862]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.27it/s]100%|██████████| 1/1 [00:00<00:00,  2.27it/s]
+2026-09-01 20:37:48,026 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7516, Test MAPE: 0.0756, Test RMSE: 1.1069
+2026-09-01 20:37:48,026 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7700, Test MAPE: 0.0824, Test RMSE: 1.2078
+2026-09-01 20:37:48,027 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.0900, Test MAPE: 0.1146, Test RMSE: 1.5498
+2026-09-01 20:37:48,035 - easytorch-training - INFO - Result <test>: [test/time: 0.45 (s), test/loss: 0.7553, test/MAE: 0.7553, test/MAPE: 0.0785, test/RMSE: 1.2104]
+2026-09-01 20:37:48,039 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_044.pt saved
+2026-09-01 20:37:48,040 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:04
+2026-09-01 20:37:48,040 - easytorch-training - INFO - Epoch 45 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.23it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.24it/s]100%|██████████| 3/3 [00:02<00:00,  1.34it/s]100%|██████████| 3/3 [00:02<00:00,  1.31it/s]
+2026-09-01 20:37:50,336 - easytorch-training - INFO - Result <train>: [train/time: 2.30 (s), train/lr: 1.00e-03, train/loss: 0.5019, train/MAE: 0.5019, train/MAPE: 0.0467, train/RMSE: 0.8259]
+2026-09-01 20:37:50,336 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 215.51it/s]
+2026-09-01 20:37:50,341 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7167, val/MAE: 0.7167, val/MAPE: 0.0661, val/RMSE: 0.9974]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.02it/s]100%|██████████| 1/1 [00:00<00:00,  2.02it/s]
+2026-09-01 20:37:50,837 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7575, Test MAPE: 0.0758, Test RMSE: 1.1129
+2026-09-01 20:37:50,837 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7833, Test MAPE: 0.0835, Test RMSE: 1.2193
+2026-09-01 20:37:50,837 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1351, Test MAPE: 0.1173, Test RMSE: 1.5876
+2026-09-01 20:37:50,844 - easytorch-training - INFO - Result <test>: [test/time: 0.50 (s), test/loss: 0.7645, test/MAE: 0.7645, test/MAPE: 0.0791, test/RMSE: 1.2215]
+2026-09-01 20:37:50,848 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_045.pt saved
+2026-09-01 20:37:50,848 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:04
+2026-09-01 20:37:50,848 - easytorch-training - INFO - Epoch 46 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.29it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.35it/s]100%|██████████| 3/3 [00:02<00:00,  1.42it/s]100%|██████████| 3/3 [00:02<00:00,  1.40it/s]
+2026-09-01 20:37:52,997 - easytorch-training - INFO - Result <train>: [train/time: 2.15 (s), train/lr: 1.00e-03, train/loss: 0.5015, train/MAE: 0.5015, train/MAPE: 0.0466, train/RMSE: 0.8254]
+2026-09-01 20:37:52,998 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 98.74it/s]
+2026-09-01 20:37:53,008 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7217, val/MAE: 0.7217, val/MAPE: 0.0660, val/RMSE: 1.0029]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.31it/s]100%|██████████| 1/1 [00:00<00:00,  2.31it/s]
+2026-09-01 20:37:53,443 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7662, Test MAPE: 0.0761, Test RMSE: 1.1199
+2026-09-01 20:37:53,444 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7853, Test MAPE: 0.0831, Test RMSE: 1.2217
+2026-09-01 20:37:53,444 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1322, Test MAPE: 0.1173, Test RMSE: 1.5836
+2026-09-01 20:37:53,452 - easytorch-training - INFO - Result <test>: [test/time: 0.44 (s), test/loss: 0.7680, test/MAE: 0.7680, test/MAPE: 0.0792, test/RMSE: 1.2243]
+2026-09-01 20:37:53,456 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_046.pt saved
+2026-09-01 20:37:53,456 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:05
+2026-09-01 20:37:53,456 - easytorch-training - INFO - Epoch 47 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.22it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.37it/s]100%|██████████| 3/3 [00:02<00:00,  1.58it/s]100%|██████████| 3/3 [00:02<00:00,  1.50it/s]
+2026-09-01 20:37:55,458 - easytorch-training - INFO - Result <train>: [train/time: 2.00 (s), train/lr: 1.00e-03, train/loss: 0.5008, train/MAE: 0.5008, train/MAPE: 0.0464, train/RMSE: 0.8247]
+2026-09-01 20:37:55,459 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 233.60it/s]
+2026-09-01 20:37:55,464 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7103, val/MAE: 0.7103, val/MAPE: 0.0660, val/RMSE: 0.9892]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.28it/s]100%|██████████| 1/1 [00:00<00:00,  3.28it/s]
+2026-09-01 20:37:55,770 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7522, Test MAPE: 0.0762, Test RMSE: 1.1070
+2026-09-01 20:37:55,770 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7691, Test MAPE: 0.0823, Test RMSE: 1.2080
+2026-09-01 20:37:55,770 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1129, Test MAPE: 0.1164, Test RMSE: 1.5668
+2026-09-01 20:37:55,775 - easytorch-training - INFO - Result <test>: [test/time: 0.31 (s), test/loss: 0.7566, test/MAE: 0.7566, test/MAPE: 0.0787, test/RMSE: 1.2124]
+2026-09-01 20:37:55,779 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_047.pt saved
+2026-09-01 20:37:55,779 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:05
+2026-09-01 20:37:55,779 - easytorch-training - INFO - Epoch 48 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.55it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.51it/s]100%|██████████| 3/3 [00:01<00:00,  1.61it/s]100%|██████████| 3/3 [00:01<00:00,  1.58it/s]
+2026-09-01 20:37:57,674 - easytorch-training - INFO - Result <train>: [train/time: 1.89 (s), train/lr: 1.00e-03, train/loss: 0.4999, train/MAE: 0.4999, train/MAPE: 0.0466, train/RMSE: 0.8252]
+2026-09-01 20:37:57,675 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 149.79it/s]
+2026-09-01 20:37:57,682 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7070, val/MAE: 0.7070, val/MAPE: 0.0659, val/RMSE: 0.9858]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.82it/s]100%|██████████| 1/1 [00:00<00:00,  2.82it/s]
+2026-09-01 20:37:58,038 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7455, Test MAPE: 0.0753, Test RMSE: 1.1025
+2026-09-01 20:37:58,039 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7466, Test MAPE: 0.0811, Test RMSE: 1.1899
+2026-09-01 20:37:58,039 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1122, Test MAPE: 0.1160, Test RMSE: 1.5669
+2026-09-01 20:37:58,047 - easytorch-training - INFO - Result <test>: [test/time: 0.36 (s), test/loss: 0.7513, test/MAE: 0.7513, test/MAPE: 0.0783, test/RMSE: 1.2080]
+2026-09-01 20:37:58,050 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_048.pt saved
+2026-09-01 20:37:58,051 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:04
+2026-09-01 20:37:58,051 - easytorch-training - INFO - Epoch 49 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.43it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.39it/s]100%|██████████| 3/3 [00:01<00:00,  1.54it/s]100%|██████████| 3/3 [00:01<00:00,  1.50it/s]
+2026-09-01 20:38:00,046 - easytorch-training - INFO - Result <train>: [train/time: 1.99 (s), train/lr: 1.00e-03, train/loss: 0.4973, train/MAE: 0.4973, train/MAPE: 0.0464, train/RMSE: 0.8214]
+2026-09-01 20:38:00,046 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 224.45it/s]
+2026-09-01 20:38:00,051 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7077, val/MAE: 0.7077, val/MAPE: 0.0659, val/RMSE: 0.9855]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.07it/s]100%|██████████| 1/1 [00:00<00:00,  3.07it/s]
+2026-09-01 20:38:00,379 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7426, Test MAPE: 0.0751, Test RMSE: 1.0999
+2026-09-01 20:38:00,379 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7575, Test MAPE: 0.0818, Test RMSE: 1.1987
+2026-09-01 20:38:00,379 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1065, Test MAPE: 0.1159, Test RMSE: 1.5614
+2026-09-01 20:38:00,383 - easytorch-training - INFO - Result <test>: [test/time: 0.33 (s), test/loss: 0.7511, test/MAE: 0.7511, test/MAPE: 0.0782, test/RMSE: 1.2067]
+2026-09-01 20:38:00,388 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_049.pt saved
+2026-09-01 20:38:00,388 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:04
+2026-09-01 20:38:00,388 - easytorch-training - INFO - Epoch 50 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.57it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.58it/s]100%|██████████| 3/3 [00:01<00:00,  1.65it/s]100%|██████████| 3/3 [00:01<00:00,  1.63it/s]
+2026-09-01 20:38:02,233 - easytorch-training - INFO - Result <train>: [train/time: 1.85 (s), train/lr: 1.00e-03, train/loss: 0.4980, train/MAE: 0.4980, train/MAPE: 0.0463, train/RMSE: 0.8229]
+2026-09-01 20:38:02,234 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 309.77it/s]
+2026-09-01 20:38:02,237 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7102, val/MAE: 0.7102, val/MAPE: 0.0661, val/RMSE: 0.9898]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.90it/s]100%|██████████| 1/1 [00:00<00:00,  2.90it/s]
+2026-09-01 20:38:02,583 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7693, Test MAPE: 0.0769, Test RMSE: 1.1221
+2026-09-01 20:38:02,584 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7622, Test MAPE: 0.0823, Test RMSE: 1.2021
+2026-09-01 20:38:02,584 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1229, Test MAPE: 0.1174, Test RMSE: 1.5743
+2026-09-01 20:38:02,593 - easytorch-training - INFO - Result <test>: [test/time: 0.36 (s), test/loss: 0.7550, test/MAE: 0.7550, test/MAPE: 0.0786, test/RMSE: 1.2121]
+2026-09-01 20:38:02,598 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_050.pt saved
+2026-09-01 20:38:02,603 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:04
+2026-09-01 20:38:02,603 - easytorch-training - INFO - Epoch 51 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.33it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.30it/s]100%|██████████| 3/3 [00:02<00:00,  1.42it/s]100%|██████████| 3/3 [00:02<00:00,  1.39it/s]
+2026-09-01 20:38:04,766 - easytorch-training - INFO - Result <train>: [train/time: 2.16 (s), train/lr: 5.00e-04, train/loss: 0.4959, train/MAE: 0.4959, train/MAPE: 0.0462, train/RMSE: 0.8209]
+2026-09-01 20:38:04,766 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 206.02it/s]
+2026-09-01 20:38:04,772 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7108, val/MAE: 0.7108, val/MAPE: 0.0662, val/RMSE: 0.9900]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.81it/s]100%|██████████| 1/1 [00:00<00:00,  2.81it/s]
+2026-09-01 20:38:05,129 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7550, Test MAPE: 0.0761, Test RMSE: 1.1104
+2026-09-01 20:38:05,129 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7541, Test MAPE: 0.0816, Test RMSE: 1.1959
+2026-09-01 20:38:05,129 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1293, Test MAPE: 0.1179, Test RMSE: 1.5797
+2026-09-01 20:38:05,134 - easytorch-training - INFO - Result <test>: [test/time: 0.36 (s), test/loss: 0.7544, test/MAE: 0.7544, test/MAPE: 0.0785, test/RMSE: 1.2112]
+2026-09-01 20:38:05,139 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_051.pt saved
+2026-09-01 20:38:05,139 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:04
+2026-09-01 20:38:05,139 - easytorch-training - INFO - Epoch 52 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.49it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.48it/s]100%|██████████| 3/3 [00:01<00:00,  1.62it/s]100%|██████████| 3/3 [00:01<00:00,  1.58it/s]
+2026-09-01 20:38:07,035 - easytorch-training - INFO - Result <train>: [train/time: 1.90 (s), train/lr: 5.00e-04, train/loss: 0.4951, train/MAE: 0.4951, train/MAPE: 0.0461, train/RMSE: 0.8199]
+2026-09-01 20:38:07,036 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 236.86it/s]
+2026-09-01 20:38:07,040 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7099, val/MAE: 0.7099, val/MAPE: 0.0658, val/RMSE: 0.9891]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.01it/s]100%|██████████| 1/1 [00:00<00:00,  3.01it/s]
+2026-09-01 20:38:07,374 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7415, Test MAPE: 0.0752, Test RMSE: 1.0991
+2026-09-01 20:38:07,375 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7579, Test MAPE: 0.0813, Test RMSE: 1.1998
+2026-09-01 20:38:07,375 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1263, Test MAPE: 0.1173, Test RMSE: 1.5776
+2026-09-01 20:38:07,389 - easytorch-training - INFO - Result <test>: [test/time: 0.35 (s), test/loss: 0.7528, test/MAE: 0.7528, test/MAPE: 0.0783, test/RMSE: 1.2100]
+2026-09-01 20:38:07,393 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_052.pt saved
+2026-09-01 20:38:07,393 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:03
+2026-09-01 20:38:07,393 - easytorch-training - INFO - Epoch 53 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.29it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.38it/s]100%|██████████| 3/3 [00:02<00:00,  1.44it/s]100%|██████████| 3/3 [00:02<00:00,  1.41it/s]
+2026-09-01 20:38:09,517 - easytorch-training - INFO - Result <train>: [train/time: 2.12 (s), train/lr: 5.00e-04, train/loss: 0.4948, train/MAE: 0.4948, train/MAPE: 0.0461, train/RMSE: 0.8202]
+2026-09-01 20:38:09,518 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 209.16it/s]
+2026-09-01 20:38:09,523 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7103, val/MAE: 0.7103, val/MAPE: 0.0660, val/RMSE: 0.9897]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.91it/s]100%|██████████| 1/1 [00:00<00:00,  2.91it/s]
+2026-09-01 20:38:09,869 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7590, Test MAPE: 0.0764, Test RMSE: 1.1139
+2026-09-01 20:38:09,869 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7589, Test MAPE: 0.0815, Test RMSE: 1.2004
+2026-09-01 20:38:09,869 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1161, Test MAPE: 0.1170, Test RMSE: 1.5687
+2026-09-01 20:38:09,876 - easytorch-training - INFO - Result <test>: [test/time: 0.35 (s), test/loss: 0.7526, test/MAE: 0.7526, test/MAPE: 0.0784, test/RMSE: 1.2097]
+2026-09-01 20:38:09,880 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_053.pt saved
+2026-09-01 20:38:09,880 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:04
+2026-09-01 20:38:09,880 - easytorch-training - INFO - Epoch 54 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.65it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.59it/s]100%|██████████| 3/3 [00:01<00:00,  1.59it/s]100%|██████████| 3/3 [00:01<00:00,  1.59it/s]
+2026-09-01 20:38:11,764 - easytorch-training - INFO - Result <train>: [train/time: 1.88 (s), train/lr: 5.00e-04, train/loss: 0.4948, train/MAE: 0.4948, train/MAPE: 0.0462, train/RMSE: 0.8199]
+2026-09-01 20:38:11,765 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 204.84it/s]
+2026-09-01 20:38:11,770 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7166, val/MAE: 0.7166, val/MAPE: 0.0660, val/RMSE: 0.9980]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.05it/s]100%|██████████| 1/1 [00:00<00:00,  3.05it/s]
+2026-09-01 20:38:12,099 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7664, Test MAPE: 0.0764, Test RMSE: 1.1203
+2026-09-01 20:38:12,099 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7638, Test MAPE: 0.0814, Test RMSE: 1.2052
+2026-09-01 20:38:12,100 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1432, Test MAPE: 0.1180, Test RMSE: 1.5918
+2026-09-01 20:38:12,104 - easytorch-training - INFO - Result <test>: [test/time: 0.33 (s), test/loss: 0.7602, test/MAE: 0.7602, test/MAPE: 0.0786, test/RMSE: 1.2183]
+2026-09-01 20:38:12,108 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_054.pt saved
+2026-09-01 20:38:12,108 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:03
+2026-09-01 20:38:12,108 - easytorch-training - INFO - Epoch 55 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.45it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.51it/s]100%|██████████| 3/3 [00:01<00:00,  1.62it/s]100%|██████████| 3/3 [00:01<00:00,  1.58it/s]
+2026-09-01 20:38:14,006 - easytorch-training - INFO - Result <train>: [train/time: 1.90 (s), train/lr: 5.00e-04, train/loss: 0.4943, train/MAE: 0.4943, train/MAPE: 0.0458, train/RMSE: 0.8197]
+2026-09-01 20:38:14,006 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 202.85it/s]
+2026-09-01 20:38:14,011 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7121, val/MAE: 0.7121, val/MAPE: 0.0658, val/RMSE: 0.9922]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.92it/s]100%|██████████| 1/1 [00:00<00:00,  2.92it/s]
+2026-09-01 20:38:14,358 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7467, Test MAPE: 0.0753, Test RMSE: 1.1036
+2026-09-01 20:38:14,358 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7537, Test MAPE: 0.0809, Test RMSE: 1.1965
+2026-09-01 20:38:14,358 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1261, Test MAPE: 0.1173, Test RMSE: 1.5770
+2026-09-01 20:38:14,366 - easytorch-training - INFO - Result <test>: [test/time: 0.35 (s), test/loss: 0.7525, test/MAE: 0.7525, test/MAPE: 0.0782, test/RMSE: 1.2100]
+2026-09-01 20:38:14,370 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_055.pt saved
+2026-09-01 20:38:14,371 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:03
+2026-09-01 20:38:14,371 - easytorch-training - INFO - Epoch 56 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.55it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.55it/s]100%|██████████| 3/3 [00:01<00:00,  1.65it/s]100%|██████████| 3/3 [00:01<00:00,  1.63it/s]
+2026-09-01 20:38:16,217 - easytorch-training - INFO - Result <train>: [train/time: 1.85 (s), train/lr: 5.00e-04, train/loss: 0.4933, train/MAE: 0.4933, train/MAPE: 0.0460, train/RMSE: 0.8182]
+2026-09-01 20:38:16,218 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 163.13it/s]
+2026-09-01 20:38:16,224 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7143, val/MAE: 0.7143, val/MAPE: 0.0665, val/RMSE: 0.9942]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.18it/s]100%|██████████| 1/1 [00:00<00:00,  3.17it/s]
+2026-09-01 20:38:16,541 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7541, Test MAPE: 0.0763, Test RMSE: 1.1094
+2026-09-01 20:38:16,542 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7614, Test MAPE: 0.0819, Test RMSE: 1.2025
+2026-09-01 20:38:16,542 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1281, Test MAPE: 0.1182, Test RMSE: 1.5778
+2026-09-01 20:38:16,550 - easytorch-training - INFO - Result <test>: [test/time: 0.33 (s), test/loss: 0.7529, test/MAE: 0.7529, test/MAPE: 0.0785, test/RMSE: 1.2103]
+2026-09-01 20:38:16,553 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_056.pt saved
+2026-09-01 20:38:16,553 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:38:16,553 - easytorch-training - INFO - Epoch 57 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.62it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.62it/s]100%|██████████| 3/3 [00:01<00:00,  1.73it/s]100%|██████████| 3/3 [00:01<00:00,  1.70it/s]
+2026-09-01 20:38:18,320 - easytorch-training - INFO - Result <train>: [train/time: 1.77 (s), train/lr: 5.00e-04, train/loss: 0.4934, train/MAE: 0.4934, train/MAPE: 0.0460, train/RMSE: 0.8188]
+2026-09-01 20:38:18,321 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 178.91it/s]
+2026-09-01 20:38:18,326 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7229, val/MAE: 0.7229, val/MAPE: 0.0666, val/RMSE: 1.0053]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.27it/s]100%|██████████| 1/1 [00:00<00:00,  3.27it/s]
+2026-09-01 20:38:18,635 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7778, Test MAPE: 0.0772, Test RMSE: 1.1301
+2026-09-01 20:38:18,636 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7715, Test MAPE: 0.0820, Test RMSE: 1.2126
+2026-09-01 20:38:18,636 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1582, Test MAPE: 0.1193, Test RMSE: 1.6038
+2026-09-01 20:38:18,643 - easytorch-training - INFO - Result <test>: [test/time: 0.32 (s), test/loss: 0.7625, test/MAE: 0.7625, test/MAPE: 0.0788, test/RMSE: 1.2214]
+2026-09-01 20:38:18,647 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_057.pt saved
+2026-09-01 20:38:18,647 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:38:18,647 - easytorch-training - INFO - Epoch 58 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.52it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.54it/s]100%|██████████| 3/3 [00:01<00:00,  1.65it/s]100%|██████████| 3/3 [00:01<00:00,  1.62it/s]
+2026-09-01 20:38:20,500 - easytorch-training - INFO - Result <train>: [train/time: 1.85 (s), train/lr: 5.00e-04, train/loss: 0.4929, train/MAE: 0.4929, train/MAPE: 0.0458, train/RMSE: 0.8186]
+2026-09-01 20:38:20,500 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 153.78it/s]
+2026-09-01 20:38:20,507 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7132, val/MAE: 0.7132, val/MAPE: 0.0664, val/RMSE: 0.9922]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.26it/s]100%|██████████| 1/1 [00:00<00:00,  3.26it/s]
+2026-09-01 20:38:20,815 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7515, Test MAPE: 0.0759, Test RMSE: 1.1069
+2026-09-01 20:38:20,815 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7505, Test MAPE: 0.0813, Test RMSE: 1.1931
+2026-09-01 20:38:20,815 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1290, Test MAPE: 0.1181, Test RMSE: 1.5782
+2026-09-01 20:38:20,821 - easytorch-training - INFO - Result <test>: [test/time: 0.31 (s), test/loss: 0.7504, test/MAE: 0.7504, test/MAPE: 0.0782, test/RMSE: 1.2073]
+2026-09-01 20:38:20,825 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_058.pt saved
+2026-09-01 20:38:20,825 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:01
+2026-09-01 20:38:20,825 - easytorch-training - INFO - Epoch 59 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.61it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.55it/s]100%|██████████| 3/3 [00:01<00:00,  1.70it/s]100%|██████████| 3/3 [00:01<00:00,  1.66it/s]
+2026-09-01 20:38:22,632 - easytorch-training - INFO - Result <train>: [train/time: 1.81 (s), train/lr: 5.00e-04, train/loss: 0.4928, train/MAE: 0.4928, train/MAPE: 0.0459, train/RMSE: 0.8178]
+2026-09-01 20:38:22,633 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 190.25it/s]
+2026-09-01 20:38:22,638 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7151, val/MAE: 0.7151, val/MAPE: 0.0662, val/RMSE: 0.9962]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.76it/s]100%|██████████| 1/1 [00:00<00:00,  2.76it/s]
+2026-09-01 20:38:23,002 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7553, Test MAPE: 0.0758, Test RMSE: 1.1105
+2026-09-01 20:38:23,002 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7632, Test MAPE: 0.0817, Test RMSE: 1.2049
+2026-09-01 20:38:23,002 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1379, Test MAPE: 0.1181, Test RMSE: 1.5863
+2026-09-01 20:38:23,012 - easytorch-training - INFO - Result <test>: [test/time: 0.37 (s), test/loss: 0.7543, test/MAE: 0.7543, test/MAPE: 0.0783, test/RMSE: 1.2127]
+2026-09-01 20:38:23,017 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_059.pt saved
+2026-09-01 20:38:23,017 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:01
+2026-09-01 20:38:23,017 - easytorch-training - INFO - Epoch 60 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.41it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.41it/s]100%|██████████| 3/3 [00:02<00:00,  1.47it/s]100%|██████████| 3/3 [00:02<00:00,  1.45it/s]
+2026-09-01 20:38:25,086 - easytorch-training - INFO - Result <train>: [train/time: 2.07 (s), train/lr: 5.00e-04, train/loss: 0.4920, train/MAE: 0.4920, train/MAPE: 0.0458, train/RMSE: 0.8165]
+2026-09-01 20:38:25,087 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 172.12it/s]
+2026-09-01 20:38:25,093 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7171, val/MAE: 0.7171, val/MAPE: 0.0665, val/RMSE: 0.9983]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.60it/s]100%|██████████| 1/1 [00:00<00:00,  2.60it/s]
+2026-09-01 20:38:25,480 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7673, Test MAPE: 0.0767, Test RMSE: 1.1202
+2026-09-01 20:38:25,480 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7622, Test MAPE: 0.0817, Test RMSE: 1.2038
+2026-09-01 20:38:25,480 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1512, Test MAPE: 0.1192, Test RMSE: 1.5969
+2026-09-01 20:38:25,486 - easytorch-training - INFO - Result <test>: [test/time: 0.39 (s), test/loss: 0.7570, test/MAE: 0.7570, test/MAPE: 0.0786, test/RMSE: 1.2155]
+2026-09-01 20:38:25,490 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_060.pt saved
+2026-09-01 20:38:25,495 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:01
+2026-09-01 20:38:25,495 - easytorch-training - INFO - Epoch 61 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.48it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.48it/s]100%|██████████| 3/3 [00:01<00:00,  1.63it/s]100%|██████████| 3/3 [00:01<00:00,  1.59it/s]
+2026-09-01 20:38:27,386 - easytorch-training - INFO - Result <train>: [train/time: 1.89 (s), train/lr: 5.00e-04, train/loss: 0.4912, train/MAE: 0.4912, train/MAPE: 0.0458, train/RMSE: 0.8169]
+2026-09-01 20:38:27,386 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 239.52it/s]
+2026-09-01 20:38:27,391 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7137, val/MAE: 0.7137, val/MAPE: 0.0665, val/RMSE: 0.9933]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.13it/s]100%|██████████| 1/1 [00:00<00:00,  3.13it/s]
+2026-09-01 20:38:27,712 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7524, Test MAPE: 0.0760, Test RMSE: 1.1075
+2026-09-01 20:38:27,712 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7477, Test MAPE: 0.0808, Test RMSE: 1.1918
+2026-09-01 20:38:27,712 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1409, Test MAPE: 0.1189, Test RMSE: 1.5882
+2026-09-01 20:38:27,716 - easytorch-training - INFO - Result <test>: [test/time: 0.32 (s), test/loss: 0.7502, test/MAE: 0.7502, test/MAPE: 0.0782, test/RMSE: 1.2080]
+2026-09-01 20:38:27,722 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_061.pt saved
+2026-09-01 20:38:27,722 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:01
+2026-09-01 20:38:27,722 - easytorch-training - INFO - Epoch 62 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.26it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.18it/s]100%|██████████| 3/3 [00:02<00:00,  1.29it/s]100%|██████████| 3/3 [00:02<00:00,  1.27it/s]
+2026-09-01 20:38:30,085 - easytorch-training - INFO - Result <train>: [train/time: 2.36 (s), train/lr: 5.00e-04, train/loss: 0.4904, train/MAE: 0.4904, train/MAPE: 0.0459, train/RMSE: 0.8150]
+2026-09-01 20:38:30,087 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 149.25it/s]
+2026-09-01 20:38:30,094 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7200, val/MAE: 0.7200, val/MAPE: 0.0669, val/RMSE: 1.0012]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.27it/s]100%|██████████| 1/1 [00:00<00:00,  2.27it/s]
+2026-09-01 20:38:30,537 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7717, Test MAPE: 0.0772, Test RMSE: 1.1239
+2026-09-01 20:38:30,537 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7656, Test MAPE: 0.0820, Test RMSE: 1.2065
+2026-09-01 20:38:30,537 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1504, Test MAPE: 0.1195, Test RMSE: 1.5960
+2026-09-01 20:38:30,544 - easytorch-training - INFO - Result <test>: [test/time: 0.45 (s), test/loss: 0.7579, test/MAE: 0.7579, test/MAPE: 0.0787, test/RMSE: 1.2165]
+2026-09-01 20:38:30,548 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_062.pt saved
+2026-09-01 20:38:30,549 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:38:30,549 - easytorch-training - INFO - Epoch 63 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.15it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.24it/s]100%|██████████| 3/3 [00:02<00:00,  1.38it/s]100%|██████████| 3/3 [00:02<00:00,  1.33it/s]
+2026-09-01 20:38:32,807 - easytorch-training - INFO - Result <train>: [train/time: 2.26 (s), train/lr: 5.00e-04, train/loss: 0.4905, train/MAE: 0.4905, train/MAPE: 0.0458, train/RMSE: 0.8146]
+2026-09-01 20:38:32,808 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 226.65it/s]
+2026-09-01 20:38:32,812 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7181, val/MAE: 0.7181, val/MAPE: 0.0667, val/RMSE: 0.9988]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.86it/s]100%|██████████| 1/1 [00:00<00:00,  2.86it/s]
+2026-09-01 20:38:33,163 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7552, Test MAPE: 0.0763, Test RMSE: 1.1098
+2026-09-01 20:38:33,164 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7600, Test MAPE: 0.0816, Test RMSE: 1.2020
+2026-09-01 20:38:33,164 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1444, Test MAPE: 0.1189, Test RMSE: 1.5912
+2026-09-01 20:38:33,180 - easytorch-training - INFO - Result <test>: [test/time: 0.37 (s), test/loss: 0.7525, test/MAE: 0.7525, test/MAPE: 0.0783, test/RMSE: 1.2110]
+2026-09-01 20:38:33,185 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_063.pt saved
+2026-09-01 20:38:33,186 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:38:33,186 - easytorch-training - INFO - Epoch 64 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.64it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.57it/s]100%|██████████| 3/3 [00:01<00:00,  1.72it/s]100%|██████████| 3/3 [00:01<00:00,  1.69it/s]
+2026-09-01 20:38:34,965 - easytorch-training - INFO - Result <train>: [train/time: 1.78 (s), train/lr: 5.00e-04, train/loss: 0.4896, train/MAE: 0.4896, train/MAPE: 0.0456, train/RMSE: 0.8154]
+2026-09-01 20:38:34,965 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 179.64it/s]
+2026-09-01 20:38:34,971 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7220, val/MAE: 0.7220, val/MAPE: 0.0669, val/RMSE: 1.0037]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.98it/s]100%|██████████| 1/1 [00:00<00:00,  2.98it/s]
+2026-09-01 20:38:35,308 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7652, Test MAPE: 0.0770, Test RMSE: 1.1180
+2026-09-01 20:38:35,308 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7605, Test MAPE: 0.0816, Test RMSE: 1.2023
+2026-09-01 20:38:35,309 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1593, Test MAPE: 0.1202, Test RMSE: 1.6032
+2026-09-01 20:38:35,313 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 0.7560, test/MAE: 0.7560, test/MAPE: 0.0785, test/RMSE: 1.2148]
+2026-09-01 20:38:35,317 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_064.pt saved
+2026-09-01 20:38:35,317 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:02
+2026-09-01 20:38:35,317 - easytorch-training - INFO - Epoch 65 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.59it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.62it/s]100%|██████████| 3/3 [00:01<00:00,  1.73it/s]100%|██████████| 3/3 [00:01<00:00,  1.70it/s]
+2026-09-01 20:38:37,084 - easytorch-training - INFO - Result <train>: [train/time: 1.77 (s), train/lr: 5.00e-04, train/loss: 0.4900, train/MAE: 0.4900, train/MAPE: 0.0458, train/RMSE: 0.8138]
+2026-09-01 20:38:37,084 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 200.56it/s]
+2026-09-01 20:38:37,089 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7232, val/MAE: 0.7232, val/MAPE: 0.0668, val/RMSE: 1.0060]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.36it/s]100%|██████████| 1/1 [00:00<00:00,  3.36it/s]
+2026-09-01 20:38:37,389 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7762, Test MAPE: 0.0774, Test RMSE: 1.1277
+2026-09-01 20:38:37,389 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7581, Test MAPE: 0.0810, Test RMSE: 1.2018
+2026-09-01 20:38:37,389 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1566, Test MAPE: 0.1197, Test RMSE: 1.6013
+2026-09-01 20:38:37,393 - easytorch-training - INFO - Result <test>: [test/time: 0.30 (s), test/loss: 0.7568, test/MAE: 0.7568, test/MAPE: 0.0784, test/RMSE: 1.2163]
+2026-09-01 20:38:37,397 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_065.pt saved
+2026-09-01 20:38:37,397 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:01
+2026-09-01 20:38:37,397 - easytorch-training - INFO - Epoch 66 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.69it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.68it/s]100%|██████████| 3/3 [00:01<00:00,  1.78it/s]100%|██████████| 3/3 [00:01<00:00,  1.75it/s]
+2026-09-01 20:38:39,112 - easytorch-training - INFO - Result <train>: [train/time: 1.72 (s), train/lr: 5.00e-04, train/loss: 0.4896, train/MAE: 0.4896, train/MAPE: 0.0458, train/RMSE: 0.8145]
+2026-09-01 20:38:39,113 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 221.50it/s]
+2026-09-01 20:38:39,117 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7169, val/MAE: 0.7169, val/MAPE: 0.0667, val/RMSE: 0.9971]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.16it/s]100%|██████████| 1/1 [00:00<00:00,  3.15it/s]
+2026-09-01 20:38:39,436 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7513, Test MAPE: 0.0764, Test RMSE: 1.1061
+2026-09-01 20:38:39,436 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7489, Test MAPE: 0.0809, Test RMSE: 1.1930
+2026-09-01 20:38:39,436 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1511, Test MAPE: 0.1197, Test RMSE: 1.5963
+2026-09-01 20:38:39,441 - easytorch-training - INFO - Result <test>: [test/time: 0.32 (s), test/loss: 0.7506, test/MAE: 0.7506, test/MAPE: 0.0782, test/RMSE: 1.2090]
+2026-09-01 20:38:39,446 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_066.pt saved
+2026-09-01 20:38:39,446 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:00
+2026-09-01 20:38:39,446 - easytorch-training - INFO - Epoch 67 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.65it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.62it/s]100%|██████████| 3/3 [00:01<00:00,  1.77it/s]100%|██████████| 3/3 [00:01<00:00,  1.73it/s]
+2026-09-01 20:38:41,183 - easytorch-training - INFO - Result <train>: [train/time: 1.74 (s), train/lr: 5.00e-04, train/loss: 0.4890, train/MAE: 0.4890, train/MAPE: 0.0457, train/RMSE: 0.8146]
+2026-09-01 20:38:41,184 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 258.65it/s]
+2026-09-01 20:38:41,188 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7203, val/MAE: 0.7203, val/MAPE: 0.0667, val/RMSE: 1.0027]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.32it/s]100%|██████████| 1/1 [00:00<00:00,  3.32it/s]
+2026-09-01 20:38:41,490 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7717, Test MAPE: 0.0772, Test RMSE: 1.1236
+2026-09-01 20:38:41,491 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7662, Test MAPE: 0.0818, Test RMSE: 1.2076
+2026-09-01 20:38:41,491 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1613, Test MAPE: 0.1198, Test RMSE: 1.6052
+2026-09-01 20:38:41,497 - easytorch-training - INFO - Result <test>: [test/time: 0.31 (s), test/loss: 0.7571, test/MAE: 0.7571, test/MAPE: 0.0785, test/RMSE: 1.2168]
+2026-09-01 20:38:41,500 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_067.pt saved
+2026-09-01 20:38:41,500 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:00
+2026-09-01 20:38:41,500 - easytorch-training - INFO - Epoch 68 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.60it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.62it/s]100%|██████████| 3/3 [00:01<00:00,  1.71it/s]100%|██████████| 3/3 [00:01<00:00,  1.68it/s]
+2026-09-01 20:38:43,282 - easytorch-training - INFO - Result <train>: [train/time: 1.78 (s), train/lr: 5.00e-04, train/loss: 0.4887, train/MAE: 0.4887, train/MAPE: 0.0456, train/RMSE: 0.8147]
+2026-09-01 20:38:43,283 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 231.05it/s]
+2026-09-01 20:38:43,288 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7204, val/MAE: 0.7204, val/MAPE: 0.0668, val/RMSE: 1.0019]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.27it/s]100%|██████████| 1/1 [00:00<00:00,  3.26it/s]
+2026-09-01 20:38:43,596 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7691, Test MAPE: 0.0774, Test RMSE: 1.1210
+2026-09-01 20:38:43,597 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7658, Test MAPE: 0.0820, Test RMSE: 1.2070
+2026-09-01 20:38:43,597 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1602, Test MAPE: 0.1201, Test RMSE: 1.6041
+2026-09-01 20:38:43,603 - easytorch-training - INFO - Result <test>: [test/time: 0.32 (s), test/loss: 0.7569, test/MAE: 0.7569, test/MAPE: 0.0785, test/RMSE: 1.2159]
+2026-09-01 20:38:43,607 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_068.pt saved
+2026-09-01 20:38:43,608 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:40:00
+2026-09-01 20:38:43,608 - easytorch-training - INFO - Epoch 69 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.55it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.57it/s]100%|██████████| 3/3 [00:01<00:00,  1.70it/s]100%|██████████| 3/3 [00:01<00:00,  1.66it/s]
+2026-09-01 20:38:45,411 - easytorch-training - INFO - Result <train>: [train/time: 1.80 (s), train/lr: 5.00e-04, train/loss: 0.4878, train/MAE: 0.4878, train/MAPE: 0.0455, train/RMSE: 0.8120]
+2026-09-01 20:38:45,412 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 207.46it/s]
+2026-09-01 20:38:45,417 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7197, val/MAE: 0.7197, val/MAPE: 0.0671, val/RMSE: 1.0002]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.84it/s]100%|██████████| 1/1 [00:00<00:00,  2.84it/s]
+2026-09-01 20:38:45,771 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7645, Test MAPE: 0.0774, Test RMSE: 1.1171
+2026-09-01 20:38:45,771 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7540, Test MAPE: 0.0816, Test RMSE: 1.1967
+2026-09-01 20:38:45,771 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1608, Test MAPE: 0.1207, Test RMSE: 1.6040
+2026-09-01 20:38:45,779 - easytorch-training - INFO - Result <test>: [test/time: 0.36 (s), test/loss: 0.7532, test/MAE: 0.7532, test/MAPE: 0.0785, test/RMSE: 1.2119]
+2026-09-01 20:38:45,783 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_069.pt saved
+2026-09-01 20:38:45,783 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:59
+2026-09-01 20:38:45,783 - easytorch-training - INFO - Epoch 70 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.49it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.55it/s]100%|██████████| 3/3 [00:01<00:00,  1.70it/s]100%|██████████| 3/3 [00:01<00:00,  1.65it/s]
+2026-09-01 20:38:47,605 - easytorch-training - INFO - Result <train>: [train/time: 1.82 (s), train/lr: 5.00e-04, train/loss: 0.4874, train/MAE: 0.4874, train/MAPE: 0.0456, train/RMSE: 0.8126]
+2026-09-01 20:38:47,606 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 230.63it/s]
+2026-09-01 20:38:47,610 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7239, val/MAE: 0.7239, val/MAPE: 0.0672, val/RMSE: 1.0057]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.35it/s]100%|██████████| 1/1 [00:00<00:00,  3.35it/s]
+2026-09-01 20:38:47,911 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7703, Test MAPE: 0.0775, Test RMSE: 1.1223
+2026-09-01 20:38:47,911 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7635, Test MAPE: 0.0817, Test RMSE: 1.2056
+2026-09-01 20:38:47,911 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1769, Test MAPE: 0.1215, Test RMSE: 1.6173
+2026-09-01 20:38:47,920 - easytorch-training - INFO - Result <test>: [test/time: 0.31 (s), test/loss: 0.7570, test/MAE: 0.7570, test/MAPE: 0.0786, test/RMSE: 1.2167]
+2026-09-01 20:38:47,924 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_070.pt saved
+2026-09-01 20:38:47,931 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:59
+2026-09-01 20:38:47,931 - easytorch-training - INFO - Epoch 71 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.61it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.62it/s]100%|██████████| 3/3 [00:01<00:00,  1.66it/s]100%|██████████| 3/3 [00:01<00:00,  1.65it/s]
+2026-09-01 20:38:49,754 - easytorch-training - INFO - Result <train>: [train/time: 1.82 (s), train/lr: 5.00e-04, train/loss: 0.4879, train/MAE: 0.4879, train/MAPE: 0.0457, train/RMSE: 0.8127]
+2026-09-01 20:38:49,754 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 228.46it/s]
+2026-09-01 20:38:49,759 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7228, val/MAE: 0.7228, val/MAPE: 0.0670, val/RMSE: 1.0044]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.92it/s]100%|██████████| 1/1 [00:00<00:00,  2.91it/s]
+2026-09-01 20:38:50,104 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7613, Test MAPE: 0.0767, Test RMSE: 1.1145
+2026-09-01 20:38:50,104 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7633, Test MAPE: 0.0813, Test RMSE: 1.2059
+2026-09-01 20:38:50,104 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1597, Test MAPE: 0.1206, Test RMSE: 1.6027
+2026-09-01 20:38:50,117 - easytorch-training - INFO - Result <test>: [test/time: 0.36 (s), test/loss: 0.7542, test/MAE: 0.7542, test/MAPE: 0.0784, test/RMSE: 1.2136]
+2026-09-01 20:38:50,124 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_071.pt saved
+2026-09-01 20:38:50,124 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:59
+2026-09-01 20:38:50,124 - easytorch-training - INFO - Epoch 72 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.46it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.49it/s]100%|██████████| 3/3 [00:01<00:00,  1.61it/s]100%|██████████| 3/3 [00:01<00:00,  1.57it/s]
+2026-09-01 20:38:52,034 - easytorch-training - INFO - Result <train>: [train/time: 1.91 (s), train/lr: 5.00e-04, train/loss: 0.4867, train/MAE: 0.4867, train/MAPE: 0.0453, train/RMSE: 0.8124]
+2026-09-01 20:38:52,035 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 182.24it/s]
+2026-09-01 20:38:52,040 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7257, val/MAE: 0.7257, val/MAPE: 0.0671, val/RMSE: 1.0082]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.22it/s]100%|██████████| 1/1 [00:00<00:00,  3.22it/s]
+2026-09-01 20:38:52,353 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7748, Test MAPE: 0.0773, Test RMSE: 1.1260
+2026-09-01 20:38:52,354 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7563, Test MAPE: 0.0809, Test RMSE: 1.1998
+2026-09-01 20:38:52,355 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1706, Test MAPE: 0.1210, Test RMSE: 1.6118
+2026-09-01 20:38:52,362 - easytorch-training - INFO - Result <test>: [test/time: 0.32 (s), test/loss: 0.7559, test/MAE: 0.7559, test/MAPE: 0.0784, test/RMSE: 1.2154]
+2026-09-01 20:38:52,366 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_072.pt saved
+2026-09-01 20:38:52,366 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:58
+2026-09-01 20:38:52,366 - easytorch-training - INFO - Epoch 73 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.58it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.52it/s]100%|██████████| 3/3 [00:01<00:00,  1.57it/s]100%|██████████| 3/3 [00:01<00:00,  1.56it/s]
+2026-09-01 20:38:54,291 - easytorch-training - INFO - Result <train>: [train/time: 1.92 (s), train/lr: 5.00e-04, train/loss: 0.4861, train/MAE: 0.4861, train/MAPE: 0.0453, train/RMSE: 0.8114]
+2026-09-01 20:38:54,292 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 224.86it/s]
+2026-09-01 20:38:54,296 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7283, val/MAE: 0.7283, val/MAPE: 0.0673, val/RMSE: 1.0110]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.85it/s]100%|██████████| 1/1 [00:00<00:00,  2.85it/s]
+2026-09-01 20:38:54,649 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7686, Test MAPE: 0.0771, Test RMSE: 1.1206
+2026-09-01 20:38:54,649 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7638, Test MAPE: 0.0815, Test RMSE: 1.2060
+2026-09-01 20:38:54,650 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1874, Test MAPE: 0.1216, Test RMSE: 1.6263
+2026-09-01 20:38:54,660 - easytorch-training - INFO - Result <test>: [test/time: 0.36 (s), test/loss: 0.7584, test/MAE: 0.7584, test/MAPE: 0.0786, test/RMSE: 1.2184]
+2026-09-01 20:38:54,664 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_073.pt saved
+2026-09-01 20:38:54,664 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:58
+2026-09-01 20:38:54,664 - easytorch-training - INFO - Epoch 74 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.39it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.46it/s]100%|██████████| 3/3 [00:01<00:00,  1.56it/s]100%|██████████| 3/3 [00:01<00:00,  1.53it/s]
+2026-09-01 20:38:56,630 - easytorch-training - INFO - Result <train>: [train/time: 1.97 (s), train/lr: 5.00e-04, train/loss: 0.4866, train/MAE: 0.4866, train/MAPE: 0.0455, train/RMSE: 0.8123]
+2026-09-01 20:38:56,631 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 136.31it/s]
+2026-09-01 20:38:56,639 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7247, val/MAE: 0.7247, val/MAPE: 0.0674, val/RMSE: 1.0061]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.56it/s]100%|██████████| 1/1 [00:00<00:00,  2.56it/s]
+2026-09-01 20:38:57,031 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7687, Test MAPE: 0.0772, Test RMSE: 1.1211
+2026-09-01 20:38:57,031 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7661, Test MAPE: 0.0821, Test RMSE: 1.2073
+2026-09-01 20:38:57,031 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1655, Test MAPE: 0.1208, Test RMSE: 1.6077
+2026-09-01 20:38:57,037 - easytorch-training - INFO - Result <test>: [test/time: 0.40 (s), test/loss: 0.7545, test/MAE: 0.7545, test/MAPE: 0.0785, test/RMSE: 1.2141]
+2026-09-01 20:38:57,041 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_074.pt saved
+2026-09-01 20:38:57,041 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:58
+2026-09-01 20:38:57,041 - easytorch-training - INFO - Epoch 75 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.54it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.51it/s]100%|██████████| 3/3 [00:01<00:00,  1.67it/s]100%|██████████| 3/3 [00:01<00:00,  1.63it/s]
+2026-09-01 20:38:58,885 - easytorch-training - INFO - Result <train>: [train/time: 1.84 (s), train/lr: 5.00e-04, train/loss: 0.4860, train/MAE: 0.4860, train/MAPE: 0.0453, train/RMSE: 0.8101]
+2026-09-01 20:38:58,885 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 134.86it/s]
+2026-09-01 20:38:58,893 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7238, val/MAE: 0.7238, val/MAPE: 0.0673, val/RMSE: 1.0045]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.34it/s]100%|██████████| 1/1 [00:00<00:00,  3.34it/s]
+2026-09-01 20:38:59,193 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7652, Test MAPE: 0.0773, Test RMSE: 1.1175
+2026-09-01 20:38:59,194 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7642, Test MAPE: 0.0821, Test RMSE: 1.2050
+2026-09-01 20:38:59,194 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1735, Test MAPE: 0.1212, Test RMSE: 1.6137
+2026-09-01 20:38:59,203 - easytorch-training - INFO - Result <test>: [test/time: 0.31 (s), test/loss: 0.7557, test/MAE: 0.7557, test/MAPE: 0.0785, test/RMSE: 1.2147]
+2026-09-01 20:38:59,207 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_075.pt saved
+2026-09-01 20:38:59,207 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:58
+2026-09-01 20:38:59,207 - easytorch-training - INFO - Epoch 76 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.54it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.58it/s]100%|██████████| 3/3 [00:01<00:00,  1.68it/s]100%|██████████| 3/3 [00:01<00:00,  1.64it/s]
+2026-09-01 20:39:01,033 - easytorch-training - INFO - Result <train>: [train/time: 1.83 (s), train/lr: 5.00e-04, train/loss: 0.4855, train/MAE: 0.4855, train/MAPE: 0.0454, train/RMSE: 0.8110]
+2026-09-01 20:39:01,033 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 208.03it/s]
+2026-09-01 20:39:01,038 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7236, val/MAE: 0.7236, val/MAPE: 0.0675, val/RMSE: 1.0049]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.18it/s]100%|██████████| 1/1 [00:00<00:00,  3.18it/s]
+2026-09-01 20:39:01,355 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7790, Test MAPE: 0.0783, Test RMSE: 1.1288
+2026-09-01 20:39:01,356 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7584, Test MAPE: 0.0819, Test RMSE: 1.2003
+2026-09-01 20:39:01,357 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1819, Test MAPE: 0.1220, Test RMSE: 1.6204
+2026-09-01 20:39:01,366 - easytorch-training - INFO - Result <test>: [test/time: 0.33 (s), test/loss: 0.7562, test/MAE: 0.7562, test/MAPE: 0.0787, test/RMSE: 1.2157]
+2026-09-01 20:39:01,373 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_076.pt saved
+2026-09-01 20:39:01,373 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:58
+2026-09-01 20:39:01,373 - easytorch-training - INFO - Epoch 77 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.62it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.64it/s]100%|██████████| 3/3 [00:01<00:00,  1.75it/s]100%|██████████| 3/3 [00:01<00:00,  1.71it/s]
+2026-09-01 20:39:03,123 - easytorch-training - INFO - Result <train>: [train/time: 1.75 (s), train/lr: 5.00e-04, train/loss: 0.4855, train/MAE: 0.4855, train/MAPE: 0.0454, train/RMSE: 0.8100]
+2026-09-01 20:39:03,124 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 194.55it/s]
+2026-09-01 20:39:03,129 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7264, val/MAE: 0.7264, val/MAPE: 0.0674, val/RMSE: 1.0087]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.33it/s]100%|██████████| 1/1 [00:00<00:00,  3.33it/s]
+2026-09-01 20:39:03,432 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7681, Test MAPE: 0.0774, Test RMSE: 1.1198
+2026-09-01 20:39:03,432 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7673, Test MAPE: 0.0819, Test RMSE: 1.2087
+2026-09-01 20:39:03,433 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1900, Test MAPE: 0.1224, Test RMSE: 1.6273
+2026-09-01 20:39:03,438 - easytorch-training - INFO - Result <test>: [test/time: 0.31 (s), test/loss: 0.7580, test/MAE: 0.7580, test/MAPE: 0.0787, test/RMSE: 1.2182]
+2026-09-01 20:39:03,443 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_077.pt saved
+2026-09-01 20:39:03,443 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:57
+2026-09-01 20:39:03,443 - easytorch-training - INFO - Epoch 78 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.65it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.65it/s]100%|██████████| 3/3 [00:01<00:00,  1.80it/s]100%|██████████| 3/3 [00:01<00:00,  1.76it/s]
+2026-09-01 20:39:05,148 - easytorch-training - INFO - Result <train>: [train/time: 1.70 (s), train/lr: 5.00e-04, train/loss: 0.4848, train/MAE: 0.4848, train/MAPE: 0.0452, train/RMSE: 0.8095]
+2026-09-01 20:39:05,148 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 215.98it/s]
+2026-09-01 20:39:05,153 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7285, val/MAE: 0.7285, val/MAPE: 0.0673, val/RMSE: 1.0113]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.27it/s]100%|██████████| 1/1 [00:00<00:00,  3.26it/s]
+2026-09-01 20:39:05,461 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7813, Test MAPE: 0.0777, Test RMSE: 1.1316
+2026-09-01 20:39:05,461 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7700, Test MAPE: 0.0818, Test RMSE: 1.2108
+2026-09-01 20:39:05,462 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1803, Test MAPE: 0.1219, Test RMSE: 1.6191
+2026-09-01 20:39:05,466 - easytorch-training - INFO - Result <test>: [test/time: 0.31 (s), test/loss: 0.7593, test/MAE: 0.7593, test/MAPE: 0.0787, test/RMSE: 1.2195]
+2026-09-01 20:39:05,470 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_078.pt saved
+2026-09-01 20:39:05,470 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:57
+2026-09-01 20:39:05,470 - easytorch-training - INFO - Epoch 79 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.65it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.64it/s]100%|██████████| 3/3 [00:01<00:00,  1.76it/s]100%|██████████| 3/3 [00:01<00:00,  1.72it/s]
+2026-09-01 20:39:07,210 - easytorch-training - INFO - Result <train>: [train/time: 1.74 (s), train/lr: 5.00e-04, train/loss: 0.4839, train/MAE: 0.4839, train/MAPE: 0.0451, train/RMSE: 0.8087]
+2026-09-01 20:39:07,211 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 171.34it/s]
+2026-09-01 20:39:07,217 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7291, val/MAE: 0.7291, val/MAPE: 0.0676, val/RMSE: 1.0109]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.96it/s]100%|██████████| 1/1 [00:00<00:00,  2.96it/s]
+2026-09-01 20:39:07,557 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7700, Test MAPE: 0.0776, Test RMSE: 1.1215
+2026-09-01 20:39:07,558 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7682, Test MAPE: 0.0819, Test RMSE: 1.2091
+2026-09-01 20:39:07,559 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1890, Test MAPE: 0.1223, Test RMSE: 1.6261
+2026-09-01 20:39:07,567 - easytorch-training - INFO - Result <test>: [test/time: 0.35 (s), test/loss: 0.7580, test/MAE: 0.7580, test/MAPE: 0.0787, test/RMSE: 1.2176]
+2026-09-01 20:39:07,571 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_079.pt saved
+2026-09-01 20:39:07,571 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:57
+2026-09-01 20:39:07,571 - easytorch-training - INFO - Epoch 80 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.59it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.65it/s]100%|██████████| 3/3 [00:01<00:00,  1.78it/s]100%|██████████| 3/3 [00:01<00:00,  1.73it/s]
+2026-09-01 20:39:09,301 - easytorch-training - INFO - Result <train>: [train/time: 1.73 (s), train/lr: 5.00e-04, train/loss: 0.4844, train/MAE: 0.4844, train/MAPE: 0.0453, train/RMSE: 0.8102]
+2026-09-01 20:39:09,302 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 169.61it/s]
+2026-09-01 20:39:09,308 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7246, val/MAE: 0.7246, val/MAPE: 0.0674, val/RMSE: 1.0065]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.29it/s]100%|██████████| 1/1 [00:00<00:00,  3.28it/s]
+2026-09-01 20:39:09,615 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7719, Test MAPE: 0.0775, Test RMSE: 1.1235
+2026-09-01 20:39:09,615 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7545, Test MAPE: 0.0811, Test RMSE: 1.1979
+2026-09-01 20:39:09,616 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1788, Test MAPE: 0.1217, Test RMSE: 1.6177
+2026-09-01 20:39:09,621 - easytorch-training - INFO - Result <test>: [test/time: 0.31 (s), test/loss: 0.7522, test/MAE: 0.7522, test/MAPE: 0.0783, test/RMSE: 1.2128]
+2026-09-01 20:39:09,624 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_080.pt saved
+2026-09-01 20:39:09,632 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:56
+2026-09-01 20:39:09,632 - easytorch-training - INFO - Epoch 81 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.64it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.65it/s]100%|██████████| 3/3 [00:01<00:00,  1.76it/s]100%|██████████| 3/3 [00:01<00:00,  1.73it/s]
+2026-09-01 20:39:11,367 - easytorch-training - INFO - Result <train>: [train/time: 1.74 (s), train/lr: 2.50e-04, train/loss: 0.4837, train/MAE: 0.4837, train/MAPE: 0.0451, train/RMSE: 0.8075]
+2026-09-01 20:39:11,368 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 249.87it/s]
+2026-09-01 20:39:11,372 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7334, val/MAE: 0.7334, val/MAPE: 0.0680, val/RMSE: 1.0165]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.26it/s]100%|██████████| 1/1 [00:00<00:00,  3.26it/s]
+2026-09-01 20:39:11,681 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7782, Test MAPE: 0.0781, Test RMSE: 1.1287
+2026-09-01 20:39:11,682 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7755, Test MAPE: 0.0825, Test RMSE: 1.2152
+2026-09-01 20:39:11,682 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.2022, Test MAPE: 0.1232, Test RMSE: 1.6372
+2026-09-01 20:39:11,689 - easytorch-training - INFO - Result <test>: [test/time: 0.32 (s), test/loss: 0.7621, test/MAE: 0.7621, test/MAPE: 0.0790, test/RMSE: 1.2230]
+2026-09-01 20:39:11,692 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_081.pt saved
+2026-09-01 20:39:11,692 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:56
+2026-09-01 20:39:11,692 - easytorch-training - INFO - Epoch 82 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.67it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.67it/s]100%|██████████| 3/3 [00:01<00:00,  1.81it/s]100%|██████████| 3/3 [00:01<00:00,  1.77it/s]
+2026-09-01 20:39:13,386 - easytorch-training - INFO - Result <train>: [train/time: 1.69 (s), train/lr: 2.50e-04, train/loss: 0.4836, train/MAE: 0.4836, train/MAPE: 0.0451, train/RMSE: 0.8094]
+2026-09-01 20:39:13,387 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 204.53it/s]
+2026-09-01 20:39:13,392 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7306, val/MAE: 0.7306, val/MAPE: 0.0676, val/RMSE: 1.0126]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.42it/s]100%|██████████| 1/1 [00:00<00:00,  3.42it/s]
+2026-09-01 20:39:13,687 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7741, Test MAPE: 0.0776, Test RMSE: 1.1249
+2026-09-01 20:39:13,688 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7687, Test MAPE: 0.0819, Test RMSE: 1.2091
+2026-09-01 20:39:13,688 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1883, Test MAPE: 0.1224, Test RMSE: 1.6251
+2026-09-01 20:39:13,696 - easytorch-training - INFO - Result <test>: [test/time: 0.30 (s), test/loss: 0.7582, test/MAE: 0.7582, test/MAPE: 0.0786, test/RMSE: 1.2179]
+2026-09-01 20:39:13,700 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_082.pt saved
+2026-09-01 20:39:13,700 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:55
+2026-09-01 20:39:13,700 - easytorch-training - INFO - Epoch 83 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.66it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.61it/s]100%|██████████| 3/3 [00:01<00:00,  1.74it/s]100%|██████████| 3/3 [00:01<00:00,  1.71it/s]
+2026-09-01 20:39:15,458 - easytorch-training - INFO - Result <train>: [train/time: 1.76 (s), train/lr: 2.50e-04, train/loss: 0.4834, train/MAE: 0.4834, train/MAPE: 0.0451, train/RMSE: 0.8078]
+2026-09-01 20:39:15,458 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 202.26it/s]
+2026-09-01 20:39:15,464 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7336, val/MAE: 0.7336, val/MAPE: 0.0678, val/RMSE: 1.0168]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.16it/s]100%|██████████| 1/1 [00:00<00:00,  3.15it/s]
+2026-09-01 20:39:15,782 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7846, Test MAPE: 0.0782, Test RMSE: 1.1342
+2026-09-01 20:39:15,782 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7763, Test MAPE: 0.0823, Test RMSE: 1.2159
+2026-09-01 20:39:15,783 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1987, Test MAPE: 0.1229, Test RMSE: 1.6341
+2026-09-01 20:39:15,791 - easytorch-training - INFO - Result <test>: [test/time: 0.33 (s), test/loss: 0.7616, test/MAE: 0.7616, test/MAPE: 0.0788, test/RMSE: 1.2222]
+2026-09-01 20:39:15,795 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_083.pt saved
+2026-09-01 20:39:15,795 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:55
+2026-09-01 20:39:15,795 - easytorch-training - INFO - Epoch 84 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.66it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.60it/s]100%|██████████| 3/3 [00:01<00:00,  1.72it/s]100%|██████████| 3/3 [00:01<00:00,  1.69it/s]
+2026-09-01 20:39:17,572 - easytorch-training - INFO - Result <train>: [train/time: 1.78 (s), train/lr: 2.50e-04, train/loss: 0.4835, train/MAE: 0.4835, train/MAPE: 0.0451, train/RMSE: 0.8085]
+2026-09-01 20:39:17,573 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 157.33it/s]
+2026-09-01 20:39:17,579 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7313, val/MAE: 0.7313, val/MAPE: 0.0680, val/RMSE: 1.0134]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.20it/s]100%|██████████| 1/1 [00:00<00:00,  3.20it/s]
+2026-09-01 20:39:17,893 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7776, Test MAPE: 0.0782, Test RMSE: 1.1279
+2026-09-01 20:39:17,893 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7699, Test MAPE: 0.0823, Test RMSE: 1.2098
+2026-09-01 20:39:17,893 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1947, Test MAPE: 0.1231, Test RMSE: 1.6303
+2026-09-01 20:39:17,901 - easytorch-training - INFO - Result <test>: [test/time: 0.32 (s), test/loss: 0.7582, test/MAE: 0.7582, test/MAPE: 0.0788, test/RMSE: 1.2182]
+2026-09-01 20:39:17,905 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_084.pt saved
+2026-09-01 20:39:17,905 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:55
+2026-09-01 20:39:17,905 - easytorch-training - INFO - Epoch 85 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.64it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.64it/s]100%|██████████| 3/3 [00:01<00:00,  1.65it/s]100%|██████████| 3/3 [00:01<00:00,  1.65it/s]
+2026-09-01 20:39:19,725 - easytorch-training - INFO - Result <train>: [train/time: 1.82 (s), train/lr: 2.50e-04, train/loss: 0.4832, train/MAE: 0.4832, train/MAPE: 0.0452, train/RMSE: 0.8075]
+2026-09-01 20:39:19,726 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 115.67it/s]
+2026-09-01 20:39:19,735 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7330, val/MAE: 0.7330, val/MAPE: 0.0680, val/RMSE: 1.0159]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.88it/s]100%|██████████| 1/1 [00:00<00:00,  2.88it/s]
+2026-09-01 20:39:20,084 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7800, Test MAPE: 0.0783, Test RMSE: 1.1299
+2026-09-01 20:39:20,085 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7736, Test MAPE: 0.0825, Test RMSE: 1.2132
+2026-09-01 20:39:20,085 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.2017, Test MAPE: 0.1233, Test RMSE: 1.6364
+2026-09-01 20:39:20,091 - easytorch-training - INFO - Result <test>: [test/time: 0.35 (s), test/loss: 0.7607, test/MAE: 0.7607, test/MAPE: 0.0789, test/RMSE: 1.2212]
+2026-09-01 20:39:20,097 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_085.pt saved
+2026-09-01 20:39:20,097 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:55
+2026-09-01 20:39:20,097 - easytorch-training - INFO - Epoch 86 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.46it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.47it/s]100%|██████████| 3/3 [00:01<00:00,  1.60it/s]100%|██████████| 3/3 [00:01<00:00,  1.56it/s]
+2026-09-01 20:39:22,017 - easytorch-training - INFO - Result <train>: [train/time: 1.92 (s), train/lr: 2.50e-04, train/loss: 0.4827, train/MAE: 0.4827, train/MAPE: 0.0450, train/RMSE: 0.8079]
+2026-09-01 20:39:22,017 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 142.53it/s]
+2026-09-01 20:39:22,025 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7301, val/MAE: 0.7301, val/MAPE: 0.0679, val/RMSE: 1.0123]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.48it/s]100%|██████████| 1/1 [00:00<00:00,  2.47it/s]
+2026-09-01 20:39:22,430 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7742, Test MAPE: 0.0779, Test RMSE: 1.1251
+2026-09-01 20:39:22,430 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7693, Test MAPE: 0.0822, Test RMSE: 1.2094
+2026-09-01 20:39:22,431 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1889, Test MAPE: 0.1228, Test RMSE: 1.6254
+2026-09-01 20:39:22,437 - easytorch-training - INFO - Result <test>: [test/time: 0.41 (s), test/loss: 0.7572, test/MAE: 0.7572, test/MAPE: 0.0787, test/RMSE: 1.2174]
+2026-09-01 20:39:22,441 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_086.pt saved
+2026-09-01 20:39:22,442 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:55
+2026-09-01 20:39:22,442 - easytorch-training - INFO - Epoch 87 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.17it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.33it/s]100%|██████████| 3/3 [00:02<00:00,  1.44it/s]100%|██████████| 3/3 [00:02<00:00,  1.39it/s]
+2026-09-01 20:39:24,598 - easytorch-training - INFO - Result <train>: [train/time: 2.16 (s), train/lr: 2.50e-04, train/loss: 0.4824, train/MAE: 0.4824, train/MAPE: 0.0451, train/RMSE: 0.8066]
+2026-09-01 20:39:24,599 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 136.72it/s]
+2026-09-01 20:39:24,607 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7319, val/MAE: 0.7319, val/MAPE: 0.0678, val/RMSE: 1.0146]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.10it/s]100%|██████████| 1/1 [00:00<00:00,  3.09it/s]
+2026-09-01 20:39:24,931 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7776, Test MAPE: 0.0779, Test RMSE: 1.1283
+2026-09-01 20:39:24,931 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7745, Test MAPE: 0.0823, Test RMSE: 1.2141
+2026-09-01 20:39:24,932 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1948, Test MAPE: 0.1230, Test RMSE: 1.6307
+2026-09-01 20:39:24,942 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 0.7596, test/MAE: 0.7596, test/MAPE: 0.0788, test/RMSE: 1.2203]
+2026-09-01 20:39:24,947 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_087.pt saved
+2026-09-01 20:39:24,947 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:55
+2026-09-01 20:39:24,947 - easytorch-training - INFO - Epoch 88 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.43it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.49it/s]100%|██████████| 3/3 [00:01<00:00,  1.63it/s]100%|██████████| 3/3 [00:01<00:00,  1.58it/s]
+2026-09-01 20:39:26,845 - easytorch-training - INFO - Result <train>: [train/time: 1.90 (s), train/lr: 2.50e-04, train/loss: 0.4822, train/MAE: 0.4822, train/MAPE: 0.0452, train/RMSE: 0.8064]
+2026-09-01 20:39:26,846 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 172.33it/s]
+2026-09-01 20:39:26,852 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7326, val/MAE: 0.7326, val/MAPE: 0.0679, val/RMSE: 1.0149]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.98it/s]100%|██████████| 1/1 [00:00<00:00,  2.98it/s]
+2026-09-01 20:39:27,189 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7754, Test MAPE: 0.0777, Test RMSE: 1.1265
+2026-09-01 20:39:27,189 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7712, Test MAPE: 0.0821, Test RMSE: 1.2113
+2026-09-01 20:39:27,190 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1987, Test MAPE: 0.1233, Test RMSE: 1.6336
+2026-09-01 20:39:27,197 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 0.7596, test/MAE: 0.7596, test/MAPE: 0.0788, test/RMSE: 1.2198]
+2026-09-01 20:39:27,202 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_088.pt saved
+2026-09-01 20:39:27,202 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:55
+2026-09-01 20:39:27,202 - easytorch-training - INFO - Epoch 89 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.40it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.43it/s]100%|██████████| 3/3 [00:01<00:00,  1.61it/s]100%|██████████| 3/3 [00:01<00:00,  1.56it/s]
+2026-09-01 20:39:29,130 - easytorch-training - INFO - Result <train>: [train/time: 1.93 (s), train/lr: 2.50e-04, train/loss: 0.4819, train/MAE: 0.4819, train/MAPE: 0.0449, train/RMSE: 0.8060]
+2026-09-01 20:39:29,131 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 176.15it/s]
+2026-09-01 20:39:29,137 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7336, val/MAE: 0.7336, val/MAPE: 0.0680, val/RMSE: 1.0161]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.80it/s]100%|██████████| 1/1 [00:00<00:00,  2.80it/s]
+2026-09-01 20:39:29,496 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7831, Test MAPE: 0.0784, Test RMSE: 1.1326
+2026-09-01 20:39:29,497 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7673, Test MAPE: 0.0819, Test RMSE: 1.2079
+2026-09-01 20:39:29,498 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1992, Test MAPE: 0.1233, Test RMSE: 1.6339
+2026-09-01 20:39:29,503 - easytorch-training - INFO - Result <test>: [test/time: 0.37 (s), test/loss: 0.7593, test/MAE: 0.7593, test/MAPE: 0.0788, test/RMSE: 1.2197]
+2026-09-01 20:39:29,507 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_089.pt saved
+2026-09-01 20:39:29,507 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:55
+2026-09-01 20:39:29,507 - easytorch-training - INFO - Epoch 90 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.62it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.61it/s]100%|██████████| 3/3 [00:01<00:00,  1.73it/s]100%|██████████| 3/3 [00:01<00:00,  1.70it/s]
+2026-09-01 20:39:31,276 - easytorch-training - INFO - Result <train>: [train/time: 1.77 (s), train/lr: 2.50e-04, train/loss: 0.4819, train/MAE: 0.4819, train/MAPE: 0.0450, train/RMSE: 0.8070]
+2026-09-01 20:39:31,276 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 127.72it/s]
+2026-09-01 20:39:31,285 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7344, val/MAE: 0.7344, val/MAPE: 0.0681, val/RMSE: 1.0171]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.35it/s]100%|██████████| 1/1 [00:00<00:00,  3.34it/s]
+2026-09-01 20:39:31,585 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7807, Test MAPE: 0.0784, Test RMSE: 1.1304
+2026-09-01 20:39:31,585 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7697, Test MAPE: 0.0821, Test RMSE: 1.2099
+2026-09-01 20:39:31,585 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1988, Test MAPE: 0.1233, Test RMSE: 1.6334
+2026-09-01 20:39:31,589 - easytorch-training - INFO - Result <test>: [test/time: 0.30 (s), test/loss: 0.7592, test/MAE: 0.7592, test/MAPE: 0.0788, test/RMSE: 1.2196]
+2026-09-01 20:39:31,596 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_090.pt saved
+2026-09-01 20:39:31,599 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:54
+2026-09-01 20:39:31,599 - easytorch-training - INFO - Epoch 91 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.67it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.66it/s]100%|██████████| 3/3 [00:01<00:00,  1.77it/s]100%|██████████| 3/3 [00:01<00:00,  1.74it/s]
+2026-09-01 20:39:33,326 - easytorch-training - INFO - Result <train>: [train/time: 1.73 (s), train/lr: 2.50e-04, train/loss: 0.4820, train/MAE: 0.4820, train/MAPE: 0.0452, train/RMSE: 0.8078]
+2026-09-01 20:39:33,326 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 159.26it/s]
+2026-09-01 20:39:33,333 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7340, val/MAE: 0.7340, val/MAPE: 0.0681, val/RMSE: 1.0163]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.05it/s]100%|██████████| 1/1 [00:00<00:00,  3.05it/s]
+2026-09-01 20:39:33,662 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7750, Test MAPE: 0.0780, Test RMSE: 1.1255
+2026-09-01 20:39:33,662 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7724, Test MAPE: 0.0822, Test RMSE: 1.2118
+2026-09-01 20:39:33,663 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1999, Test MAPE: 0.1233, Test RMSE: 1.6340
+2026-09-01 20:39:33,669 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 0.7584, test/MAE: 0.7584, test/MAPE: 0.0787, test/RMSE: 1.2184]
+2026-09-01 20:39:33,675 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_091.pt saved
+2026-09-01 20:39:33,675 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:54
+2026-09-01 20:39:33,675 - easytorch-training - INFO - Epoch 92 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.64it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.64it/s]100%|██████████| 3/3 [00:01<00:00,  1.78it/s]100%|██████████| 3/3 [00:01<00:00,  1.74it/s]
+2026-09-01 20:39:35,398 - easytorch-training - INFO - Result <train>: [train/time: 1.72 (s), train/lr: 2.50e-04, train/loss: 0.4818, train/MAE: 0.4818, train/MAPE: 0.0450, train/RMSE: 0.8062]
+2026-09-01 20:39:35,399 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 275.47it/s]
+2026-09-01 20:39:35,403 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7332, val/MAE: 0.7332, val/MAPE: 0.0678, val/RMSE: 1.0159]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.40it/s]100%|██████████| 1/1 [00:00<00:00,  3.40it/s]
+2026-09-01 20:39:35,698 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7787, Test MAPE: 0.0780, Test RMSE: 1.1287
+2026-09-01 20:39:35,698 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7698, Test MAPE: 0.0819, Test RMSE: 1.2095
+2026-09-01 20:39:35,698 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1986, Test MAPE: 0.1229, Test RMSE: 1.6332
+2026-09-01 20:39:35,705 - easytorch-training - INFO - Result <test>: [test/time: 0.30 (s), test/loss: 0.7578, test/MAE: 0.7578, test/MAPE: 0.0786, test/RMSE: 1.2183]
+2026-09-01 20:39:35,709 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_092.pt saved
+2026-09-01 20:39:35,709 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:54
+2026-09-01 20:39:35,709 - easytorch-training - INFO - Epoch 93 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.66it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.66it/s]100%|██████████| 3/3 [00:01<00:00,  1.80it/s]100%|██████████| 3/3 [00:01<00:00,  1.76it/s]
+2026-09-01 20:39:37,417 - easytorch-training - INFO - Result <train>: [train/time: 1.71 (s), train/lr: 2.50e-04, train/loss: 0.4816, train/MAE: 0.4816, train/MAPE: 0.0450, train/RMSE: 0.8062]
+2026-09-01 20:39:37,417 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 241.50it/s]
+2026-09-01 20:39:37,422 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7337, val/MAE: 0.7337, val/MAPE: 0.0678, val/RMSE: 1.0162]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.23it/s]100%|██████████| 1/1 [00:00<00:00,  3.23it/s]
+2026-09-01 20:39:37,733 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7751, Test MAPE: 0.0779, Test RMSE: 1.1257
+2026-09-01 20:39:37,733 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7680, Test MAPE: 0.0817, Test RMSE: 1.2084
+2026-09-01 20:39:37,733 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1993, Test MAPE: 0.1228, Test RMSE: 1.6341
+2026-09-01 20:39:37,737 - easytorch-training - INFO - Result <test>: [test/time: 0.32 (s), test/loss: 0.7582, test/MAE: 0.7582, test/MAPE: 0.0785, test/RMSE: 1.2186]
+2026-09-01 20:39:37,740 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_093.pt saved
+2026-09-01 20:39:37,741 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:54
+2026-09-01 20:39:37,741 - easytorch-training - INFO - Epoch 94 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.66it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.62it/s]100%|██████████| 3/3 [00:01<00:00,  1.75it/s]100%|██████████| 3/3 [00:01<00:00,  1.72it/s]
+2026-09-01 20:39:39,488 - easytorch-training - INFO - Result <train>: [train/time: 1.75 (s), train/lr: 2.50e-04, train/loss: 0.4816, train/MAE: 0.4816, train/MAPE: 0.0449, train/RMSE: 0.8059]
+2026-09-01 20:39:39,489 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 197.89it/s]
+2026-09-01 20:39:39,494 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7347, val/MAE: 0.7347, val/MAPE: 0.0682, val/RMSE: 1.0169]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.37it/s]100%|██████████| 1/1 [00:00<00:00,  3.37it/s]
+2026-09-01 20:39:39,792 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7804, Test MAPE: 0.0785, Test RMSE: 1.1302
+2026-09-01 20:39:39,792 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7693, Test MAPE: 0.0821, Test RMSE: 1.2094
+2026-09-01 20:39:39,792 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1998, Test MAPE: 0.1232, Test RMSE: 1.6345
+2026-09-01 20:39:39,798 - easytorch-training - INFO - Result <test>: [test/time: 0.30 (s), test/loss: 0.7591, test/MAE: 0.7591, test/MAPE: 0.0788, test/RMSE: 1.2198]
+2026-09-01 20:39:39,801 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_094.pt saved
+2026-09-01 20:39:39,801 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:53
+2026-09-01 20:39:39,801 - easytorch-training - INFO - Epoch 95 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.68it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.68it/s]100%|██████████| 3/3 [00:01<00:00,  1.80it/s]100%|██████████| 3/3 [00:01<00:00,  1.77it/s]
+2026-09-01 20:39:41,501 - easytorch-training - INFO - Result <train>: [train/time: 1.70 (s), train/lr: 2.50e-04, train/loss: 0.4815, train/MAE: 0.4815, train/MAPE: 0.0450, train/RMSE: 0.8069]
+2026-09-01 20:39:41,501 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 166.95it/s]
+2026-09-01 20:39:41,508 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7340, val/MAE: 0.7340, val/MAPE: 0.0684, val/RMSE: 1.0155]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.19it/s]100%|██████████| 1/1 [00:00<00:00,  3.18it/s]
+2026-09-01 20:39:41,823 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7792, Test MAPE: 0.0786, Test RMSE: 1.1292
+2026-09-01 20:39:41,823 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7667, Test MAPE: 0.0821, Test RMSE: 1.2072
+2026-09-01 20:39:41,824 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.1969, Test MAPE: 0.1233, Test RMSE: 1.6317
+2026-09-01 20:39:41,831 - easytorch-training - INFO - Result <test>: [test/time: 0.32 (s), test/loss: 0.7580, test/MAE: 0.7580, test/MAPE: 0.0788, test/RMSE: 1.2184]
+2026-09-01 20:39:41,836 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_095.pt saved
+2026-09-01 20:39:41,836 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:53
+2026-09-01 20:39:41,836 - easytorch-training - INFO - Epoch 96 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.59it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.57it/s]100%|██████████| 3/3 [00:01<00:00,  1.69it/s]100%|██████████| 3/3 [00:01<00:00,  1.66it/s]
+2026-09-01 20:39:43,645 - easytorch-training - INFO - Result <train>: [train/time: 1.81 (s), train/lr: 2.50e-04, train/loss: 0.4811, train/MAE: 0.4811, train/MAPE: 0.0449, train/RMSE: 0.8052]
+2026-09-01 20:39:43,645 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 250.50it/s]
+2026-09-01 20:39:43,650 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7338, val/MAE: 0.7338, val/MAPE: 0.0681, val/RMSE: 1.0156]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.96it/s]100%|██████████| 1/1 [00:00<00:00,  2.96it/s]
+2026-09-01 20:39:43,989 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7768, Test MAPE: 0.0782, Test RMSE: 1.1270
+2026-09-01 20:39:43,990 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7707, Test MAPE: 0.0822, Test RMSE: 1.2106
+2026-09-01 20:39:43,990 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.2023, Test MAPE: 0.1235, Test RMSE: 1.6359
+2026-09-01 20:39:43,995 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 0.7587, test/MAE: 0.7587, test/MAPE: 0.0787, test/RMSE: 1.2191]
+2026-09-01 20:39:43,999 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_096.pt saved
+2026-09-01 20:39:43,999 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:53
+2026-09-01 20:39:43,999 - easytorch-training - INFO - Epoch 97 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.55it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.56it/s]100%|██████████| 3/3 [00:01<00:00,  1.67it/s]100%|██████████| 3/3 [00:01<00:00,  1.63it/s]
+2026-09-01 20:39:45,835 - easytorch-training - INFO - Result <train>: [train/time: 1.84 (s), train/lr: 2.50e-04, train/loss: 0.4807, train/MAE: 0.4807, train/MAPE: 0.0449, train/RMSE: 0.8048]
+2026-09-01 20:39:45,835 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 124.24it/s]
+2026-09-01 20:39:45,843 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7365, val/MAE: 0.7365, val/MAPE: 0.0682, val/RMSE: 1.0187]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.97it/s]100%|██████████| 1/1 [00:00<00:00,  2.96it/s]
+2026-09-01 20:39:46,182 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7839, Test MAPE: 0.0785, Test RMSE: 1.1328
+2026-09-01 20:39:46,182 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7747, Test MAPE: 0.0824, Test RMSE: 1.2132
+2026-09-01 20:39:46,182 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.2115, Test MAPE: 0.1241, Test RMSE: 1.6432
+2026-09-01 20:39:46,189 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 0.7621, test/MAE: 0.7621, test/MAPE: 0.0789, test/RMSE: 1.2224]
+2026-09-01 20:39:46,194 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_097.pt saved
+2026-09-01 20:39:46,195 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:53
+2026-09-01 20:39:46,195 - easytorch-training - INFO - Epoch 98 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.49it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.42it/s]100%|██████████| 3/3 [00:01<00:00,  1.54it/s]100%|██████████| 3/3 [00:01<00:00,  1.51it/s]
+2026-09-01 20:39:48,181 - easytorch-training - INFO - Result <train>: [train/time: 1.99 (s), train/lr: 2.50e-04, train/loss: 0.4810, train/MAE: 0.4810, train/MAPE: 0.0448, train/RMSE: 0.8062]
+2026-09-01 20:39:48,182 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 228.78it/s]
+2026-09-01 20:39:48,186 - easytorch-training - INFO - Result <val>: [val/time: 0.00 (s), val/loss: 0.7339, val/MAE: 0.7339, val/MAPE: 0.0679, val/RMSE: 1.0160]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.50it/s]100%|██████████| 1/1 [00:00<00:00,  2.50it/s]
+2026-09-01 20:39:48,589 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7816, Test MAPE: 0.0783, Test RMSE: 1.1306
+2026-09-01 20:39:48,589 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7675, Test MAPE: 0.0819, Test RMSE: 1.2069
+2026-09-01 20:39:48,590 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.2037, Test MAPE: 0.1237, Test RMSE: 1.6364
+2026-09-01 20:39:48,596 - easytorch-training - INFO - Result <test>: [test/time: 0.41 (s), test/loss: 0.7581, test/MAE: 0.7581, test/MAPE: 0.0786, test/RMSE: 1.2181]
+2026-09-01 20:39:48,600 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_098.pt saved
+2026-09-01 20:39:48,600 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:53
+2026-09-01 20:39:48,600 - easytorch-training - INFO - Epoch 99 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.23it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.38it/s]100%|██████████| 3/3 [00:02<00:00,  1.51it/s]100%|██████████| 3/3 [00:02<00:00,  1.45it/s]
+2026-09-01 20:39:50,668 - easytorch-training - INFO - Result <train>: [train/time: 2.07 (s), train/lr: 2.50e-04, train/loss: 0.4806, train/MAE: 0.4806, train/MAPE: 0.0449, train/RMSE: 0.8046]
+2026-09-01 20:39:50,668 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 137.88it/s]
+2026-09-01 20:39:50,676 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7370, val/MAE: 0.7370, val/MAPE: 0.0682, val/RMSE: 1.0201]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  3.02it/s]100%|██████████| 1/1 [00:00<00:00,  3.02it/s]
+2026-09-01 20:39:51,009 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7893, Test MAPE: 0.0789, Test RMSE: 1.1376
+2026-09-01 20:39:51,010 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7764, Test MAPE: 0.0825, Test RMSE: 1.2149
+2026-09-01 20:39:51,010 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.2130, Test MAPE: 0.1243, Test RMSE: 1.6445
+2026-09-01 20:39:51,016 - easytorch-training - INFO - Result <test>: [test/time: 0.34 (s), test/loss: 0.7609, test/MAE: 0.7609, test/MAPE: 0.0789, test/RMSE: 1.2218]
+2026-09-01 20:39:51,019 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_099.pt saved
+2026-09-01 20:39:51,020 - easytorch-training - INFO - The estimated training finish time is 2026-09-01 20:39:53
+2026-09-01 20:39:51,020 - easytorch-training - INFO - Epoch 100 / 100
+  0%|          | 0/3 [00:00<?, ?it/s] 33%|███▎      | 1/3 [00:00<00:01,  1.46it/s] 67%|██████▋   | 2/3 [00:01<00:00,  1.47it/s]100%|██████████| 3/3 [00:01<00:00,  1.60it/s]100%|██████████| 3/3 [00:01<00:00,  1.56it/s]
+2026-09-01 20:39:52,942 - easytorch-training - INFO - Result <train>: [train/time: 1.92 (s), train/lr: 2.50e-04, train/loss: 0.4806, train/MAE: 0.4806, train/MAPE: 0.0450, train/RMSE: 0.8053]
+2026-09-01 20:39:52,942 - easytorch-training - INFO - Start validation.
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00, 196.08it/s]
+2026-09-01 20:39:52,947 - easytorch-training - INFO - Result <val>: [val/time: 0.01 (s), val/loss: 0.7356, val/MAE: 0.7356, val/MAPE: 0.0685, val/RMSE: 1.0178]
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.87it/s]100%|██████████| 1/1 [00:00<00:00,  2.87it/s]
+2026-09-01 20:39:53,298 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.7790, Test MAPE: 0.0787, Test RMSE: 1.1288
+2026-09-01 20:39:53,298 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.7697, Test MAPE: 0.0824, Test RMSE: 1.2092
+2026-09-01 20:39:53,298 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 1.2040, Test MAPE: 0.1242, Test RMSE: 1.6368
+2026-09-01 20:39:53,306 - easytorch-training - INFO - Result <test>: [test/time: 0.36 (s), test/loss: 0.7583, test/MAE: 0.7583, test/MAPE: 0.0789, test/RMSE: 1.2187]
+2026-09-01 20:39:53,312 - easytorch-training - INFO - Checkpoint checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_100.pt saved
+2026-09-01 20:39:53,317 - easytorch-training - INFO - The training finished at 2026-09-01 20:39:53
+2026-09-01 20:39:53,317 - easytorch-training - INFO - Evaluating the best model on the test set.
+2026-09-01 20:39:53,317 - easytorch-training - INFO - Loading Checkpoint from 'checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/STID_best_val_MAE.pt'
+  0%|          | 0/1 [00:00<?, ?it/s]100%|██████████| 1/1 [00:00<00:00,  2.77it/s]100%|██████████| 1/1 [00:00<00:00,  2.77it/s]
+2026-09-01 20:39:53,688 - easytorch-training - INFO - Evaluate best model on test data for horizon 3, Test MAE: 0.6100, Test MAPE: 0.0631, Test RMSE: 0.9983
+2026-09-01 20:39:53,689 - easytorch-training - INFO - Evaluate best model on test data for horizon 6, Test MAE: 0.8174, Test MAPE: 0.0852, Test RMSE: 1.2495
+2026-09-01 20:39:53,690 - easytorch-training - INFO - Evaluate best model on test data for horizon 12, Test MAE: 0.9870, Test MAPE: 0.1058, Test RMSE: 1.4761
+2026-09-01 20:39:53,702 - easytorch-training - INFO - Result <test>: [test/time: 0.38 (s), test/loss: 0.7429, test/MAE: 0.7429, test/MAPE: 0.0767, test/RMSE: 1.1920]
+2026-09-01 20:39:53,704 - easytorch-training - INFO - Test results saved to checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/test_results.npz.
+2026-09-01 20:39:53,704 - easytorch-training - INFO - Test metrics saved to checkpoints/STID/DhakaR1SensorGraph_legacy_100_12_12/2c262e22e401f52a9dea6276b953a366/test_metrics.json.

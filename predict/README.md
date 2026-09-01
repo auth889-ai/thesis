@@ -26,16 +26,20 @@ containing `baselines/STID`, `baselines/GWNet`, `baselines/DCRNN`,
 
 Drive state:
 
-- `gdrive2tb:dhakaflow/predict/raw_data/METR-LA/` exists but currently only
-  has `adj_METR-LA.pkl`; the notebook will try the official DCRNN Google Drive
-  folder for `METR-LA.h5`.
-- `gdrive2tb:dhakaflow/predict/raw_data/PEMS-BAY/` exists but currently only
-  has `adj_PEMS-BAY.pkl`; the notebook will try the official DCRNN Google Drive
-  folder for `PEMS-BAY.h5`.
+- `gdrive2tb:dhakaflow/predict/raw_data/METR-LA/` contains `METR-LA.h5`
+  and `adj_METR-LA.pkl`.
+- `gdrive2tb:dhakaflow/predict/raw_data/PEMS-BAY/` contains `PEMS-BAY.h5`
+  and `adj_PEMS-BAY.pkl`.
 - `gdrive2tb:dhakaflow/predict/dhaka_twin/basicts_legacy/` contains the small
   Dhaka R1 BasicTS export for later custom-Dhaka runs.
 
 First run stays one pair: `TARGET_MODEL = 'STID'`,
 `TARGET_DATASET = 'METR-LA'`, `RUN_ALL_READY_PAIRS = False`.
+
+Thesis forecasting evidence must come from the Colab/Drive run artifacts:
+`gdrive2tb:dhakaflow/predict/results/benchmark.csv`,
+`benchmark.md`, run JSON files, logs, and checkpoint manifests. Local CPU
+training scripts are scratch/debug only unless the result is explicitly
+reproduced on Colab and copied back with `predict/pull_colab_results.py`.
 
 Notes: unlisted edges fall back to free-flow in SUMO; speed NaN (no vehicle sampled) is kept NaN in `data.npz` with `mask=False` and filled 0.0 (= BasicTS NULL_VAL) only in the BasicTS exports; BasicTS exports use `period_steps = bins_per_seed` (tod = fraction of the simulated window, day = seed index). Reuses `research/twin/sensor_graph.py`, `research/twin/demand.py`, `research/forecasting/{baselines,basicts_adapter}.py` unchanged.

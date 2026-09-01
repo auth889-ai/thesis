@@ -69,7 +69,10 @@ def base_cmd(a, out: Path) -> list[str]:
            "--device.rerouting.probability", "0",
            "--device.rerouting.adaptation-interval", "10",
            "--device.rerouting.adaptation-weight", "0.5"]
-    return cmd
+    # Extra SUMO options shared by EVERY arm/driver (run_arms, incident, predeparture) without CLI plumbing,
+    # e.g. DHAKAFLOW_SUMO_EXTRA="--ignore-junction-blocker 60" (gridlock remedy, see route/results/gridlock_check.md)
+    extra = os.environ.get("DHAKAFLOW_SUMO_EXTRA", "").split()
+    return cmd + extra
 
 
 def load_weights(path: Path) -> list[tuple[float, float, str, float]]:

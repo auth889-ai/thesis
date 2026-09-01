@@ -1,0 +1,244 @@
+{
+ "generated_utc": "2026-09-01T16:23:31.937214+00:00",
+ "source": {
+  "reality": "SYNTHETIC_WHAT_IF",
+  "note": "levels supplied on the command line \u2014 a mechanism check, NEVER evidence about Dhaka",
+  "levels": {
+   "karwanbazar_to_shahbagh": 3.0,
+   "farmgate_to_shahbagh": 2.0,
+   "karwanbazar_to_banglamotor": 3.0
+  }
+ },
+ "demand": "DHAKA_SIMULATED_DEMAND (live feed supplies congestion state, never demand)",
+ "network": "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+ "scale": 0.25,
+ "horizon_s": 1800,
+ "compliance": 0.2,
+ "edges_congested": 53,
+ "weights": {
+  "out": "/Users/jannatulferdouseva/thesis/route/results/live_chain_weights.xml",
+  "edges_written": 53,
+  "corridors": {
+   "karwanbazar_to_shahbagh": {
+    "level": 3.0,
+    "multiplier": 2.5,
+    "edges": 36
+   },
+   "farmgate_to_shahbagh": {
+    "level": 2.0,
+    "multiplier": 1.75,
+    "edges": 46
+   },
+   "karwanbazar_to_banglamotor": {
+    "level": 3.0,
+    "multiplier": 2.5,
+    "edges": 21
+   }
+  },
+  "provenance": {
+   "reality": "SYNTHETIC_WHAT_IF",
+   "note": "levels supplied on the command line \u2014 a mechanism check, NEVER evidence about Dhaka",
+   "levels": {
+    "karwanbazar_to_shahbagh": 3.0,
+    "farmgate_to_shahbagh": 2.0,
+    "karwanbazar_to_banglamotor": 3.0
+   }
+  },
+  "band_midpoints": {
+   "0": 1.08,
+   "1": 1.33,
+   "2": 1.75,
+   "3": 2.5
+  },
+  "bands": {
+   "0": "FREE_FLOW ratio<1.15",
+   "1": "SLOW 1.15-1.5",
+   "2": "CONGESTED 1.5-2.0",
+   "3": "SEVERE >=2.0 (open band)"
+  }
+ },
+ "runs": [
+  {
+   "arm": "unaware",
+   "seed": 11,
+   "edges_slowed": 53,
+   "routes_changed": 0,
+   "wall_s": 4.1,
+   "metrics": {
+    "arrived": 1703,
+    "unfinished_at_horizon": 547,
+    "unfinished": 547,
+    "total_vehicle_hours": 212.96,
+    "mean_travel_time_all": 340.736,
+    "mean_travel_time_s": 355.2272460364063,
+    "p95_travel_time_s": 574.0,
+    "mean_waiting_s": 34.76864357017029,
+    "total_waiting_s": 59211.0,
+    "mean_time_loss_s": 101.41191426893717,
+    "mean_depart_delay_s": 0.0358191426893717,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 0,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 547,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "advised",
+   "seed": 11,
+   "edges_slowed": 53,
+   "routes_changed": 1457,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1745,
+    "unfinished_at_horizon": 505,
+    "unfinished": 505,
+    "total_vehicle_hours": 202.00666666666666,
+    "mean_travel_time_all": 323.21066666666667,
+    "mean_travel_time_s": 338.7358166189112,
+    "p95_travel_time_s": 523.0,
+    "mean_waiting_s": 27.983381088825215,
+    "total_waiting_s": 48831.0,
+    "mean_time_loss_s": 92.36067621776505,
+    "mean_depart_delay_s": 0.028080229226361032,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 0,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 505,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "unaware",
+   "seed": 12,
+   "edges_slowed": 53,
+   "routes_changed": 0,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1685,
+    "unfinished_at_horizon": 565,
+    "unfinished": 565,
+    "total_vehicle_hours": 214.9897222222222,
+    "mean_travel_time_all": 343.98355555555554,
+    "mean_travel_time_s": 355.6272997032641,
+    "p95_travel_time_s": 557.0,
+    "mean_waiting_s": 33.823145400593475,
+    "total_waiting_s": 56992.0,
+    "mean_time_loss_s": 100.0886646884273,
+    "mean_depart_delay_s": 0.034421364985163204,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 0,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 565,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "advised",
+   "seed": 12,
+   "edges_slowed": 53,
+   "routes_changed": 1457,
+   "wall_s": 3.9,
+   "metrics": {
+    "arrived": 1716,
+    "unfinished_at_horizon": 534,
+    "unfinished": 534,
+    "total_vehicle_hours": 206.77972222222223,
+    "mean_travel_time_all": 330.8475555555556,
+    "mean_travel_time_s": 347.94638694638695,
+    "p95_travel_time_s": 576.0,
+    "mean_waiting_s": 33.378787878787875,
+    "total_waiting_s": 57278.0,
+    "mean_time_loss_s": 99.1909965034965,
+    "mean_depart_delay_s": 0.03146853146853147,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 1,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 534,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "unaware",
+   "seed": 13,
+   "edges_slowed": 53,
+   "routes_changed": 0,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1702,
+    "unfinished_at_horizon": 548,
+    "unfinished": 548,
+    "total_vehicle_hours": 213.2447222222222,
+    "mean_travel_time_all": 341.19155555555557,
+    "mean_travel_time_s": 359.93125734430083,
+    "p95_travel_time_s": 567.0,
+    "mean_waiting_s": 35.531727379553466,
+    "total_waiting_s": 60475.0,
+    "mean_time_loss_s": 104.8589365452409,
+    "mean_depart_delay_s": 0.02702702702702703,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 4,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 548,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "advised",
+   "seed": 13,
+   "edges_slowed": 53,
+   "routes_changed": 1457,
+   "wall_s": 4.1,
+   "metrics": {
+    "arrived": 1667,
+    "unfinished_at_horizon": 580,
+    "unfinished": 580,
+    "total_vehicle_hours": 212.7788888888889,
+    "mean_travel_time_all": 340.900756564308,
+    "mean_travel_time_s": 350.2975404919016,
+    "p95_travel_time_s": 614.0,
+    "mean_waiting_s": 36.66586682663468,
+    "total_waiting_s": 61122.0,
+    "mean_time_loss_s": 102.63451109778045,
+    "mean_depart_delay_s": 0.022795440911817635,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 10,
+    "loaded": 9061,
+    "inserted": 2247,
+    "running_at_end": 580,
+    "waiting_to_insert_at_end": 3
+   }
+  }
+ ],
+ "decision": {
+  "decision": "NO_ACTION",
+  "reason": "teleports rise on average (+2.3)",
+  "seeds": [
+   11,
+   12,
+   13
+  ],
+  "vehicle_hours_pct_per_seed": [
+   -5.14,
+   -3.82,
+   -0.22
+  ],
+  "mean_pct": -3.06,
+  "arrivals_delta": [
+   42,
+   31,
+   -35
+  ],
+  "teleports_delta": [
+   0,
+   1,
+   6
+  ],
+  "rule": "ACT iff total vehicle-hours improves on EVERY paired seed and mean arrivals do not fall and mean teleports do not rise"
+ }
+}
