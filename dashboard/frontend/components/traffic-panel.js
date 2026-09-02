@@ -46,12 +46,18 @@ class TrafficPanel extends BasePanel {
     if (!el || !window.maplibregl) return;
     const map = new maplibregl.Map({
       container: el, style: {version: 8, sources: {osm: {type: "raster",
-        tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"], tileSize: 256,
-        attribution: "© OpenStreetMap contributors"}},
+        tiles: ["https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png"], tileSize: 256,
+        attribution: "© OpenStreetMap contributors © CARTO"}},
         layers: [{id: "osm", type: "raster", source: "osm"}]},
       center: [90.392, 23.7508], zoom: 12.4, attributionControl: true,
     });
     map.addControl(new maplibregl.NavigationControl({showCompass: false}), "top-left");
+    // The container is sized by CSS after the element is inserted, so MapLibre can initialise
+    // against a zero-height box and render no tiles. Resize once the layout has settled, and
+    // again if the panel is ever resized.
+    requestAnimationFrame(() => map.resize());
+    new ResizeObserver(() => map.resize()).observe(el);
+    map.on("error", (e) => console.error("[map]", e?.error?.message ?? e));
     map.on("load", () => {
       d.corridors.filter(c => c.origin && c.dest).forEach((c, i) => {
         const id = `corridor-${i}`;

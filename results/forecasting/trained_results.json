@@ -1,6 +1,6 @@
 {
- "generated_utc": "2026-09-02T02:26:23.786027+00:00",
- "repo_git_sha": "b927aed",
+ "generated_utc": "2026-09-02T04:56:10.152382+00:00",
+ "repo_git_sha": "72b86be",
  "reality": "REAL public benchmark datasets; official upstream configs; GPU-trained",
  "runs": [
   {
@@ -34,8 +34,8 @@
     "gpu": "Tesla T4",
     "region": "us-east-1",
     "ami": "ami-001972c501ec6b965",
-    "instance_id": "i-0e889775eb11aa7c5",
-    "launched_utc": "2026-09-02T02:25:38Z",
+    "instance_id": "i-0872f901f15cc8024",
+    "launched_utc": "2026-09-02T04:35:36Z",
     "matched_by": "dataset"
    },
    "mape_unit_note": "harness logs MAPE as a fraction; converted to percent here",
@@ -169,6 +169,74 @@
    }
   },
   {
+   "model": "STAEformer",
+   "model_info": {
+    "name": "STAEformer",
+    "paper": "Liu et al., CIKM 2023",
+    "repo": "https://github.com/XDZhelheim/STAEformer",
+    "config": "baselines/STAEformer/{dataset}.py"
+   },
+   "dataset": "METR-LA",
+   "dataset_info": {
+    "sensors": 207,
+    "bin_minutes": 5,
+    "source": "DCRNN release (Li et al., ICLR 2018)",
+    "note": "real loop detectors, Los Angeles"
+   },
+   "harness": {
+    "name": "BasicTS (legacy fair-comparison branch)",
+    "repo": "https://github.com/GestaltCogTeam/BasicTS",
+    "sha": "4c3e2d373c647667c2123e1591f2d79c229dfcc6",
+    "paper": "Shao et al., Exploring Progress in Multivariate Time Series Forecasting, TKDE 2024"
+   },
+   "config": "baselines/STAEformer/METR-LA.py",
+   "epochs": 50,
+   "epochs_completed": 50,
+   "checkpoint": "checkpoints/STAEformer/METR-LA_50_12_12/809473e13fe9f1182d15ca25c4518806/STAEformer_best_val_MAE.pt",
+   "hardware": {
+    "provider": "AWS EC2",
+    "instance_type": "g5.xlarge",
+    "gpu": "Tesla T4",
+    "region": "us-east-1",
+    "ami": "ami-001972c501ec6b965",
+    "instance_id": "i-0872f901f15cc8024",
+    "launched_utc": "2026-09-02T04:35:36Z",
+    "matched_by": "dataset"
+   },
+   "mape_unit_note": "harness logs MAPE as a fraction; converted to percent here",
+   "log": "results/forecasting/aws_logs/STAEformer_METR-LA.log",
+   "metrics_by_horizon_min": {
+    "5": {
+     "mae": 2.2669,
+     "rmse": 3.9697,
+     "mape_pct": 5.510000000000001,
+     "horizon_steps": 1,
+     "horizon_minutes": 5
+    },
+    "15": {
+     "mae": 2.6738,
+     "rmse": 5.1665,
+     "mape_pct": 6.959999999999999,
+     "horizon_steps": 3,
+     "horizon_minutes": 15
+    },
+    "30": {
+     "mae": 2.9846,
+     "rmse": 6.068,
+     "mape_pct": 8.25,
+     "horizon_steps": 6,
+     "horizon_minutes": 30
+    },
+    "60": {
+     "mae": 3.3501,
+     "rmse": 7.0632,
+     "mape_pct": 9.82,
+     "horizon_steps": 12,
+     "horizon_minutes": 60
+    }
+   }
+  },
+  {
    "model": "STID",
    "model_info": {
     "name": "STID",
@@ -199,8 +267,8 @@
     "gpu": "Tesla T4",
     "region": "us-east-1",
     "ami": "ami-001972c501ec6b965",
-    "instance_id": "i-0e889775eb11aa7c5",
-    "launched_utc": "2026-09-02T02:25:38Z",
+    "instance_id": "i-0872f901f15cc8024",
+    "launched_utc": "2026-09-02T04:35:36Z",
     "matched_by": "dataset"
    },
    "mape_unit_note": "harness logs MAPE as a fraction; converted to percent here",

@@ -1,0 +1,15 @@
+/* Design tokens. Every colour and spacing value in the app resolves to one of these, so a theme
+   change is a token change, never a hunt through components. */
+:root {
+  --bg: #0b1220; --surface: #111a2b; --surface-2: #16203a; --line: #1f2b40;
+  --ink: #e8eef7; --ink-muted: #8fa0b8;
+  --accent: #3b82f6; --good: #22c55e; --warn: #f59e0b; --bad: #ef4444; --violet: #8b5cf6;
+  --radius: 12px; --radius-sm: 8px;
+  --gap: 14px; --pad: 16px;
+  --font: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+:root[data-theme="light"] {
+  --bg: #f4f6fa; --surface: #ffffff; --surface-2: #f8fafc; --line: #e3e8f0;
+  --ink: #0f1b2d; --ink-muted: #5b6b82;
+}
