@@ -1,0 +1,230 @@
+{
+ "generated_utc": "2026-09-02T13:51:06.534610+00:00",
+ "source": {
+  "reality": "SYNTHETIC_WHAT_IF",
+  "note": "levels supplied on the command line \u2014 a mechanism check, NEVER evidence about Dhaka",
+  "levels": {
+   "karwanbazar_to_shahbagh": 2.5
+  }
+ },
+ "demand": "DHAKA_SIMULATED_DEMAND (live feed supplies congestion state, never demand)",
+ "network": "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+ "scale": 0.25,
+ "horizon_s": 1800,
+ "compliance": 0.3,
+ "edges_congested": 36,
+ "weights": {
+  "out": "/Users/jannatulferdouseva/thesis/results/routing/live_chain_weights.xml",
+  "edges_written": 36,
+  "corridors": {
+   "karwanbazar_to_shahbagh": {
+    "level": 2.5,
+    "multiplier": 2.125,
+    "edges": 36
+   }
+  },
+  "provenance": {
+   "reality": "SYNTHETIC_WHAT_IF",
+   "note": "levels supplied on the command line \u2014 a mechanism check, NEVER evidence about Dhaka",
+   "levels": {
+    "karwanbazar_to_shahbagh": 2.5
+   }
+  },
+  "band_midpoints": {
+   "0": 1.08,
+   "1": 1.33,
+   "2": 1.75,
+   "3": 2.5
+  },
+  "bands": {
+   "0": "FREE_FLOW ratio<1.15",
+   "1": "SLOW 1.15-1.5",
+   "2": "CONGESTED 1.5-2.0",
+   "3": "SEVERE >=2.0 (open band)"
+  }
+ },
+ "runs": [
+  {
+   "arm": "unaware",
+   "seed": 11,
+   "edges_slowed": 36,
+   "routes_changed": 0,
+   "wall_s": 4.2,
+   "metrics": {
+    "arrived": 1689,
+    "unfinished_at_horizon": 561,
+    "unfinished": 561,
+    "total_vehicle_hours": 211.3436111111111,
+    "mean_travel_time_all": 338.1497777777778,
+    "mean_travel_time_s": 350.42451154529306,
+    "p95_travel_time_s": 576.0,
+    "mean_waiting_s": 33.558318531675546,
+    "total_waiting_s": 56680.0,
+    "mean_time_loss_s": 98.67480757844879,
+    "mean_depart_delay_s": 0.04381290704558911,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 0,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 561,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "advised",
+   "seed": 11,
+   "edges_slowed": 36,
+   "routes_changed": 2152,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1679,
+    "unfinished_at_horizon": 560,
+    "unfinished": 560,
+    "total_vehicle_hours": 207.7836111111111,
+    "mean_travel_time_all": 334.0870924519875,
+    "mean_travel_time_s": 340.5324597974985,
+    "p95_travel_time_s": 564.0,
+    "mean_waiting_s": 35.18463371054199,
+    "total_waiting_s": 59075.0,
+    "mean_time_loss_s": 100.12665276950565,
+    "mean_depart_delay_s": 0.026801667659321026,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 8,
+    "loaded": 9061,
+    "inserted": 2239,
+    "running_at_end": 560,
+    "waiting_to_insert_at_end": 11
+   }
+  },
+  {
+   "arm": "unaware",
+   "seed": 12,
+   "edges_slowed": 36,
+   "routes_changed": 0,
+   "wall_s": 3.9,
+   "metrics": {
+    "arrived": 1705,
+    "unfinished_at_horizon": 545,
+    "unfinished": 545,
+    "total_vehicle_hours": 210.98361111111112,
+    "mean_travel_time_all": 337.57377777777776,
+    "mean_travel_time_s": 349.75718475073313,
+    "p95_travel_time_s": 535.0,
+    "mean_waiting_s": 30.14076246334311,
+    "total_waiting_s": 51390.0,
+    "mean_time_loss_s": 96.3360469208211,
+    "mean_depart_delay_s": 0.02932551319648094,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 2,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 545,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "advised",
+   "seed": 12,
+   "edges_slowed": 36,
+   "routes_changed": 2152,
+   "wall_s": 3.9,
+   "metrics": {
+    "arrived": 1719,
+    "unfinished_at_horizon": 531,
+    "unfinished": 531,
+    "total_vehicle_hours": 204.6786111111111,
+    "mean_travel_time_all": 327.4857777777778,
+    "mean_travel_time_s": 344.8022105875509,
+    "p95_travel_time_s": 606.0,
+    "mean_waiting_s": 36.954624781849915,
+    "total_waiting_s": 63525.0,
+    "mean_time_loss_s": 103.04709133216987,
+    "mean_depart_delay_s": 0.029668411867364748,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 6,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 531,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "unaware",
+   "seed": 13,
+   "edges_slowed": 36,
+   "routes_changed": 0,
+   "wall_s": 4.1,
+   "metrics": {
+    "arrived": 1673,
+    "unfinished_at_horizon": 577,
+    "unfinished": 577,
+    "total_vehicle_hours": 216.47694444444446,
+    "mean_travel_time_all": 346.3631111111111,
+    "mean_travel_time_s": 358.8726838015541,
+    "p95_travel_time_s": 642.0,
+    "mean_waiting_s": 39.57083084279737,
+    "total_waiting_s": 66202.0,
+    "mean_time_loss_s": 106.73607890017931,
+    "mean_depart_delay_s": 0.0328750747160789,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 10,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 577,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "advised",
+   "seed": 13,
+   "edges_slowed": 36,
+   "routes_changed": 2152,
+   "wall_s": 4.1,
+   "metrics": {
+    "arrived": 1612,
+    "unfinished_at_horizon": 614,
+    "unfinished": 614,
+    "total_vehicle_hours": 221.79555555555555,
+    "mean_travel_time_all": 358.69901168014377,
+    "mean_travel_time_s": 358.6408188585608,
+    "p95_travel_time_s": 730.0,
+    "mean_waiting_s": 49.728908188585606,
+    "total_waiting_s": 80163.0,
+    "mean_time_loss_s": 116.89577543424318,
+    "mean_depart_delay_s": 0.026674937965260544,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 19,
+    "loaded": 9061,
+    "inserted": 2226,
+    "running_at_end": 614,
+    "waiting_to_insert_at_end": 24
+   }
+  }
+ ],
+ "decision": {
+  "decision": "NO_ACTION",
+  "reason": "vehicle-hours improved on only 2/3 seeds; arrivals fall on average (-19.0); teleports rise on average (+7.0)",
+  "seeds": [
+   11,
+   12,
+   13
+  ],
+  "vehicle_hours_pct_per_seed": [
+   -1.68,
+   -2.99,
+   2.46
+  ],
+  "mean_pct": -0.74,
+  "arrivals_delta": [
+   -10,
+   14,
+   -61
+  ],
+  "teleports_delta": [
+   8,
+   4,
+   9
+  ],
+  "rule": "ACT iff total vehicle-hours improves on EVERY paired seed and mean arrivals do not fall and mean teleports do not rise"
+ }
+}

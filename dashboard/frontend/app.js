@@ -1,50 +1,68 @@
 /**
- * Shell: routing between panels and the live connection indicator.
+ * Shell: which page is mounted, and the live connection indicator.
  *
- * Panels are Web Components that own their own fetching, so this file only decides which one is
- * mounted and forwards live pulses to it. Chart defaults live here because every panel needs them
- * to agree with the current theme.
+ * The order of the navigation is deliberate. This is a live traffic system first — live state,
+ * prediction, route advice, counterfactual — and a research artefact last. The benchmark
+ * reproductions support the system; they are not the system.
+ *
+ * Hash routes carry an optional argument (`#prediction:karwanbazar_to_shahbagh`) so one page can
+ * hand a selected corridor to the next, which is what makes the demo flow end to end.
  */
 import {stream} from "./services/stream.js";
-import "./components/traffic-panel.js";
-import "./components/forecast-panel.js";
-import "./components/routing-panel.js";
-import "./components/simulation-panel.js";
-import "./components/network-panel.js";
-import "./components/evidence-panel.js";
+import "./components/live-traffic-page.js";
+import "./components/prediction-page.js";
+import "./components/route-advisor-page.js";
+import "./components/counterfactual-page.js";
+import "./components/research-page.js";
 
 const PAGES = {
-  traffic:    {tag: "traffic-panel",    title: "Live Traffic",       sub: "Real Dhaka corridors, captured every five minutes"},
-  forecast:   {tag: "forecast-panel",   title: "Traffic Prediction", sub: "Trained models on real benchmarks, against the published papers"},
-  routing:    {tag: "routing-panel",    title: "Route Optimisation", sub: "Paired-seed arms and the act / no-action decision"},
-  simulation: {tag: "simulation-panel", title: "SUMO Simulation",    sub: "Before and after on the real Dhaka network"},
-  network:    {tag: "network-panel",    title: "V2X Networking",     sub: "Eclipse MOSAIC: delivery, latency and loss"},
-  evidence:   {tag: "evidence-panel",   title: "Evidence",           sub: "Every claim, its command, and whether it exists"},
+  live:           {tag: "live-traffic-page",   title: "Live Traffic",
+                   sub: "Real Dhaka corridors from the Google Routes API, refreshed every two minutes"},
+  prediction:     {tag: "prediction-page",     title: "Prediction",
+                   sub: "Live state now, then 5 / 15 / 30 / 60 minutes ahead"},
+  advisor:        {tag: "route-advisor-page",  title: "Route Advisor",
+                   sub: "Live alternatives between two points, traffic-aware"},
+  counterfactual: {tag: "counterfactual-page", title: "Counterfactual",
+                   sub: "Take the live state into SUMO and test an intervention"},
+  research:       {tag: "research-page",       title: "Research Evidence",
+                   sub: "Benchmark reproductions that support the system"},
 };
 
 const outlet = document.getElementById("outlet");
 let mounted = null;
 
-function show(key) {
+function parseHash() {
+  const raw = location.hash.slice(1) || "live";
+  const [key] = raw.split(":");
+  return PAGES[key] ? key : "live";
+}
+
+function show(key, arg = "") {
   const page = PAGES[key];
   if (!page) return;
   document.getElementById("title").textContent = page.title;
   document.getElementById("subtitle").textContent = page.sub;
   document.querySelectorAll("nav button").forEach(b =>
     b.setAttribute("aria-current", String(b.dataset.page === key)));
+  location.hash = arg ? `${key}:${arg}` : key;
   outlet.replaceChildren(document.createElement(page.tag));
   mounted = outlet.firstElementChild;
-  location.hash = key;
 }
 
 document.querySelectorAll("nav button").forEach(b =>
   b.addEventListener("click", () => show(b.dataset.page)));
 
-/* Theme: charts have to be rebuilt because their colours are baked at construction. */
+/* A hash change from an in-page link ("Predict this corridor →") must mount the target page. */
+window.addEventListener("hashchange", () => {
+  const key = parseHash();
+  const arg = (location.hash.split(":")[1] || "");
+  if (!mounted || mounted.tagName.toLowerCase() !== PAGES[key].tag) show(key, arg);
+});
+
 document.getElementById("theme").addEventListener("click", () => {
   const root = document.documentElement;
   root.dataset.theme = root.dataset.theme === "light" ? "dark" : "light";
-  show(location.hash.slice(1) || "traffic");
+  show(parseHash(), location.hash.split(":")[1] || "");
 });
 
 /* Chart defaults, read from the CSS tokens so charts always match the theme. */
@@ -62,7 +80,7 @@ window.chartDefaults = () => {
   };
 };
 
-/* Live connection. The indicator is the point: a dashboard must say when it has stopped updating. */
+/* The indicator is the point: a dashboard must say when it has stopped updating. */
 const dot = document.getElementById("dot");
 const label = document.getElementById("conn-label");
 stream.addEventListener("status", (e) => {
@@ -72,4 +90,4 @@ stream.addEventListener("status", (e) => {
 stream.addEventListener("pulse", (e) => mounted?.onPulse?.(e.detail));
 stream.start();
 
-show(location.hash.slice(1) || "traffic");
+show(parseHash(), location.hash.split(":")[1] || "");
