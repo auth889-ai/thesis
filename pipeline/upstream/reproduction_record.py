@@ -130,8 +130,15 @@ RECORDS = [
         "published": None,
         "published_source": "NOT YET READ OUT OF THE PAPER (OpenCity, Li et al. 2024)",
         "ours_from": None,
-        "blockers": ["released pretrained weights not yet downloaded from HuggingFace "
-                     "(hkuds/OpenCity-Plus); they belong on the 2 TB Drive, not this laptop"],
+        "blockers": [
+            "runner, GPU job and compatibility shims are built and the released weights are "
+            "downloaded; the evaluation itself has NOT yet produced a number, so this stays "
+            "NOT_ATTEMPTED. A first GPU attempt uploaded nothing because it was launched without "
+            "an IAM instance profile and had no S3 access.",
+        ],
+        "note": "CRITICAL for how this is reported: METR_LA and PEMS_BAY are in OpenCity's "
+                "pre-training corpus, so neither can support a zero-shot claim. Only held-out "
+                "cities (PEMS07M, TrafficSH/NJ/TJ, SZ_DIDI, CD_DIDI, NYC_BIKE-3, CHI_TAXI) can.",
     },
 ]
 

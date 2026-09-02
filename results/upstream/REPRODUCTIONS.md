@@ -27,7 +27,8 @@ Tolerance: 5% relative error against the published figure.
   - _PeMSD7 data ships inside the repo (15 MB), so this is the cheapest genuine federated reproduction available and is attempted first. Its server/client processes talk over real TCP sockets, which is exactly where the communication impairment adapter attaches._
 
 **OpenCity / cross-city (zero-shot)**
-  - released pretrained weights not yet downloaded from HuggingFace (hkuds/OpenCity-Plus); they belong on the 2 TB Drive, not this laptop
+  - runner, GPU job and compatibility shims are built and the released weights are downloaded; the evaluation itself has NOT yet produced a number, so this stays NOT_ATTEMPTED. A first GPU attempt uploaded nothing because it was launched without an IAM instance profile and had no S3 access.
+  - _CRITICAL for how this is reported: METR_LA and PEMS_BAY are in OpenCity's pre-training corpus, so neither can support a zero-shot claim. Only held-out cities (PEMS07M, TrafficSH/NJ/TJ, SZ_DIDI, CD_DIDI, NYC_BIKE-3, CHI_TAXI) can._
 
 ## Notes
 
