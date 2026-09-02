@@ -1,16 +1,13 @@
 {
- "status": "DEGENERATE_WINDOW",
- "distinct_levels": 1,
- "reason": "DEGENERATE WINDOW: every observation is FREE_FLOW (342 readings, Dhaka local 0.0h-23.9h). Floors are undefined here \u2014 a constant series is predicted perfectly by anything. Keep recording through a rush hour (Dhaka peaks ~08:00-11:00 and ~17:00-21:00 local) before reporting live floors.",
  "manifest": {
-  "built_utc": "2026-09-01T23:32:48.225097+00:00",
+  "built_utc": "2026-09-02T03:02:53.840881+00:00",
   "source": "artifacts/live_dhaka/normalized/google_routes_runtime_reference.jsonl",
   "reality": "REAL_LIVE",
   "provider": "google_routes",
   "google_data_mode": "RUNTIME_REFERENCE",
   "quantity": "DERIVED_CONGESTION_LEVEL (ordinal 0-3), not a speed and not a Google travel time",
-  "rows": 558,
-  "bins": 90,
+  "rows": 1020,
+  "bins": 132,
   "corridors": [
    "banglamotor_to_karwanbazar",
    "farmgate_to_banglamotor",
@@ -20,10 +17,10 @@
    "shahbagh_to_farmgate"
   ],
   "bin_s": 300,
-  "coverage": 0.6333,
-  "span_hours": 7.5,
+  "coverage": 0.7348,
+  "span_hours": 11.0,
   "first_bin_utc": "2026-09-01T16:05:00+00:00",
-  "last_bin_utc": "2026-09-01T23:30:00+00:00",
+  "last_bin_utc": "2026-09-02T03:00:00+00:00",
   "level_encoding": {
    "FREE_FLOW": 0.0,
    "SLOW": 1.0,
@@ -31,5 +28,31 @@
    "SEVERE": 3.0
   },
   "gap_policy": "mask=False, never imputed"
+ },
+ "floors": {
+  "5": {
+   "persistence": 0.0926,
+   "historical_average": 0.162,
+   "global_mean": 0.162,
+   "n_pairs": 216
+  },
+  "15": {
+   "persistence": 0.1373,
+   "historical_average": 0.1716,
+   "global_mean": 0.1716,
+   "n_pairs": 204
+  },
+  "30": {
+   "persistence": 0.1823,
+   "historical_average": 0.2135,
+   "global_mean": 0.2135,
+   "n_pairs": 192
+  },
+  "60": {
+   "persistence": 0.2436,
+   "historical_average": 0.2628,
+   "global_mean": 0.2628,
+   "n_pairs": 156
+  }
  }
 }

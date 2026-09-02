@@ -169,6 +169,14 @@ def main() -> int:
     fl = floors(vals, mask, bins, hs)
     OUT_RES.mkdir(parents=True, exist_ok=True)
     (OUT_RES / "live_floors.json").write_text(json.dumps({"manifest": man, "floors": fl}, indent=1))
+    # Class balance decides how to read these numbers: if almost everything is FREE_FLOW, a
+    # constant predictor already scores well and a small MAE is not evidence of skill.
+    names = ["FREE_FLOW", "SLOW", "CONGESTED", "SEVERE"]
+    counts = {names[int(k)]: int(c) for k, c in
+              zip(*np.unique(obs, return_counts=True))}
+    n_obs = int(obs.size)
+    free_pct = 100 * counts.get("FREE_FLOW", 0) / max(n_obs, 1)
+    congested = sum(v for k, v in counts.items() if k != "FREE_FLOW")
     lines = ["# Live Dhaka congestion — arithmetic floors (REAL_LIVE, no model)\n",
              f"{len(rows)} captures -> {T} bins x {N} corridors over {span_h:.1f} h, coverage {mask.mean():.0%}; "
              f"target = derived congestion level 0-3 (FREE_FLOW..SEVERE); chronological 70/30 split; gaps masked, never imputed.\n",
@@ -176,6 +184,23 @@ def main() -> int:
     for m, r in sorted(fl.items()):
         lines.append(f"| {m} min | " + " | ".join(f"{r[k]:.3f}" if r[k] is not None else "–"
                      for k in ("persistence", "historical_average", "global_mean")) + f" | {r['n_pairs']} |")
+    names_l = ["FREE_FLOW", "SLOW", "CONGESTED", "SEVERE"]
+    uq, cnt = np.unique(obs, return_counts=True)
+    counts = {names_l[int(k)]: int(c) for k, c in zip(uq, cnt)}
+    n_obs = int(obs.size)
+    free_pct = 100 * counts.get("FREE_FLOW", 0) / max(n_obs, 1)
+    congested = sum(v for k, v in counts.items() if k != "FREE_FLOW")
+    lines += ["", "## How to read these numbers", "",
+              f"The target is heavily imbalanced: **{free_pct:.0f} % of the {n_obs} observations are "
+              f"FREE_FLOW** ({', '.join(f'{k} {v}' for k, v in sorted(counts.items(), key=lambda t: -t[1]))}). "
+              "On a series that is mostly one class a constant predictor already scores a small MAE, so "
+              "the absolute values above are NOT evidence of skill on their own -- the comparison between "
+              "them is. Persistence beating the historical average at every horizon says short-term "
+              "congestion is autocorrelated; both being small says Dhaka was mostly free-flowing here.",
+              "",
+              f"Only {congested} readings ({100 * congested / max(n_obs, 1):.0f} %) were SLOW or worse, so a "
+              "learned model has few congestion events to learn from yet. Recording through more rush "
+              "hours is what makes this dataset worth training on."]
     lines += ["", "A learned forecaster must beat these on the same masked test region to be worth reporting.",
               "Regenerate: `python predict/live_state.py --report`."]
     (OUT_RES / "live_floors.md").write_text("\n".join(lines) + "\n")
