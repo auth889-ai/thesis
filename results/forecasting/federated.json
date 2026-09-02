@@ -1,0 +1,150 @@
+{
+ "experiment": "federated forecasting under a SIMULATED V2X link",
+ "dataset": "METR-LA (real loop detectors, DCRNN release)",
+ "link": {
+  "delivery_ratio": 0.975,
+  "messages": 6548621,
+  "mosaic_runs": 5,
+  "sensors": 207,
+  "rounds": 30,
+  "local_epochs": 1,
+  "horizon_steps": 12
+ },
+ "impairment_nature": "SIMULATED: the delivery ratio and latency come from Eclipse MOSAIC's ITS-G5 model, an official simulator, NOT from radio hardware",
+ "note_on_source_logs": "the raw AWS logs in federated_logs/ were written by a build of federated_forecast.py that predates the wording correction and still say 'MEASURED'. The runs are unaffected; only the label was wrong, and it is corrected here.",
+ "hardware": "AWS g5.xlarge (A10G), job federated-v2x, instance i-0872f901f15cc8024",
+ "rows": [
+  {
+   "clients": 16,
+   "arm": "centralized",
+   "mae": 4.9755,
+   "vs_centralized_pct": 0.0,
+   "uplink_mb": 0.0,
+   "rounds": 0,
+   "updates_lost": 0,
+   "link_time_s": 0.0,
+   "wall_s": 52.7
+  },
+  {
+   "clients": 16,
+   "arm": "local_only",
+   "mae": 4.9942,
+   "vs_centralized_pct": 0.4,
+   "uplink_mb": 0.0,
+   "rounds": 0,
+   "updates_lost": 0,
+   "link_time_s": 0.0,
+   "wall_s": 265.8
+  },
+  {
+   "clients": 16,
+   "arm": "federated",
+   "mae": 5.0048,
+   "vs_centralized_pct": 0.6,
+   "uplink_mb": 7.2,
+   "rounds": 30,
+   "updates_lost": 0,
+   "link_time_s": 0.0,
+   "wall_s": 374.2
+  },
+  {
+   "clients": 16,
+   "arm": "federated_v2x",
+   "mae": 5.0032,
+   "vs_centralized_pct": 0.6,
+   "uplink_mb": 7.2,
+   "rounds": 30,
+   "updates_lost": 12,
+   "link_time_s": 13.94,
+   "wall_s": 374.4
+  },
+  {
+   "clients": 4,
+   "arm": "centralized",
+   "mae": 4.9755,
+   "vs_centralized_pct": 0.0,
+   "uplink_mb": 0.0,
+   "rounds": 0,
+   "updates_lost": 0,
+   "link_time_s": 0.0,
+   "wall_s": 82.7
+  },
+  {
+   "clients": 4,
+   "arm": "local_only",
+   "mae": 4.9895,
+   "vs_centralized_pct": 0.3,
+   "uplink_mb": 0.0,
+   "rounds": 0,
+   "updates_lost": 0,
+   "link_time_s": 0.0,
+   "wall_s": 73.4
+  },
+  {
+   "clients": 4,
+   "arm": "federated",
+   "mae": 4.9819,
+   "vs_centralized_pct": 0.1,
+   "uplink_mb": 1.8,
+   "rounds": 30,
+   "updates_lost": 0,
+   "link_time_s": 0.0,
+   "wall_s": 130.0
+  },
+  {
+   "clients": 4,
+   "arm": "federated_v2x",
+   "mae": 4.9795,
+   "vs_centralized_pct": 0.1,
+   "uplink_mb": 1.8,
+   "rounds": 30,
+   "updates_lost": 2,
+   "link_time_s": 3.4,
+   "wall_s": 131.5
+  },
+  {
+   "clients": 8,
+   "arm": "centralized",
+   "mae": 4.9755,
+   "vs_centralized_pct": 0.0,
+   "uplink_mb": 0.0,
+   "rounds": 0,
+   "updates_lost": 0,
+   "link_time_s": 0.0,
+   "wall_s": 52.8
+  },
+  {
+   "clients": 8,
+   "arm": "local_only",
+   "mae": 4.9863,
+   "vs_centralized_pct": 0.2,
+   "uplink_mb": 0.0,
+   "rounds": 0,
+   "updates_lost": 0,
+   "link_time_s": 0.0,
+   "wall_s": 139.0
+  },
+  {
+   "clients": 8,
+   "arm": "federated",
+   "mae": 4.9903,
+   "vs_centralized_pct": 0.3,
+   "uplink_mb": 3.6,
+   "rounds": 30,
+   "updates_lost": 0,
+   "link_time_s": 0.0,
+   "wall_s": 206.9
+  },
+  {
+   "clients": 8,
+   "arm": "federated_v2x",
+   "mae": 4.9826,
+   "vs_centralized_pct": 0.1,
+   "uplink_mb": 3.6,
+   "rounds": 30,
+   "updates_lost": 6,
+   "link_time_s": 6.88,
+   "wall_s": 205.3
+  }
+ ]
+}

@@ -1,0 +1,28 @@
+/opt/pytorch/lib64/python3.12/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[federated] metr_la.npz: T=34272 N=207 -> 8 RSU clients (sizes [26, 26, 26, 26, 26, 26, 26, 25]) on cuda
+[federated] measured link: delivery 0.975, 6,548,621 messages from 5 MOSAIC runs
+[federated] centralized     MAE 4.9755
+[federated] local_only      MAE 4.9863
+[federated] federated       MAE 4.9903  3.6 MB  lost 0/240
+[federated] federated_v2x   MAE 4.9826  3.6 MB  lost 6/240
+# Federated traffic forecasting under a MEASURED V2X link — metr_la.npz
+
+207 sensors partitioned into 8 RSU clients; 30 FedAvg rounds x 1 local epochs; horizon 12 steps. Link statistics are MEASURED from the official Eclipse MOSAIC ITS-G5 stack on the Dhaka R1 network (6,548,621 messages, delivery ratio 0.975).
+
+| arm | MAE | vs centralized | uplink bytes | rounds | updates lost | link time s | wall s |
+|---|---|---|---|---|---|---|---|
+| centralized | 4.9755 | +0.0 % | 0.0 MB | 0 | 0 | 0 | 52.8 |
+| local_only | 4.9863 | +0.2 % | 0.0 MB | 0 | 0 | 0 | 139.0 |
+| federated | 4.9903 | +0.3 % | 3.6 MB | 30 | 0 | 0.0 | 206.9 |
+| federated_v2x | 4.9826 | +0.1 % | 3.6 MB | 30 | 6 | 6.88 | 205.3 |
+
+The accuracy column and the communication column come from the SAME experiment: this is the point where the forecasting chapters and the networking chapters meet.
+
+Protocol: FedAvg (McMahan et al. 2017) over sensor-partitioned clients, following CNFGNN (Meng et al., KDD 2021) — with their analytic byte count replaced by a link whose loss and latency were measured in this project's own V2X simulation.
+
+Partition assumption: sensors grouped into RSU coverage areas (spatial if coordinates exist, else contiguous blocks) — an assumption, not a surveyed deployment.
+
+Regenerate: `python pipeline/forecasting/federated_forecast.py --data /home/ec2-user/in/metr_la.npz --clients 8 --rounds 30` (wall 604.1s).
+
+The same command runs on any registered city — `pipeline/forecasting/city_datasets.py --list`.
