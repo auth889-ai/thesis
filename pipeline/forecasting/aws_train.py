@@ -95,7 +95,9 @@ OPENCITY_SHA = "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f"
 OPENCITY_SCRIPT = r"""#!/bin/bash
 exec > >(tee -a /var/log/dhakaflow.log) 2>&1
 set -x
-NAME=@NAME@; BUCKET=@BUCKET@; OCSHA=@OCSHA@; CITIES="@OCDATASETS@"
+NAME=@NAME@; BUCKET=@BUCKET@; OCSHA=@OCSHA@
+# exported: the Python heredoc below reads it from the environment, not the shell
+export CITIES="@OCDATASETS@"
 ( sleep $((@MAXH@ * 3600)); shutdown -h now ) &
 aws s3 cp s3://$BUCKET/jobs/$NAME/ /home/ec2-user/in/ --recursive || true
 cd /home/ec2-user
@@ -120,6 +122,14 @@ for name in os.environ['CITIES'].split():
     with zipfile.ZipFile(z) as zf: zf.extractall(root/'data')
     print('extracted', name)
 EOF
+for CITY in $CITIES; do
+  if [ ! -f "/home/ec2-user/oc/data/$CITY/${CITY}_rn_adj.npy" ]; then
+    echo "MISSING_DATA $CITY — released artefacts did not download; aborting before wasting GPU time"
+    aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/ || true
+    echo FAILED_NO_DATA > /tmp/DONE && aws s3 cp /tmp/DONE s3://$BUCKET/jobs/$NAME/DONE
+    shutdown -h now
+  fi
+done
 cp /home/ec2-user/in/_opencity_boot.py /home/ec2-user/oc/
 CONF=conf/general_conf/pretrain.conf
 cp $CONF /tmp/pretrain.conf.orig

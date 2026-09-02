@@ -1,0 +1,28 @@
+/opt/pytorch/lib64/python3.12/site-packages/torch/cuda/__init__.py:63: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+[opencity-boot] compatibility shims: np.mat -> np.asmatrix, np.float_ -> np.float64, np.complex_ -> np.complex128, np.unicode_ -> np.str_, np.NaN -> np.nan, np.Inf -> np.inf, np.infty -> np.inf
+/opt/pytorch/lib64/python3.12/site-packages/tslearn/bases/bases.py:16: UserWarning: h5py not installed, hdf5 features will not be supported.
+Install h5py to use hdf5 features: http://docs.h5py.org/
+  warn(h5py_msg)
+/home/ec2-user/oc
+Traceback (most recent call last):
+  File "/home/ec2-user/oc/_opencity_boot.py", line 90, in <module>
+    main()
+  File "/home/ec2-user/oc/_opencity_boot.py", line 86, in main
+    runpy.run_path(str(target), run_name="__main__")
+  File "<frozen runpy>", line 287, in run_path
+  File "<frozen runpy>", line 98, in _run_module_code
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/ec2-user/oc/model/Run.py", line 30, in <module>
+    args_predictor = get_predictor_params(args)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ec2-user/oc/lib/Params_predictor.py", line 59, in get_predictor_params
+    args_predictor = parse_args(parser_pred, args)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/ec2-user/oc/model/OpenCity/args.py", line 78, in parse_args
+    A = np.load(args_predictor.filepath + f'{dataset_select}_rn_adj.npy')
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/opt/pytorch/lib64/python3.12/site-packages/numpy/lib/_npyio_impl.py", line 454, in load
+    fid = stack.enter_context(open(os.fspath(file), "rb"))
+                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^
+FileNotFoundError: [Errno 2] No such file or directory: '../data/TrafficTJ/TrafficTJ_rn_adj.npy'
