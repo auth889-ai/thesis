@@ -23,11 +23,11 @@ Tolerance: 5% relative error against the published figure.
   - repo targets python<3.8 and an old PyTorch Lightning; needs its own environment
 
 **FedGTP / PeMSD7**
-  - run.sh hard-codes a server IP and cuda:2; needs a single-host config
+  - needs a CUDA host: upstream client.py calls get_memory_usage('cuda') unconditionally, and we do not edit their code to work around it
   - _PeMSD7 data ships inside the repo (15 MB), so this is the cheapest genuine federated reproduction available and is attempted first. Its server/client processes talk over real TCP sockets, which is exactly where the communication impairment adapter attaches._
 
 **OpenCity / cross-city (zero-shot)**
-  - pretrained weights not yet downloaded from HuggingFace
+  - released pretrained weights not yet downloaded from HuggingFace (hkuds/OpenCity-Plus); they belong on the 2 TB Drive, not this laptop
 
 ## Notes
 

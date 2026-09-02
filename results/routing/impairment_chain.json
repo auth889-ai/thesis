@@ -1,0 +1,552 @@
+{
+ "generated_utc": "2026-09-02T10:20:24.524364+00:00",
+ "question": "does worse communication cause higher network delay?",
+ "source": {
+  "reality": "SYNTHETIC_WHAT_IF",
+  "levels": {
+   "karwanbazar_to_shahbagh": 3.0,
+   "farmgate_to_shahbagh": 2.0,
+   "karwanbazar_to_banglamotor": 3.0
+  },
+  "note": "congestion levels supplied on the command line \u2014 a mechanism check of the communication chain, NEVER evidence about Dhaka"
+ },
+ "demand": "DHAKA_SIMULATED_DEMAND (the feed supplies congestion state, never demand)",
+ "network": "dhaka_r1.net.xml",
+ "scale": 0.25,
+ "horizon_s": 1800,
+ "compliance": 0.3,
+ "delivery_model": "official 1 Hz DENM repeat",
+ "impairment_nature": "SIMULATED (Eclipse MOSAIC ITS-G5), not hardware-measured",
+ "weights": {
+  "out": "/Users/jannatulferdouseva/thesis/results/routing/impairment_weights.xml",
+  "edges_written": 53,
+  "corridors": {
+   "karwanbazar_to_shahbagh": {
+    "level": 3.0,
+    "multiplier": 2.5,
+    "edges": 36
+   },
+   "farmgate_to_shahbagh": {
+    "level": 2.0,
+    "multiplier": 1.75,
+    "edges": 46
+   },
+   "karwanbazar_to_banglamotor": {
+    "level": 3.0,
+    "multiplier": 2.5,
+    "edges": 21
+   }
+  },
+  "provenance": {
+   "reality": "SYNTHETIC_WHAT_IF",
+   "levels": {
+    "karwanbazar_to_shahbagh": 3.0,
+    "farmgate_to_shahbagh": 2.0,
+    "karwanbazar_to_banglamotor": 3.0
+   },
+   "note": "congestion levels supplied on the command line \u2014 a mechanism check of the communication chain, NEVER evidence about Dhaka"
+  },
+  "band_midpoints": {
+   "0": 1.08,
+   "1": 1.33,
+   "2": 1.75,
+   "3": 2.5
+  },
+  "bands": {
+   "0": "FREE_FLOW ratio<1.15",
+   "1": "SLOW 1.15-1.5",
+   "2": "CONGESTED 1.5-2.0",
+   "3": "SEVERE >=2.0 (open band)"
+  }
+ },
+ "runs": [
+  {
+   "condition": "ideal",
+   "seed": 11,
+   "delivery_fraction": 0.8568,
+   "link": {
+    "added_latency_ms": 0,
+    "loss_pct": 0,
+    "delivery_model": "frac_delivered_1hz_repeat",
+    "n_vehicles": 4386,
+    "effective_latency_mean_ms": 2.6,
+    "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5 sweep, SIMULATED)"
+   },
+   "equipped": 2655,
+   "advisories_delivered": 2263,
+   "routes_changed": 1831,
+   "edges_slowed": 53,
+   "wall_s": 4.3,
+   "metrics": {
+    "arrived": 1706,
+    "unfinished_at_horizon": 542,
+    "unfinished": 542,
+    "total_vehicle_hours": 206.79666666666665,
+    "mean_travel_time_all": 331.16903914590745,
+    "mean_travel_time_s": 347.10140679953105,
+    "p95_travel_time_s": 561.0,
+    "mean_waiting_s": 35.906213364595544,
+    "total_waiting_s": 61256.0,
+    "mean_time_loss_s": 102.3339976553341,
+    "mean_depart_delay_s": 0.038100820633059786,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 12,
+    "loaded": 9061,
+    "inserted": 2248,
+    "running_at_end": 542,
+    "waiting_to_insert_at_end": 2
+   }
+  },
+  {
+   "condition": "good",
+   "seed": 11,
+   "delivery_fraction": 0.8503,
+   "link": {
+    "added_latency_ms": 0,
+    "loss_pct": 10,
+    "delivery_model": "frac_delivered_1hz_repeat",
+    "n_vehicles": 4386,
+    "effective_latency_mean_ms": 2.6,
+    "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5 sweep, SIMULATED)"
+   },
+   "equipped": 2655,
+   "advisories_delivered": 2244,
+   "routes_changed": 1822,
+   "edges_slowed": 53,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1725,
+    "unfinished_at_horizon": 525,
+    "unfinished": 525,
+    "total_vehicle_hours": 204.42805555555555,
+    "mean_travel_time_all": 327.0848888888889,
+    "mean_travel_time_s": 341.8208695652174,
+    "p95_travel_time_s": 529.0,
+    "mean_waiting_s": 30.16985507246377,
+    "total_waiting_s": 52043.0,
+    "mean_time_loss_s": 95.90013333333334,
+    "mean_depart_delay_s": 0.02608695652173913,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 0,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 525,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "condition": "degraded",
+   "seed": 11,
+   "delivery_fraction": 0.7972,
+   "link": {
+    "added_latency_ms": 500,
+    "loss_pct": 30,
+    "delivery_model": "frac_delivered_1hz_repeat",
+    "n_vehicles": 4386,
+    "effective_latency_mean_ms": 502.6,
+    "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5 sweep, SIMULATED)"
+   },
+   "equipped": 2655,
+   "advisories_delivered": 2113,
+   "routes_changed": 1726,
+   "edges_slowed": 53,
+   "wall_s": 3.8,
+   "metrics": {
+    "arrived": 1740,
+    "unfinished_at_horizon": 510,
+    "unfinished": 510,
+    "total_vehicle_hours": 203.93972222222223,
+    "mean_travel_time_all": 326.30355555555553,
+    "mean_travel_time_s": 342.8833333333333,
+    "p95_travel_time_s": 540.0,
+    "mean_waiting_s": 31.35919540229885,
+    "total_waiting_s": 54565.0,
+    "mean_time_loss_s": 97.24840804597702,
+    "mean_depart_delay_s": 0.035632183908045977,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 1,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 510,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "condition": "bad",
+   "seed": 11,
+   "delivery_fraction": 0.7776,
+   "link": {
+    "added_latency_ms": 5000,
+    "loss_pct": 30,
+    "delivery_model": "frac_delivered_1hz_repeat",
+    "n_vehicles": 4386,
+    "effective_latency_mean_ms": 5002.6,
+    "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5 sweep, SIMULATED)"
+   },
+   "equipped": 2655,
+   "advisories_delivered": 2065,
+   "routes_changed": 1679,
+   "edges_slowed": 53,
+   "wall_s": 3.8,
+   "metrics": {
+    "arrived": 1739,
+    "unfinished_at_horizon": 511,
+    "unfinished": 511,
+    "total_vehicle_hours": 200.54833333333335,
+    "mean_travel_time_all": 320.87733333333335,
+    "mean_travel_time_s": 338.54859114433583,
+    "p95_travel_time_s": 539.0,
+    "mean_waiting_s": 28.55664174813111,
+    "total_waiting_s": 49660.0,
+    "mean_time_loss_s": 92.87873490511788,
+    "mean_depart_delay_s": 0.027602070155261643,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 5,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 511,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "condition": "ideal",
+   "seed": 12,
+   "delivery_fraction": 0.8568,
+   "link": {
+    "added_latency_ms": 0,
+    "loss_pct": 0,
+    "delivery_model": "frac_delivered_1hz_repeat",
+    "n_vehicles": 4386,
+    "effective_latency_mean_ms": 2.6,
+    "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5 sweep, SIMULATED)"
+   },
+   "equipped": 2655,
+   "advisories_delivered": 2252,
+   "routes_changed": 1827,
+   "edges_slowed": 53,
+   "wall_s": 3.9,
+   "metrics": {
+    "arrived": 1726,
+    "unfinished_at_horizon": 524,
+    "unfinished": 524,
+    "total_vehicle_hours": 202.48611111111111,
+    "mean_travel_time_all": 323.97777777777776,
+    "mean_travel_time_s": 342.1738122827347,
+    "p95_travel_time_s": 552.0,
+    "mean_waiting_s": 29.750869061413674,
+    "total_waiting_s": 51350.0,
+    "mean_time_loss_s": 95.59617033603708,
+    "mean_depart_delay_s": 0.031286210892236384,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 4,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 524,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "condition": "good",
+   "seed": 12,
+   "delivery_fraction": 0.8503,
+   "link": {
+    "added_latency_ms": 0,
+    "loss_pct": 10,
+    "delivery_model": "frac_delivered_1hz_repeat",
+    "n_vehicles": 4386,
+    "effective_latency_mean_ms": 2.6,
+    "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5 sweep, SIMULATED)"
+   },
+   "equipped": 2655,
+   "advisories_delivered": 2255,
+   "routes_changed": 1838,
+   "edges_slowed": 53,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1715,
+    "unfinished_at_horizon": 535,
+    "unfinished": 535,
+    "total_vehicle_hours": 205.20555555555555,
+    "mean_travel_time_all": 328.3288888888889,
+    "mean_travel_time_s": 346.4524781341108,
+    "p95_travel_time_s": 545.0,
+    "mean_waiting_s": 33.33819241982507,
+    "total_waiting_s": 57175.0,
+    "mean_time_loss_s": 99.4599416909621,
+    "mean_depart_delay_s": 0.046064139941690965,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 4,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 535,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "condition": "degraded",
+   "seed": 12,
+   "delivery_fraction": 0.7972,
+   "link": {
+    "added_latency_ms": 500,
+    "loss_pct": 30,
+    "delivery_model": "frac_delivered_1hz_repeat",
+    "n_vehicles": 4386,
+    "effective_latency_mean_ms": 502.6,
+    "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5 sweep, SIMULATED)"
+   },
+   "equipped": 2655,
+   "advisories_delivered": 2113,
+   "routes_changed": 1716,
+   "edges_slowed": 53,
+   "wall_s": 3.9,
+   "metrics": {
+    "arrived": 1739,
+    "unfinished_at_horizon": 511,
+    "unfinished": 511,
+    "total_vehicle_hours": 203.66027777777776,
+    "mean_travel_time_all": 325.85644444444443,
+    "mean_travel_time_s": 346.281771132835,
+    "p95_travel_time_s": 556.0,
+    "mean_waiting_s": 32.451983898792406,
+    "total_waiting_s": 56434.0,
+    "mean_time_loss_s": 98.33500862564692,
+    "mean_depart_delay_s": 0.020701552616446232,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 1,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 511,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "condition": "bad",
+   "seed": 12,
+   "delivery_fraction": 0.7776,
+   "link": {
+    "added_latency_ms": 5000,
+    "loss_pct": 30,
+    "delivery_model": "frac_delivered_1hz_repeat",
+    "n_vehicles": 4386,
+    "effective_latency_mean_ms": 5002.6,
+    "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5 sweep, SIMULATED)"
+   },
+   "equipped": 2655,
+   "advisories_delivered": 2077,
+   "routes_changed": 1702,
+   "edges_slowed": 53,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1639,
+    "unfinished_at_horizon": 575,
+    "unfinished": 575,
+    "total_vehicle_hours": 217.47805555555556,
+    "mean_travel_time_all": 353.62285456187897,
+    "mean_travel_time_s": 357.496644295302,
+    "p95_travel_time_s": 689.0,
+    "mean_waiting_s": 42.432580841976815,
+    "total_waiting_s": 69547.0,
+    "mean_time_loss_s": 109.83314826113484,
+    "mean_depart_delay_s": 0.026845637583892617,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 16,
+    "loaded": 9061,
+    "inserted": 2214,
+    "running_at_end": 575,
+    "waiting_to_insert_at_end": 36
+   }
+  },
+  {
+   "condition": "ideal",
+   "seed": 13,
+   "delivery_fraction": 0.8568,
+   "link": {
+    "added_latency_ms": 0,
+    "loss_pct": 0,
+    "delivery_model": "frac_delivered_1hz_repeat",
+    "n_vehicles": 4386,
+    "effective_latency_mean_ms": 2.6,
+    "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5 sweep, SIMULATED)"
+   },
+   "equipped": 2655,
+   "advisories_delivered": 2279,
+   "routes_changed": 1857,
+   "edges_slowed": 53,
+   "wall_s": 4.6,
+   "metrics": {
+    "arrived": 1696,
+    "unfinished_at_horizon": 554,
+    "unfinished": 554,
+    "total_vehicle_hours": 208.05916666666667,
+    "mean_travel_time_all": 332.8946666666667,
+    "mean_travel_time_s": 350.39327830188677,
+    "p95_travel_time_s": 560.0,
+    "mean_waiting_s": 37.91155660377358,
+    "total_waiting_s": 64298.0,
+    "mean_time_loss_s": 104.90762971698113,
+    "mean_depart_delay_s": 0.024764150943396228,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 3,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 554,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "condition": "good",
+   "seed": 13,
+   "delivery_fraction": 0.8503,
+   "link": {
+    "added_latency_ms": 0,
+    "loss_pct": 10,
+    "delivery_model": "frac_delivered_1hz_repeat",
+    "n_vehicles": 4386,
+    "effective_latency_mean_ms": 2.6,
+    "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5 sweep, SIMULATED)"
+   },
+   "equipped": 2655,
+   "advisories_delivered": 2255,
+   "routes_changed": 1832,
+   "edges_slowed": 53,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1738,
+    "unfinished_at_horizon": 512,
+    "unfinished": 512,
+    "total_vehicle_hours": 204.21944444444443,
+    "mean_travel_time_all": 326.75111111111113,
+    "mean_travel_time_s": 343.92865362485617,
+    "p95_travel_time_s": 557.0,
+    "mean_waiting_s": 31.543153049482164,
+    "total_waiting_s": 54822.0,
+    "mean_time_loss_s": 97.34671461449942,
+    "mean_depart_delay_s": 0.03164556962025317,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 0,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 512,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "condition": "degraded",
+   "seed": 13,
+   "delivery_fraction": 0.7972,
+   "link": {
+    "added_latency_ms": 500,
+    "loss_pct": 30,
+    "delivery_model": "frac_delivered_1hz_repeat",
+    "n_vehicles": 4386,
+    "effective_latency_mean_ms": 502.6,
+    "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5 sweep, SIMULATED)"
+   },
+   "equipped": 2655,
+   "advisories_delivered": 2098,
+   "routes_changed": 1691,
+   "edges_slowed": 53,
+   "wall_s": 3.9,
+   "metrics": {
+    "arrived": 1704,
+    "unfinished_at_horizon": 546,
+    "unfinished": 546,
+    "total_vehicle_hours": 213.3475,
+    "mean_travel_time_all": 341.356,
+    "mean_travel_time_s": 361.69483568075117,
+    "p95_travel_time_s": 643.0,
+    "mean_waiting_s": 47.19072769953052,
+    "total_waiting_s": 80413.0,
+    "mean_time_loss_s": 115.83164319248826,
+    "mean_depart_delay_s": 0.025821596244131457,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 15,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 546,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "condition": "bad",
+   "seed": 13,
+   "delivery_fraction": 0.7776,
+   "link": {
+    "added_latency_ms": 5000,
+    "loss_pct": 30,
+    "delivery_model": "frac_delivered_1hz_repeat",
+    "n_vehicles": 4386,
+    "effective_latency_mean_ms": 5002.6,
+    "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5 sweep, SIMULATED)"
+   },
+   "equipped": 2655,
+   "advisories_delivered": 2095,
+   "routes_changed": 1698,
+   "edges_slowed": 53,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1637,
+    "unfinished_at_horizon": 590,
+    "unfinished": 590,
+    "total_vehicle_hours": 226.52944444444444,
+    "mean_travel_time_all": 366.1903906600808,
+    "mean_travel_time_s": 374.5809407452657,
+    "p95_travel_time_s": 736.0,
+    "mean_waiting_s": 57.16860109957239,
+    "total_waiting_s": 93585.0,
+    "mean_time_loss_s": 127.28101405009163,
+    "mean_depart_delay_s": 0.029932803909590716,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 19,
+    "loaded": 9061,
+    "inserted": 2227,
+    "running_at_end": 590,
+    "waiting_to_insert_at_end": 23
+   }
+  }
+ ],
+ "summary": {
+  "baseline": "ideal",
+  "conditions": {
+   "good": {
+    "delivery_fraction": 0.8503,
+    "mean_advisories_delivered": 2251.3,
+    "vehicle_hours_pct_per_seed": [
+     -1.15,
+     1.34,
+     -1.85
+    ],
+    "mean_vehicle_hours_pct": -0.55,
+    "mean_waiting_pct": -6.15,
+    "seeds_worse": 1,
+    "seeds": 3
+   },
+   "degraded": {
+    "delivery_fraction": 0.7972,
+    "mean_advisories_delivered": 2108.0,
+    "vehicle_hours_pct_per_seed": [
+     -1.38,
+     0.58,
+     2.54
+    ],
+    "mean_vehicle_hours_pct": 0.58,
+    "mean_waiting_pct": 8.01,
+    "seeds_worse": 2,
+    "seeds": 3
+   },
+   "bad": {
+    "delivery_fraction": 0.7776,
+    "mean_advisories_delivered": 2079.0,
+    "vehicle_hours_pct_per_seed": [
+     -3.02,
+     7.4,
+     8.88
+    ],
+    "mean_vehicle_hours_pct": 4.42,
+    "mean_waiting_pct": 20.69,
+    "seeds_worse": 2,
+    "seeds": 3
+   }
+  }
+ }
+}

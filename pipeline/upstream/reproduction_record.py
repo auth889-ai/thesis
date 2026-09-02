@@ -110,8 +110,11 @@ RECORDS = [
         "published_source": "NOT YET READ OUT OF THE PAPER (FedGTP, Yang et al. KDD 2024)",
         "ours_from": None,
         "blockers": [
-            "run.sh hard-codes a server IP and cuda:2; needs a single-host config",
+            "needs a CUDA host: upstream client.py calls get_memory_usage('cuda') "
+            "unconditionally, and we do not edit their code to work around it",
         ],
+        "launcher": "pipeline/federated/run_fedgtp.py (single-host config; verifies the pinned "
+                    "SHA and refuses to run if a tracked upstream file was modified)",
         "note": "PeMSD7 data ships inside the repo (15 MB), so this is the cheapest genuine "
                 "federated reproduction available and is attempted first. Its server/client "
                 "processes talk over real TCP sockets, which is exactly where the communication "
@@ -127,7 +130,8 @@ RECORDS = [
         "published": None,
         "published_source": "NOT YET READ OUT OF THE PAPER (OpenCity, Li et al. 2024)",
         "ours_from": None,
-        "blockers": ["pretrained weights not yet downloaded from HuggingFace"],
+        "blockers": ["released pretrained weights not yet downloaded from HuggingFace "
+                     "(hkuds/OpenCity-Plus); they belong on the 2 TB Drive, not this laptop"],
     },
 ]
 

@@ -71,6 +71,36 @@ G6 matters: it proves the weights on disk actually produce the reported numbers.
 real bug — the checkpoint finder matched on architecture alone, so a GWNet/PEMS-BAY run silently
 loaded METR-LA weights. Only the differing sensor counts (325 vs 207) exposed it.
 
+### The metric the field reports hides where models actually differ
+
+Average MAE over a whole test set is dominated by free-flow bins, where forecasting is easy and
+nobody needs it. Scoring the full test region of both cities on the bins that are *actually*
+congested (per-sensor threshold at 60 % of that sensor's own free-flow speed, taken from the
+training split only) gives a different picture:
+
+| METR-LA, 15 min | overall MAE | **congestion MAE** | free-flow MAE | congestion F1 | onset detection |
+|---|---|---|---|---|---|
+| Graph WaveNet | 2.71 | **6.92** | 2.18 | 0.851 | 70.7 % |
+| STID | 2.83 | **7.97** | 2.18 | 0.830 | 60.9 % |
+
+Three findings:
+
+1. **Error during congestion is 2–4.5× the reported average.** GWNet is 2.71 MAE overall on
+   METR-LA but 6.92 where it matters; on PEMS-BAY, 1.31 vs 4.43.
+2. **It degrades far faster with horizon than the headline suggests.** GWNet's congestion MAE runs
+   4.60 → 11.50 from 5 to 60 min (2.5×) while its free-flow MAE moves only 1.94 → 2.56 (1.3×).
+   Recall falls 0.90 → 0.70 while precision holds — these models grow conservative at long range
+   and *miss* jams rather than raising false alarms.
+3. **Ranking by average MAE understates the operational gap.** GWNet beats STID by 4 % on average
+   MAE at 15 min, but by 15 % on congestion MAE and 16 % on onset detection rate.
+
+Congestion warning lead time is also reported, two ways: the earliest horizon that flags an onset,
+and a stricter *sustained* lead requiring every horizon from 5 min up to it to agree, so one lucky
+long-range flag cannot be sold as an hour of notice. Sustained lead is 36 min on METR-LA but only
+15 min on PEMS-BAY — lead time is a property of the site, not just of the model.
+
+→ `results/forecasting/congestion_metrics.md`
+
 ### Honest position in the field
 
 The field is **saturated**. Four years moved best-known METR-LA MAE from 2.69 to 2.65 — 1.5 %.
