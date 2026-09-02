@@ -58,6 +58,7 @@ MAP_FILE = REPO / "data/forecasting/live_dhaka/corridor_edges.json"
 
 # (added latency ms, loss %) -> a name the chain reports. Every one must exist in latency.csv.
 CONDITIONS = {
+    "none":     None,        # nobody is advised — the unaware reference arm
     "ideal":    (0, 0),
     "good":     (0, 10),
     "degraded": (500, 30),
@@ -65,8 +66,13 @@ CONDITIONS = {
 }
 
 
-def delivery_fraction(added_ms: int, loss_pct: int, repeat: bool) -> tuple[float, dict]:
+def delivery_fraction(added_ms, loss_pct, repeat: bool) -> tuple[float, dict]:
     """Read the delivered fraction out of the networking evidence. Never interpolated."""
+    if added_ms is None:                       # the unaware reference arm
+        return 0.0, {"added_latency_ms": "—", "loss_pct": "—",
+                     "delivery_model": "no advisory issued (unaware reference arm)",
+                     "n_vehicles": 0, "effective_latency_mean_ms": 0.0,
+                     "source": "reference arm, not a link condition"}
     if not NET_RESULTS.exists():
         raise SystemExit(f"missing {NET_RESULTS}; run pipeline/networking/latency_injection.py first")
     col = "frac_delivered_1hz_repeat" if repeat else "frac_delivered_single_shot"
@@ -96,7 +102,8 @@ def delivered(vid: str, p: float, condition: str, seed: int) -> bool:
 def run_condition(a, condition: str, seed: int, slow: dict, weights: Path) -> dict:
     """One SUMO run: the equipped-and-DELIVERED share is rerouted; everyone else is not."""
     import traci
-    added_ms, loss_pct = CONDITIONS[condition]
+    spec = CONDITIONS[condition]
+    added_ms, loss_pct = spec if spec else (None, None)
     p, prov = delivery_fraction(added_ms, loss_pct, repeat=not a.single_shot)
     out = RESULTS / f"impairment_{condition}_s{seed}"
     out.mkdir(parents=True, exist_ok=True)
@@ -197,24 +204,49 @@ def analyse(runs: list[dict], baseline: str) -> dict:
     # A monotone trend in the MEANS is not the same as an effect the seeds support. The same
     # standard the routing decision guard already applies: a causal claim needs every paired seed
     # to agree, otherwise it is reported as suggestive and nothing stronger.
-    worst = max(out["conditions"], key=lambda c: out["conditions"][c]["mean_vehicle_hours_pct"] or 0,
-                default=None)
+    link_conds = {c: d for c, d in out["conditions"].items() if c != "none"}
+    worst = max(link_conds, key=lambda c: link_conds[c]["mean_vehicle_hours_pct"] or 0, default=None)
+
+    # Before asking whether a degraded link hurts, check that the advisory helped at all. If
+    # perfect delivery does not beat advising nobody, then there is no benefit for the link to
+    # erode, and a null impairment result says nothing about communication.
+    ref = out["conditions"].get("none")
+    baseline_benefit = None
+    if ref is not None:
+        helped = sum(1 for x in ref["vehicle_hours_pct_per_seed"] if x > 0)
+        baseline_benefit = {
+            "reference_arm": "none (nobody advised)",
+            "mean_vehicle_hours_pct_vs_full_delivery": ref["mean_vehicle_hours_pct"],
+            "seeds_where_advising_helped": f"{helped}/{ref['seeds']}",
+            "established": helped == ref["seeds"] and ref["seeds"] >= 3,
+        }
+
     if worst:
-        d = out["conditions"][worst]
+        d = link_conds[worst]
         unanimous = d["seeds_worse"] == d["seeds"] and d["seeds"] >= 3
-        means = [out["conditions"][c]["mean_vehicle_hours_pct"] for c in out["conditions"]
-                 if out["conditions"][c]["mean_vehicle_hours_pct"] is not None]
+        means = [link_conds[c]["mean_vehicle_hours_pct"] for c in link_conds
+                 if link_conds[c]["mean_vehicle_hours_pct"] is not None]
+        if baseline_benefit and not baseline_benefit["established"]:
+            claim = "INCONCLUSIVE_NO_BASELINE_BENEFIT"
+            reason = ("advising every equipped vehicle with a perfect link does not reliably beat "
+                      f"advising nobody ({baseline_benefit['seeds_where_advising_helped']} seeds). "
+                      "There is therefore no routing benefit for a degraded link to erode, and this "
+                      "experiment cannot test the communication hypothesis. The chain must first be "
+                      "run in a regime where the routing intervention itself is established.")
+        elif unanimous:
+            claim, reason = "CAUSAL_EFFECT_SUPPORTED", "every paired seed is worse under the degraded link"
+        else:
+            claim = "NO_EFFECT_DETECTED" if d["seeds"] >= 10 else "SUGGESTIVE_ONLY"
+            reason = (f"only {d['seeds_worse']} of {d['seeds']} paired seeds are worse under "
+                      f"`{worst}` (mean {d['mean_vehicle_hours_pct']} %); the seeds do not "
+                      f"establish an effect.")
         out["verdict"] = {
             "worst_condition": worst,
             "mean_vehicle_hours_pct": d["mean_vehicle_hours_pct"],
             "seeds_agreeing": f"{d['seeds_worse']}/{d['seeds']}",
             "monotone_in_means": means == sorted(means),
-            "claim": ("CAUSAL_EFFECT_SUPPORTED" if unanimous else "SUGGESTIVE_ONLY"),
-            "reason": ("every paired seed is worse under the degraded link" if unanimous else
-                       f"only {d['seeds_worse']} of {d['seeds']} paired seeds are worse under "
-                       f"`{worst}`; the direction of the means is consistent but the seeds do not "
-                       f"establish it. More seeds, or a wider delivery spread (--single-shot), "
-                       f"are needed before this is stated as a causal result."),
+            "baseline_benefit": baseline_benefit,
+            "claim": claim, "reason": reason,
         }
     return out
 
@@ -314,7 +346,14 @@ def write_md(rec: dict, a) -> None:
                   "the link raised network delay.\n"]
     v = s.get("verdict")
     if v:
-        L += [f"## Verdict: **{v['claim']}**\n",
+        L += [f"## Verdict: **{v['claim']}**\n"]
+        bb = v.get("baseline_benefit")
+        if bb:
+            L += [f"Reference check — does advising anyone help at all? With perfect delivery vs "
+                  f"advising nobody: mean {bb['mean_vehicle_hours_pct_vs_full_delivery']} % "
+                  f"vehicle-hours, helped on {bb['seeds_where_advising_helped']} seeds "
+                  f"(**established: {bb['established']}**).\n"]
+        L += [
               f"Worst condition `{v['worst_condition']}`: mean vehicle-hours "
               f"{v['mean_vehicle_hours_pct']} %, {v['seeds_agreeing']} paired seeds agree; "
               f"means monotone in link quality: {v['monotone_in_means']}.\n",
