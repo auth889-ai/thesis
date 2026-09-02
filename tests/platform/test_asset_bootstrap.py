@@ -4,8 +4,8 @@ import hashlib
 import json
 from pathlib import Path
 
-from scripts.build_asset_manifest import build_manifest
-from scripts.restore_assets import main as restore_main
+from results.build_asset_manifest import build_manifest
+from legacy.scripts.restore_assets import main as restore_main
 
 
 def _sha(data: bytes) -> str:

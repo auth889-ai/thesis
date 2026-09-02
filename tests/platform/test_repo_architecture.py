@@ -14,9 +14,13 @@ import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
+# The active tree (see README "Project structure"). The 2026-09 rebuild retired
+# scripts/, dashboard/, deployment/ and model_registry/ into legacy/ and replaced them with the
+# stage-oriented folders below; this list is the contract for the CURRENT layout.
 REQUIRED_TOP_LEVEL = [
-    "dhakaflow", "configs", "model_registry", "research", "upstream",
-    "scripts", "tests", "dashboard", "deployment", "docs", "artifacts",
+    "dhakaflow", "configs", "research", "upstream",
+    "predict", "route", "network", "nlp", "demo", "results",
+    "tests", "docs", "artifacts",
 ]
 
 REQUIRED_CONFIG_SUBSYSTEMS = [
@@ -133,6 +137,9 @@ def test_lab02_freeze_record_present():
 
 
 # ------------------------------------------------------------- model registry
+@pytest.mark.skip(reason="model_registry/ was retired to legacy/ in the 2026-09 rebuild; model "
+                         "provenance now lives in predict/results/trained_results.json, which "
+                         "tests/rebuild/test_phase1_prediction.py validates")
 def test_model_registry_entries_validate():
     from dhakaflow.common.model_registry import load_entries
 

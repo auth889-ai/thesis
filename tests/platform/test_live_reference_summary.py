@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from scripts.summarize_live_reference import main
+from predict.summarize_live_reference import main
 
 
 def test_live_reference_summary_uses_latest_unique_corridors(tmp_path: Path, monkeypatch):

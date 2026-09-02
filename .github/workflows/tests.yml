@@ -9,7 +9,12 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with: {python-version: "3.13", cache: pip}
-      # SUMO and torch are heavy; the fast suite needs neither a GPU nor a simulator.
-      - run: pip install numpy pandas scipy scikit-learn matplotlib pytest tables
+      # The fast suite needs no GPU and no MOSAIC, but it DOES import sumolib (corridor->edge
+      # mapping), torch (federated aggregation) and streamlit (the demo renders headlessly).
+      # Installing less makes the suite fail at collection, not at assertion.
+      - run: |
+          pip install numpy pandas scipy scikit-learn matplotlib pytest tables joblib PyYAML \
+                      streamlit pydeck eclipse-sumo sumolib traci
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
       - run: python -m pytest tests/rebuild -q -m "not slow"
         env: {PYTHONPATH: .}
