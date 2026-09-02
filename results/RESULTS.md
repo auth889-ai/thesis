@@ -1,6 +1,6 @@
 # RESULTS — DhakaFlow rebuild
 
-Generated 2026-09-02T07:29 @ `c64f35f` by `python results/build_results.py`.
+Generated 2026-09-02T08:58 @ `b927aed` by `python results/build_results.py`.
 
 Every table below is read from a file written by the pipeline named next to it. Nothing here is typed by hand.
 
@@ -85,9 +85,17 @@ target = speed_ms (m/s), test region only, masked
 | GWNet | METR-LA | 15 min | 2.719 | 2.69 | +1.1 % | 5.183 | 7.02 | 6.90 |
 | GWNet | METR-LA | 30 min | 3.111 | 3.07 | +1.3 % | 6.225 | 8.45 | 8.37 |
 | GWNet | METR-LA | 60 min | 3.595 | 3.53 | +1.8 % | 7.423 | 10.05 | 10.01 |
+| GWNet | PEMS-BAY | 5 min | 0.855 | – | – | 1.547 | 1.64 | – |
+| GWNet | PEMS-BAY | 15 min | 1.308 | 1.30 | +0.6 % | 2.744 | 2.70 | 2.73 |
+| GWNet | PEMS-BAY | 30 min | 1.638 | 1.63 | +0.5 % | 3.693 | 3.63 | 3.67 |
+| GWNet | PEMS-BAY | 60 min | 1.945 | 1.95 | -0.2 % | 4.460 | 4.55 | 4.63 |
 | STID | METR-LA | 15 min | 2.825 | – | – | 5.563 | 7.69 | – |
 | STID | METR-LA | 30 min | 3.214 | – | – | 6.665 | 9.55 | – |
 | STID | METR-LA | 60 min | 3.593 | – | – | 7.646 | 11.31 | – |
+| STID | PEMS-BAY | 5 min | 0.857 | – | – | 1.572 | 1.64 | – |
+| STID | PEMS-BAY | 15 min | 1.318 | – | – | 2.789 | 2.77 | – |
+| STID | PEMS-BAY | 30 min | 1.644 | – | – | 3.738 | 3.75 | – |
+| STID | PEMS-BAY | 60 min | 1.920 | – | – | 4.409 | 4.55 | – |
 
 Compare against `predict/results/benchmark_floors.md` (the floors these must beat) and the published numbers cited there.
 
@@ -119,17 +127,30 @@ Regenerate: `python predict/aws_train.py --launch` then `--collect`.
 | **historical_average** | floor | 3.021 | 3.021 | 3.021 | 3.021 | – | – |
 | **persistence** | floor | 0.971 | 1.590 | 2.170 | 3.040 | – | – |
 | **seasonal_naive** | floor | 2.812 | 2.812 | 2.812 | 2.812 | – | – |
+| **GWNet** | trained | 0.855 | 1.308 | 1.638 | 1.945 | 1.30 | +0.6 % |
+| **STID** | trained | 0.857 | 1.318 | 1.644 | 1.920 | – | – |
 
-## Phase-1 gate: **NOT YET MET**
+## Where our results sit in the published field
+
+Published 15-min MAE from STAEformer (CIKM 2023) Table 1, which retrained every baseline under one protocol. Note the field is saturated: four years moved the best METR-LA number from 2.69 to 2.65 (1.5 %), and ten architectures from 2018-2023 sit inside 2.67-2.85 — a spread plausibly within seed and hyperparameter noise.
+
+| our model | dataset | our MAE@15 | band | gap to SOTA | published models it beats |
+|---|---|---|---|---|---|
+| **GWNet** | METR-LA | 2.719 | respectable published baseline | +2.6 % | STGCN (IJCAI 2018), GTS (ICLR 2021), GMAN (AAAI 2020), STNorm (KDD 2021), STID (CIKM 2022) +3 more |
+| **STID** | METR-LA | 2.825 | respectable published baseline | +6.6 % | PDFormer (AAAI 2023), AGCRN (NeurIPS 2020), HI (naive) (-) |
+| **GWNet** | PEMS-BAY | 1.308 | state of the art | +0.6 % | STAEformer (CIKM 2023), DCRNN (ICLR 2018), HI (naive) (-) |
+| **STID** | PEMS-BAY | 1.318 | respectable published baseline | +1.4 % | DCRNN (ICLR 2018), HI (naive) (-) |
+
+## Phase-1 gate: **PASS**
 
 | check | ok | detail |
 |---|---|---|
 | G1_both_cities | yes | METR-LA, PEMS-BAY |
 | G2_floors | yes | METR-LA/global_mean, METR-LA/historical_average, METR-LA/persistence, METR-LA/seasonal_naive, PEMS-BAY/global_mean, PEMS-BAY/historical_average, PEMS- |
-| G3_models | NO | METR-LA/GWNet, METR-LA/STID |
+| G3_models | yes | METR-LA/GWNet, METR-LA/STID, PEMS-BAY/GWNet, PEMS-BAY/STID |
 | G4_models_beat_floors | yes | every trained model beats every floor |
-| G5_gwnet_reproduces_published | yes | METR-LA@15min +1.1 %, METR-LA@30min +1.3 %, METR-LA@60min +1.8 % |
-| G6_checkpoint_inference | yes | GWNet/METR-LA, STID/METR-LA |
+| G5_gwnet_reproduces_published | yes | METR-LA@15min +1.1 %, METR-LA@30min +1.3 %, METR-LA@60min +1.8 %, PEMS-BAY@15min +0.6 %, PEMS-BAY@30min +0.5 %, PEMS-BAY@60min -0.2 % |
+| G6_checkpoint_inference | yes | STID/PEMS-BAY, GWNet/PEMS-BAY, GWNet/METR-LA, STID/METR-LA |
 
 Regenerate: `python predict/comparison_table.py`. Machine-readable: `phase1_comparison.json` / `.csv`.
 

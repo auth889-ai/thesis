@@ -19,12 +19,38 @@ live/sensor data ──► FORECAST ──► future edge travel times ──►
 
 MAE in mph, held-out test split, official upstream configurations.
 
-| model | 15 min | 30 min | 60 min | published (paper) | our difference |
+**METR-LA** (207 loop detectors, Los Angeles)
+
+| model | 15 min | 30 min | 60 min | published | our difference |
 |---|---|---|---|---|---|
 | **Graph WaveNet** (IJCAI 2019) | **2.719** | **3.111** | **3.595** | 2.69 / 3.07 / 3.53 | **+1.1 / +1.3 / +1.8 %** |
 | **STID** (CIKM 2022) | 2.825 | 3.214 | 3.593 | — | — |
 | persistence *(floor)* | 3.460 | 4.147 | 5.308 | — | — |
 | historical average *(floor)* | 4.189 | 4.189 | 4.189 | — | — |
+
+**PEMS-BAY** (325 loop detectors, San Francisco Bay Area)
+
+| model | 15 min | 30 min | 60 min | published | our difference |
+|---|---|---|---|---|---|
+| **Graph WaveNet** | **1.308** | **1.638** | **1.945** | 1.30 / 1.63 / 1.95 | **+0.6 / +0.5 / −0.2 %** |
+| **STID** | 1.318 | 1.644 | 1.920 | — | — |
+| persistence *(floor)* | 1.590 | 2.170 | 3.040 | — | — |
+| historical average *(floor)* | 3.021 | 3.021 | 3.021 | — | — |
+
+Both cities reproduce the published numbers within 2 %; on PEMS-BAY at 60 min the reproduction is
+marginally *better* than the paper. All four checkpoints reload from disk and reproduce their own
+reported error over 100–150 unseen windows (worst drift 3.6 %).
+
+### Where this sits in the published field
+
+![field position](docs/figures/5_field_position.png)
+
+Ten architectures published 2018–2023 sit inside MAE 2.67–2.85 on METR-LA, and four years moved the
+best number from 2.69 to 2.65 — a 1.5 % gain. The benchmark is saturated, which the literature says
+plainly (STAEformer, CIKM 2023: *"advancements in network architectures have encountered diminishing
+performance gains"*; BasicTS, TKDE 2024, exists because inconsistent pipelines make cross-paper
+comparison unreliable). Our 2.719 is a correctly reproduced member of that cluster, ahead of
+PDFormer (AAAI 2023), STID, AGCRN, GMAN and STNorm.
 
 Two independent checks make these trustworthy:
 

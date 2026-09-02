@@ -40,7 +40,9 @@ def find_checkpoints() -> list[dict]:
     for pt in sorted(CKPT_DIR.rglob("*.pt")):
         parts = pt.relative_to(CKPT_DIR).parts
         arch = parts[0] if parts else "?"
-        ds = next((p.split("_")[0] for p in parts if "_" in p and p.split("_")[0].replace("-", "").isalnum()), "?")
+        # the harness lays out <Arch>/<DATASET>_<epochs>_<in>_<out>/<hash>/<file>.pt, so the dataset
+        # is the run-directory prefix. Matching on architecture ALONE loads another city's weights.
+        ds = next((seg.split("_")[0] for seg in parts[1:] if "_" in seg), "?")
         out.append({"path": pt, "arch": arch, "dataset_dir": ds,
                     "size_mb": round(pt.stat().st_size / 1e6, 2),
                     "test_results": next(iter(pt.parent.glob("test_results.npz")), None),
@@ -99,18 +101,20 @@ def main() -> int:
             print(f"no checkpoints under {CKPT_DIR}\n"
                   f"fetch them:  python predict/aws_train.py --job <job> --collect-checkpoints")
             return 1
-        print(f"{'arch':<16} {'size MB':>8}  path")
+        print(f"{'arch':<16} {'dataset':<10} {'size MB':>8}  path")
         for c in cks:
-            print(f"{c['arch']:<16} {c['size_mb']:>8}  {c['path'].relative_to(REPO)}")
+            print(f"{c['arch']:<16} {c['dataset_dir']:<10} {c['size_mb']:>8}  {c['path'].relative_to(REPO)}")
         return 0
 
     arch_alias = {"GWNet": "GraphWaveNet", "STID": "STID", "DCRNN": "DCRNN", "STAEformer": "STAEformer"}
     want = arch_alias.get(a.model, a.model)
-    cand = [c for c in cks if c["arch"] == want]
+    cand = [c for c in cks if c["arch"] == want and c["dataset_dir"] == a.dataset]
     if not cand:
-        print(f"no checkpoint for {a.model} (arch {want}); available: {sorted({c['arch'] for c in cks})}")
+        have = sorted({f"{c['arch']}/{c['dataset_dir']}" for c in cks})
+        print(f"no checkpoint for {a.model} on {a.dataset} (arch {want}); available: {have}")
         return 1
-    ck = cand[0]
+    # prefer the best-validation checkpoint over the last epoch
+    ck = next((c for c in cand if "best" in c["path"].name), cand[0])
     print(f"[infer] checkpoint {ck['path'].relative_to(REPO)} ({ck['size_mb']} MB)")
 
     import torch

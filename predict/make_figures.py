@@ -26,6 +26,7 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[1]
 RES = REPO / "predict/results"
+sys = __import__("sys")
 OUT = REPO / "docs/figures"
 BLUE, ORANGE, AQUA, YELLOW = "#2a78d6", "#eb6834", "#1baf7a", "#eda100"
 INK, MUTED, SURFACE, GRID = "#0b0b0b", "#52514e", "#fcfcfb", "#e6e5e1"
@@ -184,9 +185,47 @@ def fig_routing():
     return "4_routing_arms.png"
 
 
+def fig_field_position():
+    """Where our reproduction sits among the published models — the question an examiner asks."""
+    cmp_path = RES / "phase1_comparison.json"
+    if not cmp_path.exists():
+        return None
+    sys.path.insert(0, str(REPO))
+    from predict.comparison_table import LEADERBOARD
+    doc = json.loads(cmp_path.read_text())
+    ours = {(r["model"], r["dataset"]): r["mae"] for r in doc["rows"]
+            if r["trained"] and r["horizon_min"] == 15}
+    city = "METR-LA"
+    board = sorted(LEADERBOARD[city], key=lambda t: t[2])
+    board = [b for b in board if b[2] < 4]                      # drop the naive outlier for scale
+    names = [f"{n}\n{v}" for n, v, _ in board]
+    vals = [m for _, _, m in board]
+    mine = ours.get(("GWNet", city))
+    fig, ax = plt.subplots(figsize=(9.6, 4.6))
+    bars = ax.bar(range(len(vals)), vals, color=MUTED, width=0.62, zorder=3)
+    for i, (bar, v) in enumerate(zip(bars, vals)):
+        ax.annotate(f"{v:.2f}", (bar.get_x() + bar.get_width() / 2, v), xytext=(0, 4),
+                    textcoords="offset points", ha="center", fontsize=8.5, color=MUTED)
+    if mine:
+        ax.axhline(mine, color=BLUE, lw=2, ls="--", zorder=4)
+        ax.annotate(f"ours: {mine:.3f}", (len(vals) - 0.4, mine), xytext=(0, 6),
+                    textcoords="offset points", ha="right", color=BLUE, fontweight="bold", fontsize=10)
+    style(ax, f"Our reproduction against the published field — {city}, 15-min MAE",
+          "", "MAE  (mph, lower is better)")
+    ax.set_xticks(range(len(names))); ax.set_xticklabels(names, fontsize=8)
+    ax.set_ylim(min(vals) * 0.96, max(vals) * 1.06)
+    fig.text(0.01, 0.015, "published numbers re-run under one protocol by STAEformer (CIKM 2023). "
+                          "Ten architectures from 2018-2023 sit inside 2.67-2.85: the benchmark is saturated.",
+             color=MUTED, fontsize=8.5)
+    fig.tight_layout(rect=[0, 0.05, 1, 1])
+    fig.savefig(OUT / "5_field_position.png", dpi=200); plt.close(fig)
+    return "5_field_position.png"
+
+
 def main() -> int:
     OUT.mkdir(parents=True, exist_ok=True)
-    made = [f for f in (fig_accuracy(), fig_reproduction(), fig_actual_vs_predicted(), fig_routing()) if f]
+    made = [f for f in (fig_accuracy(), fig_reproduction(), fig_actual_vs_predicted(),
+                        fig_routing(), fig_field_position()) if f]
     for f in made:
         print(f"wrote docs/figures/{f}")
     return 0 if made else 1

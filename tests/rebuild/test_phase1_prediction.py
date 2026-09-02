@@ -114,3 +114,52 @@ def test_comparison_table_is_regenerable_and_self_consistent():
     for row in doc["rows"]:
         assert row["kind"] in ("floor", "trained")
         assert row["mae"] is None or row["mae"] > 0
+
+
+# ------------------------------------------------------------------ the phase gate, on real data
+@pytest.mark.skipif(not (RES / "phase1_comparison.json").exists(), reason="run comparison_table.py")
+def test_phase1_gate_passes_on_the_real_evidence():
+    """Phase 1 is complete. If this fails, a result regressed or evidence was deleted."""
+    r = subprocess.run([PY, str(REPO / "predict/comparison_table.py"), "--check"],
+                       capture_output=True, text=True, cwd=REPO)
+    doc = json.loads((RES / "phase1_comparison.json").read_text())
+    failed = [k for k, v in doc["gate"]["checks"].items() if not v["ok"]]
+    assert r.returncode == 0 and doc["gate"]["passed"], f"gate failed: {failed}"
+
+
+@pytest.mark.skipif(not (RES / "trained_results.json").exists(), reason="no trained results")
+def test_both_cities_reproduce_their_published_numbers():
+    doc = json.loads((RES / "trained_results.json").read_text())
+    seen = {}
+    for r in doc["runs"]:
+        if r["model"] != "GWNet":
+            continue
+        for minutes, m in r["metrics_by_horizon_min"].items():
+            if "mae_diff_pct" in m:
+                seen.setdefault(r["dataset"], []).append(abs(m["mae_diff_pct"]))
+    assert {"METR-LA", "PEMS-BAY"} <= set(seen), f"only reproduced on {sorted(seen)}"
+    for city, diffs in seen.items():
+        assert max(diffs) <= 5.0, f"{city}: worst deviation from published is {max(diffs):.1f} %"
+
+
+@pytest.mark.skipif(not any(RES.glob("inference_*.json")), reason="no checkpoint verification")
+def test_every_checkpoint_reproduces_its_reported_error():
+    """A checkpoint that does not reproduce its own metrics is not the model that was scored."""
+    checked = 0
+    for f in RES.glob("inference_*.json"):
+        d = json.loads(f.read_text())
+        for horizon, v in (d.get("verification") or {}).items():
+            if v.get("diff_pct") is None:
+                continue
+            checked += 1
+            assert abs(v["diff_pct"]) <= 15, \
+                f"{d['model']}/{d['dataset']} @{horizon}min drifted {v['diff_pct']:+.1f} %"
+    assert checked >= 4, f"expected several verified horizons, saw {checked}"
+
+
+def test_checkpoint_selection_requires_a_matching_dataset():
+    """Matching on architecture alone once loaded METR-LA weights for a PEMS-BAY request."""
+    import inspect
+    from predict import infer_from_checkpoint as ifc
+    src = inspect.getsource(ifc.main)
+    assert 'c["dataset_dir"] == a.dataset' in src, "checkpoint choice must filter on dataset"

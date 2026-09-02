@@ -1,0 +1,148 @@
+{
+ "model": "GWNet",
+ "dataset": "PEMS-BAY",
+ "checkpoint": "predict/results/checkpoints/GraphWaveNet/PEMS-BAY_50_12_12/680ffdbe55716f3677d2311eb2432ac1/GraphWaveNet_best_val_MAE.pt",
+ "window_index_in_test": 0,
+ "t0_absolute": 41692,
+ "input_len": 12,
+ "horizon_len": 12,
+ "scaler": {
+  "mu": 62.73689270019531,
+  "sd": 9.436833381652832,
+  "fitted_on": "train split only"
+ },
+ "window_mae_all_horizons_mph": 1.34,
+ "reported_test_metrics": {
+  "5": {
+   "mae": 0.8553,
+   "rmse": 1.5468,
+   "mape_pct": 1.6400000000000001,
+   "horizon_steps": 1,
+   "horizon_minutes": 5
+  },
+  "15": {
+   "mae": 1.3083,
+   "rmse": 2.7435,
+   "mape_pct": 2.7,
+   "horizon_steps": 3,
+   "horizon_minutes": 15,
+   "published_mae": 1.3,
+   "published_rmse": 2.74,
+   "published_mape_pct": 2.73,
+   "mae_diff_pct": 0.64,
+   "rmse_diff_pct": 0.13,
+   "mape_diff_pct": -1.1
+  },
+  "30": {
+   "mae": 1.6377,
+   "rmse": 3.6929,
+   "mape_pct": 3.63,
+   "horizon_steps": 6,
+   "horizon_minutes": 30,
+   "published_mae": 1.63,
+   "published_rmse": 3.7,
+   "published_mape_pct": 3.67,
+   "mae_diff_pct": 0.47,
+   "rmse_diff_pct": -0.19,
+   "mape_diff_pct": -1.09
+  },
+  "60": {
+   "mae": 1.9454,
+   "rmse": 4.4597,
+   "mape_pct": 4.55,
+   "horizon_steps": 12,
+   "horizon_minutes": 60,
+   "published_mae": 1.95,
+   "published_rmse": 4.52,
+   "published_mape_pct": 4.63,
+   "mae_diff_pct": -0.24,
+   "rmse_diff_pct": -1.33,
+   "mape_diff_pct": -1.73
+  }
+ },
+ "verification": {
+  "5": {
+   "reloaded_mae": 0.8732,
+   "reported_mae": 0.8553,
+   "diff_pct": 2.09,
+   "windows": 100
+  },
+  "15": {
+   "reloaded_mae": 1.3393,
+   "reported_mae": 1.3083,
+   "diff_pct": 2.37,
+   "windows": 100
+  },
+  "30": {
+   "reloaded_mae": 1.6626,
+   "reported_mae": 1.6377,
+   "diff_pct": 1.52,
+   "windows": 100
+  },
+  "60": {
+   "reloaded_mae": 2.0157,
+   "reported_mae": 1.9454,
+   "diff_pct": 3.62,
+   "windows": 100
+  }
+ },
+ "note": "single unseen window; the training metrics average the whole test set, so these differ in magnitude \u2014 the check is that they are the same order, not identical",
+ "rows": [
+  {
+   "horizon_min": 5,
+   "sensor_index": 0,
+   "actual_mph": 71.1,
+   "predicted_mph": 71.3,
+   "abs_error_mph": 0.2
+  },
+  {
+   "horizon_min": 5,
+   "sensor_index": "ALL",
+   "actual_mph": null,
+   "predicted_mph": null,
+   "abs_error_mph": 0.823
+  },
+  {
+   "horizon_min": 15,
+   "sensor_index": 0,
+   "actual_mph": 71.2,
+   "predicted_mph": 71.25,
+   "abs_error_mph": 0.05
+  },
+  {
+   "horizon_min": 15,
+   "sensor_index": "ALL",
+   "actual_mph": null,
+   "predicted_mph": null,
+   "abs_error_mph": 1.121
+  },
+  {
+   "horizon_min": 30,
+   "sensor_index": 0,
+   "actual_mph": 69.8,
+   "predicted_mph": 71.33,
+   "abs_error_mph": 1.53
+  },
+  {
+   "horizon_min": 30,
+   "sensor_index": "ALL",
+   "actual_mph": null,
+   "predicted_mph": null,
+   "abs_error_mph": 1.376
+  },
+  {
+   "horizon_min": 60,
+   "sensor_index": 0,
+   "actual_mph": 70.1,
+   "predicted_mph": 71.38,
+   "abs_error_mph": 1.28
+  },
+  {
+   "horizon_min": 60,
+   "sensor_index": "ALL",
+   "actual_mph": null,
+   "predicted_mph": null,
+   "abs_error_mph": 1.706
+  }
+ ]
+}

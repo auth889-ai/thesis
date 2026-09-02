@@ -33,6 +33,45 @@ RESULTS = REPO / "predict/results"
 FLOOR_NAMES = ["persistence", "historical_average", "seasonal_naive", "global_mean"]
 HORIZONS = [5, 15, 30, 60]
 
+# The published field, at 15-min MAE, as re-run under ONE protocol by STAEformer (Liu et al.,
+# CIKM 2023, Table 1) -- their table is used because they retrained every baseline themselves, so
+# the numbers are mutually comparable rather than copied across papers with different splits.
+# This exists so our own result is placed in the field automatically instead of by hand.
+LEADERBOARD = {
+    "METR-LA": [
+        ("STAEformer", "CIKM 2023", 2.65), ("DCRNN", "ICLR 2018", 2.67),
+        ("Graph WaveNet", "IJCAI 2019", 2.69), ("MTGNN", "KDD 2020", 2.69),
+        ("STGCN", "IJCAI 2018", 2.75), ("GTS", "ICLR 2021", 2.75),
+        ("GMAN", "AAAI 2020", 2.80), ("STNorm", "KDD 2021", 2.81),
+        ("STID", "CIKM 2022", 2.82), ("PDFormer", "AAAI 2023", 2.83),
+        ("AGCRN", "NeurIPS 2020", 2.85), ("HI (naive)", "-", 6.80),
+    ],
+    "PEMS-BAY": [
+        ("Graph WaveNet", "IJCAI 2019", 1.30), ("STAEformer", "CIKM 2023", 1.31),
+        ("DCRNN", "ICLR 2018", 1.38), ("HI (naive)", "-", 3.06),
+    ],
+}
+# Bands from the same survey: the 2019-2023 generation clusters in 2.67-2.85 on METR-LA, a spread
+# plausibly inside seed/hyperparameter noise. Four years moved SOTA 2.69 -> 2.65 (1.5 %).
+BANDS = {"METR-LA": [(2.65, "state of the art"), (2.90, "respectable published baseline"),
+                     (float("inf"), "below the published generation")],
+         "PEMS-BAY": [(1.31, "state of the art"), (1.45, "respectable published baseline"),
+                      (float("inf"), "below the published generation")]}
+
+
+def place_in_field(city: str, mae: float) -> dict:
+    """Where does our number sit among the published models on this benchmark?"""
+    board = LEADERBOARD.get(city, [])
+    if not board or mae is None:
+        return {}
+    beaten = [f"{n} ({v})" for n, v, m in board if mae < m]
+    ahead = [f"{n} ({v})" for n, v, m in board if mae >= m]
+    band = next(label for thr, label in BANDS[city] if mae <= thr)
+    best = min(m for _, _, m in board)
+    return {"band": band, "beats": beaten, "behind": ahead,
+            "gap_to_sota_mae": round(mae - best, 3),
+            "gap_to_sota_pct": round(100 * (mae / best - 1), 2)}
+
 
 def load() -> tuple[dict, dict, dict]:
     fl = json.loads((RESULTS / "benchmark_floors.json").read_text()) if (RESULTS / "benchmark_floors.json").exists() else {}
@@ -139,6 +178,25 @@ def main() -> int:
             df = f"{pub[0]['mae_diff_pct']:+.1f} %" if pub else "–"
             lines.append(f"| **{mdl}** | {'trained' if is_tr else 'floor'} | " + " | ".join(cells) + f" | {pm} | {df} |")
         lines.append("")
+    # position every trained model in the published field
+    lines += ["## Where our results sit in the published field", "",
+              "Published 15-min MAE from STAEformer (CIKM 2023) Table 1, which retrained every "
+              "baseline under one protocol. Note the field is saturated: four years moved the best "
+              "METR-LA number from 2.69 to 2.65 (1.5 %), and ten architectures from 2018-2023 sit "
+              "inside 2.67-2.85 — a spread plausibly within seed and hyperparameter noise.", "",
+              "| our model | dataset | our MAE@15 | band | gap to SOTA | published models it beats |",
+              "|---|---|---|---|---|---|"]
+    for r in sorted(doc["rows"], key=lambda r: (r["dataset"], r["model"])):
+        if not r["trained"] or r["horizon_min"] != 15:
+            continue
+        pl = place_in_field(r["dataset"], r["mae"])
+        if not pl:
+            continue
+        doc.setdefault("field_position", {})[f"{r['model']}/{r['dataset']}"] = pl
+        beats = ", ".join(pl["beats"][:5]) + (f" +{len(pl['beats']) - 5} more" if len(pl["beats"]) > 5 else "")
+        lines.append(f"| **{r['model']}** | {r['dataset']} | {r['mae']:.3f} | {pl['band']} | "
+                     f"+{pl['gap_to_sota_pct']:.1f} % | {beats or '—'} |")
+    lines.append("")
     g = doc["gate"]
     lines += [f"## Phase-1 gate: {'**PASS**' if g['passed'] else '**NOT YET MET**'}", "",
               "| check | ok | detail |", "|---|---|---|"]
