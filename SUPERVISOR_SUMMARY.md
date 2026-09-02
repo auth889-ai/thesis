@@ -3,7 +3,29 @@
 **Traffic prediction first, route optimisation second.** Every number below is read from a file
 in this package, and every file names the one command that regenerates it. Nothing is typed by hand.
 
-Verified at commit `33659af`. Tests: **232 passed, 5 skipped**. CI: **green**.
+Verified at commit `f1d1420`. Tests: **242 passed, 5 skipped**. CI: **green**.
+
+## What you asked me to fix — and what was done
+
+| your correction | what changed |
+|---|---|
+| **Do not call MOSAIC-generated ITS-G5 packets "real messages."** They are simulated V2X communication events produced by an official simulator. | Corrected at the *source*, not just in prose. The provenance record every downstream table quotes (`artifacts/gates/mosaic_barnim/latencies.json`) now reads **"SIMULATED by official Eclipse MOSAIC 25.2"** and carries a `measurement_nature` field stating it is simulator output, not radio hardware. The same fix went into the latency generator, the federated module, the training launcher, the results builder, `README.md` and `main.py`, and every affected table was regenerated. Every new record written by the impairment work is stamped `SIMULATED`. |
+| **Do not claim "works for any city" merely because `city_datasets.py` has multiple loaders.** That proves software portability, not cross-city prediction accuracy. | The claim is withdrawn. Section 1 now says explicitly that multiple loaders demonstrate **software portability, not cross-city accuracy**, that a cross-city claim requires a zero-shot / fine-tuned comparison against city-specific models, and that **Dhaka prediction accuracy is not claimed** — there are not yet enough legitimate Dhaka historical observations to support it. |
+
+Fixing the first one exposed a genuine bug rather than only a wording problem: `latency_injection.py`
+still pointed at a module path the earlier restructure had removed, so the script had been failing
+to run. It is fixed and its output regenerated.
+
+### The rest of your brief
+
+The work has been re-planned around the core research question you set, under the **upstream-first
+rule**: clone the official repo, pin its SHA, use the authors' own preprocessing and config,
+reproduce their published benchmark, record `REPRODUCTION_PASS/FAIL`, and only then attach a thin
+adapter. No algorithm is reimplemented from paper text and no new architecture is invented.
+Progress against each item is in **section 8**, and the reproduction ledger is
+`results/upstream/REPRODUCTIONS.md`.
+
+---
 
 ## The research question
 
