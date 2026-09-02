@@ -14,7 +14,7 @@ Tolerance: 5% relative error against the published figure.
 | STAEformer | METR-LA | `XDZhelheim/STAEformer` | `PINNED — see` | `trained via the BasicTS-legacy harness; the AUTHORS' OWN repo run is pending` | MAE@15min | – | 2.6738 | – | **REFERENCE_UNKNOWN** |
 | CNFGNN | METR-LA | `mengcz13/KDD2021_CNFGNN` | `505660846e04` | `submission_exps/exp_main.sh -> SplitFedAvgNodePredictor + GRUSeq2SeqWithGraphNet` | MAE@15min | – | – | – | **NOT_ATTEMPTED** |
 | FedGTP | PeMSD7 | `LarryHawkingYoung/KDD2024_FedGTP` | `ff128f5bed77` | `config/PeMSD7.conf + run.sh (num_clients=4, metis partition, adptpolu)` | MAE | – | – | – | **NOT_ATTEMPTED** |
-| OpenCity | cross-city (zero-shot) | `HKUDS/OpenCity` | `eca64c9d9c65` | `conf/ + released pretrained weights (HuggingFace hkuds/OpenCity-Plus)` | MAE | – | – | – | **NOT_ATTEMPTED** |
+| OpenCity | cross-city (zero-shot) | `HKUDS/OpenCity` | `eca64c9d9c65` | `conf/ + released pretrained weights (HuggingFace hkuds/OpenCity-Plus)` | MAE (zero-shot, PEMS07M, authors' 288-step horizon) | – | 4.5 | – | **REFERENCE_UNKNOWN** |
 
 ## What is blocking the outstanding reproductions
 
@@ -27,7 +27,8 @@ Tolerance: 5% relative error against the published figure.
   - _PeMSD7 data ships inside the repo (15 MB), so this is the cheapest genuine federated reproduction available and is attempted first. Its server/client processes talk over real TCP sockets, which is exactly where the communication impairment adapter attaches._
 
 **OpenCity / cross-city (zero-shot)**
-  - runner, GPU job and compatibility shims are built and the released weights are downloaded; the evaluation itself has NOT yet produced a number, so this stays NOT_ATTEMPTED. A first GPU attempt uploaded nothing because it was launched without an IAM instance profile and had no S3 access.
+  - PEMS07M ran: zero-shot MAE 4.50 / RMSE 8.21 / MAPE 12.20 % on the authors' own protocol. The verdict stays REFERENCE_UNKNOWN rather than PASS because their published figure for this setting has not been read out of the paper yet.
+  - TrafficSH / NJ / TJ hit CUDA OOM at batch 8 on a 22 GB A10G (896 nodes vs PEMS07M's 228); relaunched at batch 1.
   - _CRITICAL for how this is reported: METR_LA and PEMS_BAY are in OpenCity's pre-training corpus, so neither can support a zero-shot claim. Only held-out cities (PEMS07M, TrafficSH/NJ/TJ, SZ_DIDI, CD_DIDI, NYC_BIKE-3, CHI_TAXI) can._
 
 ## Notes

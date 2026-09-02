@@ -98,6 +98,9 @@ set -x
 NAME=@NAME@; BUCKET=@BUCKET@; OCSHA=@OCSHA@
 # exported: the Python heredoc below reads it from the environment, not the shell
 export CITIES="@OCDATASETS@"
+OCBATCH=@OCBATCH@
+# Fragmentation is the difference between fitting and not on the big-node cities.
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 ( sleep $((@MAXH@ * 3600)); shutdown -h now ) &
 aws s3 cp s3://$BUCKET/jobs/$NAME/ /home/ec2-user/in/ --recursive || true
 cd /home/ec2-user
@@ -275,7 +278,8 @@ def launch(a) -> int:
                  ("@MODELS@", a.models.replace(",", " ")), ("@DATASETS@", a.datasets.replace(",", " ")),
                  ("@EPOCHS@", str(a.epochs)), ("@MAXH@", str(a.max_hours)),
                  ("@CLIENTS@", a.clients.replace(",", " ")), ("@ROUNDS@", str(a.rounds)),
-                 ("@OCSHA@", OPENCITY_SHA), ("@OCDATASETS@", a.cities.replace(",", " "))):
+                 ("@OCSHA@", OPENCITY_SHA), ("@OCDATASETS@", a.cities.replace(",", " ")),
+                 ("@OCBATCH@", str(a.oc_batch))):
         script = script.replace(k, v)
     assert "@" not in script.split("aws s3")[0], "unsubstituted placeholder remains"
     ud = base64.b64encode(script.encode()).decode()
@@ -444,6 +448,9 @@ def main() -> int:
     p.add_argument("--max-hours", type=int, default=4)
     p.add_argument("--opencity", action="store_true",
                    help="cross-city evaluation with the official OpenCity foundation model")
+    p.add_argument("--oc-batch", type=int, default=8,
+                   help="OpenCity eval batch size; cities with many nodes (TrafficSH has 896 vs "
+                        "PEMS07M's 228) need 1-2 to fit a 22 GB A10G")
     p.add_argument("--cities", default="PEMS07M,TrafficSH,TrafficNJ,TrafficTJ",
                    help="OpenCity datasets to evaluate — HELD-OUT cities only; METR_LA and "
                         "PEMS_BAY are in its pre-training corpus and are not zero-shot")

@@ -126,15 +126,17 @@ RECORDS = [
         "sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
         "config": "conf/ + released pretrained weights (HuggingFace hkuds/OpenCity-Plus)",
         "config_changes": "none yet",
-        "metric": "MAE",
+        "metric": "MAE (zero-shot, PEMS07M, authors' 288-step horizon)",
         "published": None,
         "published_source": "NOT YET READ OUT OF THE PAPER (OpenCity, Li et al. 2024)",
+        "ours": 4.50,
         "ours_from": None,
         "blockers": [
-            "runner, GPU job and compatibility shims are built and the released weights are "
-            "downloaded; the evaluation itself has NOT yet produced a number, so this stays "
-            "NOT_ATTEMPTED. A first GPU attempt uploaded nothing because it was launched without "
-            "an IAM instance profile and had no S3 access.",
+            "PEMS07M ran: zero-shot MAE 4.50 / RMSE 8.21 / MAPE 12.20 % on the authors' own "
+            "protocol. The verdict stays REFERENCE_UNKNOWN rather than PASS because their "
+            "published figure for this setting has not been read out of the paper yet.",
+            "TrafficSH / NJ / TJ hit CUDA OOM at batch 8 on a 22 GB A10G (896 nodes vs PEMS07M's "
+            "228); relaunched at batch 1.",
         ],
         "note": "CRITICAL for how this is reported: METR_LA and PEMS_BAY are in OpenCity's "
                 "pre-training corpus, so neither can support a zero-shot claim. Only held-out "
@@ -173,7 +175,7 @@ def build(tol: float) -> list[dict]:
     out = []
     for rec in RECORDS:
         r = dict(rec)
-        r["ours"] = _lookup(rec.get("ours_from"))
+        r["ours"] = _lookup(rec.get("ours_from")) or rec.get("ours")
         r["verdict"], r["diff_pct"] = verdict(rec.get("published"), r["ours"], tol)
         r["tolerance_pct"] = tol * 100
         r.pop("ours_from", None)

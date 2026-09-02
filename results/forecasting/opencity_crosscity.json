@@ -1,0 +1,129 @@
+[
+ {
+  "dataset": "PEMS07M",
+  "model": "OpenCity-plus",
+  "arm": "zero_shot",
+  "exposure": "HELD_OUT_ZERO_SHOT",
+  "exposure_note": "absent from OpenCity's pre-training corpus, so this IS a zero-shot result",
+  "status": "OK",
+  "failure": null,
+  "metrics": {
+   "average": {
+    "mae": 4.5,
+    "rmse": 8.21,
+    "mape": 12.1966,
+    "corr": 0.7361
+   }
+  },
+  "upstream": {
+   "repo": "HKUDS/OpenCity",
+   "sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
+   "weights": "OpenCity-plus.pth",
+   "weights_source": "huggingface hkuds/OpenCity-Plus (released, as-is)",
+   "command": "Run.py -mode test -model OpenCity (authors' own evaluation)",
+   "config_changed": "dataset_use -> ['PEMS07M'], restored after the run",
+   "checkout_restored": true,
+   "checkout_verified_by": "git status --porcelain on the instance -> empty"
+  },
+  "settings": {
+   "batch_size": 8,
+   "embed_dim": 512,
+   "skip_dim": 512,
+   "enc_depth": 6,
+   "split": "the authors' own (their predictor config overrides CLI ratios)"
+  },
+  "compatibility_shims": "pipeline/forecasting/_opencity_boot.py \u2014 NumPy 2.0 aliases; no upstream source edited",
+  "hardware": "AWS g5.xlarge (A10G 22 GB), job opencity-crosscity",
+  "log": "results/forecasting/opencity_logs/oc_PEMS07M.log"
+ },
+ {
+  "dataset": "TrafficNJ",
+  "model": "OpenCity-plus",
+  "arm": "zero_shot",
+  "exposure": "HELD_OUT_ZERO_SHOT",
+  "exposure_note": "absent from OpenCity's pre-training corpus, so this IS a zero-shot result",
+  "status": "CUDA_OOM",
+  "failure": "CUDA out of memory at batch_size 8 on a 22 GB A10G \u2014 this city has far more nodes than PEMS07M (228); needs a smaller batch, not a different method",
+  "metrics": {},
+  "upstream": {
+   "repo": "HKUDS/OpenCity",
+   "sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
+   "weights": "OpenCity-plus.pth",
+   "weights_source": "huggingface hkuds/OpenCity-Plus (released, as-is)",
+   "command": "Run.py -mode test -model OpenCity (authors' own evaluation)",
+   "config_changed": "dataset_use -> ['TrafficNJ'], restored after the run",
+   "checkout_restored": true,
+   "checkout_verified_by": "git status --porcelain on the instance -> empty"
+  },
+  "settings": {
+   "batch_size": 8,
+   "embed_dim": 512,
+   "skip_dim": 512,
+   "enc_depth": 6,
+   "split": "the authors' own (their predictor config overrides CLI ratios)"
+  },
+  "compatibility_shims": "pipeline/forecasting/_opencity_boot.py \u2014 NumPy 2.0 aliases; no upstream source edited",
+  "hardware": "AWS g5.xlarge (A10G 22 GB), job opencity-crosscity",
+  "log": "results/forecasting/opencity_logs/oc_TrafficNJ.log"
+ },
+ {
+  "dataset": "TrafficSH",
+  "model": "OpenCity-plus",
+  "arm": "zero_shot",
+  "exposure": "HELD_OUT_ZERO_SHOT",
+  "exposure_note": "absent from OpenCity's pre-training corpus, so this IS a zero-shot result",
+  "status": "CUDA_OOM",
+  "failure": "CUDA out of memory at batch_size 8 on a 22 GB A10G \u2014 this city has far more nodes than PEMS07M (228); needs a smaller batch, not a different method",
+  "metrics": {},
+  "upstream": {
+   "repo": "HKUDS/OpenCity",
+   "sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
+   "weights": "OpenCity-plus.pth",
+   "weights_source": "huggingface hkuds/OpenCity-Plus (released, as-is)",
+   "command": "Run.py -mode test -model OpenCity (authors' own evaluation)",
+   "config_changed": "dataset_use -> ['TrafficSH'], restored after the run",
+   "checkout_restored": true,
+   "checkout_verified_by": "git status --porcelain on the instance -> empty"
+  },
+  "settings": {
+   "batch_size": 8,
+   "embed_dim": 512,
+   "skip_dim": 512,
+   "enc_depth": 6,
+   "split": "the authors' own (their predictor config overrides CLI ratios)"
+  },
+  "compatibility_shims": "pipeline/forecasting/_opencity_boot.py \u2014 NumPy 2.0 aliases; no upstream source edited",
+  "hardware": "AWS g5.xlarge (A10G 22 GB), job opencity-crosscity",
+  "log": "results/forecasting/opencity_logs/oc_TrafficSH.log"
+ },
+ {
+  "dataset": "TrafficTJ",
+  "model": "OpenCity-plus",
+  "arm": "zero_shot",
+  "exposure": "HELD_OUT_ZERO_SHOT",
+  "exposure_note": "absent from OpenCity's pre-training corpus, so this IS a zero-shot result",
+  "status": "CUDA_OOM",
+  "failure": "CUDA out of memory at batch_size 8 on a 22 GB A10G \u2014 this city has far more nodes than PEMS07M (228); needs a smaller batch, not a different method",
+  "metrics": {},
+  "upstream": {
+   "repo": "HKUDS/OpenCity",
+   "sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
+   "weights": "OpenCity-plus.pth",
+   "weights_source": "huggingface hkuds/OpenCity-Plus (released, as-is)",
+   "command": "Run.py -mode test -model OpenCity (authors' own evaluation)",
+   "config_changed": "dataset_use -> ['TrafficTJ'], restored after the run",
+   "checkout_restored": true,
+   "checkout_verified_by": "git status --porcelain on the instance -> empty"
+  },
+  "settings": {
+   "batch_size": 8,
+   "embed_dim": 512,
+   "skip_dim": 512,
+   "enc_depth": 6,
+   "split": "the authors' own (their predictor config overrides CLI ratios)"
+  },
+  "compatibility_shims": "pipeline/forecasting/_opencity_boot.py \u2014 NumPy 2.0 aliases; no upstream source edited",
+  "hardware": "AWS g5.xlarge (A10G 22 GB), job opencity-crosscity",
+  "log": "results/forecasting/opencity_logs/oc_TrafficTJ.log"
+ }
+]
