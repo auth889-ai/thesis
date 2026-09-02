@@ -2,7 +2,7 @@
 #
 # HARD RULE: official research code is never committed into this repository and
 # never modified. This file records *what* to fetch and *at which exact commit*.
-# `scripts/fetch_upstream.py` clones each entry into the gitignored external
+# `pipeline/upstream/fetch_upstream.py` clones each entry into the gitignored external
 # workspace ($DHAKAFLOW_WORKSPACE, default ~/.dhakaflow/upstream) and verifies
 # the checked-out SHA matches this file before the code may be used.
 #
@@ -269,4 +269,59 @@ repos:
     license: EPL-2.0
     why: Official V2X co-simulation (SUMO + SNS/cell/ns-3). The bundled
          Barnim example is reproduced as-is; DhakaFlow's message bus uses
-         latency distributions MEASURED from that official run.
+         latency distributions SIMULATED by that official run (simulator
+         output, not radio-hardware measurement).
+
+  # -------------------------------------------------- federated forecasting
+  # Core research question: how do realistic V2X communication constraints
+  # affect DISTRIBUTED traffic forecasting accuracy, and how does that
+  # degradation propagate into prediction-aware routing? These two are the
+  # official baselines that question is measured against. Upstream-first:
+  # reproduce the authors' own benchmark BEFORE any impairment adapter is
+  # attached, and record REPRODUCTION_PASS/FAIL.
+
+  - name: CNFGNN
+    subsystem: federated_forecasting
+    url: https://github.com/mengcz13/KDD2021_CNFGNN.git
+    ref: main
+    sha: 505660846e046ab5890d1450b918b8fe9317bd46
+    verified: "2026-09-02"
+    status: PINNED_NOT_FETCHED
+    paper: https://arxiv.org/abs/2106.05223
+    venue: KDD 2021
+    why: Cross-Node Federated Graph Neural Network - the reference federated
+         spatio-temporal forecasting method. Splits temporal modelling (on
+         node) from spatial modelling (on server) with alternating training,
+         so its communication cost is a first-class quantity. This is the
+         baseline our impairment study degrades; we do not reimplement it.
+
+  - name: FedGTP
+    subsystem: federated_forecasting
+    url: https://github.com/LarryHawkingYoung/KDD2024_FedGTP.git
+    ref: main
+    sha: ff128f5bed7780b384776d03fe0bad8110575a64
+    verified: "2026-09-02"
+    status: PINNED_NOT_FETCHED
+    paper: https://doi.org/10.1145/3637528.3672054
+    venue: KDD 2024
+    why: Federated Graph-based Traffic Prediction exploiting inter-client
+         spatial dependency - the current federated traffic-forecasting
+         baseline. Compared against CNFGNN and FedAvg under identical
+         communication impairment profiles.
+
+  # ------------------------------------------------- cross-city generalization
+  - name: OpenCity
+    subsystem: forecasting
+    url: https://github.com/HKUDS/OpenCity.git
+    ref: main
+    sha: eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f
+    verified: "2026-09-02"
+    status: PINNED_NOT_FETCHED
+    paper: https://arxiv.org/abs/2408.10269
+    venue: 2024 (traffic foundation model)
+    why: Open-source traffic foundation model with RELEASED PRETRAINED WEIGHTS.
+         Used for the cross-city claim, comparing city-specific
+         GWNet/STAEformer against
+         OpenCity zero-shot vs OpenCity fine-tuned, on METR-LA + PEMS-BAY +
+         a held-out third city. Pretrained weights are used as released; we do
+         not pretrain a foundation model from scratch.

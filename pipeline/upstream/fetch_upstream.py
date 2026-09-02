@@ -13,10 +13,10 @@ Policy enforced here (see docs/INTEGRATED_BUILD_PLAN.md §OFFICIAL_REPOS):
   reproducible.
 
 Usage:
-    python scripts/fetch_upstream.py --list
-    python scripts/fetch_upstream.py --name RT-DETR
-    python scripts/fetch_upstream.py --subsystem forecasting
-    python scripts/fetch_upstream.py --verify-only
+    python pipeline/upstream/fetch_upstream.py --list
+    python pipeline/upstream/fetch_upstream.py --name RT-DETR
+    python pipeline/upstream/fetch_upstream.py --subsystem forecasting
+    python pipeline/upstream/fetch_upstream.py --verify-only
 """
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[1]
+REPO_ROOT = Path(__file__).resolve().parents[2]
 PINS_FILE = REPO_ROOT / "upstream" / "UPSTREAM_PINS.yaml"
 DEFAULT_WORKSPACE = Path.home() / ".dhakaflow" / "upstream"
 
@@ -194,9 +194,21 @@ def main() -> int:
         records.append(rec)
         print(f"  {rec['status']:24} {rec['name']}")
 
+    # Merge by name rather than overwrite: fetching one repo must not erase the provenance of
+    # every repo fetched before it.
     out = REPO_ROOT / "artifacts" / "upstream_fetch_record.json"
     out.parent.mkdir(parents=True, exist_ok=True)
-    out.write_text(json.dumps(records, indent=2))
+    prior = {}
+    if out.exists():
+        try:
+            prior = {r["name"]: r for r in json.loads(out.read_text())}
+        except (json.JSONDecodeError, KeyError, TypeError):
+            prior = {}
+    stamp = __import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()
+    for r in records:
+        r["fetched_utc"] = stamp
+        prior[r["name"]] = r
+    out.write_text(json.dumps(sorted(prior.values(), key=lambda r: r["name"]), indent=2))
     print(f"record: {out.relative_to(REPO_ROOT)}")
     return 0 if all(r["status"] in {"VERIFIED", "RESOLVED_FLOATING_REF", "SKIPPED_NO_URL"}
                     for r in records) else 1

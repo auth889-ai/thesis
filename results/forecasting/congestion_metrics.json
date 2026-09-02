@@ -1,0 +1,86 @@
+{
+ "METR-LA": {
+  "GWNet": {
+   "threshold": {
+    "rule": "0.6 x per-sensor free-flow (85th pct of TRAIN-split observed speed)",
+    "ratio": 0.6,
+    "absolute_mph": null,
+    "per_sensor_threshold_mph": {
+     "min": 21.73,
+     "median": 39.82,
+     "max": 42.0
+    },
+    "congested_share_of_observed": 0.1177
+   },
+   "horizons": {
+    "5": {
+     "mae": 2.2611,
+     "rmse": 3.8275,
+     "masked_mape_pct": 5.499,
+     "congestion_mae": 4.407,
+     "freeflow_mae": 1.9746,
+     "congestion_precision": 0.8983,
+     "congestion_recall": 0.9066,
+     "congestion_f1": 0.9024,
+     "n_observed": 50358,
+     "n_congested": 5931
+    },
+    "15": {
+     "mae": 2.793,
+     "rmse": 5.2186,
+     "masked_mape_pct": 7.415,
+     "congestion_mae": 6.7833,
+     "freeflow_mae": 2.2598,
+     "congestion_precision": 0.8657,
+     "congestion_recall": 0.8335,
+     "congestion_f1": 0.8493,
+     "n_observed": 50342,
+     "n_congested": 5934
+    },
+    "30": {
+     "mae": 3.2074,
+     "rmse": 6.3209,
+     "masked_mape_pct": 9.006,
+     "congestion_mae": 8.712,
+     "freeflow_mae": 2.4713,
+     "congestion_precision": 0.8372,
+     "congestion_recall": 0.7781,
+     "congestion_f1": 0.8066,
+     "n_observed": 50314,
+     "n_congested": 5935
+    },
+    "60": {
+     "mae": 3.6419,
+     "rmse": 7.3399,
+     "masked_mape_pct": 10.643,
+     "congestion_mae": 10.6252,
+     "freeflow_mae": 2.7173,
+     "congestion_precision": 0.8132,
+     "congestion_recall": 0.7215,
+     "congestion_f1": 0.7646,
+     "n_observed": 50274,
+     "n_congested": 5878
+    }
+   },
+   "lead_time": {
+    "events": 464,
+    "warned": 337,
+    "missed": 127,
+    "detection_rate": 0.7263,
+    "min_dwell_steps": 2,
+    "definition_first": "largest horizon k whose forecast already flags the onset",
+    "mean_lead_minutes": 46.87,
+    "median_lead_minutes": 60.0,
+    "p90_lead_minutes": 60.0,
+    "definition_sustained": "largest k such that EVERY horizon 1..k flags it (no lone early flag)",
+    "sustained_mean_lead_minutes": 32.3,
+    "sustained_median_lead_minutes": 25.0,
+    "sustained_warned": 185,
+    "max_possible_lead_minutes": 60
+   },
+   "checkpoint": "results/forecasting/checkpoints/GraphWaveNet/METR-LA_50_12_12/d1ffd3d52d3caacf60ebf59214673f7c/GraphWaveNet_best_val_MAE.pt",
+   "official_config": "baselines/GWNet/METR-LA.py",
+   "windows_scored": 256
+  }
+ }
+}
