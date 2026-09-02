@@ -11,23 +11,23 @@ The system is a pipeline, and the order matters — you cannot optimise a route 
 have not predicted:
 
     STAGE 1  PREDICT   sensors / live API -> forecast of near-future congestion
-             predict/city_datasets.py     any city, one interface (METR-LA, PEMS-BAY, PEMS04/08, Dhaka)
-             predict/record_live.py       live Dhaka congestion recorder (real API, compliant)
-             predict/live_state.py        stream -> forecastable series + arithmetic floors
-             predict/federated_forecast.py  ML + NETWORKING: FedAvg across RSUs over a MEASURED V2X link
+             pipeline/forecasting/city_datasets.py     any city, one interface (METR-LA, PEMS-BAY, PEMS04/08, Dhaka)
+             pipeline/forecasting/record_live.py       live Dhaka congestion recorder (real API, compliant)
+             pipeline/forecasting/live_state.py        stream -> forecastable series + arithmetic floors
+             pipeline/forecasting/federated_forecast.py  ML + NETWORKING: FedAvg across RSUs over a MEASURED V2X link
              notebooks/*.ipynb            GPU training (Colab) — never trained on this machine
 
     STAGE 2  ROUTE     forecast -> future edge travel times -> routing -> proof it helped
-             predict/live_to_edges.py     forecast -> SUMO edge travel times on the real road network
-             route/predictive_routing.py  the routing arms (static / reactive / predictive)
-             route/run_arms.py            paired-seed experiment driver
-             route/live_chain.py          the whole chain -> ACT / NO_ACTION decision
-             route/decision_guard.py      refuses to claim an improvement the seeds do not support
+             pipeline/forecasting/live_to_edges.py     forecast -> SUMO edge travel times on the real road network
+             pipeline/routing/predictive_routing.py  the routing arms (static / reactive / predictive)
+             pipeline/routing/run_arms.py            paired-seed experiment driver
+             pipeline/routing/live_chain.py          the whole chain -> ACT / NO_ACTION decision
+             pipeline/routing/decision_guard.py      refuses to claim an improvement the seeds do not support
 
     EVIDENCE results/build_results.py -> results/RESULTS.md   every number -> command -> file
 
 Everything else in the repo is support: `dhakaflow/` is the reusable library, `research/` holds
-imported algorithm adapters, `network/` the V2X experiments, `nlp/` the incident-text pipeline,
+imported algorithm adapters, `pipeline/networking/` the V2X experiments, `pipeline/nlp/` the incident-text pipeline,
 `artifacts/` is RUN OUTPUT (not source), and `legacy/` is retired code kept only for history.
 """
 from __future__ import annotations
@@ -50,7 +50,7 @@ def run(cmd: list[str], why: str) -> int:
 def status(_a) -> int:
     print("STAGE 1 — PREDICTION")
     sys.path.insert(0, str(REPO))
-    from predict.city_datasets import REGISTRY, available, load_city
+    from pipeline.forecasting.city_datasets import REGISTRY, available, load_city
     for city in REGISTRY:
         if available(city):
             try:
@@ -67,23 +67,23 @@ def status(_a) -> int:
         m = json.loads(rec.read_text())
         print(f"  live recorder: {m['ticks']} sweeps, {m['rows_ok']} rows, {m['rows_failed']} failed "
               f"({m['reality']}, every {m['interval_s']}s)")
-    for f, what in (("predict/results/federated.md", "federated (ML x networking)"),
-                    ("predict/results/twin_models.md", "trained models"),
-                    ("predict/results/benchmark.md", "public benchmark (Colab)")):
+    for f, what in (("results/forecasting/federated.md", "federated (ML x networking)"),
+                    ("results/forecasting/twin_models.md", "trained models"),
+                    ("results/forecasting/benchmark.md", "public benchmark (Colab)")):
         print(f"  {'OK  ' if (REPO / f).exists() else 'MISS'} {what:<32} {f}")
 
     print("\nSTAGE 2 — ROUTE OPTIMISATION")
-    for f, what in (("route/results/stats.md", "routing arms, paired seeds"),
-                    ("route/results/decision_guard_h7200.md", "decision guard"),
-                    ("route/results/live_chain.md", "live chain -> ACT/NO_ACTION"),
-                    ("route/results/incident.md", "NLP incident -> reroute"),
-                    ("route/results/real_demand.md", "real measured demand (Athens)")):
+    for f, what in (("results/routing/stats.md", "routing arms, paired seeds"),
+                    ("results/routing/decision_guard_h7200.md", "decision guard"),
+                    ("results/routing/live_chain.md", "live chain -> ACT/NO_ACTION"),
+                    ("results/routing/incident.md", "NLP incident -> reroute"),
+                    ("results/routing/real_demand.md", "real measured demand (Athens)")):
         print(f"  {'OK  ' if (REPO / f).exists() else 'MISS'} {what:<32} {f}")
 
     print("\nNETWORKING")
-    for f, what in (("network/results/penetration.md", "V2X penetration sweep"),
-                    ("network/results/latency.md", "latency / loss"),
-                    ("network/results/event_sweep.md", "DENM from our own event")):
+    for f, what in (("results/networking/penetration.md", "V2X penetration sweep"),
+                    ("results/networking/latency.md", "latency / loss"),
+                    ("results/networking/event_sweep.md", "DENM from our own event")):
         print(f"  {'OK  ' if (REPO / f).exists() else 'MISS'} {what:<32} {f}")
 
     res = REPO / "results/RESULTS.md"
@@ -96,24 +96,24 @@ def status(_a) -> int:
 
 def predict(a) -> int:
     """STAGE 1. Data first, then the floors that any model must beat, then the ML x networking run."""
-    rc = run(["predict/city_datasets.py", "--city", a.city], f"load and validate {a.city}")
+    rc = run(["pipeline/forecasting/city_datasets.py", "--city", a.city], f"load and validate {a.city}")
     if rc:
         return rc
-    if (REPO / "predict/data/live_dhaka/series.npz").exists() or (REPO / "artifacts/live_dhaka").exists():
-        run(["predict/live_state.py", "--report"], "live Dhaka stream -> series + floors")
-    run(["predict/federated_forecast.py", "--self-test"], "verify the federated + V2X mechanics")
+    if (REPO / "data/forecasting/live_dhaka/series.npz").exists() or (REPO / "artifacts/live_dhaka").exists():
+        run(["pipeline/forecasting/live_state.py", "--report"], "live Dhaka stream -> series + floors")
+    run(["pipeline/forecasting/federated_forecast.py", "--self-test"], "verify the federated + V2X mechanics")
     print("\n\033[1mGPU training runs on Colab, never here:\033[0m")
     print("  notebooks/Predict_BasicTS_Colab.ipynb   official baselines (STID/GWNet/DCRNN/AGCRN/STAEformer)")
     print("  notebooks/Federated_V2X_Colab.ipynb     federated forecasting over the measured V2X link")
-    print("  push the source first:  bash predict/sync_src_to_drive.sh")
+    print("  push the source first:  bash pipeline/forecasting/sync_src_to_drive.sh")
     return 0
 
 
 def route(a) -> int:
     """STAGE 2. Only meaningful once a forecast exists — that is why it is stage 2."""
-    if not (REPO / "predict/data/live_dhaka/corridor_edges.json").exists():
-        run(["predict/live_to_edges.py", "--map"], "map live corridors onto the real road network")
-    rc = run(["route/live_chain.py", "--seeds", a.seeds], "live congestion -> routing -> ACT/NO_ACTION")
+    if not (REPO / "data/forecasting/live_dhaka/corridor_edges.json").exists():
+        run(["pipeline/forecasting/live_to_edges.py", "--map"], "map live corridors onto the real road network")
+    rc = run(["pipeline/routing/live_chain.py", "--seeds", a.seeds], "live congestion -> routing -> ACT/NO_ACTION")
     run(["results/build_results.py"], "collect every table into results/RESULTS.md")
     return rc
 

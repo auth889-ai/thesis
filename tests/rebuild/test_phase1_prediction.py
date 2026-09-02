@@ -10,10 +10,10 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-from predict.comparison_table import FLOOR_NAMES, build, gate  # noqa: E402
-from predict.record_results import MAPE_IS_FRACTION, PUBLISHED, UPSTREAM, parse_log  # noqa: E402
+from pipeline.forecasting.comparison_table import FLOOR_NAMES, build, gate  # noqa: E402
+from pipeline.forecasting.record_results import MAPE_IS_FRACTION, PUBLISHED, UPSTREAM, parse_log  # noqa: E402
 
-RES = REPO / "predict/results"
+RES = REPO / "results/forecasting"
 PY = sys.executable
 
 
@@ -107,7 +107,7 @@ def test_real_record_carries_full_provenance():
 
 @pytest.mark.skipif(not (RES / "phase1_comparison.json").exists(), reason="run comparison_table.py")
 def test_comparison_table_is_regenerable_and_self_consistent():
-    r = subprocess.run([PY, str(REPO / "predict/comparison_table.py")], capture_output=True, text=True, cwd=REPO)
+    r = subprocess.run([PY, str(REPO / "pipeline/forecasting/comparison_table.py")], capture_output=True, text=True, cwd=REPO)
     assert r.returncode == 0, r.stderr[-500:]
     doc = json.loads((RES / "phase1_comparison.json").read_text())
     assert doc["rows"] and "gate" in doc
@@ -120,7 +120,7 @@ def test_comparison_table_is_regenerable_and_self_consistent():
 @pytest.mark.skipif(not (RES / "phase1_comparison.json").exists(), reason="run comparison_table.py")
 def test_phase1_gate_passes_on_the_real_evidence():
     """Phase 1 is complete. If this fails, a result regressed or evidence was deleted."""
-    r = subprocess.run([PY, str(REPO / "predict/comparison_table.py"), "--check"],
+    r = subprocess.run([PY, str(REPO / "pipeline/forecasting/comparison_table.py"), "--check"],
                        capture_output=True, text=True, cwd=REPO)
     doc = json.loads((RES / "phase1_comparison.json").read_text())
     failed = [k for k, v in doc["gate"]["checks"].items() if not v["ok"]]
@@ -160,6 +160,6 @@ def test_every_checkpoint_reproduces_its_reported_error():
 def test_checkpoint_selection_requires_a_matching_dataset():
     """Matching on architecture alone once loaded METR-LA weights for a PEMS-BAY request."""
     import inspect
-    from predict import infer_from_checkpoint as ifc
+    from pipeline.forecasting import infer_from_checkpoint as ifc
     src = inspect.getsource(ifc.main)
     assert 'c["dataset_dir"] == a.dataset' in src, "checkpoint choice must filter on dataset"

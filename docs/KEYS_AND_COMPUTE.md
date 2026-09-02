@@ -8,7 +8,7 @@ secrets / notebook environment variables.
 
 | Credential | Env var / access | Required for | Used in thesis as |
 |---|---|---|---|
-| Google Maps Platform | `GOOGLE_MAPS_API_KEY` | live route/travel-time reference, weather/reference context, demo comparison | live reference and sanity check, not ML training data |
+| Google Maps Platform | `GOOGLE_MAPS_API_KEY` | live pipeline/routing/travel-time reference, weather/reference context, demo comparison | live reference and sanity check, not ML training data |
 | Road traffic provider | `ROAD511_API_KEY` or provider equivalent | live incidents, live camera metadata/snapshots if available | provider integration + incident evidence; Dhaka validation only if the provider is actually Dhaka |
 | Google Colab Pro | browser login: `anastasiasaat81@gmail.com` | GPU training for BasicTS/STGNN models | compute, not an API key |
 | Google Drive 3 TB | same Google account | datasets, checkpoints, logs, large artifacts | remote artifact store with sha256 manifests |
@@ -21,8 +21,8 @@ secrets / notebook environment variables.
 
 Use Google Routes for reference/comparison only:
 
-- compare SUMO route/travel-time estimates against a live commercial reference
-- display route/reference information in the demo with correct attribution
+- compare SUMO pipeline/routing/travel-time estimates against a live commercial reference
+- display pipeline/routing/reference information in the demo with correct attribution
 - avoid using Google Routes responses as a stored ML training dataset
 - set API restrictions to only the APIs used by this project
 - set daily quota/budget alerts before running loops
@@ -79,7 +79,7 @@ Google Routes is billed per request, so the verifier reports it as present but
 does not spend quota. Run the live Google capture deliberately:
 
 ```bash
-python predict/run_live_capture.py
+python pipeline/forecasting/run_live_capture.py
 ```
 
 ## Colab Workflow

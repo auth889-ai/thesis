@@ -1,0 +1,31 @@
+{
+ "arm": "predeparture_oracle_c0.3",
+ "seed": 20,
+ "horizon_s": 7200,
+ "scale": 0.2,
+ "compliance": 0.3,
+ "weights": "results/routing/scale0.2/static_s20_h7200/edgedata.xml",
+ "equipped_trips": 7147,
+ "routes_changed": 6258,
+ "duarouter": "duarouter --net-file /Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml --route-files results/routing/scale0.2/predeparture_oracle_c0.3_s20_h7200/trips_equipped.xml --weight-files results/routing/scale0.2/static_s20_h7200/edgedata.xml --weight-attribute traveltime --output-file results/routing/scale0.2/predeparture_oracle_c0.3_s20_h7200/routes_equipped.rou.xml --ignore-errors --no-warnings --no-step-log --seed 20 --routing-threads 4",
+ "wall_s": 15.1,
+ "metrics": {
+  "arrived": 4785,
+  "unfinished_at_horizon": 15,
+  "unfinished": 15,
+  "total_vehicle_hours": 1174.6183333333333,
+  "mean_travel_time_all": 880.96375,
+  "mean_travel_time_s": 875.3974921630094,
+  "p95_travel_time_s": 1905.0,
+  "mean_waiting_s": 299.5059561128527,
+  "total_waiting_s": 1433136.0,
+  "mean_time_loss_s": 561.9275882967606,
+  "mean_depart_delay_s": 331.3201671891327,
+  "vehicles_rerouted_at_least_once": 0,
+  "teleports": 108,
+  "loaded": 24000,
+  "inserted": 4800,
+  "running_at_end": 15,
+  "waiting_to_insert_at_end": 0
+ }
+}

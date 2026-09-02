@@ -13,7 +13,7 @@ def _write(path: Path, payload: dict) -> None:
 
 def test_evidence_audit_fails_failed_twin_manifest(tmp_path: Path):
     _write(
-        tmp_path / "predict/data/dhaka_twin/MANIFEST.json",
+        tmp_path / "data/forecasting/dhaka_twin/MANIFEST.json",
         {
             "label": "DHAKA_SIMULATED_SENSOR_GRAPH",
             "seeds": [11, 12, 13],
@@ -31,7 +31,7 @@ def test_evidence_audit_fails_failed_twin_manifest(tmp_path: Path):
 
 def test_evidence_audit_passes_core_local_evidence_with_colab_pending(tmp_path: Path):
     _write(
-        tmp_path / "predict/data/dhaka_twin/MANIFEST.json",
+        tmp_path / "data/forecasting/dhaka_twin/MANIFEST.json",
         {
             "label": "DHAKA_SIMULATED_SENSOR_GRAPH",
             "seeds": [11, 12, 13],
@@ -40,11 +40,11 @@ def test_evidence_audit_passes_core_local_evidence_with_colab_pending(tmp_path: 
         },
     )
     _write(
-        tmp_path / "predict/results/twin_floors.json",
+        tmp_path / "results/forecasting/twin_floors.json",
         {"models": {"persistence": {}, "historical_average": {}}, "horizons_min": [5, 15, 30, 60]},
     )
     _write(
-        tmp_path / "route/results/decision_guard.json",
+        tmp_path / "results/routing/decision_guard.json",
         {
             "decision": "ACT",
             "selected_arm": "predictive_persistence",
@@ -61,9 +61,9 @@ def test_evidence_audit_passes_core_local_evidence_with_colab_pending(tmp_path: 
             "latest": [{"route_content_persisted": False}],
         },
     )
-    (tmp_path / "network/results").mkdir(parents=True)
-    (tmp_path / "network/results/penetration.csv").write_text("p,seed\n0.5,11\n")
-    _write(tmp_path / "nlp/results/classifier.json", {"accuracy": 0.9})
+    (tmp_path / "results/networking").mkdir(parents=True)
+    (tmp_path / "results/networking/penetration.csv").write_text("p,seed\n0.5,11\n")
+    _write(tmp_path / "results/nlp/classifier.json", {"accuracy": 0.9})
 
     report = build_report(tmp_path)
     statuses = {r["name"]: r["status"] for r in report["rows"]}

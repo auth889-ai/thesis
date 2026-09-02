@@ -38,7 +38,7 @@ def row(name: str, status: str, artifact: Path, check: str, details: str) -> dic
 
 
 def audit_twin(repo: Path) -> dict[str, str]:
-    path = repo / "predict/data/dhaka_twin/MANIFEST.json"
+    path = repo / "data/forecasting/dhaka_twin/MANIFEST.json"
     manifest = load_json(path)
     if not manifest:
         return row("Dhaka twin prediction data", "PENDING", path, "manifest exists", "dataset not generated")
@@ -53,7 +53,7 @@ def audit_twin(repo: Path) -> dict[str, str]:
 
 
 def audit_twin_floors(repo: Path) -> dict[str, str]:
-    path = repo / "predict/results/twin_floors.json"
+    path = repo / "results/forecasting/twin_floors.json"
     rep = load_json(path)
     if not rep:
         return row("Prediction floors", "PENDING", path, "baseline forecast file exists", "not produced")
@@ -66,8 +66,8 @@ def audit_twin_floors(repo: Path) -> dict[str, str]:
 
 
 def audit_colab_benchmark(repo: Path) -> dict[str, str]:
-    csv_path = repo / "predict/results/benchmark.csv"
-    md_path = repo / "predict/results/benchmark.md"
+    csv_path = repo / "results/forecasting/benchmark.csv"
+    md_path = repo / "results/forecasting/benchmark.md"
     if not csv_path.exists() and not md_path.exists():
         return row("Colab BasicTS benchmark", "PENDING", csv_path,
                    "real benchmark table copied from Drive", "run the Colab notebook, then pull results")
@@ -84,7 +84,7 @@ def audit_colab_benchmark(repo: Path) -> dict[str, str]:
 
 
 def audit_routing(repo: Path) -> dict[str, str]:
-    path = repo / "route/results/decision_guard.json"
+    path = repo / "results/routing/decision_guard.json"
     decision = load_json(path)
     if not decision:
         return row("Routing decision guard", "PENDING", path, "decision artifact exists", "run make route")
@@ -178,7 +178,7 @@ def audit_asset_manifest(repo: Path) -> dict[str, str]:
 
 
 def audit_network(repo: Path) -> dict[str, str]:
-    path = repo / "network/results/penetration.csv"
+    path = repo / "results/networking/penetration.csv"
     if not path.exists():
         return row("V2X networking sweep", "PENDING", path, "penetration sweep CSV exists", "run make network")
     lines = [ln for ln in path.read_text().splitlines() if ln.strip()]
@@ -187,7 +187,7 @@ def audit_network(repo: Path) -> dict[str, str]:
 
 
 def audit_nlp(repo: Path) -> dict[str, str]:
-    path = repo / "nlp/results/classifier.json"
+    path = repo / "results/nlp/classifier.json"
     rep = load_json(path)
     if not rep:
         return row("NLP incident classifier", "PENDING", path, "classifier result exists", "run make nlp")

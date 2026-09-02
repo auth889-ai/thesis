@@ -1,4 +1,4 @@
-"""Fast tests for the rebuild tree (predict/ route/ nlp/ results/). No GPU, no network, no long SUMO runs."""
+"""Fast tests for the rebuild tree (pipeline/forecasting/ pipeline/routing/ pipeline/nlp/ results/). No GPU, no network, no long SUMO runs."""
 from __future__ import annotations
 
 import json
@@ -10,10 +10,10 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-from route import predictive_routing as pr  # noqa: E402
-from route import incident_scenario as inc  # noqa: E402
+from pipeline.routing import predictive_routing as pr  # noqa: E402
+from pipeline.routing import incident_scenario as inc  # noqa: E402
 
-SMOKE_EDGEDATA = REPO / "route/results/static_s11_h900/edgedata.xml"
+SMOKE_EDGEDATA = REPO / "results/routing/static_s11_h900/edgedata.xml"
 PY = sys.executable
 
 
@@ -54,7 +54,7 @@ def test_load_weights_and_forecast_to_weights_sources(tmp_path):
     assert intervals[0][0] == 0.0 and intervals[0][1] == 300.0
     for src in ("oracle", "persistence"):
         out = tmp_path / f"{src}.xml"
-        r = subprocess.run([PY, str(REPO / "predict/forecast_to_weights.py"), "--source", src, "--edgedata", str(SMOKE_EDGEDATA),
+        r = subprocess.run([PY, str(REPO / "pipeline/forecasting/forecast_to_weights.py"), "--source", src, "--edgedata", str(SMOKE_EDGEDATA),
                             "--out", str(out)], capture_output=True, text=True)
         assert r.returncode == 0, r.stderr[-800:]
         got = pr.load_weights(out)
@@ -70,13 +70,13 @@ def test_incident_helpers():
     assert inc.pct(100, 80) == -20.0 and inc.pct(0, 5) is None
     lo, hi = inc.boot_ci([-10.0, -12.0, -8.0])
     assert lo <= -10.0 <= hi and lo >= -12.0 and hi <= -8.0
-    ev = inc.load_event(REPO / "nlp/results/events_karwan_bazar.jsonl")
+    ev = inc.load_event(REPO / "results/nlp/events_karwan_bazar.jsonl")
     assert ev["edges"] and ev["factor"] >= 3 and ev["label"] in ("incident", "congestion")
 
 
 def test_event_feed_maps_karwan_bazar_to_r1_edges(tmp_path):
     out = tmp_path / "ev.jsonl"
-    r = subprocess.run([PY, str(REPO / "nlp/event_feed.py"), "--text", "Heavy jam at Karwan Bazar after a bus breakdown", "--out", str(out)],
+    r = subprocess.run([PY, str(REPO / "pipeline/nlp/event_feed.py"), "--text", "Heavy jam at Karwan Bazar after a bus breakdown", "--out", str(out)],
                        capture_output=True, text=True)
     assert r.returncode == 0, r.stderr[-800:]
     ev = [json.loads(l) for l in out.read_text().splitlines() if l.strip()]
@@ -85,7 +85,7 @@ def test_event_feed_maps_karwan_bazar_to_r1_edges(tmp_path):
 
 
 def test_gazetteer_all_inside_or_labelled():
-    g = json.loads((REPO / "nlp/gazetteer.json").read_text())
+    g = json.loads((REPO / "pipeline/nlp/gazetteer.json").read_text())
     places = g if isinstance(g, list) else g.get("places", list(g.values()))
     assert len(places) >= 25
     for p in places:
@@ -103,7 +103,7 @@ def test_build_results_marks_missing(tmp_path, monkeypatch):
 def test_static_and_predictive_smoke(tmp_path):
     for arm, extra in (("static", []), ("predictive", ["--weights", str(SMOKE_EDGEDATA), "--compliance", "0.3"])):
         out = tmp_path / arm
-        r = subprocess.run([PY, str(REPO / "route/predictive_routing.py"), "--arm", arm, "--seed", "11", "--horizon", "300", "--out", str(out)] + extra,
+        r = subprocess.run([PY, str(REPO / "pipeline/routing/predictive_routing.py"), "--arm", arm, "--seed", "11", "--horizon", "300", "--out", str(out)] + extra,
                            capture_output=True, text=True)
         assert r.returncode == 0, r.stderr[-800:]
         m = json.loads((out / "metrics.json").read_text())["metrics"]

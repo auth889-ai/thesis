@@ -18,9 +18,13 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # scripts/, dashboard/, deployment/ and model_registry/ into legacy/ and replaced them with the
 # stage-oriented folders below; this list is the contract for the CURRENT layout.
 REQUIRED_TOP_LEVEL = [
-    "dhakaflow", "configs", "research", "upstream",
-    "predict", "route", "network", "nlp", "demo", "results",
-    "tests", "docs", "artifacts",
+    # 2026-09 restructure: research CODE, its RESULTS and its DATA are separated, and the
+    # dashboard that reads the results is its own application.
+    "pipeline",      # the experiments (forecasting / routing / networking / nlp / core / adapters)
+    "results",       # the evidence they produce
+    "data",          # the datasets they consume
+    "dashboard",     # the app that reads results
+    "tests", "docs", "notebooks", "configs", "artifacts", "upstream",
 ]
 
 REQUIRED_CONFIG_SUBSYSTEMS = [
@@ -138,10 +142,10 @@ def test_lab02_freeze_record_present():
 
 # ------------------------------------------------------------- model registry
 @pytest.mark.skip(reason="model_registry/ was retired to legacy/ in the 2026-09 rebuild; model "
-                         "provenance now lives in predict/results/trained_results.json, which "
+                         "provenance now lives in results/forecasting/trained_results.json, which "
                          "tests/rebuild/test_phase1_prediction.py validates")
 def test_model_registry_entries_validate():
-    from dhakaflow.common.model_registry import load_entries
+    from pipeline.core.common.model_registry import load_entries
 
     entries = load_entries()
     assert entries, "model registry has no entries"
@@ -151,7 +155,7 @@ def test_model_registry_entries_validate():
 
 def test_no_weights_paths_inside_registry_entries():
     """checkpoint_uri must be remote; the loader enforces it, this proves it stays on."""
-    from dhakaflow.common.model_registry import ModelEntry, ModelStatus
+    from pipeline.core.common.model_registry import ModelEntry, ModelStatus
 
     with pytest.raises(ValueError, match="never committed to git"):
         ModelEntry(key="bad", subsystem="perception", architecture="x",

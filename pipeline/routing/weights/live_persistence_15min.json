@@ -1,0 +1,65 @@
+{
+ "out": "pipeline/routing/weights/live_persistence_15min.xml",
+ "edges_written": 79,
+ "corridors": {
+  "banglamotor_to_karwanbazar": {
+   "level": 0.0,
+   "multiplier": 1.08,
+   "edges": 12
+  },
+  "farmgate_to_banglamotor": {
+   "level": 0.0,
+   "multiplier": 1.08,
+   "edges": 31
+  },
+  "farmgate_to_shahbagh": {
+   "level": 0.0,
+   "multiplier": 1.08,
+   "edges": 46
+  },
+  "karwanbazar_to_banglamotor": {
+   "level": 0.0,
+   "multiplier": 1.08,
+   "edges": 21
+  },
+  "karwanbazar_to_shahbagh": {
+   "level": 0.0,
+   "multiplier": 1.08,
+   "edges": 36
+  },
+  "shahbagh_to_farmgate": {
+   "level": 0.0,
+   "multiplier": 1.08,
+   "edges": 26
+  }
+ },
+ "provenance": {
+  "series": "data/forecasting/live_dhaka/series.npz",
+  "bins": 1,
+  "last_bin_utc": "2026-09-01T16:05:00+00:00",
+  "staleness_bins": {
+   "banglamotor_to_karwanbazar": 0,
+   "farmgate_to_banglamotor": 0,
+   "farmgate_to_shahbagh": 0,
+   "karwanbazar_to_banglamotor": 0,
+   "karwanbazar_to_shahbagh": 0,
+   "shahbagh_to_farmgate": 0
+  },
+  "horizon_bins": 3,
+  "forecast": "persistence",
+  "horizon_min": 15.0,
+  "note": "persistence = last observed level projected forward; the floor a learned model must beat"
+ },
+ "band_midpoints": {
+  "0": 1.08,
+  "1": 1.33,
+  "2": 1.75,
+  "3": 2.5
+ },
+ "bands": {
+  "0": "FREE_FLOW ratio<1.15",
+  "1": "SLOW 1.15-1.5",
+  "2": "CONGESTED 1.5-2.0",
+  "3": "SEVERE >=2.0 (open band)"
+ }
+}

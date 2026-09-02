@@ -8,11 +8,11 @@ from __future__ import annotations
 
 import pytest
 
-from dhakaflow.common.city import DHAKA_R1, CityProfile, TrafficSide, get_city
-from dhakaflow.digital_twin.sumo_runner import (CounterfactualComparison,
+from pipeline.core.common.city import DHAKA_R1, CityProfile, TrafficSide, get_city
+from pipeline.core.digital_twin.sumo_runner import (CounterfactualComparison,
                                                 DemandCompletion, write_route_file)
-from dhakaflow.common.types import TrafficMetrics
-from dhakaflow.routing.graph_router import (EdgeInfo, NetworkGraph, RouteDistribution,
+from pipeline.core.common.types import TrafficMetrics
+from pipeline.core.routing.graph_router import (EdgeInfo, NetworkGraph, RouteDistribution,
                                             RouteUnreachable, candidate_distributions,
                                             diverse_alternatives, _edge_overlap)
 

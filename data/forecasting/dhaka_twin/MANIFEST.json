@@ -1,0 +1,293 @@
+{
+ "evidence_domain": "DHAKA_SIMULATED_SENSOR_GRAPH",
+ "never_described_as": "real sensor measurements",
+ "reality_label": "SIMULATED",
+ "shape": {
+  "timesteps": 288,
+  "nodes": 250,
+  "channels": 4
+ },
+ "channels": [
+  "speed_ms",
+  "density_veh_km",
+  "occupancy_pct",
+  "flow_veh"
+ ],
+ "period_s": 300.0,
+ "node_list_sha256": "fe9c7541d754274840b0a101318d5e8f3e71ab8a92745aa05b90498de09876ac",
+ "network_sha256": "06194df039740fa2ceb0bcb2c438444efd755f26e0f863327f0e1d6524775dcb",
+ "seeds": [
+  11,
+  12,
+  13
+ ],
+ "adjacency_recipe": "DCRNN gaussian kernel on directed road distances (Li et al., ICLR 2018), threshold 0.1  [OFFICIAL]",
+ "missing_value_policy": "speed NaN + mask=False when no vehicle sampled; flow/density/occupancy true zeros",
+ "config": {
+  "hours_per_seed": 8.0,
+  "bins_per_seed": 96,
+  "demand_scale": 0.15,
+  "start_hour": 8.0,
+  "demand_provenance": "CALIBRATED_ROUTING_SCENARIO: DUE pulse artifacts/due_dso_stats/v200/DUE/003/trips_003.rou.xml.gz tiled every 600s x 48 (same generator as artifacts/gates/routes_repeat_1h), sumo --scale 0.15",
+  "routes_file": "data/forecasting/dhaka_twin/raw/routes_48x600s.rou.xml.gz",
+  "routes_sha256": "a4285916fa16953e4e899d729ee0f962812035ce75f89e59f7f9319193996f61",
+  "pulse_sha256": "59bb29bb2a01e04589e9f9ae064955ec12552ce4b9ff09077fdf746bc2e03373",
+  "time_to_teleport_s": 300,
+  "seed_boundaries_timesteps": [
+   96,
+   96,
+   96
+  ],
+  "per_seed": [
+   {
+    "seed": 11,
+    "timesteps": 96,
+    "coverage_pct": 84.3,
+    "mean_speed_ms": 14.823,
+    "mean_flow_veh_per_bin": 17.38,
+    "wall_s": 24.4,
+    "inserted": 21600,
+    "loaded": 144000,
+    "running_at_end": 284,
+    "waiting_to_insert_at_end": 0,
+    "teleports": 10,
+    "demand_after_scale": 21600,
+    "insertion_rate": 1.0,
+    "teleport_frac": 0.00046,
+    "pass": true
+   },
+   {
+    "seed": 12,
+    "timesteps": 96,
+    "coverage_pct": 84.3,
+    "mean_speed_ms": 14.818,
+    "mean_flow_veh_per_bin": 17.38,
+    "wall_s": 24.2,
+    "inserted": 21600,
+    "loaded": 144000,
+    "running_at_end": 281,
+    "waiting_to_insert_at_end": 0,
+    "teleports": 1,
+    "demand_after_scale": 21600,
+    "insertion_rate": 1.0,
+    "teleport_frac": 5e-05,
+    "pass": true
+   },
+   {
+    "seed": 13,
+    "timesteps": 96,
+    "coverage_pct": 84.3,
+    "mean_speed_ms": 14.799,
+    "mean_flow_veh_per_bin": 17.36,
+    "wall_s": 24.8,
+    "inserted": 21600,
+    "loaded": 144000,
+    "running_at_end": 312,
+    "waiting_to_insert_at_end": 0,
+    "teleports": 75,
+    "demand_after_scale": 21600,
+    "insertion_rate": 1.0,
+    "teleport_frac": 0.00347,
+    "pass": true
+   }
+  ],
+  "wall_s_total": 75.1,
+  "sumo": "Eclipse SUMO sumo 1.27.1"
+ },
+ "label": "DHAKA_SIMULATED_SENSOR_GRAPH",
+ "acceptance": {
+  "verdict": "PASS",
+  "rule": "every seed: insertion_rate >= 0.95 and teleports/inserted <= 0.01",
+  "per_seed": [
+   {
+    "seed": 11,
+    "insertion_rate": 1.0,
+    "teleport_frac": 0.00046,
+    "pass": true
+   },
+   {
+    "seed": 12,
+    "insertion_rate": 1.0,
+    "teleport_frac": 5e-05,
+    "pass": true
+   },
+   {
+    "seed": 13,
+    "insertion_rate": 1.0,
+    "teleport_frac": 0.00347,
+    "pass": true
+   }
+  ]
+ },
+ "sensor_placement": {
+  "policy": "top-N by summed edgeData `entered` (tie: sampledSeconds, then lanes/speed/length/id rank) over passenger edges in the largest SCC",
+  "source_edgedata": "results/routing/static_s11_h7200/edgedata.xml",
+  "source_edgedata_sha256": "057a998cdab04e550df4af9628ac90fbc88f57fa836a6c08a3bd4fcfb88f9e0a",
+  "source_intervals": 24,
+  "candidates": 2351,
+  "edges_with_traffic_in_source": 902,
+  "min_entered_selected": 224.0,
+  "max_entered_selected": 1336.0
+ },
+ "scale_sweep_note": {
+  "finding": "the calibrated ROUTING scale 0.584 (TWIN_SYNC_PASS, 1-h window) is NOT a usable SENSOR-DATA scale: the DUE pulse (3000 veh / 600 s before scaling) gridlocks R1 at every scale >= 0.2 over 2-4 h; 0.15 is the largest scale in the sweep that passes the gate (insertion 1.00, 0 teleports)",
+  "insertion_rate": "inserted / (inserted + waiting_to_insert_at_end)",
+  "runs_seed11": [
+   {
+    "scale": 0.584,
+    "hours": 4,
+    "inserted": 20366,
+    "waiting": 21682,
+    "insertion_rate": 0.484,
+    "teleports": 2965,
+    "teleport_frac": 0.146,
+    "coverage_pct": 36.0,
+    "wall_s": 258.7,
+    "verdict": "FAIL"
+   },
+   {
+    "scale": 0.5,
+    "hours": 2,
+    "inserted": 11146,
+    "waiting": 6854,
+    "insertion_rate": 0.619,
+    "teleports": 681,
+    "teleport_frac": 0.061,
+    "coverage_pct": 35.8,
+    "wall_s": 71.0,
+    "verdict": "FAIL"
+   },
+   {
+    "scale": 0.4,
+    "hours": 2,
+    "inserted": 7565,
+    "waiting": 6835,
+    "insertion_rate": 0.525,
+    "teleports": 710,
+    "teleport_frac": 0.094,
+    "coverage_pct": 15.5,
+    "wall_s": 57.9,
+    "verdict": "FAIL"
+   },
+   {
+    "scale": 0.3,
+    "hours": 2,
+    "inserted": 8275,
+    "waiting": 2525,
+    "insertion_rate": 0.766,
+    "teleports": 567,
+    "teleport_frac": 0.069,
+    "coverage_pct": 28.7,
+    "wall_s": 47.7,
+    "verdict": "FAIL"
+   },
+   {
+    "scale": 0.25,
+    "hours": 2,
+    "inserted": 9000,
+    "waiting": 0,
+    "insertion_rate": 1.0,
+    "teleports": 62,
+    "teleport_frac": 0.0069,
+    "coverage_pct": 38.1,
+    "wall_s": 34.8,
+    "verdict": "FAIL (teleports > 0.5%)"
+   },
+   {
+    "scale": 0.2,
+    "hours": 2,
+    "inserted": 5230,
+    "waiting": 1970,
+    "insertion_rate": 0.726,
+    "teleports": 109,
+    "teleport_frac": 0.021,
+    "coverage_pct": 13.3,
+    "wall_s": 26.8,
+    "verdict": "FAIL"
+   },
+   {
+    "scale": 0.15,
+    "hours": 2,
+    "inserted": 5400,
+    "waiting": 0,
+    "insertion_rate": 1.0,
+    "teleports": 0,
+    "teleport_frac": 0.0,
+    "coverage_pct": 29.4,
+    "wall_s": 16.1,
+    "verdict": "PASS"
+   },
+   {
+    "scale": 0.1,
+    "hours": 2,
+    "inserted": 3600,
+    "waiting": 0,
+    "insertion_rate": 1.0,
+    "teleports": 0,
+    "teleport_frac": 0.0,
+    "coverage_pct": 13.4,
+    "wall_s": 10.9,
+    "verdict": "PASS"
+   }
+  ],
+  "measured": "2026-09-01, pipeline/forecasting/make_twin_dataset.py, sumo 1.27.1, seed 11, time-to-teleport 300"
+ },
+ "dataset": "dhaka_twin (METR-LA-shaped)",
+ "data_npz": {
+  "data_shape": [
+   288,
+   250,
+   5
+  ],
+  "channels": [
+   "speed_ms",
+   "flow_veh",
+   "occupancy_pct",
+   "tod_fraction",
+   "dow_fraction"
+  ],
+  "speed_missing": "NaN where no vehicle sampled; mask False",
+  "tod": "fraction of 24h clock, window starts at 8:00",
+  "dow": "seed_index % 7 / 7 (each seed = one simulated day)"
+ },
+ "basicts_clock_convention": "period_steps=bins_per_seed: tod = fraction of the simulated window, day = seed index",
+ "files_sha256": {
+  "adj_mx.pkl": "9d9f2b9653640dbe19bba891622d3eaafb63a7264640f6076561e8ae1bbba6a4",
+  "basicts_legacy/adj_mx.pkl": "9d9f2b9653640dbe19bba891622d3eaafb63a7264640f6076561e8ae1bbba6a4",
+  "basicts_legacy/data.dat": "bd02b9dba73116639fe0add942b32f7c646a5033f27f60035bd3c09892e02292",
+  "basicts_legacy/desc.json": "9ed3166f7a1975bef9d25761c4f896d9403eee27ed13d4e3b82abdfff07844c3",
+  "basicts_v1/DESC.json": "5990be63b45ef695ad15eae42d96be27a9b0bb251b8ceda0b2cd956dbc180b71",
+  "basicts_v1/adj_mx.npy": "b47fbe5d943d5a153928668d811be7de4f30cd2ea28646259512f3f6a955a723",
+  "basicts_v1/test_data.npy": "5f726807869d9203ad7dab8d7600cfa0aa00f9a0eeb1e406190c20e23b35d3cf",
+  "basicts_v1/test_timestamps.npy": "75058fe6a2c1872699bf342e8cdf71ce66a592a296f98c581e099098e5a66f79",
+  "basicts_v1/train_data.npy": "e47d08d86c2e5ee1750a88a9e7929caf539fa14695093297760d6a1c216dcc23",
+  "basicts_v1/train_timestamps.npy": "751ea8d4caa2cab95859b0fdd96995fbcb65cc360b6f0ed52a89b42a8d348c30",
+  "basicts_v1/val_data.npy": "804f391237fbd9b07ae2928b31bbb8f0c86155cd9fbdb8fe85e7f115caf2b8aa",
+  "basicts_v1/val_timestamps.npy": "05ee6a4f4451f33fe4fd4bf113a83931befdffa457ffb2b7189dcf294b4cb54b",
+  "data.npz": "c26bf808f9dad200feaff3b67ea837d215689a45596c03fbea441df3c93e2ae7",
+  "sensor_graph_data.npz": "b82f83679fb9eefd85f597d6a71f6effef2a92b7d9576ec7e4721e9ae5ca2695",
+  "sensor_nodes.json": "f6f5a2d4beafb77984612d7fc53b1e99438a0855176839598fe2f5fd1fab3cfa"
+ },
+ "generator": "pipeline/forecasting/make_twin_dataset.py",
+ "args": {
+  "seeds": "11,12,13",
+  "hours": 8.0,
+  "scale": 0.15,
+  "n_sensors": 250,
+  "start_hour": 8.0,
+  "net": "/Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+  "pulse": "/Users/jannatulferdouseva/thesis/artifacts/due_dso_stats/v200/DUE/003/trips_003.rou.xml.gz",
+  "out": "/Users/jannatulferdouseva/thesis/predict/data/dhaka_twin",
+  "time_to_teleport": 300,
+  "sumo_binary": "sumo",
+  "keep_raw": false,
+  "place_by_flow": "auto",
+  "max_teleport_frac": 0.01
+ },
+ "known_limitations": {
+  "sensors_never_observed": 39,
+  "of_total": 250,
+  "meaning": "39 placed sensor edges carry no vehicle in this demand, so they are all-masked columns; a graph model sees them as permanently missing nodes",
+  "detected_by": "pipeline/forecasting/city_datasets.py CityData.validate()"
+ }
+}

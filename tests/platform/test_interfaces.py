@@ -13,23 +13,23 @@ from __future__ import annotations
 
 import pytest
 
-from dhakaflow.common.registry import available, build, clear, register
-from dhakaflow.common.provenance import RunProvenance
-from dhakaflow.common.types import (LaneState, TrafficMetrics, TrafficObservation,
+from pipeline.core.common.registry import available, build, clear, register
+from pipeline.core.common.provenance import RunProvenance
+from pipeline.core.common.types import (LaneState, TrafficMetrics, TrafficObservation,
                                     TrafficScenario, VehicleClass)
-from dhakaflow.common.units import (flow_per_interval_to_vph, kmh_to_ms,
+from pipeline.core.common.units import (flow_per_interval_to_vph, kmh_to_ms,
                                     percent_to_fraction, speed_from_flow_density)
-from dhakaflow.control.interfaces import (SignalAction, SignalActionType, TrafficController)
-from dhakaflow.evaluation.interfaces import ArmSetup, BenchmarkSpec
-from dhakaflow.evaluation.traffic_science import (CriticalPoint, MFDPoint,
+from pipeline.core.control.interfaces import (SignalAction, SignalActionType, TrafficController)
+from pipeline.core.evaluation.interfaces import ArmSetup, BenchmarkSpec
+from pipeline.core.evaluation.traffic_science import (CriticalPoint, MFDPoint,
                                                   distance_to_critical, network_speed)
-from dhakaflow.genai.interfaces import CopilotAnswer, Evidence
-from dhakaflow.perception.interfaces import BoundingBox, Detection, Detector
-from dhakaflow.routing.interfaces import RouteDecision
-from dhakaflow.safety.interfaces import (LAB01_VALIDATED_REFERENCE_PROFILE, SAFETY_PROFILES,
+from pipeline.core.genai.interfaces import CopilotAnswer, Evidence
+from pipeline.core.perception.interfaces import BoundingBox, Detection, Detector
+from pipeline.core.routing.interfaces import RouteDecision
+from pipeline.core.safety.interfaces import (LAB01_VALIDATED_REFERENCE_PROFILE, SAFETY_PROFILES,
                                           SafetyConstraints)
-from dhakaflow.simulation.interfaces import SimulationBackend
-from dhakaflow.visualization.interfaces import FigureSpec
+from pipeline.core.simulation.interfaces import SimulationBackend
+from pipeline.core.visualization.interfaces import FigureSpec
 
 
 # --------------------------------------------------------------------- units

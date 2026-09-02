@@ -1,0 +1,298 @@
+{
+ "METR-LA": {
+  "city": "METR-LA",
+  "summary": {
+   "city": "METR-LA",
+   "timesteps": 34272,
+   "sensors": 207,
+   "bin_seconds": 300,
+   "span_days": 119.0,
+   "quantity": "speed_mph",
+   "reality": "REAL",
+   "coverage": 0.9189,
+   "value_min": 0.33,
+   "value_mean": 58.46,
+   "value_max": 70.0,
+   "has_adjacency": true,
+   "has_coords": false,
+   "source": "data/forecasting/cities/METR-LA/METR-LA.h5",
+   "first": "2012-03-01 00:00:00",
+   "last": "2012-06-27 23:55:00",
+   "missing_encoding": "0.0 means no reading (carried in mask, never imputed)",
+   "paper": "Li et al., DCRNN, ICLR 2018",
+   "expected_sensors": 207
+  },
+  "bin_seconds": 300,
+  "split": {
+   "train": 23990,
+   "val": 3427,
+   "test": 6855
+  },
+  "floors": {
+   "1": {
+    "persistence": {
+     "mae": 2.795175790786743,
+     "rmse": 4.560182094573975,
+     "mape": 6.405893802642822,
+     "n": 1238957
+    },
+    "historical_average": {
+     "mae": 4.189303116438337,
+     "rmse": 7.855885528703754,
+     "mape": 13.044689877090093,
+     "n": 1244780
+    },
+    "global_mean": {
+     "mae": 9.455756187438965,
+     "rmse": 13.664266586303711,
+     "mape": 29.953332901000977,
+     "n": 1238957
+    },
+    "seasonal_naive": {
+     "mae": 5.328932762145996,
+     "rmse": 10.582941055297852,
+     "mape": 14.999382019042969,
+     "n": 1069763
+    }
+   },
+   "3": {
+    "persistence": {
+     "mae": 3.459803342819214,
+     "rmse": 6.310368061065674,
+     "mape": 8.447266578674316,
+     "n": 1231828
+    },
+    "historical_average": {
+     "mae": 4.189303116438337,
+     "rmse": 7.855885528703754,
+     "mape": 13.044689877090093,
+     "n": 1244780
+    },
+    "global_mean": {
+     "mae": 9.451318740844727,
+     "rmse": 13.658320426940918,
+     "mape": 29.91199493408203,
+     "n": 1231828
+    },
+    "seasonal_naive": {
+     "mae": 5.328932762145996,
+     "rmse": 10.582941055297852,
+     "mape": 14.999382019042969,
+     "n": 1069763
+    }
+   },
+   "6": {
+    "persistence": {
+     "mae": 4.146811008453369,
+     "rmse": 7.919678688049316,
+     "mape": 10.628560066223145,
+     "n": 1222602
+    },
+    "historical_average": {
+     "mae": 4.189303116438337,
+     "rmse": 7.855885528703754,
+     "mape": 13.044689877090093,
+     "n": 1244780
+    },
+    "global_mean": {
+     "mae": 9.450263977050781,
+     "rmse": 13.656937599182129,
+     "mape": 29.890731811523438,
+     "n": 1222602
+    },
+    "seasonal_naive": {
+     "mae": 5.328932762145996,
+     "rmse": 10.582941055297852,
+     "mape": 14.999382019042969,
+     "n": 1069763
+    }
+   },
+   "12": {
+    "persistence": {
+     "mae": 5.3076887130737305,
+     "rmse": 10.22358512878418,
+     "mape": 14.301924705505371,
+     "n": 1209566
+    },
+    "historical_average": {
+     "mae": 4.189303116438337,
+     "rmse": 7.855885528703754,
+     "mape": 13.044689877090093,
+     "n": 1244780
+    },
+    "global_mean": {
+     "mae": 9.457012176513672,
+     "rmse": 13.671608924865723,
+     "mape": 30.010805130004883,
+     "n": 1209566
+    },
+    "seasonal_naive": {
+     "mae": 5.328932762145996,
+     "rmse": 10.582941055297852,
+     "mape": 14.999382019042969,
+     "n": 1069763
+    }
+   }
+  },
+  "protocol_check": {
+   "historical_average": {
+    "ours_mae": 4.189,
+    "published_mae": 4.16,
+    "mae_diff_pct": 0.7,
+    "ours_rmse": 7.856,
+    "published_rmse": 7.8,
+    "rmse_diff_pct": 0.72,
+    "source": "DCRNN, Li et al. ICLR 2018, Table 1 (HA)",
+    "verdict": "PROTOCOL MATCHES the published evaluation"
+   }
+  }
+ },
+ "PEMS-BAY": {
+  "city": "PEMS-BAY",
+  "summary": {
+   "city": "PEMS-BAY",
+   "timesteps": 52116,
+   "sensors": 325,
+   "bin_seconds": 300,
+   "span_days": 180.96,
+   "quantity": "speed_mph",
+   "reality": "REAL",
+   "coverage": 1.0,
+   "value_min": 3.0,
+   "value_mean": 62.62,
+   "value_max": 85.1,
+   "has_adjacency": true,
+   "has_coords": false,
+   "source": "data/forecasting/cities/PEMS-BAY/PEMS-BAY.h5",
+   "first": "2017-01-01 00:00:00",
+   "last": "2017-06-30 23:55:00",
+   "missing_encoding": "0.0 means no reading (carried in mask, never imputed)",
+   "paper": "Li et al., DCRNN, ICLR 2018",
+   "expected_sensors": 325
+  },
+  "bin_seconds": 300,
+  "split": {
+   "train": 36481,
+   "val": 5211,
+   "test": 10424
+  },
+  "floors": {
+   "1": {
+    "persistence": {
+     "mae": 0.971078634262085,
+     "rmse": 1.7777079343795776,
+     "mape": 1.8498588800430298,
+     "n": 3383466
+    },
+    "historical_average": {
+     "mae": 3.021196204634122,
+     "rmse": 5.837679564327952,
+     "mape": 7.118091758706964,
+     "n": 3383683
+    },
+    "global_mean": {
+     "mae": 5.665615558624268,
+     "rmse": 9.649230003356934,
+     "mape": 14.474113464355469,
+     "n": 3383466
+    },
+    "seasonal_naive": {
+     "mae": 2.8124372959136963,
+     "rmse": 6.4741034507751465,
+     "mape": 6.322508811950684,
+     "n": 3383466
+    }
+   },
+   "3": {
+    "persistence": {
+     "mae": 1.5904027223587036,
+     "rmse": 3.383960485458374,
+     "mape": 3.229374408721924,
+     "n": 3383466
+    },
+    "historical_average": {
+     "mae": 3.021196204634122,
+     "rmse": 5.837679564327952,
+     "mape": 7.118091758706964,
+     "n": 3383683
+    },
+    "global_mean": {
+     "mae": 5.665624141693115,
+     "rmse": 9.649234771728516,
+     "mape": 14.474124908447266,
+     "n": 3383466
+    },
+    "seasonal_naive": {
+     "mae": 2.8124372959136963,
+     "rmse": 6.4741034507751465,
+     "mape": 6.322508811950684,
+     "n": 3383466
+    }
+   },
+   "6": {
+    "persistence": {
+     "mae": 2.1701040267944336,
+     "rmse": 4.945180416107178,
+     "mape": 4.63882303237915,
+     "n": 3383466
+    },
+    "historical_average": {
+     "mae": 3.021196204634122,
+     "rmse": 5.837679564327952,
+     "mape": 7.118091758706964,
+     "n": 3383683
+    },
+    "global_mean": {
+     "mae": 5.665626525878906,
+     "rmse": 9.649235725402832,
+     "mape": 14.474129676818848,
+     "n": 3383466
+    },
+    "seasonal_naive": {
+     "mae": 2.8124372959136963,
+     "rmse": 6.4741034507751465,
+     "mape": 6.322508811950684,
+     "n": 3383466
+    }
+   },
+   "12": {
+    "persistence": {
+     "mae": 3.03995418548584,
+     "rmse": 6.984405517578125,
+     "mape": 6.823398113250732,
+     "n": 3383466
+    },
+    "historical_average": {
+     "mae": 3.021196204634122,
+     "rmse": 5.837679564327952,
+     "mape": 7.118091758706964,
+     "n": 3383683
+    },
+    "global_mean": {
+     "mae": 5.665622234344482,
+     "rmse": 9.649232864379883,
+     "mape": 14.474122047424316,
+     "n": 3383466
+    },
+    "seasonal_naive": {
+     "mae": 2.8124372959136963,
+     "rmse": 6.4741034507751465,
+     "mape": 6.322508811950684,
+     "n": 3383466
+    }
+   }
+  },
+  "protocol_check": {
+   "historical_average": {
+    "ours_mae": 3.021,
+    "published_mae": 2.88,
+    "mae_diff_pct": 4.9,
+    "ours_rmse": 5.838,
+    "published_rmse": 5.59,
+    "rmse_diff_pct": 4.43,
+    "source": "DCRNN, Li et al. ICLR 2018, Table 1 (HA)",
+    "verdict": "PROTOCOL MATCHES the published evaluation"
+   }
+  }
+ }
+}

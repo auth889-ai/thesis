@@ -96,29 +96,29 @@ python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
 
 python main.py status                  # what exists, what is real, what is missing
-python predict/benchmark_floors.py     # forecasting floors on real data (no GPU, ~2 s)
-python predict/comparison_table.py     # the Phase-1 gate, machine-readable
+python pipeline/forecasting/benchmark_floors.py     # forecasting floors on real data (no GPU, ~2 s)
+python pipeline/forecasting/comparison_table.py     # the Phase-1 gate, machine-readable
 python main.py demo                    # the Streamlit app
 ```
 
 ## Data preparation
 
 1. **Public benchmarks** — METR-LA and PEMS-BAY come from the DCRNN release (Li et al., ICLR 2018).
-   `predict/city_datasets.py` fetches them automatically from the project Drive; nothing is vendored.
-2. **Check what is present** — `python predict/city_datasets.py --list`
-3. **Load and validate one city** — `python predict/city_datasets.py --city METR-LA`
+   `pipeline/forecasting/city_datasets.py` fetches them automatically from the project Drive; nothing is vendored.
+2. **Check what is present** — `python pipeline/forecasting/city_datasets.py --list`
+3. **Load and validate one city** — `python pipeline/forecasting/city_datasets.py --city METR-LA`
    (verifies sensor count against the paper and that missing readings are masked, never scored as 0 mph)
-4. **Free the local cache** — `python predict/city_datasets.py --purge-local`
+4. **Free the local cache** — `python pipeline/forecasting/city_datasets.py --purge-local`
 
 ## Training
 
 Training never runs on a laptop. Two supported paths, both using the pinned upstream harness:
 
 ```bash
-python predict/aws_train.py --plan              # cost and configuration first
-python predict/aws_train.py --launch --models GWNet,STID --datasets METR-LA
-python predict/aws_train.py --collect --collect-checkpoints
-python predict/infer_from_checkpoint.py --model GWNet --dataset METR-LA
+python pipeline/forecasting/aws_train.py --plan              # cost and configuration first
+python pipeline/forecasting/aws_train.py --launch --models GWNet,STID --datasets METR-LA
+python pipeline/forecasting/aws_train.py --collect --collect-checkpoints
+python pipeline/forecasting/infer_from_checkpoint.py --model GWNet --dataset METR-LA
 ```
 
 or open `notebooks/Predict_BasicTS_Colab.ipynb` on a Colab GPU.
@@ -127,16 +127,16 @@ or open `notebooks/Predict_BasicTS_Colab.ipynb` on a Colab GPU.
 
 ```
 main.py               single entry point: status | predict | route | demo
-predict/              STAGE 1 — forecasting
+pipeline/forecasting/              STAGE 1 — forecasting
   city_datasets.py      any city behind one interface (METR-LA, PEMS-BAY, PEMS04/08, Dhaka)
   benchmark_floors.py   persistence / HA / seasonal floors + protocol check vs published
   aws_train.py          GPU training from the terminal, self-terminating
   federated_forecast.py FedAvg across RSUs over the MEASURED V2X link
   infer_from_checkpoint.py  reload a checkpoint, forecast an unseen window
-route/                STAGE 2 — routing, evaluated in SUMO with paired seeds
+pipeline/routing/                STAGE 2 — routing, evaluated in SUMO with paired seeds
   predictive_routing.py, run_arms.py, decision_guard.py, live_chain.py
-network/              V2X experiments (Eclipse MOSAIC): penetration, latency, loss
-nlp/                  incident-text classifier and its event feed
+pipeline/networking/              V2X experiments (Eclipse MOSAIC): penetration, latency, loss
+pipeline/nlp/                  incident-text classifier and its event feed
 demo/                 Streamlit app
 results/              evidence collection -> results/RESULTS.md
 tests/rebuild/        60 tests, run in CI
@@ -166,7 +166,7 @@ Enforced in code and carried in every output file, not only in prose:
   real-world claim — a test asserts this.
 * The live Dhaka feed stores **derived congestion classes only**; provider content is never
   persisted, and a test asserts that too.
-* Where a result does not hold, the file says so — see `route/results/real_demand.md`, where the
+* Where a result does not hold, the file says so — see `results/routing/real_demand.md`, where the
   free-running twin gridlocks and no routing claim is made.
 
 ## Citation

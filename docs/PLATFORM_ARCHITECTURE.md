@@ -24,7 +24,7 @@ dhakaflow/
   routing/        RouteRequest · RouteDecision · Router                    (Lab 22)
   safety/         SafetyConstraints · SafetyShield · SafetyViolation ← Lab 01 ✓ (Lab 21)
   priority/       PriorityRequest · PriorityPolicy                         (Lab 23)
-  nlp/            TrafficIncident · IncidentExtractor                      (Lab 24)
+  pipeline/nlp/            TrafficIncident · IncidentExtractor                      (Lab 24)
   genai/          CopilotQuery · CopilotAnswer · Evidence · TrafficCopilot (Lab 25)
   evaluation/     TrafficMetrics computation · BenchmarkSpec ← Lab 01 ✓
                   traffic_science: MFDPoint · CriticalPoint ← Lab 00 ✓
@@ -82,7 +82,7 @@ arms that differ in scenario, seeds, warmup, duration or safety constraints.
 ## Component registry
 
 ```python
-from dhakaflow.common.registry import register, build
+from pipeline.core.common.registry import register, build
 
 @register("controller", "colight_official")
 def _make(**kw):
@@ -95,7 +95,7 @@ ctrl = build("controller", "colight_official", min_green=10)
 Registering the same `(category, name)` twice raises — the platform refuses to
 hold two competing sources of truth for one component. Heavy dependencies are
 imported inside factories, so a missing research dependency can never break
-`import dhakaflow`.
+`import pipeline.core as dhakaflow`.
 
 ## Result-type separation
 

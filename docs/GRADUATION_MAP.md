@@ -104,6 +104,6 @@ is the measured field-survey burden any calibration must close.
 ## Forward slots (empty by design)
 
 `perception/` (Labs 04–06), `forecasting/` (07–12), `digital_twin/` (13),
-`routing/` (22), `priority/` (23), `nlp/` (24), `genai/` (25) contain contracts
+`routing/` (22), `priority/` (23), `pipeline/nlp/` (24), `genai/` (25) contain contracts
 only. Nothing is implemented until its lab passes and a KEEP decision is
 recorded.

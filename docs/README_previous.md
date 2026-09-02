@@ -1,8 +1,8 @@
 # DhakaFlow Nexus
 
 **Current active thesis path:** real-time Dhaka route advice plus prediction
-benchmarks. The clean execution layer is `live/`, `predict/`, `route/`,
-`network/`, `nlp/`, `demo/`, and `results/`; it reuses the existing
+benchmarks. The clean execution layer is `live/`, `pipeline/forecasting/`, `pipeline/routing/`,
+`pipeline/networking/`, `pipeline/nlp/`, `demo/`, and `results/`; it reuses the existing
 `dhakaflow/`, `research/`, `scripts/`, and `paper_labs/` code instead of
 starting a new project. `live/` is the no-fixed-seed real pilot path; SUMO and
 MOSAIC are repeatable appendix stress tests.
@@ -91,12 +91,12 @@ p = 1.3×10⁻⁵ (`artifacts/due_dso_stats/v200/result.json`).*
 
 | Component | Method (official code, pinned) | Result | Comparison |
 |---|---|---|---|
-| **Prediction data** | Eclipse SUMO 1.27.1 on frozen Dhaka R1 + 250 virtual sensors | 8 h × 3 seeds, 288 timesteps, 84.3 % valid speed coverage | `predict/data/dhaka_twin/MANIFEST.json` acceptance PASS |
-| **Forecasting floors** | Persistence + historical average | MAE@15 min: 0.724 / 0.570 m/s | `predict/results/twin_floors.md` |
-| **Deep forecasting** | BasicTS STID/GWNet/STAEformer on Colab Pro | pending | `notebooks/Predict_BasicTS_Colab.ipynb` then `predict/pull_colab_results.py` |
+| **Prediction data** | Eclipse SUMO 1.27.1 on frozen Dhaka R1 + 250 virtual sensors | 8 h × 3 seeds, 288 timesteps, 84.3 % valid speed coverage | `data/forecasting/dhaka_twin/MANIFEST.json` acceptance PASS |
+| **Forecasting floors** | Persistence + historical average | MAE@15 min: 0.724 / 0.570 m/s | `results/forecasting/twin_floors.md` |
+| **Deep forecasting** | BasicTS STID/GWNet/STAEformer on Colab Pro | pending | `notebooks/Predict_BasicTS_Colab.ipynb` then `pipeline/forecasting/pull_colab_results.py` |
 | **Real route advice** | Google Routes live runtime call, route scoring in memory only | 1 real Dhaka advisory written; no Google route content persisted | `live/results/route_advice.jsonl` |
 | **Real user pilot** | 3 users record start/arrival around advisories | pending | `live/user_trip_logger.py` |
-| **Routing appendix** | SUMO paired seeds, static/reactive/DUE/predictive arms | decision guard can select an arm or honestly block unsafe action | `route/results/decision_guard.md` |
+| **Routing appendix** | SUMO paired seeds, static/reactive/DUE/predictive arms | decision guard can select an arm or honestly block unsafe action | `results/routing/decision_guard.md` |
 | **Live reference** | Google Routes runtime-reference capture | 6 Dhaka corridors captured; Google route content is not persisted | `artifacts/p_live/live_reference_summary.md` |
 | **Evidence audit** | machine-readable artifact check | PASS with Colab benchmark pending | `results/evidence_audit.md` |
 

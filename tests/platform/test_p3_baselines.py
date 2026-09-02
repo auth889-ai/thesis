@@ -4,7 +4,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from research.forecasting.baselines import (EVIDENCE_DOMAIN, HORIZONS_STEPS,
+from pipeline.adapters.forecasting.baselines import (EVIDENCE_DOMAIN, HORIZONS_STEPS,
                                             ChronoSplit,
                                             historical_average_forecast,
                                             masked_metrics,

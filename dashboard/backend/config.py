@@ -8,18 +8,18 @@ FRONTEND = REPO / "dashboard/frontend"
 
 # (file, command that produces it). A panel with no file renders its recipe, never an empty chart.
 EVIDENCE: dict[str, tuple[str, str]] = {
-    "live_series":   ("predict/data/live_dhaka/series.npz", "python predict/live_state.py"),
-    "live_map":      ("predict/data/live_dhaka/corridor_edges.json", "python predict/live_to_edges.py --map"),
-    "live_manifest": ("predict/data/live_dhaka/MANIFEST.json", "python predict/live_state.py"),
-    "recorder":      ("artifacts/live_dhaka/RECORDER_MANIFEST.json", "python predict/record_live.py --live --yes"),
-    "trained":       ("predict/results/trained_results.json", "python predict/record_results.py"),
-    "floors":        ("predict/results/benchmark_floors.json", "python predict/benchmark_floors.py"),
-    "comparison":    ("predict/results/phase1_comparison.json", "python predict/comparison_table.py"),
-    "routing":       ("route/results/stats.json", "python route/stats.py --horizon 7200"),
-    "live_chain":    ("route/results/live_chain.json", "python route/live_chain.py --seeds 11,12,13"),
-    "incident":      ("route/results/incident.json", "python route/incident_scenario.py"),
-    "penetration":   ("network/results/penetration.csv", "python network/penetration_sweep.py --all"),
-    "latency":       ("network/results/latency.csv", "python network/latency_injection.py"),
+    "live_series":   ("data/forecasting/live_dhaka/series.npz", "python pipeline/forecasting/live_state.py"),
+    "live_map":      ("data/forecasting/live_dhaka/corridor_edges.json", "python pipeline/forecasting/live_to_edges.py --map"),
+    "live_manifest": ("data/forecasting/live_dhaka/MANIFEST.json", "python pipeline/forecasting/live_state.py"),
+    "recorder":      ("artifacts/live_dhaka/RECORDER_MANIFEST.json", "python pipeline/forecasting/record_live.py --live --yes"),
+    "trained":       ("results/forecasting/trained_results.json", "python pipeline/forecasting/record_results.py"),
+    "floors":        ("results/forecasting/benchmark_floors.json", "python pipeline/forecasting/benchmark_floors.py"),
+    "comparison":    ("results/forecasting/phase1_comparison.json", "python pipeline/forecasting/comparison_table.py"),
+    "routing":       ("results/routing/stats.json", "python pipeline/routing/stats.py --horizon 7200"),
+    "live_chain":    ("results/routing/live_chain.json", "python pipeline/routing/live_chain.py --seeds 11,12,13"),
+    "incident":      ("results/routing/incident.json", "python pipeline/routing/incident_scenario.py"),
+    "penetration":   ("results/networking/penetration.csv", "python pipeline/networking/penetration_sweep.py --all"),
+    "latency":       ("results/networking/latency.csv", "python pipeline/networking/latency_injection.py"),
     "results_md":    ("results/RESULTS.md", "python results/build_results.py"),
 }
 

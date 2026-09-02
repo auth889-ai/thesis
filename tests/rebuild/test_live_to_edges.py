@@ -9,10 +9,10 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-from predict.live_to_edges import BAND_MID, MAP_FILE, multiplier, write_weights  # noqa: E402
-from route.predictive_routing import load_weights  # noqa: E402
+from pipeline.forecasting.live_to_edges import BAND_MID, MAP_FILE, multiplier, write_weights  # noqa: E402
+from pipeline.routing.predictive_routing import load_weights  # noqa: E402
 
-pytestmark = pytest.mark.skipif(not MAP_FILE.exists(), reason="run: python predict/live_to_edges.py --map")
+pytestmark = pytest.mark.skipif(not MAP_FILE.exists(), reason="run: python pipeline/forecasting/live_to_edges.py --map")
 
 
 def cmap():

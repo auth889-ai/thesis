@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import pytest
 
-from dhakaflow.common.model_registry import (EvidenceDomain, MetricBlock,
+from pipeline.core.common.model_registry import (EvidenceDomain, MetricBlock,
                                              ModelEntry, ModelStatus)
-from dhakaflow.perception.taxonomy import (MAPPINGS, ClassMapping, DhakaFlowClass,
+from pipeline.core.perception.taxonomy import (MAPPINGS, ClassMapping, DhakaFlowClass,
                                            MappingQuality, coverage_report,
                                            cross_dataset_conflicts, mapping_for,
                                            open_decisions, trainable_classes)

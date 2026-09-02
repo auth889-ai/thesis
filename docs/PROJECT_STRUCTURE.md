@@ -44,11 +44,11 @@ There must be no top-level `src/`. The source package is `dhakaflow/`.
 | Path | Owns | Reuses |
 |---|---|---|
 | `live/` | no-fixed-seed route advisor and real user-pilot logging | `dhakaflow/live/google_providers.py`, `dhakaflow/live/providers.py` |
-| `predict/` | twin sensor dataset, forecasting floors, forecast-to-SUMO weights | `research/twin/sensor_graph.py`, `research/forecasting/*`, BasicTS pins |
-| `route/` | static/reactive/predictive/DUE/DSO routing arms and paired-seed appendix stats | `research/routing/r1_router.py`, SUMO, `artifacts/gates/routes_repeat_1h.rou.xml.gz` |
-| `network/` | MOSAIC V2X penetration and latency/loss appendix sweeps | `artifacts/mosaic_dhaka/dhaka_r1`, `research/networking/v2x_bus.py` |
-| `nlp/` | incident text classifier and event-to-edge weight injection | `dhakaflow/nlp`, R1 edge mapping, routing weight format |
-| `demo/` | presentation demo using generated results | `predict/`, `route/`, `network/`, `nlp/` outputs |
+| `pipeline/forecasting/` | twin sensor dataset, forecasting floors, forecast-to-SUMO weights | `research/twin/sensor_graph.py`, `research/forecasting/*`, BasicTS pins |
+| `pipeline/routing/` | static/reactive/predictive/DUE/DSO routing arms and paired-seed appendix stats | `research/routing/r1_router.py`, SUMO, `artifacts/gates/routes_repeat_1h.rou.xml.gz` |
+| `pipeline/networking/` | MOSAIC V2X penetration and latency/loss appendix sweeps | `artifacts/mosaic_dhaka/dhaka_r1`, `research/networking/v2x_bus.py` |
+| `pipeline/nlp/` | incident text classifier and event-to-edge weight injection | `dhakaflow/nlp`, R1 edge mapping, routing weight format |
+| `demo/` | presentation demo using generated results | `pipeline/forecasting/`, `pipeline/routing/`, `pipeline/networking/`, `pipeline/nlp/` outputs |
 | `results/` | final result index and generated summary tables | all active modules |
 | `paper/` | thesis chapters, slides, speaker notes | `results/RESULTS.md` |
 | `model_registry/` | metadata-only model registry | remote checkpoints only |
@@ -60,9 +60,9 @@ There must be no top-level `src/`. The source package is `dhakaflow/`.
 | Existing issue | Fix direction | Files |
 |---|---|---|
 | Reader cannot find the project entrypoint | Use `README.md`, `PROJECT_MAP.md`, and this file as the navigation surface | `README.md`, `PROJECT_MAP.md`, `docs/PROJECT_STRUCTURE.md` |
-| Too many old gates and scripts | Keep them, but make the rebuild layer the active thesis path | `predict/`, `route/`, `network/`, `nlp/`, `demo/` |
-| Forecasting result not easy to reproduce | Put forecasting commands and tables behind `make predict` and `results/RESULTS.md` | `predict/`, `Makefile`, `results/` |
-| Route optimization mixed with older demos | Put the paired-seed routing harness in one place | `route/predictive_routing.py`, `route/run_arms.py`, `route/stats.py` |
+| Too many old gates and scripts | Keep them, but make the rebuild layer the active thesis path | `pipeline/forecasting/`, `pipeline/routing/`, `pipeline/networking/`, `pipeline/nlp/`, `demo/` |
+| Forecasting result not easy to reproduce | Put forecasting commands and tables behind `make predict` and `results/RESULTS.md` | `pipeline/forecasting/`, `Makefile`, `results/` |
+| Route optimization mixed with older demos | Put the paired-seed routing harness in one place | `pipeline/routing/predictive_routing.py`, `pipeline/routing/run_arms.py`, `pipeline/routing/stats.py` |
 | Large generated files tracked in git | Keep heavy outputs on disk/Drive/S3, remove from git index, add ignore rules | `.gitignore`, `artifacts/`, `results/` |
 | Claims can overreach the evidence | Keep labels: simulated Dhaka twin, provider integration, live reference only | docs, result JSON, model registry |
 

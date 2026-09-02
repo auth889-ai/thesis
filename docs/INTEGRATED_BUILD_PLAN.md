@@ -464,7 +464,7 @@ every job checkpoints (spot instances can be reclaimed mid-run).
 dhakaflow/        THE source tree — stable runtime interfaces + adapters +
                   our original integration. No duplicate src/ anywhere.
   common/ perception/ tracking/ sensing/ forecasting/ digital_twin/
-  control/ safety/ routing/ priority/ nlp/ genai/ evaluation/
+  control/ safety/ routing/ priority/ pipeline/nlp/ genai/ evaluation/
   visualization/ services/
 research/         Official reproduction · fair benchmark · ablation.
   perception/ tracking/ sensing/ forecasting/ twin/ control/ routing/

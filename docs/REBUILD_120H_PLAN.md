@@ -24,7 +24,7 @@ Dhaka roads with paired seeds, that vehicles wait less.*
 * `paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml` — real Dhaka R1 SUMO network, 6,527 edges, left-hand, frozen.
 * `research/twin/sensor_graph.py` — 250 virtual sensors + DCRNN-recipe adjacency → METR-LA-shaped dataset from the twin.
 * `research/forecasting/basicts_adapter.py`, `notebooks/P3_forecasting_colab.ipynb` — BasicTS export + Colab path (already ran once).
-* `route/run_due_dso.py` (duaIterate DUE/DSO), `scripts/gate7_dynamic_routing.py` (TraCI compliance ladder), `research/routing/r1_router.py` (TD-Dijkstra on R1), `artifacts/gates/routes_repeat_1h.rou.xml.gz` (1 h demand).
+* `pipeline/routing/run_due_dso.py` (duaIterate DUE/DSO), `scripts/gate7_dynamic_routing.py` (TraCI compliance ladder), `research/routing/r1_router.py` (TD-Dijkstra on R1), `artifacts/gates/routes_repeat_1h.rou.xml.gz` (1 h demand).
 * `artifacts/mosaic_dhaka/dhaka_r1` — **official Eclipse MOSAIC 25.2 already runs on the Dhaka net** (DENM broadcast → 886 route switches). `research/networking/v2x_bus.py` latency injector.
 * `dhakaflow/live/google_providers.py` + Google Routes key — live Dhaka *reference verdicts* (Google ToS forbids caching/ML-training on their content; keep it as validation only).
 * Upstream pins in `~/.dhakaflow/upstream`: BasicTS, Graph-WaveNet, DCRNN, STID, STAEformer, sumo-rl, mosaic, chronos-forecasting.
@@ -96,10 +96,10 @@ time-series dataset** — Dhaka series come from our twin (`sensor_graph.py`), l
 Clean active layer (reuses the existing project; no mass move first):
 
 ```
-predict/    configs, colab notebook, forecast_to_weights.py, results/
-route/      predictive_routing.py (all arms), stats.py, results/
-network/    mosaic scenario, penetration_sweep.py, latency_injection.py, results/
-nlp/        train_classifier.py, event_feed.py, copilot.py, results/
+pipeline/forecasting/    configs, colab notebook, forecast_to_weights.py, results/
+pipeline/routing/      predictive_routing.py (all arms), stats.py, results/
+pipeline/networking/    mosaic scenario, penetration_sweep.py, latency_injection.py, results/
+pipeline/nlp/        train_classifier.py, event_feed.py, copilot.py, results/
 demo/       streamlit app (map · forecast · before/after · event feed)
 results/RESULTS.md   ONE file: every number → one command → one evidence file
 paper/      thesis chapters + slides
@@ -131,34 +131,34 @@ Daily 15-min sync at 09:00 and 21:00. Every deliverable = a command + a JSON/CSV
 
 | Person | Hours | Task | Done when |
 |---|---|---|---|
-| ALL | 0–1 | create/confirm branch `rebuild-120h`; keep existing `dhakaflow/`, `research/`, `scripts/`, `paper_labs/` in place; create/confirm the active layer (`predict/`, `route/`, `network/`, `nlp/`, `demo/`, `results/`, `paper/`) and `Makefile` skeleton | `make -n results` lists all targets |
+| ALL | 0–1 | create/confirm branch `rebuild-120h`; keep existing `dhakaflow/`, `research/`, `scripts/`, `paper_labs/` in place; create/confirm the active layer (`pipeline/forecasting/`, `pipeline/routing/`, `pipeline/networking/`, `pipeline/nlp/`, `demo/`, `results/`, `paper/`) and `Makefile` skeleton | `make -n results` lists all targets |
 | A | 1–3 | Colab: clone BasicTS @ pinned commit, `pip install -e .`, prepare METR-LA / PEMS-BAY / PEMS08 | data dirs exist, 1 epoch STID runs |
-| A | 3–8 | Launch **STID + GWNet on METR-LA and PEMS-BAY** (full epochs, official configs). Save ckpts + test logs to Drive | 4 runs training; Drive folder `predict/ckpt/` |
-| B | 1–4 | `route/predictive_routing.py`: load R1 net + `routes_repeat_1h`, run arm B1 (static) and B2 (reactive `rerouteTraveltime(currentTravelTime=True)`, p=30 %), parse `tripinfo` → JSON | both arms run 1 seed, metrics JSON written |
+| A | 3–8 | Launch **STID + GWNet on METR-LA and PEMS-BAY** (full epochs, official configs). Save ckpts + test logs to Drive | 4 runs training; Drive folder `pipeline/forecasting/ckpt/` |
+| B | 1–4 | `pipeline/routing/predictive_routing.py`: load R1 net + `routes_repeat_1h`, run arm B1 (static) and B2 (reactive `rerouteTraveltime(currentTravelTime=True)`, p=30 %), parse `tripinfo` → JSON | both arms run 1 seed, metrics JSON written |
 | B | 4–8 | Add B3 DUE / B4 DSO via `duaIterate.py` (reuse `run_due_dso.py`), cap iterations, log convergence; add `--seeds` and paired-run driver (multiprocessing) | 4 arms × 1 seed complete |
-| C | 1–3 | Download L-TWITS / Belgian tweets; clean to 3 classes; frozen train/val/test split with sha256 | `nlp/data/MANIFEST.json` |
-| C | 3–6 | Fine-tune DistilBERT (Colab T4, ~20 min); report accuracy/F1 vs TF-IDF+LogReg baseline | `nlp/results/classifier.json` |
-| C | 6–8 | Re-run existing MOSAIC Dhaka scenario once to confirm the stack still works; record wall time | `network/results/smoke.json` |
+| C | 1–3 | Download L-TWITS / Belgian tweets; clean to 3 classes; frozen train/val/test split with sha256 | `data/nlp/MANIFEST.json` |
+| C | 3–6 | Fine-tune DistilBERT (Colab T4, ~20 min); report accuracy/F1 vs TF-IDF+LogReg baseline | `results/nlp/classifier.json` |
+| C | 6–8 | Re-run existing MOSAIC Dhaka scenario once to confirm the stack still works; record wall time | `results/networking/smoke.json` |
 
 ### DAY 2 (H8–16) — the predictive arm exists; full benchmark running
 
 | Person | Hours | Task | Done when |
 |---|---|---|---|
-| A | 8–10 | Collect Day-1 results into `predict/results/benchmark.csv` (model × dataset × horizon: MAE/RMSE/MAPE) next to published numbers | table has 2 models × 2 datasets |
+| A | 8–10 | Collect Day-1 results into `results/forecasting/benchmark.csv` (model × dataset × horizon: MAE/RMSE/MAPE) next to published numbers | table has 2 models × 2 datasets |
 | A | 10–13 | Launch **STAEformer + AGCRN + DCRNN** (METR-LA, PEMS-BAY, PEMS08) — overnight compute | 9 runs queued (~10 GPU-h) |
 | A | 13–16 | **Chronos-Bolt zero-shot** on the same test windows; add row to benchmark | MAE row for Chronos |
-| B | 8–12 | Generate twin sensor data on R1 with `sensor_graph.py`: 8 h × 3 seeds × 250 sensors at the SAME demand scale as the routing arms (`route/results/SCALE_CHOICE.json` = 0.25), sensors placed by observed flow (`--place-by-flow`, 84 % coverage); export BasicTS format; hand to A (Drive) | `predict/data/dhaka_twin/` + sha256, `MANIFEST.acceptance.verdict = PASS` |
-| B | 12–16 | **Arm P (predictive)**: `predict/forecast_to_weights.py` converts a forecast (start with the *oracle*: next-interval true edge times from the twin, then the real model) into SUMO `--weight-files` `<interval>` XML; TraCI loop every 60 s: `setAdaptedTraveltime` + `rerouteTraveltime(currentTravelTime=False)` for equipped vehicles, staggered | Arm P runs with oracle forecast, 1 seed |
-| C | 8–11 | `nlp/event_feed.py`: classifier + spaCy/regex location → JSON event; map named places to R1 edges (Karwan Bazar, Shahbagh, Farmgate…); event ⇒ edge slowdown factor in the weight table | 20 test tweets → correct edges |
-| C | 11–16 | `network/penetration_sweep.py`: parametrise MOSAIC mapping config for p ∈ {0,10,25,50,100} %, 3 seeds; parse MOSAIC output for **delivery ratio, mean latency, route switches, travel time** | 1 sweep point runs end-to-end |
+| B | 8–12 | Generate twin sensor data on R1 with `sensor_graph.py`: 8 h × 3 seeds × 250 sensors at the SAME demand scale as the routing arms (`results/routing/SCALE_CHOICE.json` = 0.25), sensors placed by observed flow (`--place-by-flow`, 84 % coverage); export BasicTS format; hand to A (Drive) | `data/forecasting/dhaka_twin/` + sha256, `MANIFEST.acceptance.verdict = PASS` |
+| B | 12–16 | **Arm P (predictive)**: `pipeline/forecasting/forecast_to_weights.py` converts a forecast (start with the *oracle*: next-interval true edge times from the twin, then the real model) into SUMO `--weight-files` `<interval>` XML; TraCI loop every 60 s: `setAdaptedTraveltime` + `rerouteTraveltime(currentTravelTime=False)` for equipped vehicles, staggered | Arm P runs with oracle forecast, 1 seed |
+| C | 8–11 | `pipeline/nlp/event_feed.py`: classifier + spaCy/regex location → JSON event; map named places to R1 edges (Karwan Bazar, Shahbagh, Farmgate…); event ⇒ edge slowdown factor in the weight table | 20 test tweets → correct edges |
+| C | 11–16 | `pipeline/networking/penetration_sweep.py`: parametrise MOSAIC mapping config for p ∈ {0,10,25,50,100} %, 3 seeds; parse MOSAIC output for **delivery ratio, mean latency, route switches, travel time** | 1 sweep point runs end-to-end |
 
 ### DAY 3 (H16–24) — real forecaster in the loop; all sweeps launched
 
 | Person | Hours | Task | Done when |
 |---|---|---|---|
-| A | 16–20 | Train GWNet (+STID) on **Dhaka twin data**; horizons 5/15/30/60 min; vs persistence & historical-average floors | `predict/results/dhaka_twin.csv` |
-| A | 20–24 | Export the Dhaka model's rolling forecasts for the routing scenario window as the weight table (`forecast_to_weights.py --model gwnet`); hand to B | `route/weights/gwnet_*.xml` |
-| B | 16–20 | Run **all 5 arms × 10 seeds** on AWS spot (8–16 vCPU); `route/stats.py`: mean & p95 travel time, total waiting time, throughput, teleports; paired Wilcoxon + bootstrap CI | `route/results/arms_10seeds.json` |
+| A | 16–20 | Train GWNet (+STID) on **Dhaka twin data**; horizons 5/15/30/60 min; vs persistence & historical-average floors | `results/forecasting/dhaka_twin.csv` |
+| A | 20–24 | Export the Dhaka model's rolling forecasts for the routing scenario window as the weight table (`forecast_to_weights.py --model gwnet`); hand to B | `pipeline/routing/weights/gwnet_*.xml` |
+| B | 16–20 | Run **all 5 arms × 10 seeds** on AWS spot (8–16 vCPU); `pipeline/routing/stats.py`: mean & p95 travel time, total waiting time, throughput, teleports; paired Wilcoxon + bootstrap CI | `results/routing/arms_10seeds.json` |
 | B | 20–24 | Compliance/penetration sweep for arm P (p = 10/25/50/100 %) — Braess/oscillation check (staggered rerouting) | curve JSON |
 | C | 16–20 | Launch full MOSAIC sweep on AWS/Mac overnight (15 runs × ~35 min); **latency/loss injection** via `v2x_bus.py` distribution → routing benefit vs latency curve | sweep running |
 | C | 20–24 | `demo/app.py` (Streamlit): Dhaka map (pydeck), sensor forecast plot, before/after trajectories, event feed panel, arms comparison chart | demo runs locally on Day-3 artefacts |
@@ -167,11 +167,11 @@ Daily 15-min sync at 09:00 and 21:00. Every deliverable = a command + a JSON/CSV
 
 | Person | Hours | Task | Done when |
 |---|---|---|---|
-| A | 24–28 | Ablations: horizon vs routing gain (5/15/30/60 min forecasts as weights); forecast error → routing benefit plot | `predict/results/ablation_horizon.csv` |
+| A | 24–28 | Ablations: horizon vs routing gain (5/15/30/60 min forecasts as weights); forecast error → routing benefit plot | `results/forecasting/ablation_horizon.csv` |
 | A | 28–32 | Write **Chapter 4 Prediction** (method, benchmark table, Dhaka-twin table, Chronos discussion, limits) | draft in `paper/` |
-| B | 24–28 | Re-run arm P with real GWNet weights + NLP incident scenario (one blocked edge at Karwan Bazar, 10 seeds); final table | `route/results/final.json` |
+| B | 24–28 | Re-run arm P with real GWNet weights + NLP incident scenario (one blocked edge at Karwan Bazar, 10 seeds); final table | `results/routing/final.json` |
 | B | 28–32 | Before/after SUMO movie (reuse `render_branch_movie.py`) + write **Chapter 5 Routing** | movie mp4 + draft |
-| C | 24–28 | Collect MOSAIC sweep → `network/results/penetration.csv`, latency curve figure; write **Chapter 6 Networking** | draft |
+| C | 24–28 | Collect MOSAIC sweep → `results/networking/penetration.csv`, latency curve figure; write **Chapter 6 Networking** | draft |
 | C | 28–32 | Write **Chapter 7 NLP**; `results/RESULTS.md` (every number → command → file); LLM copilot stretch (Claude API over run logs, 2 h max) | RESULTS.md complete |
 
 ### DAY 5 (H32–40) — reproducibility, presentation, buffer
@@ -226,7 +226,7 @@ git checkout -b rebuild-120h  # only if the branch does not already exist
 mkdir -p predict route network nlp demo results paper
 PYTHONPATH=. pytest tests/platform/test_interfaces.py tests/platform/test_repo_architecture.py -q
 # Person B: smoke the routing harness on the real network today
-python route/predictive_routing.py --arm static --seed 11 --horizon 1800   # created below
+python pipeline/routing/predictive_routing.py --arm static --seed 11 --horizon 1800   # created below
 # Person A: open notebooks/Predict_BasicTS_Colab.ipynb in Colab Pro, Run all
 # Person C: start the Google reference recorder (accrues by wall-clock) and download the tweet datasets
 ```

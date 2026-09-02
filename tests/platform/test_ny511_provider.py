@@ -9,12 +9,12 @@ import json
 
 import pytest
 
-from dhakaflow.common.reality import RealityClass
-from dhakaflow.live.ny511_provider import (CLASSIFICATION,
+from pipeline.core.common.reality import RealityClass
+from pipeline.core.live.ny511_provider import (CLASSIFICATION,
                                            FORBIDDEN_CLASSIFICATION,
                                            NY511_KEY_STATUS,
                                            NY511CameraProvider)
-from dhakaflow.live.providers import CameraProvider, ObservationStore
+from pipeline.core.live.providers import CameraProvider, ObservationStore
 
 # Shape from the 511NY developer docs; re-captured verbatim at activation.
 FIXTURE = [

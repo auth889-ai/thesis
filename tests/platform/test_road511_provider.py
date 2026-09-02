@@ -12,9 +12,9 @@ import json
 
 import pytest
 
-from dhakaflow.common.reality import RealityClass
-from dhakaflow.live.providers import CameraProvider, ObservationStore
-from dhakaflow.live.road511_provider import (CLASSIFICATION,
+from pipeline.core.common.reality import RealityClass
+from pipeline.core.live.providers import CameraProvider, ObservationStore
+from pipeline.core.live.road511_provider import (CLASSIFICATION,
                                              FORBIDDEN_CLASSIFICATION,
                                              ROAD511_KEY_STATUS,
                                              Road511Provider)

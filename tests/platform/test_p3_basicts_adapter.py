@@ -6,8 +6,8 @@ import json
 import numpy as np
 import pytest
 
-from research.forecasting.baselines import ChronoSplit
-from research.forecasting.basicts_adapter import (
+from pipeline.adapters.forecasting.baselines import ChronoSplit
+from pipeline.adapters.forecasting.basicts_adapter import (
     LEGACY_RATIOS, export_basicts_dataset, export_basicts_legacy_dataset)
 
 

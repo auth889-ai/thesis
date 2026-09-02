@@ -12,10 +12,10 @@ Read `docs/PROJECT_STRUCTURE.md` for the folder contract.
 | Folder | What it is |
 |---|---|
 | `live/` | no-fixed-seed route advisor and 3-user real pilot logger |
-| `predict/` | twin sensor data, forecasting floors, BasicTS/Graph WaveNet outputs, forecast-to-weight XML |
-| `route/` | SUMO static/reactive/predictive/DUE/DSO appendix harness and paired-seed stats |
-| `network/` | MOSAIC V2X penetration and latency/loss appendix sweeps |
-| `nlp/` | incident text classifier and event-to-edge weight injection |
+| `pipeline/forecasting/` | twin sensor data, forecasting floors, BasicTS/Graph WaveNet outputs, forecast-to-weight XML |
+| `pipeline/routing/` | SUMO static/reactive/predictive/DUE/DSO appendix harness and paired-seed stats |
+| `pipeline/networking/` | MOSAIC V2X penetration and latency/loss appendix sweeps |
+| `pipeline/nlp/` | incident text classifier and event-to-edge weight injection |
 | `demo/` | Streamlit/presentation viewer for generated evidence |
 | `results/` | single source for final tables and reproducibility links |
 

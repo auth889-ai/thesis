@@ -78,7 +78,7 @@ Deliverable: `REAL_STATE_PASS.json`.
 ### H+36 to H+60: Make The Twin Honest
 
 1. Use the real observation to seed or scale the SUMO demand.
-2. Consume calibration scale in the actual route/control scenarios.
+2. Consume calibration scale in the actual pipeline/routing/control scenarios.
 3. Constrain the selected signal/intervention area to the observed corridor.
 4. Use paired seeds and saved state for each candidate.
 

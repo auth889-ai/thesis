@@ -20,43 +20,43 @@ DEFAULT_OUT = REPO / "docs/ASSET_MANIFEST.json"
 EXACT_FILES = [
     "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
     "artifacts/due_dso_stats/v200/DUE/003/trips_003.rou.xml.gz",
-    "predict/data/dhaka_twin/MANIFEST.json",
-    "predict/data/dhaka_twin/data.npz",
-    "predict/data/dhaka_twin/sensor_graph_data.npz",
-    "predict/data/dhaka_twin/adj_mx.pkl",
-    "predict/data/dhaka_twin/sensor_nodes.json",
-    "predict/data/dhaka_twin/basicts_legacy/data.dat",
-    "predict/data/dhaka_twin/basicts_legacy/desc.json",
-    "predict/data/dhaka_twin/basicts_legacy/adj_mx.pkl",
-    "predict/data/dhaka_twin/basicts_v1/DESC.json",
-    "predict/data/dhaka_twin/basicts_v1/adj_mx.npy",
-    "predict/data/dhaka_twin/basicts_v1/train_data.npy",
-    "predict/data/dhaka_twin/basicts_v1/train_timestamps.npy",
-    "predict/data/dhaka_twin/basicts_v1/val_data.npy",
-    "predict/data/dhaka_twin/basicts_v1/val_timestamps.npy",
-    "predict/data/dhaka_twin/basicts_v1/test_data.npy",
-    "predict/data/dhaka_twin/basicts_v1/test_timestamps.npy",
-    "predict/results/twin_floors.json",
-    "predict/results/twin_floors.md",
-    "route/results/arms_h7200.json",
-    "route/results/stats.json",
-    "route/results/stats.md",
-    "route/results/decision_guard.json",
-    "route/results/decision_guard.md",
-    "network/results/penetration.csv",
-    "network/results/penetration.md",
-    "network/results/latency.csv",
-    "network/results/latency.md",
-    "nlp/results/classifier.json",
-    "nlp/results/classifier.md",
-    "nlp/results/events.jsonl",
+    "data/forecasting/dhaka_twin/MANIFEST.json",
+    "data/forecasting/dhaka_twin/data.npz",
+    "data/forecasting/dhaka_twin/sensor_graph_data.npz",
+    "data/forecasting/dhaka_twin/adj_mx.pkl",
+    "data/forecasting/dhaka_twin/sensor_nodes.json",
+    "data/forecasting/dhaka_twin/basicts_legacy/data.dat",
+    "data/forecasting/dhaka_twin/basicts_legacy/desc.json",
+    "data/forecasting/dhaka_twin/basicts_legacy/adj_mx.pkl",
+    "data/forecasting/dhaka_twin/basicts_v1/DESC.json",
+    "data/forecasting/dhaka_twin/basicts_v1/adj_mx.npy",
+    "data/forecasting/dhaka_twin/basicts_v1/train_data.npy",
+    "data/forecasting/dhaka_twin/basicts_v1/train_timestamps.npy",
+    "data/forecasting/dhaka_twin/basicts_v1/val_data.npy",
+    "data/forecasting/dhaka_twin/basicts_v1/val_timestamps.npy",
+    "data/forecasting/dhaka_twin/basicts_v1/test_data.npy",
+    "data/forecasting/dhaka_twin/basicts_v1/test_timestamps.npy",
+    "results/forecasting/twin_floors.json",
+    "results/forecasting/twin_floors.md",
+    "results/routing/arms_h7200.json",
+    "results/routing/stats.json",
+    "results/routing/stats.md",
+    "results/routing/decision_guard.json",
+    "results/routing/decision_guard.md",
+    "results/networking/penetration.csv",
+    "results/networking/penetration.md",
+    "results/networking/latency.csv",
+    "results/networking/latency.md",
+    "results/nlp/classifier.json",
+    "results/nlp/classifier.md",
+    "results/nlp/events.jsonl",
     "artifacts/p_live/live_reference_summary.json",
     "artifacts/p_live/live_reference_summary.md",
     "artifacts/p_live/normalized/google_routes_runtime_reference.jsonl",
 ]
 
 GLOB_FILES = [
-    "network/results/penetration_p*_s*.json",
+    "results/networking/penetration_p*_s*.json",
 ]
 
 
@@ -73,15 +73,15 @@ def category(rel: str) -> str:
         return "frozen-network"
     if rel.startswith("artifacts/due_dso_stats/"):
         return "demand"
-    if rel.startswith("predict/data/"):
+    if rel.startswith("data/forecasting/"):
         return "prediction-data"
-    if rel.startswith("predict/results/"):
+    if rel.startswith("results/forecasting/"):
         return "prediction-results"
-    if rel.startswith("route/results/"):
+    if rel.startswith("results/routing/"):
         return "routing-results"
-    if rel.startswith("network/results/"):
+    if rel.startswith("results/networking/"):
         return "networking-results"
-    if rel.startswith("nlp/results/"):
+    if rel.startswith("results/nlp/"):
         return "nlp-results"
     if rel.startswith("artifacts/p_live/"):
         return "live-reference"
@@ -117,9 +117,9 @@ def build_manifest(repo: Path) -> dict:
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "asset_root_hint": "Set DHAKAFLOW_ASSET_ROOT to a Drive/S3/GCS-exported local folder that mirrors these relative paths.",
         "excludes": [
-            "route/results/*/tripinfo.xml",
-            "route/results/*/edgedata.xml",
-            "route/results/*/statistic.xml",
+            "results/routing/*/tripinfo.xml",
+            "results/routing/*/edgedata.xml",
+            "results/routing/*/statistic.xml",
             "large model checkpoints",
             "raw datasets",
             "API keys or .env files",

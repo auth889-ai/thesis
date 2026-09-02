@@ -34,7 +34,7 @@ def test_build_asset_manifest_records_existing_known_assets(tmp_path: Path):
 def test_restore_assets_copies_and_verifies_from_source(tmp_path: Path, monkeypatch):
     repo = tmp_path / "repo"
     source = tmp_path / "asset-root"
-    rel = Path("predict/data/dhaka_twin/data.npz")
+    rel = Path("data/forecasting/dhaka_twin/data.npz")
     payload = b"asset bytes"
     (source / rel).parent.mkdir(parents=True)
     (source / rel).write_bytes(payload)
@@ -55,7 +55,7 @@ def test_restore_assets_copies_and_verifies_from_source(tmp_path: Path, monkeypa
 
 def test_restore_assets_fails_on_mismatch(tmp_path: Path, monkeypatch):
     repo = tmp_path / "repo"
-    rel = Path("route/results/arms_h7200.json")
+    rel = Path("results/routing/arms_h7200.json")
     (repo / rel).parent.mkdir(parents=True)
     (repo / rel).write_text("{}")
     manifest_path = tmp_path / "manifest.json"

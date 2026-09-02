@@ -128,7 +128,7 @@ def forecast() -> ForecastResponse:
         for r in tr["runs"]]
 
     runs = []
-    for f in sorted((config.REPO / "predict/results").glob("inference_*.json")):
+    for f in sorted((config.REPO / "results/forecasting").glob("inference_*.json")):
         d = json.loads(f.read_text())
         runs.append(InferenceRun(
             model=d["model"], dataset=d["dataset"], checkpoint=Path(d["checkpoint"]).name,
@@ -187,7 +187,7 @@ def routing() -> RoutingResponse:
                         reality=(chain.get("source") or {}).get("reality", "UNKNOWN")) if d else None
 
     sweep = []
-    for f in sorted((config.REPO / "route/results").glob("live_chain_c*.json")):
+    for f in sorted((config.REPO / "results/routing").glob("live_chain_c*.json")):
         j = json.loads(f.read_text())
         sweep.append(SweepPoint(compliance=j.get("compliance", 0),
                                 decision=j["decision"]["decision"],
@@ -205,7 +205,7 @@ def routing() -> RoutingResponse:
 # ---------------------------------------------------------------- simulation
 def simulation() -> SimulationResponse:
     inc = load_json("incident")
-    guard = config.REPO / "route/results/decision_guard_h7200.md"
+    guard = config.REPO / "results/routing/decision_guard_h7200.md"
     verdict = None
     if guard.exists():
         for line in guard.read_text().splitlines():
