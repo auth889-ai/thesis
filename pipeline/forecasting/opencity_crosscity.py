@@ -250,6 +250,7 @@ def write_outputs(records: list[dict]) -> None:
               "quoted as evidence of cross-city generalization.\n",
           "Regenerate: `python pipeline/forecasting/opencity_crosscity.py --all-zeroshot`. "
           "Machine-readable: `opencity_crosscity.json`.\n"]
+    (OUT / "opencity_crosscity.md").write_text("\n".join(L))
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--dataset", default="PEMS07M")
