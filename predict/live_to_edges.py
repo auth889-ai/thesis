@@ -48,6 +48,23 @@ sys.path.insert(0, str(REPO))
 from dhakaflow.live.providers import DHAKA_R1_CORRIDORS  # noqa: E402
 
 NET = REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"
+
+
+def ensure_net(net: Path = NET) -> Path:
+    """The 16 MB network is too big to track, so the repo carries a 2 MB .gz. Expand it on first
+    use, otherwise a fresh clone fails deep inside sumolib with 'unknown url type'."""
+    if net.exists():
+        return net
+    gz = net.with_suffix(net.suffix + ".gz")
+    if gz.exists():
+        import gzip
+        import shutil
+        net.parent.mkdir(parents=True, exist_ok=True)
+        with gzip.open(gz, "rb") as fi, open(net, "wb") as fo:
+            shutil.copyfileobj(fi, fo)
+        print(f"[net] expanded {gz.name} -> {net.name}")
+        return net
+    raise SystemExit(f"the Dhaka network is missing and {gz} is not present either")
 SERIES = REPO / "predict/data/live_dhaka/series.npz"
 MAP_FILE = REPO / "predict/data/live_dhaka/corridor_edges.json"
 BAND_MID = {0: 1.08, 1: 1.33, 2: 1.75, 3: 2.50}
@@ -66,7 +83,7 @@ def multiplier(level: float) -> float:
 def build_map(net_path: Path = NET, radius: float = 300.0) -> dict:
     """corridor_id -> {edges, free_flow_s, snapped distances}. Uses free-flow shortest path."""
     import sumolib
-    net = sumolib.net.readNet(str(net_path))
+    net = sumolib.net.readNet(str(ensure_net(Path(net_path))))
     out = {}
     for c in DHAKA_R1_CORRIDORS:
         rec = {"corridor_id": c["corridor_id"], "origin": c["origin"], "dest": c["dest"]}

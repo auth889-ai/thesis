@@ -40,6 +40,11 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[1]
 DEFAULT_NET = REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"
+if not DEFAULT_NET.exists() and DEFAULT_NET.with_suffix(".xml.gz").exists():
+    # the repo tracks a 2 MB .gz of the 16 MB network so a fresh clone can run
+    import gzip as _gz, shutil as _sh
+    with _gz.open(DEFAULT_NET.with_suffix(".xml.gz"), "rb") as _fi, open(DEFAULT_NET, "wb") as _fo:
+        _sh.copyfileobj(_fi, _fo)
 DEFAULT_ROUTES = REPO / "artifacts/gates/routes_repeat_1h.rou.xml.gz"
 DEFAULT_SCALE = 0.584          # calibrated demand scale recorded in artifacts/gates/TWIN_SYNC_PASS.json
 
