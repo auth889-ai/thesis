@@ -88,6 +88,9 @@ def main() -> int:
     p.add_argument("--dataset", default="METR-LA")
     p.add_argument("--window", type=int, default=0, help="index into the test region")
     p.add_argument("--sensors", type=int, default=3, help="how many sensors to print")
+    p.add_argument("--verify-windows", type=int, default=200,
+                   help="evaluate this many spaced test windows to check the checkpoint reproduces "
+                        "its reported MAE (0 to skip)")
     a = p.parse_args()
 
     cks = find_checkpoints()
@@ -183,12 +186,45 @@ def main() -> int:
     if tr.exists():
         for r in json.loads(tr.read_text())["runs"]:
             if r["model"] == a.model and r["dataset"] == a.dataset:
-                reported = r["metrics_by_horizon_min"]
+                # JSON object keys are strings; normalise so the lookup cannot silently miss
+                reported = {int(k): v for k, v in r["metrics_by_horizon_min"].items()}
+
+    # ---- the actual G6 check: does the RELOADED model reproduce its reported test error? ----
+    verify = None
+    if a.verify_windows:
+        idx = np.linspace(test_lo, T - L - H - 1, a.verify_windows, dtype=int)
+        errs = {st: [] for st in steps.values() if st <= H}
+        for t in idx:
+            xw = np.array(raw[t:t + L], dtype="float32")[None]
+            xw[..., 0] = (xw[..., 0] - mu) / sd_
+            yw = np.array(raw[t + L:t + L + H, :, 0], dtype="float32")
+            with torch.no_grad():
+                o = model(history_data=torch.tensor(xw)[..., fwd], future_data=None,
+                          batch_seen=0, epoch=1, train=False)
+            pw = (o if isinstance(o, torch.Tensor) else o["prediction"]).numpy()[0, ..., 0] * sd_ + mu
+            for st in errs:
+                m = yw[st - 1] > 0                              # observed only; 0 = sensor outage
+                if m.any():
+                    errs[st].append(np.abs(pw[st - 1][m] - yw[st - 1][m]).mean())
+        verify = {}
+        print(f"\n[verify] {len(idx)} spaced test windows — reloaded checkpoint vs training report")
+        for st, v in errs.items():
+            mnt = st * 5
+            got = float(np.mean(v))
+            rep = (reported or {}).get(mnt, {}).get("mae")
+            d = (100 * (got / rep - 1)) if rep else None
+            verify[mnt] = {"reloaded_mae": round(got, 4), "reported_mae": rep,
+                           "diff_pct": round(d, 2) if d is not None else None, "windows": len(v)}
+            print(f"    {mnt:>3} min  reloaded {got:.3f}  reported {rep}  "
+                  f"{'' if d is None else f'{d:+.1f} %'}")
+        ok = all(abs(v["diff_pct"]) <= 15 for v in verify.values() if v["diff_pct"] is not None)
+        print(f"[verify] {'PASS' if ok else 'FAIL'} — the checkpoint "
+              f"{'reproduces' if ok else 'does NOT reproduce'} its reported test error")
     rec = {"model": a.model, "dataset": a.dataset, "checkpoint": str(ck["path"].relative_to(REPO)),
            "window_index_in_test": a.window, "t0_absolute": int(t0), "input_len": L, "horizon_len": H,
            "scaler": {"mu": float(mu), "sd": float(sd_), "fitted_on": "train split only"},
            "window_mae_all_horizons_mph": round(mae_all, 3),
-           "reported_test_metrics": reported,
+           "reported_test_metrics": reported, "verification": verify,
            "note": "single unseen window; the training metrics average the whole test set, so these "
                    "differ in magnitude — the check is that they are the same order, not identical",
            "rows": rows}

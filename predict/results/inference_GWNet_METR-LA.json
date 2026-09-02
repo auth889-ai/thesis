@@ -1,0 +1,141 @@
+{
+ "model": "GWNet",
+ "dataset": "METR-LA",
+ "checkpoint": "predict/results/checkpoints/GraphWaveNet/METR-LA_50_12_12/d1ffd3d52d3caacf60ebf59214673f7c/GraphWaveNet_50.pt",
+ "window_index_in_test": 1000,
+ "t0_absolute": 28417,
+ "input_len": 12,
+ "horizon_len": 12,
+ "scaler": {
+  "mu": 54.40591049194336,
+  "sd": 19.494251251220703,
+  "fitted_on": "train split only"
+ },
+ "window_mae_all_horizons_mph": 6.309,
+ "reported_test_metrics": {
+  "15": {
+   "mae": 2.719,
+   "rmse": 5.1831,
+   "mape_pct": 7.02,
+   "horizon_steps": 3,
+   "horizon_minutes": 15,
+   "published_mae": 2.69,
+   "published_rmse": 5.15,
+   "published_mape_pct": 6.9,
+   "mae_diff_pct": 1.08,
+   "rmse_diff_pct": 0.64,
+   "mape_diff_pct": 1.74
+  },
+  "30": {
+   "mae": 3.1112,
+   "rmse": 6.2248,
+   "mape_pct": 8.450000000000001,
+   "horizon_steps": 6,
+   "horizon_minutes": 30,
+   "published_mae": 3.07,
+   "published_rmse": 6.22,
+   "published_mape_pct": 8.37,
+   "mae_diff_pct": 1.34,
+   "rmse_diff_pct": 0.08,
+   "mape_diff_pct": 0.96
+  },
+  "60": {
+   "mae": 3.5947,
+   "rmse": 7.4229,
+   "mape_pct": 10.05,
+   "horizon_steps": 12,
+   "horizon_minutes": 60,
+   "published_mae": 3.53,
+   "published_rmse": 7.37,
+   "published_mape_pct": 10.01,
+   "mae_diff_pct": 1.83,
+   "rmse_diff_pct": 0.72,
+   "mape_diff_pct": 0.4
+  }
+ },
+ "verification": {
+  "5": {
+   "reloaded_mae": 2.2013,
+   "reported_mae": null,
+   "diff_pct": null,
+   "windows": 134
+  },
+  "15": {
+   "reloaded_mae": 2.7158,
+   "reported_mae": 2.719,
+   "diff_pct": -0.12,
+   "windows": 136
+  },
+  "30": {
+   "reloaded_mae": 3.0764,
+   "reported_mae": 3.1112,
+   "diff_pct": -1.12,
+   "windows": 135
+  },
+  "60": {
+   "reloaded_mae": 3.4774,
+   "reported_mae": 3.5947,
+   "diff_pct": -3.26,
+   "windows": 137
+  }
+ },
+ "note": "single unseen window; the training metrics average the whole test set, so these differ in magnitude \u2014 the check is that they are the same order, not identical",
+ "rows": [
+  {
+   "horizon_min": 5,
+   "sensor_index": 0,
+   "actual_mph": 19.0,
+   "predicted_mph": 18.74,
+   "abs_error_mph": 0.26
+  },
+  {
+   "horizon_min": 5,
+   "sensor_index": "ALL",
+   "actual_mph": null,
+   "predicted_mph": null,
+   "abs_error_mph": 3.365
+  },
+  {
+   "horizon_min": 15,
+   "sensor_index": 0,
+   "actual_mph": 13.75,
+   "predicted_mph": 19.52,
+   "abs_error_mph": 5.77
+  },
+  {
+   "horizon_min": 15,
+   "sensor_index": "ALL",
+   "actual_mph": null,
+   "predicted_mph": null,
+   "abs_error_mph": 3.89
+  },
+  {
+   "horizon_min": 30,
+   "sensor_index": 0,
+   "actual_mph": 15.12,
+   "predicted_mph": 19.44,
+   "abs_error_mph": 4.32
+  },
+  {
+   "horizon_min": 30,
+   "sensor_index": "ALL",
+   "actual_mph": null,
+   "predicted_mph": null,
+   "abs_error_mph": 6.582
+  },
+  {
+   "horizon_min": 60,
+   "sensor_index": 0,
+   "actual_mph": 14.12,
+   "predicted_mph": 20.62,
+   "abs_error_mph": 6.49
+  },
+  {
+   "horizon_min": 60,
+   "sensor_index": "ALL",
+   "actual_mph": null,
+   "predicted_mph": null,
+   "abs_error_mph": 7.795
+  }
+ ]
+}

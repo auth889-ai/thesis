@@ -29,6 +29,6 @@
 | G3_models | NO | METR-LA/GWNet, METR-LA/STID |
 | G4_models_beat_floors | yes | every trained model beats every floor |
 | G5_gwnet_reproduces_published | yes | METR-LA@15min +1.1 %, METR-LA@30min +1.3 %, METR-LA@60min +1.8 % |
-| G6_checkpoint_inference | NO | none yet |
+| G6_checkpoint_inference | yes | GWNet/METR-LA, STID/METR-LA |
 
 Regenerate: `python predict/comparison_table.py`. Machine-readable: `phase1_comparison.json` / `.csv`.
