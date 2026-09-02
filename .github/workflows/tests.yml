@@ -1,0 +1,15 @@
+name: tests
+on:
+  push: {branches: [main, rebuild-120h]}
+  pull_request:
+jobs:
+  pytest:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: "3.13", cache: pip}
+      # SUMO and torch are heavy; the fast suite needs neither a GPU nor a simulator.
+      - run: pip install numpy pandas scipy scikit-learn matplotlib pytest tables
+      - run: python -m pytest tests/rebuild -q -m "not slow"
+        env: {PYTHONPATH: .}

@@ -1,126 +1,161 @@
-# DhakaFlow Nexus
+# DhakaFlow
 
-**Current active thesis path:** real-time Dhaka route advice plus prediction
-benchmarks. The clean execution layer is `live/`, `predict/`, `route/`,
-`network/`, `nlp/`, `demo/`, and `results/`; it reuses the existing
-`dhakaflow/`, `research/`, `scripts/`, and `paper_labs/` code instead of
-starting a new project. `live/` is the no-fixed-seed real pilot path; SUMO and
-MOSAIC are repeatable appendix stress tests.
+**Traffic prediction that is reproduced against the published literature, routing that is proven
+in a digital twin of real roads, and a communication layer that is measured rather than assumed.**
 
-Start here:
+![tests](https://github.com/auth889-ai/thesis/actions/workflows/tests.yml/badge.svg)
 
-1. `docs/PROJECT_STRUCTURE.md` — what each folder means and what is active.
-2. `docs/REBUILD_120H_PLAN.md` — 5-day rebuild plan.
-3. `docs/KEYS_AND_COMPUTE.md` — required keys and Colab/Drive/AWS setup.
-4. `results/RESULTS.md` — every result, command, and evidence file.
-5. `PROJECT_MAP.md` — quick code map.
-
-Main verification:
-
-```bash
-bash download_assets.sh
-PYTHONPATH=. pytest tests/platform/test_interfaces.py tests/platform/test_repo_architecture.py -q
-python live/route_advisor.py --dry-run --corridor farmgate_to_shahbagh
-make results
 ```
-
-`make results` only aggregates existing evidence. Use `make local-results` to
-regenerate local non-billed evidence, and `make live-capture` only when you
-intentionally want to spend a small number of Google API requests.
+live/sensor data ──► FORECAST ──► future edge travel times ──► ROUTE ──► SUMO counterfactual ──► ACT / NO ACTION
+                        │                                                        │
+                        └── federated across roadside units, over a V2X link measured in Eclipse MOSAIC
+```
 
 ---
 
-**Existing evidence chain kept from the earlier DhakaFlow build:** real UAV
-trajectories → same-street SUMO twin → published cycle-level
-calibration (−27% discharge error, authors' code) → held-out validation
-(speed MAE 3.0 m/s, 0 teleports) → causal same-state control experiments
-under network-honesty guards.
+## Results
 
-See `REPRODUCE.md` for the one-command path to every number, and
-`PROJECT_MAP.md` for the tour.
+### Traffic forecasting — METR-LA (207 real loop detectors, Los Angeles)
 
-**AI traffic management for Dhaka:** observe real traffic → predict congestion
-before it forms → prevent/react with signal control and routing → prove the
-delay reduction inside a SUMO digital twin of the real road network.
+MAE in mph, held-out test split, official upstream configurations.
 
----
+| model | 15 min | 30 min | 60 min | published (paper) | our difference |
+|---|---|---|---|---|---|
+| **Graph WaveNet** (IJCAI 2019) | **2.719** | **3.111** | **3.595** | 2.69 / 3.07 / 3.53 | **+1.1 / +1.3 / +1.8 %** |
+| **STID** (CIKM 2022) | 2.825 | 3.214 | 3.593 | — | — |
+| persistence *(floor)* | 3.460 | 4.147 | 5.308 | — | — |
+| historical average *(floor)* | 4.189 | 4.189 | 4.189 | — | — |
 
-## Appendix Demo — any video in, traffic intelligence out
+Two independent checks make these trustworthy:
 
-![REACT demo — dense rush-hour traffic detected as CONGESTED](docs/media/react_demo_rush.gif)
+* **The evaluation protocol was validated before any model ran.** Our historical-average floor
+  (4.19 MAE / 7.86 RMSE) reproduces DCRNN's published HA (4.16 / 7.80) to **0.7 %**, so the split,
+  masking and metric definitions are the ones the papers used.
+* **The checkpoint reproduces its own reported error.** Reloaded from disk and re-run over 150
+  held-out windows: 2.716 vs 2.719 reported at 15 min (**−0.1 %**).
 
-*Dense evening rush hour on I-70: ~14 vehicles per frame tracked, 10 of 11
-windows flagged **CONGESTED**, `congestion_detected: true` handed to the
-routing layer — the moment the system decides to intervene.*
+![accuracy](docs/figures/1_accuracy_vs_horizon.png)
 
-*Real output, unedited: a live US traffic-camera clip run through
-`scripts/demo_react.py` with the **Dhaka-fine-tuned RT-DETR r50** winner.
-Vehicles detected and tracked, per-window traffic state (banner), timeline and
-routing verdict written as JSON. The input slot takes anything — a file, a URL,
-an HLS live stream, or a webcam:*
+### Route optimisation — real Dhaka network, 10 paired seeds
 
-```bash
-python scripts/demo_react.py --detector rtdetr \
-    --weights artifacts/p1_winner/rtdetr_r50_poribohon_best.pth \
-    --source <video | stream-url | webcam-index>
-```
-
-| frame | | |
+| arm | total vehicle-hours | vs no rerouting |
 |---|---|---|
-| ![f1](docs/media/react_frame_1.jpg) | ![f2](docs/media/react_frame_2.jpg) | ![f3](docs/media/react_frame_3.jpg) |
+| DUE (offline assignment) | 725 | **−20.5 %** |
+| pre-departure, 5 % advised | 903 | **−1.1 %** |
+| *static (baseline)* | 913 | — |
+| pre-departure, 30 % advised | 1176 | +28.9 % |
+| reactive rerouting | 1173 | +28.5 % |
 
-Demo run stats (from `summary.json`, produced by the run above): 450 frames,
-near-real-time on a laptop CPU, detector label `DHAKA_FINETUNED_RTDETR_R50`
-(Poribohon-BD 15-class head: rickshaw, CNG, easy-bike, leguna, …).
+**The finding: advice helps only when few drivers act on it.** Advising 5 % of drivers improves the
+network; advising 30 % creates the next jam. Demand is simulated (`DHAKA_SIMULATED_DEMAND`); the
+6,527-edge road network is real (OpenStreetMap).
+
+![routing](docs/figures/4_routing_arms.png)
+
+### Networking — Eclipse MOSAIC V2X on the same network
+
+15 runs (5 penetration rates × 3 seeds): delivery ratio 0.96–0.98, latency mean 30 ms / p95 57 ms,
+route switches scaling 65 → 713 with penetration. These measured statistics then drive the
+federated-learning experiment, which is the point where the ML and networking halves meet:
+published federated work (CNFGNN KDD 2021, FedGTP KDD 2024) costs communication *analytically*
+— here it is costed with a link that was simulated end to end.
 
 ---
 
-## The proof, moving — same trips, only the routing differs
+## Quick start
 
-![SUMO twin before/after](docs/media/twin_before_after.gif)
+```bash
+git clone https://github.com/auth889-ai/thesis && cd thesis
+python -m venv .venv && source .venv/bin/activate
+pip install -r requirements.txt
 
-*The SUMO digital twin on the real Dhaka R1 network: left — selfish routing,
-jams form and 1,224 vehicles are still crawling at minute 24; right — DhakaFlow
-system routing, the same trips spread over spare capacity, only 930 still on
-the road (the rest already arrived). Full statistics: −19.5% mean delay,
-p = 1.3×10⁻⁵ (`artifacts/due_dso_stats/v200/result.json`).*
-
-![Where the traffic moved](docs/media/fig_traffic_moved.png)
-
-## Active Rebuild Status (updated 1 Sep 2026)
-
-| Component | Method (official code, pinned) | Result | Comparison |
-|---|---|---|---|
-| **Prediction data** | Eclipse SUMO 1.27.1 on frozen Dhaka R1 + 250 virtual sensors | 8 h × 3 seeds, 288 timesteps, 84.3 % valid speed coverage | `predict/data/dhaka_twin/MANIFEST.json` acceptance PASS |
-| **Forecasting floors** | Persistence + historical average | MAE@15 min: 0.724 / 0.570 m/s | `predict/results/twin_floors.md` |
-| **Deep forecasting** | BasicTS STID/GWNet/STAEformer on Colab Pro | pending | `notebooks/Predict_BasicTS_Colab.ipynb` then `predict/pull_colab_results.py` |
-| **Real route advice** | Google Routes live runtime call, route scoring in memory only | 1 real Dhaka advisory written; no Google route content persisted | `live/results/route_advice.jsonl` |
-| **Real user pilot** | 3 users record start/arrival around advisories | pending | `live/user_trip_logger.py` |
-| **Routing appendix** | SUMO paired seeds, static/reactive/DUE/predictive arms | decision guard can select an arm or honestly block unsafe action | `route/results/decision_guard.md` |
-| **Live reference** | Google Routes runtime-reference capture | 6 Dhaka corridors captured; Google route content is not persisted | `artifacts/p_live/live_reference_summary.md` |
-| **Evidence audit** | machine-readable artifact check | PASS with Colab benchmark pending | `results/evidence_audit.md` |
-
-## Architecture
-
-```
-live OD request ─► Google Routes runtime options ─► route advisor ─► 3-user pilot log
-real benchmark datasets ─► Colab STGNN benchmark ─► model comparison table
-Dhaka twin sensors ─► forecast-to-weights ─► SUMO/MOSAIC appendix stress tests
+python main.py status                  # what exists, what is real, what is missing
+python predict/benchmark_floors.py     # forecasting floors on real data (no GPU, ~2 s)
+python predict/comparison_table.py     # the Phase-1 gate, machine-readable
+python main.py demo                    # the Streamlit app
 ```
 
-## Honesty labels (enforced in code, not prose)
+## Data preparation
 
-* Simulated results carry `DHAKA_SIMULATED_SENSOR_GRAPH` and can never support
-  a real-world claim (`ModelEntry.real_world_claim_supported == False`, tested).
-* US live data (road511) is `PROVIDER_INTEGRATION_VALIDATION` + domain-shift
-  measurement — never Dhaka validation.
-* Every upstream repo is pinned by commit (`upstream/UPSTREAM_PINS.yaml`);
-  official code is never modified — adapters translate formats only.
+1. **Public benchmarks** — METR-LA and PEMS-BAY come from the DCRNN release (Li et al., ICLR 2018).
+   `predict/city_datasets.py` fetches them automatically from the project Drive; nothing is vendored.
+2. **Check what is present** — `python predict/city_datasets.py --list`
+3. **Load and validate one city** — `python predict/city_datasets.py --city METR-LA`
+   (verifies sensor count against the paper and that missing readings are masked, never scored as 0 mph)
+4. **Free the local cache** — `python predict/city_datasets.py --purge-local`
 
-## Where things live
+## Training
 
-* `docs/STATUS_BOARD.md` — live single source of truth
-* `docs/SPRINT_140H.md` — the hour-by-hour execution plan
-* `docs/INTEGRATED_BUILD_PLAN.md` — full research design, gates, policies
-* `paper_labs/` — frozen foundations (UTD19 science, SUMO platform, Dhaka network)
-* `research/`, `dhakaflow/` — components and platform contracts
+Training never runs on a laptop. Two supported paths, both using the pinned upstream harness:
+
+```bash
+python predict/aws_train.py --plan              # cost and configuration first
+python predict/aws_train.py --launch --models GWNet,STID --datasets METR-LA
+python predict/aws_train.py --collect --collect-checkpoints
+python predict/infer_from_checkpoint.py --model GWNet --dataset METR-LA
+```
+
+or open `notebooks/Predict_BasicTS_Colab.ipynb` on a Colab GPU.
+
+## Project structure
+
+```
+main.py               single entry point: status | predict | route | demo
+predict/              STAGE 1 — forecasting
+  city_datasets.py      any city behind one interface (METR-LA, PEMS-BAY, PEMS04/08, Dhaka)
+  benchmark_floors.py   persistence / HA / seasonal floors + protocol check vs published
+  aws_train.py          GPU training from the terminal, self-terminating
+  federated_forecast.py FedAvg across RSUs over the MEASURED V2X link
+  infer_from_checkpoint.py  reload a checkpoint, forecast an unseen window
+route/                STAGE 2 — routing, evaluated in SUMO with paired seeds
+  predictive_routing.py, run_arms.py, decision_guard.py, live_chain.py
+network/              V2X experiments (Eclipse MOSAIC): penetration, latency, loss
+nlp/                  incident-text classifier and its event feed
+demo/                 Streamlit app
+results/              evidence collection -> results/RESULTS.md
+tests/rebuild/        60 tests, run in CI
+legacy/               retired code, kept for history only
+```
+
+## Upstream code
+
+Nothing is re-implemented. Models and the training harness are the authors' own code at pinned
+commits, changed only in epoch count and evaluation horizons:
+
+| component | source | pin |
+|---|---|---|
+| harness | [GestaltCogTeam/BasicTS](https://github.com/GestaltCogTeam/BasicTS) (TKDE 2024) | `4c3e2d37` |
+| Graph WaveNet | [nnzhan/Graph-WaveNet](https://github.com/nnzhan/Graph-WaveNet) (IJCAI 2019) | via harness |
+| STID | [GestaltCogTeam/STID](https://github.com/GestaltCogTeam/STID) (CIKM 2022) | via harness |
+| datasets & protocol | [liyaguang/DCRNN](https://github.com/liyaguang/DCRNN) (ICLR 2018) | — |
+| V2X | [eclipse-mosaic/mosaic](https://github.com/eclipse-mosaic/mosaic) 25.2 | release |
+| simulation | Eclipse SUMO (Lopez et al., ITSC 2018) | 1.27.1 |
+
+## Honesty labels
+
+Enforced in code and carried in every output file, not only in prose:
+
+* METR-LA / PEMS-BAY results are **REAL** public benchmark data.
+* The Dhaka sensor graph is **SIMULATED** (`DHAKA_SIMULATED_SENSOR_GRAPH`) and cannot support a
+  real-world claim — a test asserts this.
+* The live Dhaka feed stores **derived congestion classes only**; provider content is never
+  persisted, and a test asserts that too.
+* Where a result does not hold, the file says so — see `route/results/real_demand.md`, where the
+  free-running twin gridlocks and no routing claim is made.
+
+## Citation
+
+```bibtex
+@software{dhakaflow2026,
+  title  = {DhakaFlow: prediction-aware route optimisation with a V2X-measured communication layer},
+  author = {Ferdouse, Jannatul},
+  year   = {2026},
+  url    = {https://github.com/auth889-ai/thesis}
+}
+```
+
+See `CITATION.cff` for the upstream papers this work builds on.
+
+## License
+
+MIT — see `LICENSE`. Upstream research code retains its own licenses and is fetched, never vendored.
