@@ -83,6 +83,63 @@ shutdown -h now
           # overridden by --job so each dataset keeps its own S3 space
 RESULTS = REPO / "results/forecasting"
 
+OPENCITY_SHA = "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f"
+
+# Cross-city evaluation with the official OpenCity foundation model, on GPU because the released
+# OpenCity-plus (512-dim, 6 encoder blocks, 288-step input and output) is not practical on CPU.
+# Weights and datasets are the authors' released artefacts, pulled from their HuggingFace repos.
+# Which dataset to evaluate lives in their conf and cannot be set on the command line (upstream
+# declares -dataset_use as type=list, so argparse would split the name into characters), so the
+# script rewrites that single assignment per city and restores it afterwards — their README's own
+# documented procedure.
+OPENCITY_SCRIPT = r"""#!/bin/bash
+exec > >(tee -a /var/log/dhakaflow.log) 2>&1
+set -x
+NAME=@NAME@; BUCKET=@BUCKET@; OCSHA=@OCSHA@; CITIES="@OCDATASETS@"
+( sleep $((@MAXH@ * 3600)); shutdown -h now ) &
+aws s3 cp s3://$BUCKET/jobs/$NAME/ /home/ec2-user/in/ --recursive || true
+cd /home/ec2-user
+PY=""
+for C in /opt/pytorch/bin/python /opt/conda/envs/pytorch/bin/python /usr/bin/python3 $(ls -d /opt/*/bin/python 2>/dev/null); do
+  if [ -x "$C" ] && "$C" -c "import torch" >/dev/null 2>&1; then PY="$C"; break; fi
+done
+[ -z "$PY" ] && { echo NO_TORCH; ls -la /opt; aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/; shutdown -h now; }
+echo "USING $PY"; $PY -c "import torch;print('torch',torch.__version__,'cuda',torch.cuda.is_available())"
+$PY -m pip install -q fastdtw tslearn huggingface_hub pandas
+git clone -q https://github.com/HKUDS/OpenCity.git oc && cd oc && git checkout -q $OCSHA
+git rev-parse HEAD
+mkdir -p model_weights/OpenCity
+$PY - <<'EOF'
+from huggingface_hub import hf_hub_download
+import shutil, zipfile, pathlib, os
+root = pathlib.Path('/home/ec2-user/oc')
+w = hf_hub_download('hkuds/OpenCity-Plus', 'OpenCity-plus.pth')
+shutil.copy2(w, root/'model_weights/OpenCity/OpenCity-plus.pth')
+for name in os.environ['CITIES'].split():
+    z = hf_hub_download('hkuds/OpenCity-dataset', f'{name}.zip', repo_type='dataset')
+    with zipfile.ZipFile(z) as zf: zf.extractall(root/'data')
+    print('extracted', name)
+EOF
+cp /home/ec2-user/in/_opencity_boot.py /home/ec2-user/oc/
+CONF=conf/general_conf/pretrain.conf
+cp $CONF /tmp/pretrain.conf.orig
+for CITY in $CITIES; do
+  echo "=== OpenCity zero-shot: $CITY ==="
+  sed -i "s/^dataset_use *=.*/dataset_use = ['$CITY']/" $CONF
+  grep '^dataset_use' $CONF
+  cd model
+  DF_OC_SCRIPT=/home/ec2-user/oc/model/Run.py timeout 7200 $PY /home/ec2-user/oc/_opencity_boot.py       -mode test -model OpenCity -load_pretrain_path OpenCity-plus.pth -batch_size 8       --embed_dim 512 --skip_dim 512 --enc_depth 6 2>&1 | tee /tmp/oc_${CITY}.log
+  cd ..
+  cp /tmp/pretrain.conf.orig $CONF
+  aws s3 cp /tmp/oc_${CITY}.log s3://$BUCKET/jobs/$NAME/logs/ || true
+done
+git status --porcelain --untracked-files=no > /tmp/oc_clean.txt
+aws s3 cp /tmp/oc_clean.txt s3://$BUCKET/jobs/$NAME/logs/ || true
+aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/ || true
+echo DONE > /tmp/DONE && aws s3 cp /tmp/DONE s3://$BUCKET/jobs/$NAME/DONE
+shutdown -h now
+"""
+
 JOB_SCRIPT = r"""#!/bin/bash
 exec > >(tee -a /var/log/dhakaflow.log) 2>&1
 set -x
@@ -173,8 +230,8 @@ def launch(a) -> int:
     if running_instances():
         print(f"refusing: a {JOB} instance is already running — use --status, or --terminate first")
         return 2
-    # upload the datasets the job needs
-    for d in a.datasets.split(","):
+    # upload the datasets the job needs (OpenCity pulls its own from the authors' HuggingFace)
+    for d in ([] if a.opencity else a.datasets.split(",")):
         src = REPO / "data/forecasting/cities" / d
         if not src.exists():
             print(f"missing {src}; fetch it first (pipeline/forecasting/city_datasets.py --list)")
@@ -186,7 +243,12 @@ def launch(a) -> int:
     for key in ("DONE", "logs/"):
         subprocess.run(["aws", "s3", "rm", f"s3://{BUCKET}/jobs/{JOB}/{key}", "--region", REGION]
                        + (["--recursive"] if key.endswith("/") else []), capture_output=True)
-    script = FED_SCRIPT if a.federated else JOB_SCRIPT
+    script = OPENCITY_SCRIPT if a.opencity else (FED_SCRIPT if a.federated else JOB_SCRIPT)
+    if a.opencity:
+        boot = REPO / "pipeline/forecasting/_opencity_boot.py"
+        subprocess.run(["aws", "s3", "cp", str(boot), f"s3://{BUCKET}/jobs/{JOB}/{boot.name}",
+                        "--region", REGION], check=True, capture_output=True)
+        print(f"[upload] OpenCity compatibility bootstrap -> s3://{BUCKET}/jobs/{JOB}/")
     if a.federated:
         import shutil as _sh
         extra = [REPO / "pipeline/forecasting/federated_forecast.py"] + \
@@ -202,7 +264,8 @@ def launch(a) -> int:
     for k, v in (("@NAME@", JOB), ("@BUCKET@", BUCKET), ("@SHA@", BASICTS_SHA),
                  ("@MODELS@", a.models.replace(",", " ")), ("@DATASETS@", a.datasets.replace(",", " ")),
                  ("@EPOCHS@", str(a.epochs)), ("@MAXH@", str(a.max_hours)),
-                 ("@CLIENTS@", a.clients.replace(",", " ")), ("@ROUNDS@", str(a.rounds))):
+                 ("@CLIENTS@", a.clients.replace(",", " ")), ("@ROUNDS@", str(a.rounds)),
+                 ("@OCSHA@", OPENCITY_SHA), ("@OCDATASETS@", a.cities.replace(",", " "))):
         script = script.replace(k, v)
     assert "@" not in script.split("aws s3")[0], "unsubstituted placeholder remains"
     ud = base64.b64encode(script.encode()).decode()
@@ -369,6 +432,11 @@ def main() -> int:
     p.add_argument("--epochs", type=int, default=50)
     p.add_argument("--instance-type", default="g5.xlarge")
     p.add_argument("--max-hours", type=int, default=4)
+    p.add_argument("--opencity", action="store_true",
+                   help="cross-city evaluation with the official OpenCity foundation model")
+    p.add_argument("--cities", default="PEMS07M,TrafficSH,TrafficNJ,TrafficTJ",
+                   help="OpenCity datasets to evaluate — HELD-OUT cities only; METR_LA and "
+                        "PEMS_BAY are in its pre-training corpus and are not zero-shot")
     p.add_argument("--federated", action="store_true",
                    help="run the federated-over-measured-V2X experiment instead of the baselines")
     p.add_argument("--clients", default="4,8,16", help="RSU counts to sweep (federated)")
