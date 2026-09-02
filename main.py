@@ -11,10 +11,11 @@ The system is a pipeline, and the order matters — you cannot optimise a route 
 have not predicted:
 
     STAGE 1  PREDICT   sensors / live API -> forecast of near-future congestion
-             pipeline/forecasting/city_datasets.py     any city, one interface (METR-LA, PEMS-BAY, PEMS04/08, Dhaka)
+             pipeline/forecasting/city_datasets.py     one loader interface per city (METR-LA, PEMS-BAY, PEMS04/08, Dhaka)
+             # portability of the pipeline, NOT a cross-city accuracy claim
              pipeline/forecasting/record_live.py       live Dhaka congestion recorder (real API, compliant)
              pipeline/forecasting/live_state.py        stream -> forecastable series + arithmetic floors
-             pipeline/forecasting/federated_forecast.py  ML + NETWORKING: FedAvg across RSUs over a MEASURED V2X link
+             pipeline/forecasting/federated_forecast.py  ML + NETWORKING: FedAvg across RSUs over a SIMULATED V2X link (MOSAIC ITS-G5)
              notebooks/*.ipynb            GPU training (Colab) — never trained on this machine
 
     STAGE 2  ROUTE     forecast -> future edge travel times -> routing -> proof it helped
@@ -104,7 +105,7 @@ def predict(a) -> int:
     run(["pipeline/forecasting/federated_forecast.py", "--self-test"], "verify the federated + V2X mechanics")
     print("\n\033[1mGPU training runs on Colab, never here:\033[0m")
     print("  notebooks/Predict_BasicTS_Colab.ipynb   official baselines (STID/GWNet/DCRNN/AGCRN/STAEformer)")
-    print("  notebooks/Federated_V2X_Colab.ipynb     federated forecasting over the measured V2X link")
+    print("  notebooks/Federated_V2X_Colab.ipynb     federated forecasting over the simulated V2X link")
     print("  push the source first:  bash pipeline/forecasting/sync_src_to_drive.sh")
     return 0
 

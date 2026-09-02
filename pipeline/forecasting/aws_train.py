@@ -198,7 +198,7 @@ def launch(a) -> int:
         if npz.exists():
             subprocess.run(["aws", "s3", "cp", str(npz), f"s3://{BUCKET}/jobs/{JOB}/metr_la.npz",
                             "--region", REGION], check=True, capture_output=True)
-        print(f"[upload] federated inputs: code + {len(extra) - 1} measured V2X files")
+        print(f"[upload] federated inputs: code + {len(extra) - 1} simulated-V2X profile files")
     for k, v in (("@NAME@", JOB), ("@BUCKET@", BUCKET), ("@SHA@", BASICTS_SHA),
                  ("@MODELS@", a.models.replace(",", " ")), ("@DATASETS@", a.datasets.replace(",", " ")),
                  ("@EPOCHS@", str(a.epochs)), ("@MAXH@", str(a.max_hours)),

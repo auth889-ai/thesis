@@ -22,7 +22,7 @@ SECTIONS = [  # (title, markdown produced by the pipeline, command that produces
     ("Prediction — PHASE 1 verdict: floors vs trained vs published, with gate", "results/forecasting/phase1_comparison.md", "python pipeline/forecasting/comparison_table.py"),
     ("Prediction — forecasting floors on real cities + protocol validation vs published", "results/forecasting/benchmark_floors.md", "python pipeline/forecasting/benchmark_floors.py --cities METR-LA,PEMS-BAY"),
     ("Prediction — city dataset registry (any city, one interface)", "results/forecasting/cities.md", "python pipeline/forecasting/city_datasets.py --list"),
-    ("Prediction × Networking — federated forecasting under the MEASURED V2X link", "results/forecasting/federated.md", "notebooks/Federated_V2X_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results results/forecasting --include federated*"),
+    ("Prediction × Networking — federated forecasting under a SIMULATED V2X link", "results/forecasting/federated.md", "notebooks/Federated_V2X_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results results/forecasting --include federated*"),
     ("Routing — arms × paired seeds on Dhaka R1", "results/routing/stats.md", "make route"),
     ("Routing — network-wide decision guard", "results/routing/decision_guard.md", "python pipeline/routing/decision_guard.py --horizon 7200 --reference reactive"),
     ("Live reference — Google Routes derived congestion states", "artifacts/p_live/live_reference_summary.md", "python pipeline/forecasting/run_live_capture.py && python pipeline/forecasting/summarize_live_reference.py"),

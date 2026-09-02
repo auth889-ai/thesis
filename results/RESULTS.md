@@ -1,6 +1,6 @@
 # RESULTS — DhakaFlow rebuild
 
-Generated 2026-09-02T10:48 @ `a010d1d` by `python results/build_results.py`.
+Generated 2026-09-02T15:58 @ `52b02ea` by `python results/build_results.py`.
 
 Every table below is read from a file written by the pipeline named next to it. Nothing here is typed by hand.
 
@@ -131,6 +131,7 @@ Regenerate: `python pipeline/forecasting/aws_train.py --launch` then `--collect`
 | **persistence** | floor | 2.795 | 3.460 | 4.147 | 5.308 | – | – |
 | **seasonal_naive** | floor | 5.329 | 5.329 | 5.329 | 5.329 | – | – |
 | **GWNet** | trained | – | 2.719 | 3.111 | 3.595 | 2.69 | +1.1 % |
+| **STAEformer** | trained | 2.267 | 2.674 | 2.985 | 3.350 | – | – |
 | **STID** | trained | – | 2.825 | 3.214 | 3.593 | – | – |
 
 ## PEMS-BAY
@@ -151,6 +152,7 @@ Published 15-min MAE from STAEformer (CIKM 2023) Table 1, which retrained every 
 | our model | dataset | our MAE@15 | band | gap to SOTA | published models it beats |
 |---|---|---|---|---|---|
 | **GWNet** | METR-LA | 2.719 | respectable published baseline | +2.6 % | STGCN (IJCAI 2018), GTS (ICLR 2021), GMAN (AAAI 2020), STNorm (KDD 2021), STID (CIKM 2022) +3 more |
+| **STAEformer** | METR-LA | 2.674 | respectable published baseline | +0.9 % | Graph WaveNet (IJCAI 2019), MTGNN (KDD 2020), STGCN (IJCAI 2018), GTS (ICLR 2021), GMAN (AAAI 2020) +5 more |
 | **STID** | METR-LA | 2.825 | respectable published baseline | +6.6 % | PDFormer (AAAI 2023), AGCRN (NeurIPS 2020), HI (naive) (-) |
 | **GWNet** | PEMS-BAY | 1.308 | state of the art | +0.6 % | STAEformer (CIKM 2023), DCRNN (ICLR 2018), HI (naive) (-) |
 | **STID** | PEMS-BAY | 1.318 | respectable published baseline | +1.4 % | DCRNN (ICLR 2018), HI (naive) (-) |
@@ -161,7 +163,7 @@ Published 15-min MAE from STAEformer (CIKM 2023) Table 1, which retrained every 
 |---|---|---|
 | G1_both_cities | yes | METR-LA, PEMS-BAY |
 | G2_floors | yes | METR-LA/global_mean, METR-LA/historical_average, METR-LA/persistence, METR-LA/seasonal_naive, PEMS-BAY/global_mean, PEMS-BAY/historical_average, PEMS- |
-| G3_models | yes | METR-LA/GWNet, METR-LA/STID, PEMS-BAY/GWNet, PEMS-BAY/STID |
+| G3_models | yes | METR-LA/GWNet, METR-LA/STAEformer, METR-LA/STID, PEMS-BAY/GWNet, PEMS-BAY/STID |
 | G4_models_beat_floors | yes | every trained model beats every floor |
 | G5_gwnet_reproduces_published | yes | METR-LA@15min +1.1 %, METR-LA@30min +1.3 %, METR-LA@60min +1.8 %, PEMS-BAY@15min +0.6 %, PEMS-BAY@30min +0.5 %, PEMS-BAY@60min -0.2 % |
 | G6_checkpoint_inference | yes | STID/PEMS-BAY, GWNet/PEMS-BAY, GWNet/METR-LA, STID/METR-LA |
@@ -246,7 +248,7 @@ Add a city by registering a loader in `pipeline/forecasting/city_datasets.py`; n
 Regenerate: `python pipeline/forecasting/city_datasets.py --list`.
 
 
-## Prediction × Networking — federated forecasting under the MEASURED V2X link
+## Prediction × Networking — federated forecasting under a SIMULATED V2X link
 
 `notebooks/Federated_V2X_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results results/forecasting --include federated*` → `results/forecasting/federated.md`
 
@@ -728,25 +730,25 @@ Regenerate: `python pipeline/networking/event_sweep.py --source nlp_event --p <P
 
 # Latency / loss injection - fraction of route advisories delivered before the decision point
 
-* base latency: V2XBus <- MEASURED from official Eclipse MOSAIC 25.2 Barnim example (SNS ad-hoc ITS-G5 geocast), run 2026-08-29, logs/log-20260829-163311-Barnim  (n=504, mean 2.6 ms, p95 7.0 ms)
-* time budget tth: sweep JSONs (15 points, 3917 rerouting vehicles): distance from position at first DENM reception to hazard rectangle / speed
-  n=3917, p10 0.0 s, p50 50.1 s, p90 249.0 s; 554 vehicles (14%) were already inside the hazard rectangle at first reception (tth = 0: no advisory can arrive in time; counted as not delivered in the all-vehicle columns, excluded in the upstream-only columns)
+* base latency: V2XBus <- SIMULATED by official Eclipse MOSAIC 25.2 Barnim example (SNS ad-hoc ITS-G5 geocast), run 2026-08-29, logs/log-20260829-163311-Barnim  (n=504, mean 2.6 ms, p95 7.0 ms)
+* time budget tth: sweep JSONs (15 points, 4386 rerouting vehicles): distance from position at first DENM reception to hazard rectangle / speed
+  n=4386, p10 0.0 s, p50 50.8 s, p90 254.8 s; 628 vehicles (14%) were already inside the hazard rectangle at first reception (tth = 0: no advisory can arrive in time; counted as not delivered in the all-vehicle columns, excluded in the upstream-only columns)
 * Monte Carlo: 20 draws per vehicle, seed 0; delivered = not lost AND (latency + added) < tth
 
 | added latency ms | loss % | delivered (single DENM) | delivered (1 Hz DENM repeat) | upstream-only single | upstream-only repeat | eff. latency mean ms |
 |---|---|---|---|---|---|---|
-| 0 | 0 | 0.859 | 0.859 | 1.000 | 1.000 | 2.6 |
-| 0 | 10 | 0.773 | 0.850 | 0.900 | 0.990 | 2.6 |
-| 0 | 30 | 0.600 | 0.832 | 0.701 | 0.969 | 2.6 |
-| 500 | 0 | 0.775 | 0.775 | 0.902 | 0.902 | 502.6 |
-| 500 | 10 | 0.697 | 0.774 | 0.810 | 0.902 | 502.6 |
-| 500 | 30 | 0.542 | 0.773 | 0.627 | 0.901 | 502.6 |
-| 2000 | 0 | 0.770 | 0.770 | 0.896 | 0.896 | 2002.6 |
-| 2000 | 10 | 0.693 | 0.769 | 0.807 | 0.896 | 2002.6 |
-| 2000 | 30 | 0.537 | 0.768 | 0.627 | 0.895 | 2002.6 |
-| 5000 | 0 | 0.764 | 0.764 | 0.889 | 0.889 | 5002.6 |
-| 5000 | 10 | 0.688 | 0.763 | 0.800 | 0.889 | 5002.6 |
-| 5000 | 30 | 0.532 | 0.763 | 0.622 | 0.889 | 5002.6 |
+| 0 | 0 | 0.857 | 0.857 | 1.000 | 1.000 | 2.6 |
+| 0 | 10 | 0.770 | 0.850 | 0.900 | 0.992 | 2.6 |
+| 0 | 30 | 0.600 | 0.837 | 0.700 | 0.977 | 2.6 |
+| 500 | 0 | 0.800 | 0.800 | 0.934 | 0.934 | 502.6 |
+| 500 | 10 | 0.721 | 0.799 | 0.840 | 0.933 | 502.6 |
+| 500 | 30 | 0.558 | 0.797 | 0.652 | 0.930 | 502.6 |
+| 2000 | 0 | 0.790 | 0.790 | 0.923 | 0.923 | 2002.6 |
+| 2000 | 10 | 0.713 | 0.790 | 0.829 | 0.922 | 2002.6 |
+| 2000 | 30 | 0.553 | 0.788 | 0.645 | 0.920 | 2002.6 |
+| 5000 | 0 | 0.778 | 0.778 | 0.908 | 0.908 | 5002.6 |
+| 5000 | 10 | 0.702 | 0.778 | 0.818 | 0.908 | 5002.6 |
+| 5000 | 30 | 0.544 | 0.778 | 0.635 | 0.908 | 5002.6 |
 
 single DENM: one advisory per vehicle, lost with probability `loss`. 1 Hz repeat: the official WeatherWarningApp re-sends a DENM every second while in the hazard, so a vehicle with slack tth - latency gets one extra chance per second (P = 1 - loss^n).
 

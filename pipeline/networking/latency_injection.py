@@ -2,9 +2,11 @@
 """Latency / loss injection: how many route advisories still arrive BEFORE the decision point?
 
 Inputs
-  * base network latency: the distribution MEASURED on the official Eclipse MOSAIC Barnim
-    example (artifacts/gates/mosaic_barnim/latencies.json) sampled through
-    research/networking/v2x_bus.py::V2XBus (the same adapter the routing arm uses);
+  * base network latency: the distribution SIMULATED by the official Eclipse MOSAIC Barnim
+    example (artifacts/gates/mosaic_barnim/latencies.json) sampled through. These are simulated
+    ITS-G5 communication events from MOSAIC's SNS ad-hoc model, NOT radio hardware measurements;
+    every latency and loss figure downstream inherits that nature and must be described as such.
+    pipeline/adapters/networking/v2x_bus.py::V2XBus (the same adapter the routing arm uses);
     `--base sweep` instead uses the per-message latency histogram of the Dhaka sweep JSONs.
   * per-vehicle time budget  tth  = time from the vehicle's FIRST DENM reception until it reaches
     the hazard zone (decision point). Source, in order of preference:
@@ -37,7 +39,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 RESULTS = REPO / "results/networking"
-V2X_BUS = REPO / "research/networking/v2x_bus.py"
+V2X_BUS = REPO / "pipeline/adapters/networking/v2x_bus.py"
 ADDED_MS = [0, 500, 2000, 5000]
 LOSS_PCT = [0, 10, 30]
 

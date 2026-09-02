@@ -1,5 +1,8 @@
 #!/usr/bin/env python3
-"""Federated traffic forecasting across roadside units, under a MEASURED V2X network.
+"""Federated traffic forecasting across roadside units, under a SIMULATED V2X network.
+
+The link profile comes from Eclipse MOSAIC (an official ITS-G5 simulator), not from radio
+hardware. Every latency, loss and delivery figure here is a simulated communication event.
 
     python pipeline/forecasting/federated_forecast.py --self-test          # no training: verifies the mechanics
     python pipeline/forecasting/federated_forecast.py --dataset METR-LA --clients 8 --rounds 30     # GPU (Colab)
@@ -86,7 +89,7 @@ def measured_link(path_glob: str = "penetration_p*_s*.json") -> dict:
         if v.get("delivery_ratio_veh"):
             ratios.append(float(v["delivery_ratio_veh"]))
     if not lat_hist:
-        raise SystemExit(f"no measured V2X stats in {NET_RESULTS} — run pipeline/networking/penetration_sweep.py first")
+        raise SystemExit(f"no simulated-V2X link stats in {NET_RESULTS} — run pipeline/networking/penetration_sweep.py first")
     bins = np.array(sorted(lat_hist), dtype=float)
     weights = np.array([lat_hist[int(b)] for b in bins], dtype=float)
     return {"latency_ms_bins": bins / 100.0,            # 10 us bins -> ms
@@ -309,7 +312,7 @@ def run(a) -> int:
                           "wall_s": round(time.time() - t0, 1), "note": "each RSU alone, never communicates"}
     print(f"[federated] local_only      MAE {arms['local_only']['mae']:.4f}")
 
-    # federated: perfect link, then the measured V2X link
+    # federated: perfect link, then the simulated MOSAIC V2X link
     for arm, link in (("federated", None), ("federated_v2x", Link(stats, seed=a.seed))):
         t0 = time.time()
         g = GRUForecaster().to(dev)
@@ -363,7 +366,7 @@ def run(a) -> int:
     (RESULTS / f"federated{tag}.json").write_text(json.dumps(rec, indent=1, default=str))
 
     base = arms["centralized"]["mae"]
-    lines = [f"# Federated traffic forecasting under a MEASURED V2X link — {label}\n",
+    lines = [f"# Federated traffic forecasting under a SIMULATED V2X link (Eclipse MOSAIC ITS-G5) — {label}\n",
              f"{N} sensors partitioned into {len(clients)} RSU clients; {a.rounds} FedAvg rounds x "
              f"{a.local_epochs} local epochs; horizon {H} steps. Link statistics are MEASURED from the official "
              f"Eclipse MOSAIC ITS-G5 stack on the Dhaka R1 network ({stats['n_messages']:,} messages, "

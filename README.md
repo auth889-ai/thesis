@@ -128,10 +128,11 @@ or open `notebooks/Predict_BasicTS_Colab.ipynb` on a Colab GPU.
 ```
 main.py               single entry point: status | predict | route | demo
 pipeline/forecasting/              STAGE 1 — forecasting
-  city_datasets.py      any city behind one interface (METR-LA, PEMS-BAY, PEMS04/08, Dhaka)
+  city_datasets.py      one loader interface per city (METR-LA, PEMS-BAY, PEMS04/08, Dhaka)
+                        -- software portability, NOT evidence of cross-city accuracy
   benchmark_floors.py   persistence / HA / seasonal floors + protocol check vs published
   aws_train.py          GPU training from the terminal, self-terminating
-  federated_forecast.py FedAvg across RSUs over the MEASURED V2X link
+  federated_forecast.py FedAvg across RSUs over a SIMULATED V2X link (Eclipse MOSAIC ITS-G5)
   infer_from_checkpoint.py  reload a checkpoint, forecast an unseen window
 pipeline/routing/                STAGE 2 — routing, evaluated in SUMO with paired seeds
   predictive_routing.py, run_arms.py, decision_guard.py, live_chain.py
