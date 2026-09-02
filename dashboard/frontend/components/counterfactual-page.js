@@ -104,7 +104,7 @@ export class CounterfactualPage extends HTMLElement {
       const j = await api.simulateJob(jobId);
       if (j.status === "RUNNING") {
         const s = Math.round((Date.now() - started) / 1000);
-        out.innerHTML = `<p class="running">Running ${nSeeds} paired seeds × 2 arms on the real
+        out.innerHTML = `<p class="running">Running ${nSeeds} paired seeds × 3 arms on the real
           Dhaka R1 network… <b>${s}s</b></p>
           <p class="muted">SUMO is simulating the observed congestion. This takes a few minutes.</p>`;
         return;
@@ -123,8 +123,9 @@ export class CounterfactualPage extends HTMLElement {
   renderResult(j) {
     const r = j.result || {};
     const arms = r.arms || [];
-    const label = {unaware: "Baseline (nobody reroutes)", advised: "Prediction-aware (forecast routing)",
-                   reactive: "Reactive (current travel times)"};
+    const label = {unaware: "Baseline — nobody reroutes",
+                   reactive: "Reactive — reroute on current travel times",
+                   advised: "Prediction-aware — reroute on the forecast"};
     const rows = arms.map(a => `
       <tr>
         <td><b>${label[a.arm] || a.arm}</b></td>

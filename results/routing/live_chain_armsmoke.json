@@ -1,0 +1,147 @@
+{
+ "generated_utc": "2026-09-02T13:52:56.444827+00:00",
+ "source": {
+  "reality": "SYNTHETIC_WHAT_IF",
+  "note": "levels supplied on the command line \u2014 a mechanism check, NEVER evidence about Dhaka",
+  "levels": {
+   "karwanbazar_to_shahbagh": 2.5
+  }
+ },
+ "demand": "DHAKA_SIMULATED_DEMAND (live feed supplies congestion state, never demand)",
+ "network": "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+ "scale": 0.25,
+ "horizon_s": 900,
+ "compliance": 0.3,
+ "edges_congested": 36,
+ "weights": {
+  "out": "/Users/jannatulferdouseva/thesis/results/routing/live_chain_weights.xml",
+  "edges_written": 36,
+  "corridors": {
+   "karwanbazar_to_shahbagh": {
+    "level": 2.5,
+    "multiplier": 2.125,
+    "edges": 36
+   }
+  },
+  "provenance": {
+   "reality": "SYNTHETIC_WHAT_IF",
+   "note": "levels supplied on the command line \u2014 a mechanism check, NEVER evidence about Dhaka",
+   "levels": {
+    "karwanbazar_to_shahbagh": 2.5
+   }
+  },
+  "band_midpoints": {
+   "0": 1.08,
+   "1": 1.33,
+   "2": 1.75,
+   "3": 2.5
+  },
+  "bands": {
+   "0": "FREE_FLOW ratio<1.15",
+   "1": "SLOW 1.15-1.5",
+   "2": "CONGESTED 1.5-2.0",
+   "3": "SEVERE >=2.0 (open band)"
+  }
+ },
+ "runs": [
+  {
+   "arm": "unaware",
+   "seed": 11,
+   "edges_slowed": 36,
+   "routes_changed": 0,
+   "reroute_calls": 0,
+   "wall_s": 2.7,
+   "metrics": {
+    "arrived": 665,
+    "unfinished_at_horizon": 460,
+    "unfinished": 460,
+    "total_vehicle_hours": 85.60722222222222,
+    "mean_travel_time_all": 273.94311111111114,
+    "mean_travel_time_s": 316.9067669172932,
+    "p95_travel_time_s": 479.0,
+    "mean_waiting_s": 17.83157894736842,
+    "total_waiting_s": 11858.0,
+    "mean_time_loss_s": 77.48306766917293,
+    "mean_depart_delay_s": 0.02857142857142857,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 0,
+    "loaded": 5041,
+    "inserted": 1125,
+    "running_at_end": 460,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "reactive",
+   "seed": 11,
+   "edges_slowed": 36,
+   "routes_changed": 1398,
+   "reroute_calls": 1398,
+   "wall_s": 3.9,
+   "metrics": {
+    "arrived": 672,
+    "unfinished_at_horizon": 453,
+    "unfinished": 453,
+    "total_vehicle_hours": 83.48722222222223,
+    "mean_travel_time_all": 267.1591111111111,
+    "mean_travel_time_s": 308.13839285714283,
+    "p95_travel_time_s": 471.0,
+    "mean_waiting_s": 17.80654761904762,
+    "total_waiting_s": 11966.0,
+    "mean_time_loss_s": 77.0609375,
+    "mean_depart_delay_s": 0.019345238095238096,
+    "vehicles_rerouted_at_least_once": 169,
+    "teleports": 2,
+    "loaded": 5041,
+    "inserted": 1125,
+    "running_at_end": 453,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "advised",
+   "seed": 11,
+   "edges_slowed": 36,
+   "routes_changed": 1058,
+   "reroute_calls": 0,
+   "wall_s": 2.6,
+   "metrics": {
+    "arrived": 684,
+    "unfinished_at_horizon": 441,
+    "unfinished": 441,
+    "total_vehicle_hours": 83.29027777777777,
+    "mean_travel_time_all": 266.5288888888889,
+    "mean_travel_time_s": 308.5497076023392,
+    "p95_travel_time_s": 477.0,
+    "mean_waiting_s": 20.760233918128655,
+    "total_waiting_s": 14200.0,
+    "mean_time_loss_s": 80.02163742690058,
+    "mean_depart_delay_s": 0.023391812865497075,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 0,
+    "loaded": 5041,
+    "inserted": 1125,
+    "running_at_end": 441,
+    "waiting_to_insert_at_end": 0
+   }
+  }
+ ],
+ "decision": {
+  "decision": "ACT",
+  "reason": "advised improves total vehicle-hours on every paired seed without cost to arrivals or teleports",
+  "seeds": [
+   11
+  ],
+  "vehicle_hours_pct_per_seed": [
+   -2.71
+  ],
+  "mean_pct": -2.71,
+  "arrivals_delta": [
+   19
+  ],
+  "teleports_delta": [
+   0
+  ],
+  "rule": "ACT iff total vehicle-hours improves on EVERY paired seed and mean arrivals do not fall and mean teleports do not rise"
+ }
+}

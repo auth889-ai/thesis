@@ -1,0 +1,317 @@
+{
+ "generated_utc": "2026-09-02T13:54:33.457993+00:00",
+ "source": {
+  "reality": "SYNTHETIC_WHAT_IF",
+  "note": "levels supplied on the command line \u2014 a mechanism check, NEVER evidence about Dhaka",
+  "levels": {
+   "farmgate_to_shahbagh": 2.5
+  }
+ },
+ "demand": "DHAKA_SIMULATED_DEMAND (live feed supplies congestion state, never demand)",
+ "network": "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+ "scale": 0.25,
+ "horizon_s": 1800,
+ "compliance": 0.3,
+ "edges_congested": 46,
+ "weights": {
+  "out": "/Users/jannatulferdouseva/thesis/results/routing/live_chain_weights.xml",
+  "edges_written": 46,
+  "corridors": {
+   "farmgate_to_shahbagh": {
+    "level": 2.5,
+    "multiplier": 2.125,
+    "edges": 46
+   }
+  },
+  "provenance": {
+   "reality": "SYNTHETIC_WHAT_IF",
+   "note": "levels supplied on the command line \u2014 a mechanism check, NEVER evidence about Dhaka",
+   "levels": {
+    "farmgate_to_shahbagh": 2.5
+   }
+  },
+  "band_midpoints": {
+   "0": 1.08,
+   "1": 1.33,
+   "2": 1.75,
+   "3": 2.5
+  },
+  "bands": {
+   "0": "FREE_FLOW ratio<1.15",
+   "1": "SLOW 1.15-1.5",
+   "2": "CONGESTED 1.5-2.0",
+   "3": "SEVERE >=2.0 (open band)"
+  }
+ },
+ "runs": [
+  {
+   "arm": "unaware",
+   "seed": 11,
+   "edges_slowed": 46,
+   "routes_changed": 0,
+   "reroute_calls": 0,
+   "wall_s": 4.1,
+   "metrics": {
+    "arrived": 1717,
+    "unfinished_at_horizon": 533,
+    "unfinished": 533,
+    "total_vehicle_hours": 209.86027777777778,
+    "mean_travel_time_all": 335.77644444444445,
+    "mean_travel_time_s": 352.7466511357018,
+    "p95_travel_time_s": 590.0,
+    "mean_waiting_s": 35.23412929528247,
+    "total_waiting_s": 60497.0,
+    "mean_time_loss_s": 101.46827023878858,
+    "mean_depart_delay_s": 0.0728013977868375,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 5,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 533,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "reactive",
+   "seed": 11,
+   "edges_slowed": 46,
+   "routes_changed": 3276,
+   "reroute_calls": 3276,
+   "wall_s": 7.2,
+   "metrics": {
+    "arrived": 1741,
+    "unfinished_at_horizon": 509,
+    "unfinished": 509,
+    "total_vehicle_hours": 200.1002777777778,
+    "mean_travel_time_all": 320.16044444444447,
+    "mean_travel_time_s": 336.8081562320505,
+    "p95_travel_time_s": 523.0,
+    "mean_waiting_s": 29.418724870763928,
+    "total_waiting_s": 51218.0,
+    "mean_time_loss_s": 93.8909304997128,
+    "mean_depart_delay_s": 0.03963239517518667,
+    "vehicles_rerouted_at_least_once": 408,
+    "teleports": 1,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 509,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "advised",
+   "seed": 11,
+   "edges_slowed": 46,
+   "routes_changed": 2149,
+   "reroute_calls": 0,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1637,
+    "unfinished_at_horizon": 590,
+    "unfinished": 590,
+    "total_vehicle_hours": 206.09444444444443,
+    "mean_travel_time_all": 333.15671306690615,
+    "mean_travel_time_s": 330.7226634086744,
+    "p95_travel_time_s": 511.0,
+    "mean_waiting_s": 27.587049480757482,
+    "total_waiting_s": 45160.0,
+    "mean_time_loss_s": 89.62232131948686,
+    "mean_depart_delay_s": 0.028711056811240074,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 18,
+    "loaded": 9061,
+    "inserted": 2227,
+    "running_at_end": 590,
+    "waiting_to_insert_at_end": 23
+   }
+  },
+  {
+   "arm": "unaware",
+   "seed": 12,
+   "edges_slowed": 46,
+   "routes_changed": 0,
+   "reroute_calls": 0,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1702,
+    "unfinished_at_horizon": 548,
+    "unfinished": 548,
+    "total_vehicle_hours": 209.98,
+    "mean_travel_time_all": 335.968,
+    "mean_travel_time_s": 347.23443008225615,
+    "p95_travel_time_s": 549.0,
+    "mean_waiting_s": 30.187426556991774,
+    "total_waiting_s": 51379.0,
+    "mean_time_loss_s": 95.14116921269094,
+    "mean_depart_delay_s": 0.03407755581668625,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 0,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 548,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "reactive",
+   "seed": 12,
+   "edges_slowed": 46,
+   "routes_changed": 3424,
+   "reroute_calls": 3424,
+   "wall_s": 7.2,
+   "metrics": {
+    "arrived": 1711,
+    "unfinished_at_horizon": 539,
+    "unfinished": 539,
+    "total_vehicle_hours": 204.87055555555557,
+    "mean_travel_time_all": 327.7928888888889,
+    "mean_travel_time_s": 347.1531268264173,
+    "p95_travel_time_s": 580.0,
+    "mean_waiting_s": 35.50379894798363,
+    "total_waiting_s": 60747.0,
+    "mean_time_loss_s": 101.6711396843951,
+    "mean_depart_delay_s": 0.030976037405026302,
+    "vehicles_rerouted_at_least_once": 393,
+    "teleports": 6,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 539,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "advised",
+   "seed": 12,
+   "edges_slowed": 46,
+   "routes_changed": 2149,
+   "reroute_calls": 0,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1714,
+    "unfinished_at_horizon": 536,
+    "unfinished": 536,
+    "total_vehicle_hours": 205.01277777777779,
+    "mean_travel_time_all": 328.0204444444444,
+    "mean_travel_time_s": 344.25495915986,
+    "p95_travel_time_s": 586.0,
+    "mean_waiting_s": 36.04784130688448,
+    "total_waiting_s": 61786.0,
+    "mean_time_loss_s": 101.39390315052509,
+    "mean_depart_delay_s": 0.027421236872812137,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 7,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 536,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "unaware",
+   "seed": 13,
+   "edges_slowed": 46,
+   "routes_changed": 0,
+   "reroute_calls": 0,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1698,
+    "unfinished_at_horizon": 552,
+    "unfinished": 552,
+    "total_vehicle_hours": 213.85222222222222,
+    "mean_travel_time_all": 342.16355555555555,
+    "mean_travel_time_s": 358.2102473498233,
+    "p95_travel_time_s": 641.0,
+    "mean_waiting_s": 39.76737338044759,
+    "total_waiting_s": 67525.0,
+    "mean_time_loss_s": 107.85567726737338,
+    "mean_depart_delay_s": 0.037102473498233215,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 3,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 552,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "reactive",
+   "seed": 13,
+   "edges_slowed": 46,
+   "routes_changed": 3290,
+   "reroute_calls": 3290,
+   "wall_s": 7.0,
+   "metrics": {
+    "arrived": 1741,
+    "unfinished_at_horizon": 509,
+    "unfinished": 509,
+    "total_vehicle_hours": 201.47805555555556,
+    "mean_travel_time_all": 322.3648888888889,
+    "mean_travel_time_s": 341.63699023549685,
+    "p95_travel_time_s": 545.0,
+    "mean_waiting_s": 31.58012636415853,
+    "total_waiting_s": 54981.0,
+    "mean_time_loss_s": 97.60489948305572,
+    "mean_depart_delay_s": 0.02871912693854107,
+    "vehicles_rerouted_at_least_once": 409,
+    "teleports": 0,
+    "loaded": 9061,
+    "inserted": 2250,
+    "running_at_end": 509,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "advised",
+   "seed": 13,
+   "edges_slowed": 46,
+   "routes_changed": 2149,
+   "reroute_calls": 0,
+   "wall_s": 4.0,
+   "metrics": {
+    "arrived": 1690,
+    "unfinished_at_horizon": 543,
+    "unfinished": 543,
+    "total_vehicle_hours": 207.51222222222222,
+    "mean_travel_time_all": 334.54724585759067,
+    "mean_travel_time_s": 341.9650887573965,
+    "p95_travel_time_s": 573.0,
+    "mean_waiting_s": 34.61597633136095,
+    "total_waiting_s": 58501.0,
+    "mean_time_loss_s": 100.0662721893491,
+    "mean_depart_delay_s": 0.031360946745562134,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 11,
+    "loaded": 9061,
+    "inserted": 2233,
+    "running_at_end": 543,
+    "waiting_to_insert_at_end": 17
+   }
+  }
+ ],
+ "decision": {
+  "decision": "NO_ACTION",
+  "reason": "arrivals fall on average (-25.3); teleports rise on average (+9.3)",
+  "seeds": [
+   11,
+   12,
+   13
+  ],
+  "vehicle_hours_pct_per_seed": [
+   -1.79,
+   -2.37,
+   -2.96
+  ],
+  "mean_pct": -2.37,
+  "arrivals_delta": [
+   -80,
+   12,
+   -8
+  ],
+  "teleports_delta": [
+   13,
+   7,
+   8
+  ],
+  "rule": "ACT iff total vehicle-hours improves on EVERY paired seed and mean arrivals do not fall and mean teleports do not rise"
+ }
+}

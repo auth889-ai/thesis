@@ -29,6 +29,7 @@ nothing to route around.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import statistics
 import subprocess
@@ -44,6 +45,9 @@ from pipeline.routing import predictive_routing as pr  # noqa: E402
 from pipeline.routing.predeparture_arm import VEH_RE, read_routes  # noqa: E402
 
 RESULTS = REPO / "results/routing"
+REACTIVE_PERIOD = 60          # s between reroute opportunities per vehicle
+# Three arms, identical network / demand / seed; only the routing rule differs.
+ARMS = ("unaware", "reactive", "advised")
 SERIES = REPO / "data/forecasting/live_dhaka/series.npz"
 
 
@@ -92,6 +96,7 @@ def run_arm(a, arm: str, seed: int, slow: dict, weights: Path | None) -> dict:
     t0 = time.time()
     traci.start(pr.base_cmd(ns, out), label=f"live-{arm}-{seed}")
     applied = 0
+    reroute_calls = 0
     for eid, m in slow.items():                       # make the live congestion REAL, in both arms
         try:
             for i in range(traci.edge.getLaneNumber(eid)):
@@ -104,11 +109,28 @@ def run_arm(a, arm: str, seed: int, slow: dict, weights: Path | None) -> dict:
     while t < a.horizon and traci.simulation.getMinExpectedNumber() > 0:
         traci.simulationStep()
         t = int(traci.simulation.getTime())
+        if arm != "reactive":
+            continue
+        # REACTIVE: equipped vehicles reroute on the travel times observed RIGHT NOW, with no
+        # forecast at all. Each vehicle reroutes once per period at its own hash offset, so the
+        # calls are staggered rather than every equipped vehicle rerouting on the same tick —
+        # the same rule predictive_routing.py uses, so the arms stay comparable.
+        for vid in traci.vehicle.getIDList():
+            if not pr.equipped(vid, a.compliance):
+                continue
+            if (int(hashlib.md5(vid.encode()).hexdigest()[8:12], 16) + t) % REACTIVE_PERIOD == 0:
+                try:
+                    traci.vehicle.rerouteTraveltime(vid, currentTravelTimes=True)
+                    reroute_calls += 1
+                except traci.TraCIException:
+                    pass
     traci.close()
     m = pr.parse_metrics(out, horizon=a.horizon)
-    rec = {"arm": arm, "seed": seed, "edges_slowed": applied, "routes_changed": changed,
+    rec = {"arm": arm, "seed": seed, "edges_slowed": applied,
+           "routes_changed": changed if arm != "reactive" else reroute_calls,
+           "reroute_calls": reroute_calls,
            "wall_s": round(time.time() - t0, 1), "metrics": m}
-    print(f"[live_chain] {arm:<8} seed={seed} slowed={applied} changed={changed} "
+    print(f"[live_chain] {arm:<8} seed={seed} slowed={applied} changed={rec['routes_changed']} "
           f"veh-h={m['total_vehicle_hours']:.1f} arrived={m['arrived']} teleports={m['teleports']} "
           f"({rec['wall_s']}s)", flush=True)
     return rec
@@ -176,6 +198,8 @@ def main() -> int:
     print(f"[live_chain] {source['reality']}: levels {({k: round(v, 2) for k, v in levels.items()})}")
     print(f"[live_chain] {len(slow)} edges congested above free flow")
 
+    arms_note = ("unaware = nobody reroutes; reactive = reroute on CURRENT travel times "
+                 "(no forecast); advised = reroute on the FORECAST travel-time table")
     weights = RESULTS / "live_chain_weights.xml"
     wrec = write_weights(levels, cmap, weights, 0.0, float(a.horizon), source)
     seeds = [int(s) for s in a.seeds.split(",")]
@@ -186,7 +210,7 @@ def main() -> int:
         print(f"[live_chain] DECISION: NO_ACTION — {dec['reason']}")
     else:
         for seed in seeds:
-            for arm in ("unaware", "advised"):
+            for arm in ARMS:
                 runs.append(run_arm(a, arm, seed, slow, weights))
         dec = decide(runs)
         print(f"[live_chain] DECISION: {dec['decision']} — {dec['reason']}")
