@@ -91,6 +91,9 @@ artifacts/urban_real_site/*.csv
 
 # Phase-1 prediction: data and large artefacts stay out of git (fetched/regenerated, sha-recorded)
 data/forecasting/cities/*/
+# raw city arrays are fetched from Drive, never committed (35 MB+ each)
+data/forecasting/cities/*.npz
+data/forecasting/cities/*.h5
 data/forecasting/live_dhaka/
 results/forecasting/aws_logs/
 results/forecasting/checkpoints/
