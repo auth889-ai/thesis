@@ -83,6 +83,11 @@ def multiplier(level: float) -> float:
 def build_map(net_path: Path = NET, radius: float = 300.0) -> dict:
     """corridor_id -> {edges, free_flow_s, snapped distances}. Uses free-flow shortest path."""
     import sumolib
+    try:
+        import pyproj  # noqa: F401
+    except ImportError:
+        raise SystemExit("pyproj is required to project corridor coordinates onto the network: "
+                         "pip install pyproj")
     net = sumolib.net.readNet(str(ensure_net(Path(net_path))))
     out = {}
     for c in DHAKA_R1_CORRIDORS:

@@ -44,7 +44,43 @@ REGION = "us-east-1"
 # a working conda env (`source activate pytorch`) with matched torch + CUDA + cuDNN.
 AMI = "ami-001972c501ec6b965"          # PyTorch 2.9 (AL2023) 20260829
 BASICTS_SHA = "4c3e2d373c647667c2123e1591f2d79c229dfcc6"
-JOB = "predict-baselines"          # overridden by --job so each dataset keeps its own S3 space
+JOB = "predict-baselines"
+
+# The federated experiment is the point where the ML and networking halves meet, so it ships its own
+# job: it needs the measured MOSAIC link statistics on the box, not just a dataset.
+FED_SCRIPT = r"""#!/bin/bash
+exec > >(tee -a /var/log/dhakaflow.log) 2>&1
+set -x
+NAME=@NAME@; BUCKET=@BUCKET@
+( sleep $((@MAXH@ * 3600)); shutdown -h now ) &
+aws s3 cp s3://$BUCKET/jobs/$NAME/ /home/ec2-user/in/ --recursive || true
+cd /home/ec2-user
+PY=""
+for C in /opt/pytorch/bin/python /opt/conda/envs/pytorch/bin/python /usr/bin/python3 $(ls -d /opt/*/bin/python 2>/dev/null); do
+  if [ -x "$C" ] && "$C" -c "import torch" >/dev/null 2>&1; then PY="$C"; break; fi
+done
+[ -z "$PY" ] && { echo NO_TORCH; ls -la /opt; aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/; shutdown -h now; }
+echo "USING $PY"; $PY -c "import torch;print('torch',torch.__version__,'cuda',torch.cuda.is_available())"
+$PY -m pip install -q pandas tables
+mkdir -p repo/pipeline/forecasting repo/results/networking repo/data/forecasting/cities/METR-LA
+cp /home/ec2-user/in/federated_forecast.py repo/pipeline/forecasting/
+cp /home/ec2-user/in/penetration_*.json repo/results/networking/ 2>/dev/null || true
+cp /home/ec2-user/in/METR-LA/* repo/data/forecasting/cities/METR-LA/ 2>/dev/null || true
+cd repo && touch pipeline/__init__.py pipeline/forecasting/__init__.py
+$PY pipeline/forecasting/federated_forecast.py --self-test 2>&1 | tee /tmp/selftest.log
+for CL in @CLIENTS@; do
+  echo "=== federated clients=$CL ==="
+  timeout 7200 $PY pipeline/forecasting/federated_forecast.py --data /home/ec2-user/in/metr_la.npz \
+      --clients $CL --rounds @ROUNDS@ --local-epochs 1 --seed 11 2>&1 | tee /tmp/fed_c${CL}.log
+  aws s3 cp /tmp/fed_c${CL}.log s3://$BUCKET/jobs/$NAME/logs/ || true
+  aws s3 sync results/forecasting s3://$BUCKET/jobs/$NAME/results/ --exclude "*" --include "federated*" || true
+done
+aws s3 cp /tmp/selftest.log s3://$BUCKET/jobs/$NAME/logs/ || true
+aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/ || true
+echo DONE > /tmp/DONE && aws s3 cp /tmp/DONE s3://$BUCKET/jobs/$NAME/DONE
+shutdown -h now
+"""
+          # overridden by --job so each dataset keeps its own S3 space
 RESULTS = REPO / "results/forecasting"
 
 JOB_SCRIPT = r"""#!/bin/bash
@@ -150,10 +186,23 @@ def launch(a) -> int:
     for key in ("DONE", "logs/"):
         subprocess.run(["aws", "s3", "rm", f"s3://{BUCKET}/jobs/{JOB}/{key}", "--region", REGION]
                        + (["--recursive"] if key.endswith("/") else []), capture_output=True)
-    script = JOB_SCRIPT
+    script = FED_SCRIPT if a.federated else JOB_SCRIPT
+    if a.federated:
+        import shutil as _sh
+        extra = [REPO / "pipeline/forecasting/federated_forecast.py"] + \
+                sorted((REPO / "results/networking").glob("penetration_p*_s*.json"))
+        for f in extra:
+            subprocess.run(["aws", "s3", "cp", str(f), f"s3://{BUCKET}/jobs/{JOB}/{f.name}",
+                            "--region", REGION], check=True, capture_output=True)
+        npz = REPO / "data/forecasting/cities/metr_la.npz"
+        if npz.exists():
+            subprocess.run(["aws", "s3", "cp", str(npz), f"s3://{BUCKET}/jobs/{JOB}/metr_la.npz",
+                            "--region", REGION], check=True, capture_output=True)
+        print(f"[upload] federated inputs: code + {len(extra) - 1} measured V2X files")
     for k, v in (("@NAME@", JOB), ("@BUCKET@", BUCKET), ("@SHA@", BASICTS_SHA),
                  ("@MODELS@", a.models.replace(",", " ")), ("@DATASETS@", a.datasets.replace(",", " ")),
-                 ("@EPOCHS@", str(a.epochs)), ("@MAXH@", str(a.max_hours))):
+                 ("@EPOCHS@", str(a.epochs)), ("@MAXH@", str(a.max_hours)),
+                 ("@CLIENTS@", a.clients.replace(",", " ")), ("@ROUNDS@", str(a.rounds))):
         script = script.replace(k, v)
     assert "@" not in script.split("aws s3")[0], "unsubstituted placeholder remains"
     ud = base64.b64encode(script.encode()).decode()
@@ -320,6 +369,10 @@ def main() -> int:
     p.add_argument("--epochs", type=int, default=50)
     p.add_argument("--instance-type", default="g5.xlarge")
     p.add_argument("--max-hours", type=int, default=4)
+    p.add_argument("--federated", action="store_true",
+                   help="run the federated-over-measured-V2X experiment instead of the baselines")
+    p.add_argument("--clients", default="4,8,16", help="RSU counts to sweep (federated)")
+    p.add_argument("--rounds", type=int, default=30, help="FedAvg rounds (federated)")
     p.add_argument("--job", default="", help="job name (default per-dataset isolation)")
     p.add_argument("--no-spot", action="store_true",
                    help="skip spot entirely; use for runs that must complete without interruption")

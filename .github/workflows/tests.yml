@@ -14,7 +14,9 @@ jobs:
       # Installing less makes the suite fail at collection, not at assertion.
       - run: |
           pip install numpy pandas scipy scikit-learn matplotlib pytest tables joblib PyYAML \
-                      streamlit pydeck eclipse-sumo sumolib traci
+                      streamlit pydeck eclipse-sumo sumolib traci pyproj
           pip install torch --index-url https://download.pytorch.org/whl/cpu
+      # rclone fetches datasets from Drive; without it those tests skip rather than fail
+      - run: sudo apt-get update -qq && sudo apt-get install -y -qq rclone || true
       - run: python -m pytest tests/rebuild -q -m "not slow"
         env: {PYTHONPATH: .}

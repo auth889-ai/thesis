@@ -180,8 +180,13 @@ def fetch_from_drive(city: str) -> bool:
         return False
     e["dir"].mkdir(parents=True, exist_ok=True)
     print(f"[fetch] {DRIVE_REMOTE}/{city} -> {e['dir'].relative_to(REPO)}")
-    r = subprocess.run(["rclone", "copy", f"{DRIVE_REMOTE}/{city}", str(e["dir"])],
-                       capture_output=True, text=True)
+    try:
+        r = subprocess.run(["rclone", "copy", f"{DRIVE_REMOTE}/{city}", str(e["dir"])],
+                           capture_output=True, text=True)
+    except FileNotFoundError:
+        # no rclone on this machine (CI, a fresh clone): a normal condition, not a crash
+        print("[fetch] rclone is not installed; install it or copy the dataset in by hand")
+        return False
     if r.returncode:
         print(f"[fetch] failed: {r.stderr.strip()[-300:]}")
     return available(city)
