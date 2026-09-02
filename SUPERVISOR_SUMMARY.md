@@ -291,16 +291,34 @@ the paper text, and no new architecture is invented.
 | — | Real user pilot (3 users, live advisories) | — | pending, marked PENDING in the evidence audit |
 | — | Thesis chapters | — | not written |
 
-### Experiment 7, first result
+### Experiment 7 — result: the chain cannot yet be tested, and that is the finding
 
-As the delivery fraction falls (0.857 → 0.850 → 0.797 → 0.778 under worsening latency and loss),
-mean vehicle-hours move −0.55 % → +0.58 % → +4.42 % and total waiting −6 % → +8 % → +21 %:
-exactly the direction the hypothesis predicts. **It is reported as `SUGGESTIVE_ONLY`, not as a
-causal result**, because only 2 of 3 paired seeds are worse at the worst condition. A monotone
-trend in the means is not an effect the seeds support. A 10-seed run and a wider delivery spread
-are in progress; the verdict is computed by the script, so it cannot be talked up in prose.
+Three runs, each overturning the last:
 
-→ `results/routing/impairment_chain.md`
+| run | seeds | delivery spread | result |
+|---|---|---|---|
+| first | 3 | 0.857 → 0.778 | +4.4 % vehicle-hours, +21 % waiting — looked like a clean causal effect |
+| wider | 10 | 0.857 → 0.544 | effect **vanished**: 5/10 seeds either way, no trend |
+| decisive | 10 | 0.857 → 0.544, plus an *unaware* reference arm | `INCONCLUSIVE_UNDERPOWERED` |
+
+The first result was seed noise. Ten seeds and a delivery spread wide enough to remove **37 % of
+all advisories** (2,268 → 1,444 delivered) produced no detectable change in network delay.
+
+The reference arm explains why. Advising every equipped vehicle over a perfect link beats advising
+nobody by **−1.96 % vehicle-hours on 8 of 10 seeds** — a real effect, but a small one. If degrading
+the link removes a proportional share of a 2 % benefit, the quantity being measured is a *fraction
+of one percent*, which is well inside the seed-to-seed spread. **The experiment is underpowered for
+the hypothesis, not evidence against it.**
+
+That is a useful negative result rather than a dead end: it says the causal chain must be tested in
+a regime where routing gives a large, unanimous benefit — higher compliance, heavier congestion, or
+a network where rerouting matters more — so that degrading delivery has something substantial to
+erode. Without the reference arm this run would have been reported as "communication quality does
+not affect routing", which would have been wrong.
+
+The verdict is computed by the script from the seed data, so it cannot be talked up in prose.
+
+→ `results/routing/impairment_chain_decisive.md`
 
 ### The reproduction ledger
 
