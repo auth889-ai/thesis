@@ -281,15 +281,34 @@ the paper text, and no new architecture is invented.
 
 | # | experiment | official source | status |
 |---|---|---|---|
-| 1 | STAEformer reproduced from the authors' own repo (not only via the BasicTS harness) | `XDZhelheim/STAEformer` | in progress |
-| 2 | Congestion-aware forecasting metrics: congestion-period MAE, congestion precision/recall/F1, warning lead time | — | in progress |
-| 3 | CNFGNN reproduced | `mengcz13/KDD2021_CNFGNN` | in progress |
-| 4 | FedGTP reproduced | `LarryHawkingYoung/KDD2024_FedGTP` | in progress |
-| 5 | Centralized vs FedAvg vs CNFGNN vs FedGTP under **A** ideal link, **B** MOSAIC V2X profile, **C** latency stress, **D** packet-loss stress — recording MAE/RMSE/MAPE, congestion F1, communication bytes, rounds, convergence time, latency, loss, dropped updates | thin adapter over 3 & 4 | in progress |
-| 6 | Cross-city generalization: city-specific GWNet/STAEformer vs OpenCity zero-shot vs OpenCity fine-tuned, on METR-LA + PEMS-BAY + a held-out third city | `HKUDS/OpenCity` (released weights) | in progress |
-| 7 | End-to-end impairment chain: low vs high latency/loss → prediction degradation → rerouting quality → SUMO delay | composition of 5 and the routing stack | in progress |
+| 1 | STAEformer reproduced from the authors' own repo, not only via the shared harness | `XDZhelheim/STAEformer` (fetched, SHA pinned) | pending GPU |
+| 2 | Congestion-aware metrics: congestion-period MAE, precision/recall/F1, warning lead time | — | **done** — `results/forecasting/congestion_metrics.md` |
+| 3 | CNFGNN reproduced | `mengcz13/KDD2021_CNFGNN` @ `5056608` (fetched, verified) | blocked on the authors' Zenodo dataset + a py<3.8 environment |
+| 4 | FedGTP reproduced | `LarryHawkingYoung/KDD2024_FedGTP` @ `ff128f5` (fetched, verified) | launcher done; blocked on GPU access |
+| 5 | Centralized vs FedAvg vs CNFGNN vs FedGTP under **A** ideal, **B** MOSAIC V2X profile, **C** latency stress, **D** loss stress | thin adapter over 3 & 4 | **adapter built and tested**; runs pending GPU |
+| 6 | Cross-city: city-specific vs OpenCity zero-shot vs fine-tuned, on METR-LA + PEMS-BAY + a held-out third city | `HKUDS/OpenCity` @ `eca64c9` (fetched, verified) | notebook ready; weights not yet fetched |
+| 7 | End-to-end chain: link quality → advisory delivery → rerouting → SUMO delay | composition of 5 and the routing stack | **running** — first result below |
 | — | Real user pilot (3 users, live advisories) | — | pending, marked PENDING in the evidence audit |
 | — | Thesis chapters | — | not written |
+
+### Experiment 7, first result
+
+As the delivery fraction falls (0.857 → 0.850 → 0.797 → 0.778 under worsening latency and loss),
+mean vehicle-hours move −0.55 % → +0.58 % → +4.42 % and total waiting −6 % → +8 % → +21 %:
+exactly the direction the hypothesis predicts. **It is reported as `SUGGESTIVE_ONLY`, not as a
+causal result**, because only 2 of 3 paired seeds are worse at the worst condition. A monotone
+trend in the means is not an effect the seeds support. A 10-seed run and a wider delivery spread
+are in progress; the verdict is computed by the script, so it cannot be talked up in prose.
+
+→ `results/routing/impairment_chain.md`
+
+### The reproduction ledger
+
+`results/upstream/REPRODUCTIONS.md` records, per (model, dataset), the pinned SHA, the authors'
+own config path, their published number, ours, and a **computed** verdict. Graph WaveNet passes on
+both cities. STID and STAEformer are `REFERENCE_UNKNOWN` — we have our numbers but have not yet
+read the authors' published figures out of the papers, and that is deliberately not counted as a
+pass. Nothing is invented to fill a slot.
 
 Until experiments 1-7 report, the claims in this document are limited to what sections 1-5
 actually measured.

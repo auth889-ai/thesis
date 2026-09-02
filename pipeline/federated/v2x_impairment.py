@@ -36,6 +36,20 @@ WHAT "PACKET LOSS" MEANS FOR A MODEL UPDATE
     stale contribution instead of a fresh one, and the event is counted in `dropped_updates`.
     Round one has no previous payload, so a drop there is counted and the fresh value is sent —
     recorded as `drops_before_cache` so the number is never quietly wrong.
+
+ATTACHING TO CNFGNN (not yet implemented — recorded so the design is not re-derived)
+    CNFGNN does not use sockets: its clients run as in-process multiprocessing workers and exchange
+    PyTorch `state_dict` objects directly (`models/st_prediction/federated*.py`, whose clients take
+    `state_dict_to_load` and return `{"state_dict": ..., "log": ...}`). The equivalent chokepoint is
+    therefore that client call, not a socket, and the three quantities map across cleanly:
+
+        bytes    len(pickle.dumps(state_dict)) — what this update WOULD cost on a real link
+        delay    sleep before the call returns
+        drop     return the previous round's state_dict, exactly as here
+
+    The semantics stay identical, so the two methods remain comparable; only the boundary moves.
+    Implementing it is gated on CNFGNN reproducing first (its Zenodo dataset and a python<3.8
+    environment), per the upstream-first rule.
 """
 from __future__ import annotations
 
