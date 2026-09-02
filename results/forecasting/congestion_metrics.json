@@ -10,77 +10,325 @@
      "median": 39.82,
      "max": 42.0
     },
-    "congested_share_of_observed": 0.1177
+    "congested_share_of_observed": 0.1118
    },
    "horizons": {
     "5": {
-     "mae": 2.2611,
-     "rmse": 3.8275,
-     "masked_mape_pct": 5.499,
-     "congestion_mae": 4.407,
-     "freeflow_mae": 1.9746,
-     "congestion_precision": 0.8983,
-     "congestion_recall": 0.9066,
-     "congestion_f1": 0.9024,
-     "n_observed": 50358,
-     "n_congested": 5931
+     "mae": 2.2394,
+     "rmse": 3.8728,
+     "masked_mape_pct": 5.436,
+     "congestion_mae": 4.6003,
+     "freeflow_mae": 1.9423,
+     "congestion_precision": 0.9002,
+     "congestion_recall": 0.9021,
+     "congestion_f1": 0.9012,
+     "n_observed": 1242580,
+     "n_congested": 138891
     },
     "15": {
-     "mae": 2.793,
-     "rmse": 5.2186,
-     "masked_mape_pct": 7.415,
-     "congestion_mae": 6.7833,
-     "freeflow_mae": 2.2598,
-     "congestion_precision": 0.8657,
-     "congestion_recall": 0.8335,
-     "congestion_f1": 0.8493,
-     "n_observed": 50342,
-     "n_congested": 5934
+     "mae": 2.7115,
+     "rmse": 5.1798,
+     "masked_mape_pct": 7.203,
+     "congestion_mae": 6.9204,
+     "freeflow_mae": 2.1818,
+     "congestion_precision": 0.8722,
+     "congestion_recall": 0.8299,
+     "congestion_f1": 0.8505,
+     "n_observed": 1242568,
+     "n_congested": 138891
     },
     "30": {
-     "mae": 3.2074,
-     "rmse": 6.3209,
-     "masked_mape_pct": 9.006,
-     "congestion_mae": 8.712,
-     "freeflow_mae": 2.4713,
-     "congestion_precision": 0.8372,
-     "congestion_recall": 0.7781,
-     "congestion_f1": 0.8066,
-     "n_observed": 50314,
-     "n_congested": 5935
+     "mae": 3.0954,
+     "rmse": 6.2346,
+     "masked_mape_pct": 8.729,
+     "congestion_mae": 8.8997,
+     "freeflow_mae": 2.365,
+     "congestion_precision": 0.843,
+     "congestion_recall": 0.7731,
+     "congestion_f1": 0.8065,
+     "n_observed": 1242550,
+     "n_congested": 138887
     },
     "60": {
-     "mae": 3.6419,
-     "rmse": 7.3399,
-     "masked_mape_pct": 10.643,
-     "congestion_mae": 10.6252,
-     "freeflow_mae": 2.7173,
-     "congestion_precision": 0.8132,
-     "congestion_recall": 0.7215,
-     "congestion_f1": 0.7646,
-     "n_observed": 50274,
-     "n_congested": 5878
+     "mae": 3.5589,
+     "rmse": 7.3642,
+     "masked_mape_pct": 10.674,
+     "congestion_mae": 11.5042,
+     "freeflow_mae": 2.5596,
+     "congestion_precision": 0.8151,
+     "congestion_recall": 0.6953,
+     "congestion_f1": 0.7504,
+     "n_observed": 1242514,
+     "n_congested": 138823
     }
    },
    "lead_time": {
-    "events": 464,
-    "warned": 337,
-    "missed": 127,
-    "detection_rate": 0.7263,
+    "events": 10757,
+    "warned": 7604,
+    "missed": 3153,
+    "detection_rate": 0.7069,
     "min_dwell_steps": 2,
     "definition_first": "largest horizon k whose forecast already flags the onset",
-    "mean_lead_minutes": 46.87,
+    "mean_lead_minutes": 47.45,
     "median_lead_minutes": 60.0,
     "p90_lead_minutes": 60.0,
     "definition_sustained": "largest k such that EVERY horizon 1..k flags it (no lone early flag)",
-    "sustained_mean_lead_minutes": 32.3,
-    "sustained_median_lead_minutes": 25.0,
-    "sustained_warned": 185,
+    "sustained_mean_lead_minutes": 35.81,
+    "sustained_median_lead_minutes": 40.0,
+    "sustained_warned": 4384,
     "max_possible_lead_minutes": 60
    },
    "checkpoint": "results/forecasting/checkpoints/GraphWaveNet/METR-LA_50_12_12/d1ffd3d52d3caacf60ebf59214673f7c/GraphWaveNet_best_val_MAE.pt",
    "official_config": "baselines/GWNet/METR-LA.py",
-   "windows_scored": 256
+   "windows_scored": 6832
+  },
+  "STID": {
+   "threshold": {
+    "rule": "0.6 x per-sensor free-flow (85th pct of TRAIN-split observed speed)",
+    "ratio": 0.6,
+    "absolute_mph": null,
+    "per_sensor_threshold_mph": {
+     "min": 21.73,
+     "median": 39.82,
+     "max": 42.0
+    },
+    "congested_share_of_observed": 0.1118
+   },
+   "horizons": {
+    "5": {
+     "mae": 2.3247,
+     "rmse": 4.0945,
+     "masked_mape_pct": 5.88,
+     "congestion_mae": 5.3088,
+     "freeflow_mae": 1.9492,
+     "congestion_precision": 0.9083,
+     "congestion_recall": 0.8723,
+     "congestion_f1": 0.8899,
+     "n_observed": 1242580,
+     "n_congested": 138891
+    },
+    "15": {
+     "mae": 2.8261,
+     "rmse": 5.5603,
+     "masked_mape_pct": 7.881,
+     "congestion_mae": 7.9737,
+     "freeflow_mae": 2.1784,
+     "congestion_precision": 0.8779,
+     "congestion_recall": 0.7877,
+     "congestion_f1": 0.8303,
+     "n_observed": 1242568,
+     "n_congested": 138891
+    },
+    "30": {
+     "mae": 3.2053,
+     "rmse": 6.6283,
+     "masked_mape_pct": 9.58,
+     "congestion_mae": 10.3234,
+     "freeflow_mae": 2.3095,
+     "congestion_precision": 0.8591,
+     "congestion_recall": 0.7173,
+     "congestion_f1": 0.7818,
+     "n_observed": 1242550,
+     "n_congested": 138887
+    },
+    "60": {
+     "mae": 3.572,
+     "rmse": 7.5618,
+     "masked_mape_pct": 11.134,
+     "congestion_mae": 12.4166,
+     "freeflow_mae": 2.4595,
+     "congestion_precision": 0.8286,
+     "congestion_recall": 0.658,
+     "congestion_f1": 0.7335,
+     "n_observed": 1242514,
+     "n_congested": 138823
+    }
+   },
+   "lead_time": {
+    "events": 10757,
+    "warned": 6546,
+    "missed": 4211,
+    "detection_rate": 0.6085,
+    "min_dwell_steps": 2,
+    "definition_first": "largest horizon k whose forecast already flags the onset",
+    "mean_lead_minutes": 48.32,
+    "median_lead_minutes": 60.0,
+    "p90_lead_minutes": 60.0,
+    "definition_sustained": "largest k such that EVERY horizon 1..k flags it (no lone early flag)",
+    "sustained_mean_lead_minutes": 40.86,
+    "sustained_median_lead_minutes": 60.0,
+    "sustained_warned": 2211,
+    "max_possible_lead_minutes": 60
+   },
+   "checkpoint": "results/forecasting/checkpoints/STID/METR-LA_50_12_12/051d1da207eda0753312c76dbf561d52/STID_best_val_MAE.pt",
+   "official_config": "baselines/STID/METR-LA.py",
+   "windows_scored": 6832
+  }
+ },
+ "PEMS-BAY": {
+  "GWNet": {
+   "threshold": {
+    "rule": "0.6 x per-sensor free-flow (85th pct of TRAIN-split observed speed)",
+    "ratio": 0.6,
+    "absolute_mph": null,
+    "per_sensor_threshold_mph": {
+     "min": 37.32,
+     "median": 40.74,
+     "max": 43.32
+    },
+    "congested_share_of_observed": 0.0519
+   },
+   "horizons": {
+    "5": {
+     "mae": 0.8553,
+     "rmse": 1.5468,
+     "masked_mape_pct": 1.639,
+     "congestion_mae": 2.046,
+     "freeflow_mae": 0.7901,
+     "congestion_precision": 0.9414,
+     "congestion_recall": 0.9495,
+     "congestion_f1": 0.9454,
+     "n_observed": 3380108,
+     "n_congested": 175430
+    },
+    "15": {
+     "mae": 1.3083,
+     "rmse": 2.7434,
+     "masked_mape_pct": 2.702,
+     "congestion_mae": 4.4348,
+     "freeflow_mae": 1.1372,
+     "congestion_precision": 0.8839,
+     "congestion_recall": 0.8704,
+     "congestion_f1": 0.8771,
+     "n_observed": 3380108,
+     "n_congested": 175426
+    },
+    "30": {
+     "mae": 1.6377,
+     "rmse": 3.6928,
+     "masked_mape_pct": 3.633,
+     "congestion_mae": 6.6528,
+     "freeflow_mae": 1.3632,
+     "congestion_precision": 0.8405,
+     "congestion_recall": 0.7981,
+     "congestion_f1": 0.8188,
+     "n_observed": 3380108,
+     "n_congested": 175423
+    },
+    "60": {
+     "mae": 1.9454,
+     "rmse": 4.4597,
+     "masked_mape_pct": 4.552,
+     "congestion_mae": 8.7381,
+     "freeflow_mae": 1.5736,
+     "congestion_precision": 0.8098,
+     "congestion_recall": 0.7289,
+     "congestion_f1": 0.7673,
+     "n_observed": 3380108,
+     "n_congested": 175412
+    }
+   },
+   "lead_time": {
+    "events": 9990,
+    "warned": 7348,
+    "missed": 2642,
+    "detection_rate": 0.7355,
+    "min_dwell_steps": 2,
+    "definition_first": "largest horizon k whose forecast already flags the onset",
+    "mean_lead_minutes": 38.71,
+    "median_lead_minutes": 50.0,
+    "p90_lead_minutes": 60.0,
+    "definition_sustained": "largest k such that EVERY horizon 1..k flags it (no lone early flag)",
+    "sustained_mean_lead_minutes": 14.94,
+    "sustained_median_lead_minutes": 5.0,
+    "sustained_warned": 4326,
+    "max_possible_lead_minutes": 60
+   },
+   "checkpoint": "results/forecasting/checkpoints/GraphWaveNet/PEMS-BAY_50_12_12/680ffdbe55716f3677d2311eb2432ac1/GraphWaveNet_best_val_MAE.pt",
+   "official_config": "baselines/GWNet/PEMS-BAY.py",
+   "windows_scored": 10401
+  },
+  "STID": {
+   "threshold": {
+    "rule": "0.6 x per-sensor free-flow (85th pct of TRAIN-split observed speed)",
+    "ratio": 0.6,
+    "absolute_mph": null,
+    "per_sensor_threshold_mph": {
+     "min": 37.32,
+     "median": 40.74,
+     "max": 43.32
+    },
+    "congested_share_of_observed": 0.0519
+   },
+   "horizons": {
+    "5": {
+     "mae": 0.8572,
+     "rmse": 1.5723,
+     "masked_mape_pct": 1.642,
+     "congestion_mae": 2.1032,
+     "freeflow_mae": 0.789,
+     "congestion_precision": 0.9432,
+     "congestion_recall": 0.9439,
+     "congestion_f1": 0.9435,
+     "n_observed": 3380108,
+     "n_congested": 175430
+    },
+    "15": {
+     "mae": 1.3182,
+     "rmse": 2.7893,
+     "masked_mape_pct": 2.771,
+     "congestion_mae": 4.8013,
+     "freeflow_mae": 1.1276,
+     "congestion_precision": 0.8926,
+     "congestion_recall": 0.8445,
+     "congestion_f1": 0.8679,
+     "n_observed": 3380108,
+     "n_congested": 175426
+    },
+    "30": {
+     "mae": 1.6439,
+     "rmse": 3.7379,
+     "masked_mape_pct": 3.746,
+     "congestion_mae": 7.3411,
+     "freeflow_mae": 1.332,
+     "congestion_precision": 0.8599,
+     "congestion_recall": 0.7607,
+     "congestion_f1": 0.8073,
+     "n_observed": 3380108,
+     "n_congested": 175423
+    },
+    "60": {
+     "mae": 1.9202,
+     "rmse": 4.4092,
+     "masked_mape_pct": 4.548,
+     "congestion_mae": 9.045,
+     "freeflow_mae": 1.5302,
+     "congestion_precision": 0.8263,
+     "congestion_recall": 0.718,
+     "congestion_f1": 0.7683,
+     "n_observed": 3380108,
+     "n_congested": 175412
+    }
+   },
+   "lead_time": {
+    "events": 9990,
+    "warned": 7005,
+    "missed": 2985,
+    "detection_rate": 0.7012,
+    "min_dwell_steps": 2,
+    "definition_first": "largest horizon k whose forecast already flags the onset",
+    "mean_lead_minutes": 40.77,
+    "median_lead_minutes": 55.0,
+    "p90_lead_minutes": 60.0,
+    "definition_sustained": "largest k such that EVERY horizon 1..k flags it (no lone early flag)",
+    "sustained_mean_lead_minutes": 11.31,
+    "sustained_median_lead_minutes": 5.0,
+    "sustained_warned": 3580,
+    "max_possible_lead_minutes": 60
+   },
+   "checkpoint": "results/forecasting/checkpoints/STID/PEMS-BAY_50_12_12/e13bbdb6ba46835623c11fa9a9fca513/STID_best_val_MAE.pt",
+   "official_config": "baselines/STID/PEMS-BAY.py",
+   "windows_scored": 10401
   }
  }
 }
