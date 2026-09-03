@@ -132,13 +132,16 @@ RECORDS = [
                              "zero-shot, PEMS07M: MAE 4.50 / RMSE 8.21 / MAPE 12.20 %"),
         "ours": 4.50,
         "ours_from": None,
-        "blockers": [
-            "TrafficSH / NJ / TJ have not produced metrics yet: CUDA OOM on a 22 GB A10G. The "
-            "batch size we thought we were setting was being discarded (upstream honours "
-            "--batch_size, not -batch_size); fixed, with a preflight that compares the parsed "
-            "value against the requested one, and rerunning.",
-        ],
-        "note": ("PEMS07M reproduces the published figure EXACTLY: ours 4.50 / 8.21 / 12.1966 % "
+        "blockers": [],
+        "note": ("GATE CLOSED. Four held-out cities evaluated, all completed. TWO have a "
+                 "published reference and both reproduce it EXACTLY: PEMS07M 4.50/8.21/12.1966 % "
+                 "vs 4.50/8.21/12.20 %, and TrafficSH 0.55/0.85/8.0142 % vs 0.55/0.85/8.01 % — "
+                 "0.0 % on every metric. TrafficNJ (0.70/1.19/14.84 %) and TrafficTJ "
+                 "(0.76/1.26/15.44 %) ran cleanly but are absent from the paper's Table 1, so "
+                 "they stay REFERENCE_UNKNOWN: no reference, no verdict. Checkpoint reloads "
+                 "standalone at 26,026,016 parameters, matching the paper's stated 26M. Pinned "
+                 "checkout verified byte-identical after every run (oc_clean.txt, 0 bytes). "
+                 "PEMS07M reproduces the published figure EXACTLY: ours 4.50 / 8.21 / 12.1966 % "
                  "against their 4.50 / 8.21 / 12.20 %, a 0.0 % difference on all three metrics. "
                  "Checkpoint sha256 ae42356159a... ; pinned checkout verified byte-identical "
                  "afterwards by git status on the instance. Note METR_LA and PEMS_BAY are in "

@@ -1,0 +1,120 @@
+{
+ "generated_utc": "2026-09-03T01:51:37.049337+00:00",
+ "checkpoint": "OpenCity/model_weights/OpenCity/OpenCity-plus.pth",
+ "checkpoint_sha256": "ae4235615a914c831543275642152409075e1a3f07d564a27fab28364d59af7b",
+ "loaded": true,
+ "tensors_in_state_dict": 140,
+ "parameters": 26026016,
+ "dataset": "PEMS07M",
+ "shape": [
+  12672,
+  228,
+  1
+ ],
+ "test_region_starts_at": 7603,
+ "window_t0": 7603,
+ "input_steps": 288,
+ "output_steps": 288,
+ "compatibility_shims": [
+  "np.mat -> np.asmatrix",
+  "np.float_ -> np.float64",
+  "np.complex_ -> np.complex128",
+  "np.unicode_ -> np.str_",
+  "np.NaN -> np.nan",
+  "np.Inf -> np.inf",
+  "np.infty -> np.inf",
+  "torch.load(map_location='cpu') [no CUDA on this host]"
+ ],
+ "parameters_stated_in_paper": 26000000,
+ "parameter_count_matches_paper": true,
+ "forward_pass_run_here": false,
+ "forward_pass_evidence": "the authors' own -mode test on GPU ran this checkpoint over the full 5,068-step PEMS07M test region and reproduced their published figure to 0.0 % \u2014 see opencity_crosscity.json",
+ "persistence_mae_on_this_window": 12.9743,
+ "samples": [
+  {
+   "node": 0,
+   "step": 1,
+   "minutes": 5,
+   "actual": 54.3,
+   "persistence": 55.9
+  },
+  {
+   "node": 0,
+   "step": 12,
+   "minutes": 60,
+   "actual": 54.4,
+   "persistence": 55.9
+  },
+  {
+   "node": 0,
+   "step": 72,
+   "minutes": 360,
+   "actual": 21.3,
+   "persistence": 55.9
+  },
+  {
+   "node": 0,
+   "step": 288,
+   "minutes": 1440,
+   "actual": 29.3,
+   "persistence": 55.9
+  },
+  {
+   "node": 1,
+   "step": 1,
+   "minutes": 5,
+   "actual": 64.8,
+   "persistence": 65.2
+  },
+  {
+   "node": 1,
+   "step": 12,
+   "minutes": 60,
+   "actual": 65.6,
+   "persistence": 65.2
+  },
+  {
+   "node": 1,
+   "step": 72,
+   "minutes": 360,
+   "actual": 9.6,
+   "persistence": 65.2
+  },
+  {
+   "node": 1,
+   "step": 288,
+   "minutes": 1440,
+   "actual": 56.2,
+   "persistence": 65.2
+  },
+  {
+   "node": 2,
+   "step": 1,
+   "minutes": 5,
+   "actual": 27.8,
+   "persistence": 36.6
+  },
+  {
+   "node": 2,
+   "step": 12,
+   "minutes": 60,
+   "actual": 25.2,
+   "persistence": 36.6
+  },
+  {
+   "node": 2,
+   "step": 72,
+   "minutes": 360,
+   "actual": 63.5,
+   "persistence": 36.6
+  },
+  {
+   "node": 2,
+   "step": 288,
+   "minutes": 1440,
+   "actual": 39.0,
+   "persistence": 36.6
+  }
+ ],
+ "note": "Standalone reload verification: the released artefact loads outside the evaluation harness and matches the parameter count the paper states. The forward pass and the accuracy claim come from the GPU -mode test run."
+}

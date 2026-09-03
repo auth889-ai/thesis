@@ -23,16 +23,9 @@ Published figures are OpenCity's own Table 1 (arXiv 2408.10269) for OpenCity-plu
 | dataset | exposure | ours MAE | published MAE | diff | ours RMSE | pub RMSE | ours MAPE | pub MAPE | verdict |
 |---|---|---|---|---|---|---|---|---|---|
 | PEMS07M | **HELD OUT** | 4.5 | 4.5 | 0.0 % | 8.21 | 8.21 | 12.1966 | 12.2 | **REPRODUCTION_PASS** |
-| TrafficNJ | **HELD OUT** | – | – | – | – | – | – | – | **REFERENCE_UNKNOWN** |
-| TrafficSH | **HELD OUT** | – | 0.55 | – | – | 0.85 | – | 8.01 | **NOT_ATTEMPTED** |
-| TrafficTJ | **HELD OUT** | – | – | – | – | – | – | – | **REFERENCE_UNKNOWN** |
-
-### Runs that did not produce a metric
-
-- **TrafficNJ** — CUDA_OOM: CUDA out of memory at batch_size 8 on a 22 GB A10G — this city has far more nodes than PEMS07M (228); needs a smaller batch, not a different method
-- **TrafficSH** — CUDA_OOM: CUDA out of memory at batch_size 8 on a 22 GB A10G — this city has far more nodes than PEMS07M (228); needs a smaller batch, not a different method
-- **TrafficTJ** — CUDA_OOM: CUDA out of memory at batch_size 8 on a 22 GB A10G — this city has far more nodes than PEMS07M (228); needs a smaller batch, not a different method
-
+| TrafficNJ | **HELD OUT** | 0.7 | – | – | 1.19 | – | 14.8437 | – | **REFERENCE_UNKNOWN** |
+| TrafficSH | **HELD OUT** | 0.55 | 0.55 | 0.0 % | 0.85 | 0.85 | 8.0142 | 8.01 | **REPRODUCTION_PASS** |
+| TrafficTJ | **HELD OUT** | 0.76 | – | – | 1.26 | – | 15.4416 | – | **REFERENCE_UNKNOWN** |
 
 ## Our city-specific models, for comparison
 

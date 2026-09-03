@@ -4,7 +4,7 @@
 /opt/pytorch/lib64/python3.12/site-packages/tslearn/bases/bases.py:16: UserWarning: h5py not installed, hdf5 features will not be supported.
 Install h5py to use hdf5 features: http://docs.h5py.org/
   warn(h5py_msg)
-2026-09-02 18:31: Experiment log path in: /home/ec2-user/oc/model_weights/OpenCity
+2026-09-03 01:45: Experiment log path in: /home/ec2-user/oc/model_weights/OpenCity
 /home/ec2-user/oc
 Number of isolated points: 0
 mode : test
@@ -23,7 +23,7 @@ input_extra_dim : 2
 output_dim : 1
 loss_func : mask_mae
 seed : 12
-batch_size : 64
+batch_size : 1
 epochs : 100
 lr_init : 0.001
 lr_decay : False
@@ -47,7 +47,7 @@ log_step : 100
 save_step : 1000
 num_nodes_dict : {'PEMS04': 307, 'PEMS08': 170, 'PEMS07': 883, 'CD_DIDI': 524, 'SZ_DIDI': 627, 'METR_LA': 207, 'PEMS_BAY': 325, 'PEMS07M': 228, 'NYC_TAXI': 263, 'CHI_TAXI': 77, 'NYC_BIKE-3': 540, 'CAD3': 480, 'CAD4-1': 621, 'CAD4-2': 610, 'CAD4-3': 593, 'CAD4-4': 528, 'CAD5': 211, 'CAD7-1': 666, 'CAD7-2': 634, 'CAD7-3': 559, 'CAD8-1': 510, 'CAD8-2': 512, 'CAD12-1': 453, 'CAD12-2': 500, 'TrafficZZ': 676, 'TrafficCD': 728, 'TrafficHZ': 672, 'TrafficJN': 576, 'TrafficSH': 896}
 ==========
-batch_size : 64
+batch_size : 1
 epochs : 100
 val_ratio : 0.1
 test_ratio : 0.4
@@ -257,63 +257,473 @@ predictor.linear.bias torch.Size([288]) True
 Total params num: 25974816, Update params num: 25974816
 *****************Finish Parameter****************
 Load saved model
-Traceback (most recent call last):
-  File "/home/ec2-user/oc/_opencity_boot.py", line 90, in <module>
-    main()
-  File "/home/ec2-user/oc/_opencity_boot.py", line 86, in main
-    runpy.run_path(str(target), run_name="__main__")
-  File "<frozen runpy>", line 287, in run_path
-  File "<frozen runpy>", line 98, in _run_module_code
-  File "<frozen runpy>", line 88, in _run_code
-  File "/home/ec2-user/oc/model/Run.py", line 152, in <module>
-    trainer.test(model, trainer.args, scaler_dict, test_dataloader, trainer.logger, path=log_dir + '/' + args.load_pretrain_path)
-  File "/home/ec2-user/oc/model/BasicTrainer.py", line 155, in test
-    output = model(inputs, targets, select_dataset, batch_seen=None)
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/pytorch/lib64/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/pytorch/lib64/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/ec2-user/oc/model/Model.py", line 58, in forward
-    x_predic = self.predictor(source, label, select_dataset)
-               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/pytorch/lib64/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/pytorch/lib64/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/ec2-user/oc/model/OpenCity/OpenCity.py", line 350, in forward
-    enc = encoder_block(enc, enc, enc, feas_all_his, feas_all_pre, adj, self.geo_mask_dict[select_dataset].to(self.device), self.sem_mask)
-          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/pytorch/lib64/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/pytorch/lib64/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/ec2-user/oc/model/OpenCity/OpenCity.py", line 252, in forward
-    x = x + self.drop_path(self.st_attn(x_nor1, x_nor1, x_nor1, TH, TP, adj, geo_mask=geo_mask, sem_mask=sem_mask))
-                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/pytorch/lib64/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/pytorch/lib64/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/home/ec2-user/oc/model/OpenCity/OpenCity.py", line 197, in forward
-    tc_v = self.tc_v_conv(x_q).transpose(1, 2)
-           ^^^^^^^^^^^^^^^^^^^
-  File "/opt/pytorch/lib64/python3.12/site-packages/torch/nn/modules/module.py", line 1775, in _wrapped_call_impl
-    return self._call_impl(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/pytorch/lib64/python3.12/site-packages/torch/nn/modules/module.py", line 1786, in _call_impl
-    return forward_call(*args, **kwargs)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-  File "/opt/pytorch/lib64/python3.12/site-packages/torch/nn/modules/linear.py", line 134, in forward
-    return F.linear(input, self.weight, self.bias)
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 2.62 GiB. GPU 0 has a total capacity of 22.06 GiB of which 379.44 MiB is free. Including non-PyTorch memory, this process has 21.68 GiB memory in use. Of the allocated memory 21.36 GiB is allocated by PyTorch, and 26.55 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
-[W902 18:31:50.349980273 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())
+1 tensor(0.5315, device='cuda:0') tensor(0.8326, device='cuda:0') tensor(0.0863, device='cuda:0') 37085 37085
+2 tensor(0.5266, device='cuda:0') tensor(0.8272, device='cuda:0') tensor(0.0860, device='cuda:0') 74170 74170
+3 tensor(0.5206, device='cuda:0') tensor(0.8167, device='cuda:0') tensor(0.0840, device='cuda:0') 111255 111255
+4 tensor(0.5190, device='cuda:0') tensor(0.8189, device='cuda:0') tensor(0.0843, device='cuda:0') 148340 148340
+5 tensor(0.5284, device='cuda:0') tensor(0.8218, device='cuda:0') tensor(0.0852, device='cuda:0') 185425 185425
+6 tensor(0.5246, device='cuda:0') tensor(0.8268, device='cuda:0') tensor(0.0862, device='cuda:0') 221736 221736
+7 tensor(0.5330, device='cuda:0') tensor(0.8317, device='cuda:0') tensor(0.0864, device='cuda:0') 258047 258047
+8 tensor(0.5230, device='cuda:0') tensor(0.8284, device='cuda:0') tensor(0.0864, device='cuda:0') 294358 294358
+9 tensor(0.5292, device='cuda:0') tensor(0.8304, device='cuda:0') tensor(0.0866, device='cuda:0') 330669 330669
+10 tensor(0.5213, device='cuda:0') tensor(0.8263, device='cuda:0') tensor(0.0865, device='cuda:0') 366980 366980
+11 tensor(0.5286, device='cuda:0') tensor(0.8297, device='cuda:0') tensor(0.0868, device='cuda:0') 403291 403291
+12 tensor(0.5205, device='cuda:0') tensor(0.8251, device='cuda:0') tensor(0.0870, device='cuda:0') 439602 439602
+13 tensor(0.5262, device='cuda:0') tensor(0.8283, device='cuda:0') tensor(0.0863, device='cuda:0') 475913 475913
+14 tensor(0.5228, device='cuda:0') tensor(0.8277, device='cuda:0') tensor(0.0876, device='cuda:0') 512224 512224
+15 tensor(0.5285, device='cuda:0') tensor(0.8292, device='cuda:0') tensor(0.0865, device='cuda:0') 548535 548535
+16 tensor(0.5266, device='cuda:0') tensor(0.8296, device='cuda:0') tensor(0.0875, device='cuda:0') 584846 584846
+17 tensor(0.5317, device='cuda:0') tensor(0.8298, device='cuda:0') tensor(0.0866, device='cuda:0') 621157 621157
+18 tensor(0.5281, device='cuda:0') tensor(0.8257, device='cuda:0') tensor(0.0873, device='cuda:0') 657468 657468
+19 tensor(0.5457, device='cuda:0') tensor(0.8416, device='cuda:0') tensor(0.0881, device='cuda:0') 693779 693779
+20 tensor(0.5356, device='cuda:0') tensor(0.8335, device='cuda:0') tensor(0.0882, device='cuda:0') 730090 730090
+21 tensor(0.5447, device='cuda:0') tensor(0.8423, device='cuda:0') tensor(0.0886, device='cuda:0') 766401 766401
+22 tensor(0.5406, device='cuda:0') tensor(0.8413, device='cuda:0') tensor(0.0891, device='cuda:0') 802712 802712
+23 tensor(0.5388, device='cuda:0') tensor(0.8442, device='cuda:0') tensor(0.0893, device='cuda:0') 839023 839023
+24 tensor(0.5582, device='cuda:0') tensor(0.8632, device='cuda:0') tensor(0.0930, device='cuda:0') 875334 875334
+25 tensor(0.5687, device='cuda:0') tensor(0.8713, device='cuda:0') tensor(0.0932, device='cuda:0') 911645 911645
+26 tensor(0.5727, device='cuda:0') tensor(0.8773, device='cuda:0') tensor(0.0960, device='cuda:0') 947956 947956
+27 tensor(0.5732, device='cuda:0') tensor(0.8765, device='cuda:0') tensor(0.0935, device='cuda:0') 984267 984267
+28 tensor(0.5747, device='cuda:0') tensor(0.8766, device='cuda:0') tensor(0.0954, device='cuda:0') 1020578 1020578
+29 tensor(0.5708, device='cuda:0') tensor(0.8707, device='cuda:0') tensor(0.0930, device='cuda:0') 1056889 1056889
+30 tensor(0.5754, device='cuda:0') tensor(0.8759, device='cuda:0') tensor(0.0955, device='cuda:0') 1093200 1093200
+31 tensor(0.5800, device='cuda:0') tensor(0.8798, device='cuda:0') tensor(0.0945, device='cuda:0') 1129511 1129511
+32 tensor(0.5611, device='cuda:0') tensor(0.8616, device='cuda:0') tensor(0.0931, device='cuda:0') 1165822 1165822
+33 tensor(0.5797, device='cuda:0') tensor(0.8809, device='cuda:0') tensor(0.0939, device='cuda:0') 1202133 1202133
+34 tensor(0.5593, device='cuda:0') tensor(0.8609, device='cuda:0') tensor(0.0932, device='cuda:0') 1238444 1238444
+35 tensor(0.5778, device='cuda:0') tensor(0.8711, device='cuda:0') tensor(0.0934, device='cuda:0') 1274755 1274755
+36 tensor(0.5509, device='cuda:0') tensor(0.8472, device='cuda:0') tensor(0.0907, device='cuda:0') 1311066 1311066
+37 tensor(0.5557, device='cuda:0') tensor(0.8508, device='cuda:0') tensor(0.0906, device='cuda:0') 1347379 1347379
+38 tensor(0.5506, device='cuda:0') tensor(0.8449, device='cuda:0') tensor(0.0909, device='cuda:0') 1383695 1383695
+39 tensor(0.5491, device='cuda:0') tensor(0.8472, device='cuda:0') tensor(0.0880, device='cuda:0') 1420015 1420015
+40 tensor(0.5479, device='cuda:0') tensor(0.8474, device='cuda:0') tensor(0.0855, device='cuda:0') 1456341 1456341
+41 tensor(0.5595, device='cuda:0') tensor(0.8644, device='cuda:0') tensor(0.0854, device='cuda:0') 1492670 1492670
+42 tensor(0.5600, device='cuda:0') tensor(0.8597, device='cuda:0') tensor(0.0848, device='cuda:0') 1528997 1528997
+43 tensor(0.5584, device='cuda:0') tensor(0.8507, device='cuda:0') tensor(0.0822, device='cuda:0') 1565331 1565331
+44 tensor(0.5554, device='cuda:0') tensor(0.8487, device='cuda:0') tensor(0.0791, device='cuda:0') 1601675 1601675
+45 tensor(0.5561, device='cuda:0') tensor(0.8469, device='cuda:0') tensor(0.0784, device='cuda:0') 1638024 1638024
+46 tensor(0.5657, device='cuda:0') tensor(0.8554, device='cuda:0') tensor(0.0776, device='cuda:0') 1674371 1674371
+47 tensor(0.5682, device='cuda:0') tensor(0.8604, device='cuda:0') tensor(0.0813, device='cuda:0') 1710715 1710715
+48 tensor(0.5762, device='cuda:0') tensor(0.8620, device='cuda:0') tensor(0.0836, device='cuda:0') 1747058 1747058
+49 tensor(0.5728, device='cuda:0') tensor(0.8571, device='cuda:0') tensor(0.0843, device='cuda:0') 1783401 1783401
+50 tensor(0.5735, device='cuda:0') tensor(0.8561, device='cuda:0') tensor(0.0840, device='cuda:0') 1819744 1819744
+51 tensor(0.5549, device='cuda:0') tensor(0.8383, device='cuda:0') tensor(0.0800, device='cuda:0') 1856087 1856087
+52 tensor(0.5611, device='cuda:0') tensor(0.8479, device='cuda:0') tensor(0.0798, device='cuda:0') 1892430 1892430
+53 tensor(0.5636, device='cuda:0') tensor(0.8534, device='cuda:0') tensor(0.0790, device='cuda:0') 1928773 1928773
+54 tensor(0.6427, device='cuda:0') tensor(0.9390, device='cuda:0') tensor(0.0847, device='cuda:0') 1965890 1965890
+55 tensor(0.6027, device='cuda:0') tensor(0.8884, device='cuda:0') tensor(0.0813, device='cuda:0') 2003007 2003007
+56 tensor(0.6111, device='cuda:0') tensor(0.9141, device='cuda:0') tensor(0.0822, device='cuda:0') 2040124 2040124
+57 tensor(0.5881, device='cuda:0') tensor(0.8722, device='cuda:0') tensor(0.0810, device='cuda:0') 2077241 2077241
+58 tensor(0.6126, device='cuda:0') tensor(0.9113, device='cuda:0') tensor(0.0829, device='cuda:0') 2114358 2114358
+59 tensor(0.5874, device='cuda:0') tensor(0.8697, device='cuda:0') tensor(0.0812, device='cuda:0') 2151475 2151475
+60 tensor(0.6169, device='cuda:0') tensor(0.9107, device='cuda:0') tensor(0.0833, device='cuda:0') 2188592 2188592
+61 tensor(0.5927, device='cuda:0') tensor(0.8696, device='cuda:0') tensor(0.0820, device='cuda:0') 2225709 2225709
+62 tensor(0.6282, device='cuda:0') tensor(0.9194, device='cuda:0') tensor(0.0849, device='cuda:0') 2262826 2262826
+63 tensor(0.6022, device='cuda:0') tensor(0.8797, device='cuda:0') tensor(0.0834, device='cuda:0') 2299943 2299943
+64 tensor(0.6325, device='cuda:0') tensor(0.9229, device='cuda:0') tensor(0.0854, device='cuda:0') 2337060 2337060
+65 tensor(0.6080, device='cuda:0') tensor(0.8871, device='cuda:0') tensor(0.0844, device='cuda:0') 2374177 2374177
+66 tensor(0.6434, device='cuda:0') tensor(0.9390, device='cuda:0') tensor(0.0867, device='cuda:0') 2411294 2411294
+67 tensor(0.6055, device='cuda:0') tensor(0.8837, device='cuda:0') tensor(0.0839, device='cuda:0') 2448411 2448411
+68 tensor(0.6397, device='cuda:0') tensor(0.9318, device='cuda:0') tensor(0.0859, device='cuda:0') 2485528 2485528
+69 tensor(0.5997, device='cuda:0') tensor(0.8780, device='cuda:0') tensor(0.0825, device='cuda:0') 2522645 2522645
+70 tensor(0.6167, device='cuda:0') tensor(0.8999, device='cuda:0') tensor(0.0821, device='cuda:0') 2559762 2559762
+71 tensor(0.5968, device='cuda:0') tensor(0.8820, device='cuda:0') tensor(0.0812, device='cuda:0') 2596879 2596879
+72 tensor(0.6404, device='cuda:0') tensor(0.9371, device='cuda:0') tensor(0.0852, device='cuda:0') 2633996 2633996
+73 tensor(0.6142, device='cuda:0') tensor(0.8940, device='cuda:0') tensor(0.0823, device='cuda:0') 2671113 2671113
+74 tensor(0.6662, device='cuda:0') tensor(0.9540, device='cuda:0') tensor(0.0878, device='cuda:0') 2708230 2708230
+75 tensor(0.6259, device='cuda:0') tensor(0.9053, device='cuda:0') tensor(0.0834, device='cuda:0') 2745347 2745347
+76 tensor(0.6692, device='cuda:0') tensor(0.9494, device='cuda:0') tensor(0.0882, device='cuda:0') 2782464 2782464
+77 tensor(0.6388, device='cuda:0') tensor(0.9133, device='cuda:0') tensor(0.0851, device='cuda:0') 2819581 2819581
+78 tensor(0.6688, device='cuda:0') tensor(0.9533, device='cuda:0') tensor(0.0881, device='cuda:0') 2856698 2856698
+79 tensor(0.6444, device='cuda:0') tensor(0.9170, device='cuda:0') tensor(0.0849, device='cuda:0') 2893815 2893815
+80 tensor(0.6854, device='cuda:0') tensor(0.9691, device='cuda:0') tensor(0.0899, device='cuda:0') 2930932 2930932
+81 tensor(0.6535, device='cuda:0') tensor(0.9239, device='cuda:0') tensor(0.0860, device='cuda:0') 2968049 2968049
+82 tensor(0.6808, device='cuda:0') tensor(0.9572, device='cuda:0') tensor(0.0894, device='cuda:0') 3005166 3005166
+83 tensor(0.6553, device='cuda:0') tensor(0.9230, device='cuda:0') tensor(0.0856, device='cuda:0') 3042283 3042283
+84 tensor(0.6754, device='cuda:0') tensor(0.9572, device='cuda:0') tensor(0.0881, device='cuda:0') 3079400 3079400
+85 tensor(0.6594, device='cuda:0') tensor(0.9214, device='cuda:0') tensor(0.0862, device='cuda:0') 3116517 3116517
+86 tensor(0.7023, device='cuda:0') tensor(0.9741, device='cuda:0') tensor(0.0911, device='cuda:0') 3153630 3153630
+87 tensor(0.6551, device='cuda:0') tensor(0.9128, device='cuda:0') tensor(0.0863, device='cuda:0') 3190745 3190745
+88 tensor(0.7048, device='cuda:0') tensor(0.9755, device='cuda:0') tensor(0.0921, device='cuda:0') 3227857 3227857
+89 tensor(0.6633, device='cuda:0') tensor(0.9192, device='cuda:0') tensor(0.0897, device='cuda:0') 3264966 3264966
+90 tensor(0.6900, device='cuda:0') tensor(0.9611, device='cuda:0') tensor(0.0925, device='cuda:0') 3302080 3302080
+91 tensor(0.6643, device='cuda:0') tensor(0.9279, device='cuda:0') tensor(0.0918, device='cuda:0') 3339195 3339195
+92 tensor(0.6849, device='cuda:0') tensor(0.9556, device='cuda:0') tensor(0.0950, device='cuda:0') 3376306 3376306
+93 tensor(0.6692, device='cuda:0') tensor(0.9335, device='cuda:0') tensor(0.0940, device='cuda:0') 3413415 3413415
+94 tensor(0.6881, device='cuda:0') tensor(0.9592, device='cuda:0') tensor(0.0962, device='cuda:0') 3450525 3450525
+95 tensor(0.6921, device='cuda:0') tensor(0.9586, device='cuda:0') tensor(0.0969, device='cuda:0') 3487636 3487636
+96 tensor(0.6818, device='cuda:0') tensor(0.9495, device='cuda:0') tensor(0.0931, device='cuda:0') 3524747 3524747
+97 tensor(0.7026, device='cuda:0') tensor(0.9686, device='cuda:0') tensor(0.0990, device='cuda:0') 3561858 3561858
+98 tensor(0.6832, device='cuda:0') tensor(0.9383, device='cuda:0') tensor(0.0930, device='cuda:0') 3598969 3598969
+99 tensor(0.6991, device='cuda:0') tensor(0.9582, device='cuda:0') tensor(0.0981, device='cuda:0') 3636080 3636080
+100 tensor(0.6628, device='cuda:0') tensor(0.9141, device='cuda:0') tensor(0.0909, device='cuda:0') 3673191 3673191
+101 tensor(0.6679, device='cuda:0') tensor(0.9276, device='cuda:0') tensor(0.0943, device='cuda:0') 3710302 3710302
+102 tensor(0.6574, device='cuda:0') tensor(0.9183, device='cuda:0') tensor(0.0921, device='cuda:0') 3747413 3747413
+103 tensor(0.6418, device='cuda:0') tensor(0.9109, device='cuda:0') tensor(0.0918, device='cuda:0') 3784524 3784524
+104 tensor(0.6515, device='cuda:0') tensor(0.9178, device='cuda:0') tensor(0.0915, device='cuda:0') 3821635 3821635
+105 tensor(0.6347, device='cuda:0') tensor(0.9077, device='cuda:0') tensor(0.0909, device='cuda:0') 3858746 3858746
+106 tensor(0.6562, device='cuda:0') tensor(0.9277, device='cuda:0') tensor(0.0919, device='cuda:0') 3895857 3895857
+107 tensor(0.6290, device='cuda:0') tensor(0.9039, device='cuda:0') tensor(0.0906, device='cuda:0') 3932968 3932968
+108 tensor(0.6538, device='cuda:0') tensor(0.9255, device='cuda:0') tensor(0.0920, device='cuda:0') 3970079 3970079
+109 tensor(0.6190, device='cuda:0') tensor(0.8934, device='cuda:0') tensor(0.0893, device='cuda:0') 4007190 4007190
+110 tensor(0.6580, device='cuda:0') tensor(0.9247, device='cuda:0') tensor(0.0913, device='cuda:0') 4044301 4044301
+111 tensor(0.6204, device='cuda:0') tensor(0.8968, device='cuda:0') tensor(0.0889, device='cuda:0') 4081412 4081412
+112 tensor(0.6527, device='cuda:0') tensor(0.9163, device='cuda:0') tensor(0.0899, device='cuda:0') 4118523 4118523
+113 tensor(0.6234, device='cuda:0') tensor(0.8960, device='cuda:0') tensor(0.0886, device='cuda:0') 4155634 4155634
+114 tensor(0.6583, device='cuda:0') tensor(0.9152, device='cuda:0') tensor(0.0901, device='cuda:0') 4192745 4192745
+115 tensor(0.6116, device='cuda:0') tensor(0.8867, device='cuda:0') tensor(0.0871, device='cuda:0') 4229856 4229856
+116 tensor(0.6456, device='cuda:0') tensor(0.9018, device='cuda:0') tensor(0.0887, device='cuda:0') 4266967 4266967
+117 tensor(0.5746, device='cuda:0') tensor(0.8526, device='cuda:0') tensor(0.0822, device='cuda:0') 4304078 4304078
+118 tensor(0.5785, device='cuda:0') tensor(0.8469, device='cuda:0') tensor(0.0809, device='cuda:0') 4341189 4341189
+119 tensor(0.6087, device='cuda:0') tensor(0.8726, device='cuda:0') tensor(0.0834, device='cuda:0') 4378300 4378300
+120 tensor(0.5481, device='cuda:0') tensor(0.8112, device='cuda:0') tensor(0.0755, device='cuda:0') 4415411 4415411
+121 tensor(0.5118, device='cuda:0') tensor(0.7886, device='cuda:0') tensor(0.0715, device='cuda:0') 4452522 4452522
+122 tensor(0.4947, device='cuda:0') tensor(0.7774, device='cuda:0') tensor(0.0694, device='cuda:0') 4489633 4489633
+123 tensor(0.4912, device='cuda:0') tensor(0.7740, device='cuda:0') tensor(0.0682, device='cuda:0') 4526744 4526744
+124 tensor(0.5002, device='cuda:0') tensor(0.7810, device='cuda:0') tensor(0.0688, device='cuda:0') 4563855 4563855
+125 tensor(0.4931, device='cuda:0') tensor(0.7731, device='cuda:0') tensor(0.0679, device='cuda:0') 4600966 4600966
+126 tensor(0.5060, device='cuda:0') tensor(0.7835, device='cuda:0') tensor(0.0690, device='cuda:0') 4638077 4638077
+127 tensor(0.5121, device='cuda:0') tensor(0.7914, device='cuda:0') tensor(0.0696, device='cuda:0') 4675188 4675188
+128 tensor(0.5086, device='cuda:0') tensor(0.7875, device='cuda:0') tensor(0.0692, device='cuda:0') 4712299 4712299
+129 tensor(0.5104, device='cuda:0') tensor(0.7913, device='cuda:0') tensor(0.0693, device='cuda:0') 4749410 4749410
+130 tensor(0.4976, device='cuda:0') tensor(0.7776, device='cuda:0') tensor(0.0682, device='cuda:0') 4786521 4786521
+131 tensor(0.5093, device='cuda:0') tensor(0.7903, device='cuda:0') tensor(0.0689, device='cuda:0') 4823632 4823632
+132 tensor(0.5010, device='cuda:0') tensor(0.7857, device='cuda:0') tensor(0.0690, device='cuda:0') 4860742 4860742
+133 tensor(0.4850, device='cuda:0') tensor(0.7721, device='cuda:0') tensor(0.0677, device='cuda:0') 4897851 4897851
+134 tensor(0.4761, device='cuda:0') tensor(0.7716, device='cuda:0') tensor(0.0683, device='cuda:0') 4934962 4934962
+135 tensor(0.4892, device='cuda:0') tensor(0.7849, device='cuda:0') tensor(0.0697, device='cuda:0') 4972073 4972073
+136 tensor(0.4796, device='cuda:0') tensor(0.7799, device='cuda:0') tensor(0.0691, device='cuda:0') 5009184 5009184
+137 tensor(0.4879, device='cuda:0') tensor(0.7926, device='cuda:0') tensor(0.0707, device='cuda:0') 5046292 5046292
+138 tensor(0.4844, device='cuda:0') tensor(0.7917, device='cuda:0') tensor(0.0715, device='cuda:0') 5083394 5083394
+139 tensor(0.4969, device='cuda:0') tensor(0.8090, device='cuda:0') tensor(0.0741, device='cuda:0') 5120492 5120492
+140 tensor(0.4940, device='cuda:0') tensor(0.8124, device='cuda:0') tensor(0.0756, device='cuda:0') 5157587 5157587
+141 tensor(0.5148, device='cuda:0') tensor(0.8409, device='cuda:0') tensor(0.0812, device='cuda:0') 5194679 5194679
+142 tensor(0.5014, device='cuda:0') tensor(0.8130, device='cuda:0') tensor(0.0782, device='cuda:0') 5231770 5231770
+143 tensor(0.5226, device='cuda:0') tensor(0.8403, device='cuda:0') tensor(0.0822, device='cuda:0') 5268863 5268863
+144 tensor(0.5076, device='cuda:0') tensor(0.8183, device='cuda:0') tensor(0.0778, device='cuda:0') 5305957 5305957
+145 tensor(0.5145, device='cuda:0') tensor(0.8328, device='cuda:0') tensor(0.0808, device='cuda:0') 5343051 5343051
+146 tensor(0.5165, device='cuda:0') tensor(0.8365, device='cuda:0') tensor(0.0799, device='cuda:0') 5380145 5380145
+147 tensor(0.5482, device='cuda:0') tensor(0.8809, device='cuda:0') tensor(0.0860, device='cuda:0') 5417239 5417239
+148 tensor(0.5693, device='cuda:0') tensor(0.9229, device='cuda:0') tensor(0.0887, device='cuda:0') 5454333 5454333
+149 tensor(0.5986, device='cuda:0') tensor(0.9620, device='cuda:0') tensor(0.0945, device='cuda:0') 5491427 5491427
+150 tensor(0.6090, device='cuda:0') tensor(0.9772, device='cuda:0') tensor(0.0957, device='cuda:0') 5528521 5528521
+151 tensor(0.6245, device='cuda:0') tensor(0.9932, device='cuda:0') tensor(0.0988, device='cuda:0') 5565615 5565615
+152 tensor(0.6280, device='cuda:0') tensor(0.9975, device='cuda:0') tensor(0.0992, device='cuda:0') 5602709 5602709
+153 tensor(0.6400, device='cuda:0') tensor(1.0064, device='cuda:0') tensor(0.1025, device='cuda:0') 5639803 5639803
+154 tensor(0.6355, device='cuda:0') tensor(1.0040, device='cuda:0') tensor(0.1002, device='cuda:0') 5676897 5676897
+155 tensor(0.6476, device='cuda:0') tensor(1.0159, device='cuda:0') tensor(0.1036, device='cuda:0') 5713991 5713991
+156 tensor(0.6390, device='cuda:0') tensor(1.0075, device='cuda:0') tensor(0.1010, device='cuda:0') 5751085 5751085
+157 tensor(0.6512, device='cuda:0') tensor(1.0208, device='cuda:0') tensor(0.1043, device='cuda:0') 5788179 5788179
+158 tensor(0.6449, device='cuda:0') tensor(1.0164, device='cuda:0') tensor(0.1017, device='cuda:0') 5825273 5825273
+159 tensor(0.6531, device='cuda:0') tensor(1.0240, device='cuda:0') tensor(0.1045, device='cuda:0') 5862367 5862367
+160 tensor(0.6494, device='cuda:0') tensor(1.0199, device='cuda:0') tensor(0.1014, device='cuda:0') 5899461 5899461
+161 tensor(0.6586, device='cuda:0') tensor(1.0283, device='cuda:0') tensor(0.1043, device='cuda:0') 5936555 5936555
+162 tensor(0.6548, device='cuda:0') tensor(1.0226, device='cuda:0') tensor(0.1016, device='cuda:0') 5973649 5973649
+163 tensor(0.6616, device='cuda:0') tensor(1.0298, device='cuda:0') tensor(0.1042, device='cuda:0') 6010743 6010743
+164 tensor(0.6601, device='cuda:0') tensor(1.0225, device='cuda:0') tensor(0.1023, device='cuda:0') 6047837 6047837
+165 tensor(0.6686, device='cuda:0') tensor(1.0366, device='cuda:0') tensor(0.1045, device='cuda:0') 6084931 6084931
+166 tensor(0.6739, device='cuda:0') tensor(1.0377, device='cuda:0') tensor(0.1039, device='cuda:0') 6122025 6122025
+167 tensor(0.6893, device='cuda:0') tensor(1.0540, device='cuda:0') tensor(0.1070, device='cuda:0') 6159119 6159119
+168 tensor(0.6993, device='cuda:0') tensor(1.0560, device='cuda:0') tensor(0.1078, device='cuda:0') 6196213 6196213
+169 tensor(0.7201, device='cuda:0') tensor(1.0829, device='cuda:0') tensor(0.1115, device='cuda:0') 6233307 6233307
+170 tensor(0.7169, device='cuda:0') tensor(1.0746, device='cuda:0') tensor(0.1095, device='cuda:0') 6270401 6270401
+171 tensor(0.7286, device='cuda:0') tensor(1.0881, device='cuda:0') tensor(0.1118, device='cuda:0') 6307495 6307495
+172 tensor(0.7165, device='cuda:0') tensor(1.0716, device='cuda:0') tensor(0.1089, device='cuda:0') 6344589 6344589
+173 tensor(0.7276, device='cuda:0') tensor(1.0847, device='cuda:0') tensor(0.1111, device='cuda:0') 6381683 6381683
+174 tensor(0.7131, device='cuda:0') tensor(1.0643, device='cuda:0') tensor(0.1083, device='cuda:0') 6418777 6418777
+175 tensor(0.7245, device='cuda:0') tensor(1.0810, device='cuda:0') tensor(0.1096, device='cuda:0') 6455870 6455870
+176 tensor(0.7164, device='cuda:0') tensor(1.0679, device='cuda:0') tensor(0.1082, device='cuda:0') 6492963 6492963
+177 tensor(0.7298, device='cuda:0') tensor(1.0881, device='cuda:0') tensor(0.1113, device='cuda:0') 6530056 6530056
+178 tensor(0.7237, device='cuda:0') tensor(1.0798, device='cuda:0') tensor(0.1098, device='cuda:0') 6567148 6567148
+179 tensor(0.7263, device='cuda:0') tensor(1.0804, device='cuda:0') tensor(0.1102, device='cuda:0') 6604240 6604240
+180 tensor(0.7241, device='cuda:0') tensor(1.0778, device='cuda:0') tensor(0.1089, device='cuda:0') 6641330 6641330
+181 tensor(0.7379, device='cuda:0') tensor(1.1029, device='cuda:0') tensor(0.1126, device='cuda:0') 6678420 6678420
+182 tensor(0.7326, device='cuda:0') tensor(1.0923, device='cuda:0') tensor(0.1088, device='cuda:0') 6715510 6715510
+183 tensor(0.7352, device='cuda:0') tensor(1.0955, device='cuda:0') tensor(0.1110, device='cuda:0') 6752596 6752596
+184 tensor(0.7337, device='cuda:0') tensor(1.0931, device='cuda:0') tensor(0.1081, device='cuda:0') 6789682 6789682
+185 tensor(0.7390, device='cuda:0') tensor(1.1003, device='cuda:0') tensor(0.1075, device='cuda:0') 6826770 6826770
+186 tensor(0.7289, device='cuda:0') tensor(1.0827, device='cuda:0') tensor(0.1046, device='cuda:0') 6863855 6863855
+187 tensor(0.7265, device='cuda:0') tensor(1.0852, device='cuda:0') tensor(0.1041, device='cuda:0') 6900937 6900937
+188 tensor(0.7106, device='cuda:0') tensor(1.0528, device='cuda:0') tensor(0.1020, device='cuda:0') 6938019 6938019
+189 tensor(0.7143, device='cuda:0') tensor(1.0622, device='cuda:0') tensor(0.1013, device='cuda:0') 6975100 6975100
+190 tensor(0.7160, device='cuda:0') tensor(1.0667, device='cuda:0') tensor(0.1014, device='cuda:0') 7012182 7012182
+191 tensor(0.7209, device='cuda:0') tensor(1.0715, device='cuda:0') tensor(0.1022, device='cuda:0') 7049264 7049264
+192 tensor(0.7117, device='cuda:0') tensor(1.0581, device='cuda:0') tensor(0.1013, device='cuda:0') 7086346 7086346
+193 tensor(0.7046, device='cuda:0') tensor(1.0412, device='cuda:0') tensor(0.1011, device='cuda:0') 7123428 7123428
+194 tensor(0.6718, device='cuda:0') tensor(0.9901, device='cuda:0') tensor(0.0952, device='cuda:0') 7160510 7160510
+195 tensor(0.6327, device='cuda:0') tensor(0.9278, device='cuda:0') tensor(0.0896, device='cuda:0') 7197592 7197592
+196 tensor(0.5955, device='cuda:0') tensor(0.8745, device='cuda:0') tensor(0.0830, device='cuda:0') 7234674 7234674
+197 tensor(0.5718, device='cuda:0') tensor(0.8519, device='cuda:0') tensor(0.0804, device='cuda:0') 7271756 7271756
+198 tensor(0.5590, device='cuda:0') tensor(0.8343, device='cuda:0') tensor(0.0777, device='cuda:0') 7308838 7308838
+199 tensor(0.5557, device='cuda:0') tensor(0.8358, device='cuda:0') tensor(0.0783, device='cuda:0') 7345920 7345920
+200 tensor(0.5517, device='cuda:0') tensor(0.8273, device='cuda:0') tensor(0.0769, device='cuda:0') 7383002 7383002
+201 tensor(0.5527, device='cuda:0') tensor(0.8350, device='cuda:0') tensor(0.0782, device='cuda:0') 7420084 7420084
+202 tensor(0.5471, device='cuda:0') tensor(0.8266, device='cuda:0') tensor(0.0764, device='cuda:0') 7457166 7457166
+203 tensor(0.5494, device='cuda:0') tensor(0.8345, device='cuda:0') tensor(0.0779, device='cuda:0') 7494248 7494248
+204 tensor(0.5438, device='cuda:0') tensor(0.8250, device='cuda:0') tensor(0.0764, device='cuda:0') 7531330 7531330
+205 tensor(0.5426, device='cuda:0') tensor(0.8274, device='cuda:0') tensor(0.0773, device='cuda:0') 7568412 7568412
+206 tensor(0.5373, device='cuda:0') tensor(0.8191, device='cuda:0') tensor(0.0756, device='cuda:0') 7605494 7605494
+207 tensor(0.5352, device='cuda:0') tensor(0.8211, device='cuda:0') tensor(0.0760, device='cuda:0') 7642576 7642576
+208 tensor(0.5324, device='cuda:0') tensor(0.8163, device='cuda:0') tensor(0.0748, device='cuda:0') 7679658 7679658
+209 tensor(0.5263, device='cuda:0') tensor(0.8140, device='cuda:0') tensor(0.0749, device='cuda:0') 7716740 7716740
+210 tensor(0.5206, device='cuda:0') tensor(0.8066, device='cuda:0') tensor(0.0733, device='cuda:0') 7753822 7753822
+211 tensor(0.5173, device='cuda:0') tensor(0.8053, device='cuda:0') tensor(0.0738, device='cuda:0') 7790904 7790904
+212 tensor(0.5091, device='cuda:0') tensor(0.7963, device='cuda:0') tensor(0.0717, device='cuda:0') 7827986 7827986
+213 tensor(0.4995, device='cuda:0') tensor(0.7870, device='cuda:0') tensor(0.0709, device='cuda:0') 7865068 7865068
+214 tensor(0.4867, device='cuda:0') tensor(0.7702, device='cuda:0') tensor(0.0683, device='cuda:0') 7902150 7902150
+215 tensor(0.4751, device='cuda:0') tensor(0.7611, device='cuda:0') tensor(0.0671, device='cuda:0') 7939232 7939232
+216 tensor(0.4588, device='cuda:0') tensor(0.7442, device='cuda:0') tensor(0.0640, device='cuda:0') 7976314 7976314
+217 tensor(0.4662, device='cuda:0') tensor(0.7568, device='cuda:0') tensor(0.0646, device='cuda:0') 8013396 8013396
+218 tensor(0.4605, device='cuda:0') tensor(0.7506, device='cuda:0') tensor(0.0634, device='cuda:0') 8050478 8050478
+219 tensor(0.4670, device='cuda:0') tensor(0.7596, device='cuda:0') tensor(0.0643, device='cuda:0') 8087560 8087560
+220 tensor(0.4621, device='cuda:0') tensor(0.7531, device='cuda:0') tensor(0.0633, device='cuda:0') 8124642 8124642
+221 tensor(0.4645, device='cuda:0') tensor(0.7576, device='cuda:0') tensor(0.0638, device='cuda:0') 8161724 8161724
+222 tensor(0.4604, device='cuda:0') tensor(0.7503, device='cuda:0') tensor(0.0631, device='cuda:0') 8198806 8198806
+223 tensor(0.4680, device='cuda:0') tensor(0.7640, device='cuda:0') tensor(0.0642, device='cuda:0') 8235889 8235889
+224 tensor(0.4604, device='cuda:0') tensor(0.7516, device='cuda:0') tensor(0.0633, device='cuda:0') 8272972 8272972
+225 tensor(0.4681, device='cuda:0') tensor(0.7650, device='cuda:0') tensor(0.0647, device='cuda:0') 8310055 8310055
+226 tensor(0.4653, device='cuda:0') tensor(0.7536, device='cuda:0') tensor(0.0643, device='cuda:0') 8347139 8347139
+227 tensor(0.4679, device='cuda:0') tensor(0.7599, device='cuda:0') tensor(0.0652, device='cuda:0') 8384223 8384223
+228 tensor(0.4571, device='cuda:0') tensor(0.7408, device='cuda:0') tensor(0.0639, device='cuda:0') 8421309 8421309
+229 tensor(0.4584, device='cuda:0') tensor(0.7461, device='cuda:0') tensor(0.0650, device='cuda:0') 8458396 8458396
+230 tensor(0.4508, device='cuda:0') tensor(0.7322, device='cuda:0') tensor(0.0646, device='cuda:0') 8495485 8495485
+231 tensor(0.4592, device='cuda:0') tensor(0.7511, device='cuda:0') tensor(0.0659, device='cuda:0') 8532577 8532577
+232 tensor(0.4475, device='cuda:0') tensor(0.7350, device='cuda:0') tensor(0.0648, device='cuda:0') 8569671 8569671
+233 tensor(0.4571, device='cuda:0') tensor(0.7585, device='cuda:0') tensor(0.0666, device='cuda:0') 8606767 8606767
+234 tensor(0.4487, device='cuda:0') tensor(0.7466, device='cuda:0') tensor(0.0652, device='cuda:0') 8643868 8643868
+235 tensor(0.4576, device='cuda:0') tensor(0.7631, device='cuda:0') tensor(0.0662, device='cuda:0') 8680971 8680971
+236 tensor(0.4353, device='cuda:0') tensor(0.7262, device='cuda:0') tensor(0.0621, device='cuda:0') 8717311 8717311
+237 tensor(0.4441, device='cuda:0') tensor(0.7402, device='cuda:0') tensor(0.0634, device='cuda:0') 8753652 8753652
+238 tensor(0.4389, device='cuda:0') tensor(0.7392, device='cuda:0') tensor(0.0650, device='cuda:0') 8789993 8789993
+239 tensor(0.4455, device='cuda:0') tensor(0.7454, device='cuda:0') tensor(0.0685, device='cuda:0') 8826332 8826332
+240 tensor(0.4452, device='cuda:0') tensor(0.7442, device='cuda:0') tensor(0.0682, device='cuda:0') 8862671 8862671
+241 tensor(0.4458, device='cuda:0') tensor(0.7423, device='cuda:0') tensor(0.0699, device='cuda:0') 8899010 8899010
+242 tensor(0.4474, device='cuda:0') tensor(0.7467, device='cuda:0') tensor(0.0690, device='cuda:0') 8935349 8935349
+243 tensor(0.4407, device='cuda:0') tensor(0.7390, device='cuda:0') tensor(0.0687, device='cuda:0') 8971688 8971688
+244 tensor(0.4392, device='cuda:0') tensor(0.7399, device='cuda:0') tensor(0.0674, device='cuda:0') 9008027 9008027
+245 tensor(0.4418, device='cuda:0') tensor(0.7418, device='cuda:0') tensor(0.0687, device='cuda:0') 9044366 9044366
+246 tensor(0.4362, device='cuda:0') tensor(0.7377, device='cuda:0') tensor(0.0673, device='cuda:0') 9080705 9080705
+247 tensor(0.4381, device='cuda:0') tensor(0.7407, device='cuda:0') tensor(0.0689, device='cuda:0') 9117044 9117044
+248 tensor(0.4348, device='cuda:0') tensor(0.7368, device='cuda:0') tensor(0.0673, device='cuda:0') 9153383 9153383
+249 tensor(0.4366, device='cuda:0') tensor(0.7395, device='cuda:0') tensor(0.0689, device='cuda:0') 9189722 9189722
+250 tensor(0.4338, device='cuda:0') tensor(0.7357, device='cuda:0') tensor(0.0673, device='cuda:0') 9226061 9226061
+251 tensor(0.4362, device='cuda:0') tensor(0.7398, device='cuda:0') tensor(0.0692, device='cuda:0') 9262400 9262400
+252 tensor(0.4363, device='cuda:0') tensor(0.7371, device='cuda:0') tensor(0.0681, device='cuda:0') 9298739 9298739
+253 tensor(0.4378, device='cuda:0') tensor(0.7416, device='cuda:0') tensor(0.0698, device='cuda:0') 9335078 9335078
+254 tensor(0.4384, device='cuda:0') tensor(0.7399, device='cuda:0') tensor(0.0683, device='cuda:0') 9371417 9371417
+255 tensor(0.4381, device='cuda:0') tensor(0.7424, device='cuda:0') tensor(0.0697, device='cuda:0') 9407756 9407756
+256 tensor(0.4399, device='cuda:0') tensor(0.7409, device='cuda:0') tensor(0.0683, device='cuda:0') 9444095 9444095
+257 tensor(0.4359, device='cuda:0') tensor(0.7375, device='cuda:0') tensor(0.0689, device='cuda:0') 9480434 9480434
+258 tensor(0.4441, device='cuda:0') tensor(0.7438, device='cuda:0') tensor(0.0685, device='cuda:0') 9516773 9516773
+259 tensor(0.4380, device='cuda:0') tensor(0.7387, device='cuda:0') tensor(0.0690, device='cuda:0') 9553112 9553112
+260 tensor(0.4471, device='cuda:0') tensor(0.7488, device='cuda:0') tensor(0.0690, device='cuda:0') 9589451 9589451
+261 tensor(0.4420, device='cuda:0') tensor(0.7439, device='cuda:0') tensor(0.0697, device='cuda:0') 9625790 9625790
+262 tensor(0.4441, device='cuda:0') tensor(0.7488, device='cuda:0') tensor(0.0686, device='cuda:0') 9662129 9662129
+263 tensor(0.4395, device='cuda:0') tensor(0.7436, device='cuda:0') tensor(0.0694, device='cuda:0') 9698468 9698468
+264 tensor(0.4369, device='cuda:0') tensor(0.7434, device='cuda:0') tensor(0.0674, device='cuda:0') 9734807 9734807
+265 tensor(0.4407, device='cuda:0') tensor(0.7424, device='cuda:0') tensor(0.0681, device='cuda:0') 9771146 9771146
+266 tensor(0.4372, device='cuda:0') tensor(0.7420, device='cuda:0') tensor(0.0660, device='cuda:0') 9807485 9807485
+267 tensor(0.4349, device='cuda:0') tensor(0.7362, device='cuda:0') tensor(0.0668, device='cuda:0') 9843824 9843824
+268 tensor(0.4385, device='cuda:0') tensor(0.7420, device='cuda:0') tensor(0.0663, device='cuda:0') 9880163 9880163
+269 tensor(0.4356, device='cuda:0') tensor(0.7370, device='cuda:0') tensor(0.0664, device='cuda:0') 9916502 9916502
+270 tensor(0.4417, device='cuda:0') tensor(0.7429, device='cuda:0') tensor(0.0664, device='cuda:0') 9952841 9952841
+271 tensor(0.4392, device='cuda:0') tensor(0.7417, device='cuda:0') tensor(0.0661, device='cuda:0') 9989180 9989180
+272 tensor(0.4436, device='cuda:0') tensor(0.7466, device='cuda:0') tensor(0.0654, device='cuda:0') 10025519 10025519
+273 tensor(0.4404, device='cuda:0') tensor(0.7405, device='cuda:0') tensor(0.0665, device='cuda:0') 10061858 10061858
+274 tensor(0.4506, device='cuda:0') tensor(0.7486, device='cuda:0') tensor(0.0664, device='cuda:0') 10098197 10098197
+275 tensor(0.4349, device='cuda:0') tensor(0.7296, device='cuda:0') tensor(0.0653, device='cuda:0') 10134536 10134536
+276 tensor(0.4419, device='cuda:0') tensor(0.7279, device='cuda:0') tensor(0.0651, device='cuda:0') 10170874 10170874
+277 tensor(0.4364, device='cuda:0') tensor(0.7190, device='cuda:0') tensor(0.0664, device='cuda:0') 10207212 10207212
+278 tensor(0.4468, device='cuda:0') tensor(0.7243, device='cuda:0') tensor(0.0677, device='cuda:0') 10243549 10243549
+279 tensor(0.4388, device='cuda:0') tensor(0.7183, device='cuda:0') tensor(0.0679, device='cuda:0') 10279886 10279886
+280 tensor(0.4456, device='cuda:0') tensor(0.7209, device='cuda:0') tensor(0.0672, device='cuda:0') 10316222 10316222
+281 tensor(0.4362, device='cuda:0') tensor(0.7086, device='cuda:0') tensor(0.0667, device='cuda:0') 10352557 10352557
+282 tensor(0.4463, device='cuda:0') tensor(0.7220, device='cuda:0') tensor(0.0671, device='cuda:0') 10388891 10388891
+283 tensor(0.4357, device='cuda:0') tensor(0.7097, device='cuda:0') tensor(0.0673, device='cuda:0') 10425222 10425222
+284 tensor(0.5067, device='cuda:0') tensor(0.7870, device='cuda:0') tensor(0.0725, device='cuda:0') 10462318 10462318
+285 tensor(0.4917, device='cuda:0') tensor(0.7763, device='cuda:0') tensor(0.0747, device='cuda:0') 10499413 10499413
+286 tensor(0.4765, device='cuda:0') tensor(0.7631, device='cuda:0') tensor(0.0691, device='cuda:0') 10536508 10536508
+287 tensor(0.4686, device='cuda:0') tensor(0.7674, device='cuda:0') tensor(0.0697, device='cuda:0') 10573603 10573603
+288 tensor(0.4753, device='cuda:0') tensor(0.7613, device='cuda:0') tensor(0.0696, device='cuda:0') 10610698 10610698
+289 tensor(0.4609, device='cuda:0') tensor(0.7598, device='cuda:0') tensor(0.0700, device='cuda:0') 10647793 10647793
+290 tensor(0.4815, device='cuda:0') tensor(0.7651, device='cuda:0') tensor(0.0703, device='cuda:0') 10684888 10684888
+291 tensor(0.4565, device='cuda:0') tensor(0.7532, device='cuda:0') tensor(0.0687, device='cuda:0') 10721983 10721983
+292 tensor(0.4815, device='cuda:0') tensor(0.7627, device='cuda:0') tensor(0.0692, device='cuda:0') 10759078 10759078
+293 tensor(0.4645, device='cuda:0') tensor(0.7542, device='cuda:0') tensor(0.0690, device='cuda:0') 10796173 10796173
+294 tensor(0.4753, device='cuda:0') tensor(0.7561, device='cuda:0') tensor(0.0683, device='cuda:0') 10833268 10833268
+295 tensor(0.4568, device='cuda:0') tensor(0.7501, device='cuda:0') tensor(0.0686, device='cuda:0') 10870363 10870363
+296 tensor(0.4744, device='cuda:0') tensor(0.7579, device='cuda:0') tensor(0.0684, device='cuda:0') 10907458 10907458
+297 tensor(0.4568, device='cuda:0') tensor(0.7499, device='cuda:0') tensor(0.0686, device='cuda:0') 10944553 10944553
+298 tensor(0.4783, device='cuda:0') tensor(0.7621, device='cuda:0') tensor(0.0687, device='cuda:0') 10981648 10981648
+299 tensor(0.4593, device='cuda:0') tensor(0.7534, device='cuda:0') tensor(0.0692, device='cuda:0') 11018743 11018743
+300 tensor(0.4745, device='cuda:0') tensor(0.7587, device='cuda:0') tensor(0.0690, device='cuda:0') 11055838 11055838
+301 tensor(0.4603, device='cuda:0') tensor(0.7532, device='cuda:0') tensor(0.0693, device='cuda:0') 11092933 11092933
+302 tensor(0.4693, device='cuda:0') tensor(0.7533, device='cuda:0') tensor(0.0685, device='cuda:0') 11130028 11130028
+303 tensor(0.4553, device='cuda:0') tensor(0.7499, device='cuda:0') tensor(0.0691, device='cuda:0') 11167123 11167123
+304 tensor(0.4679, device='cuda:0') tensor(0.7513, device='cuda:0') tensor(0.0680, device='cuda:0') 11204218 11204218
+305 tensor(0.4508, device='cuda:0') tensor(0.7436, device='cuda:0') tensor(0.0685, device='cuda:0') 11241313 11241313
+306 tensor(0.4685, device='cuda:0') tensor(0.7499, device='cuda:0') tensor(0.0685, device='cuda:0') 11278408 11278408
+307 tensor(0.4539, device='cuda:0') tensor(0.7451, device='cuda:0') tensor(0.0685, device='cuda:0') 11315503 11315503
+308 tensor(0.4606, device='cuda:0') tensor(0.7433, device='cuda:0') tensor(0.0673, device='cuda:0') 11352598 11352598
+309 tensor(0.4517, device='cuda:0') tensor(0.7445, device='cuda:0') tensor(0.0683, device='cuda:0') 11389693 11389693
+310 tensor(0.4663, device='cuda:0') tensor(0.7483, device='cuda:0') tensor(0.0681, device='cuda:0') 11426788 11426788
+311 tensor(0.4528, device='cuda:0') tensor(0.7395, device='cuda:0') tensor(0.0674, device='cuda:0') 11463883 11463883
+312 tensor(0.4747, device='cuda:0') tensor(0.7530, device='cuda:0') tensor(0.0686, device='cuda:0') 11500978 11500978
+313 tensor(0.4670, device='cuda:0') tensor(0.7558, device='cuda:0') tensor(0.0688, device='cuda:0') 11538073 11538073
+314 tensor(0.4865, device='cuda:0') tensor(0.7676, device='cuda:0') tensor(0.0702, device='cuda:0') 11575168 11575168
+315 tensor(0.4728, device='cuda:0') tensor(0.7614, device='cuda:0') tensor(0.0691, device='cuda:0') 11612263 11612263
+316 tensor(0.4876, device='cuda:0') tensor(0.7686, device='cuda:0') tensor(0.0702, device='cuda:0') 11649358 11649358
+317 tensor(0.4715, device='cuda:0') tensor(0.7561, device='cuda:0') tensor(0.0681, device='cuda:0') 11686453 11686453
+318 tensor(0.4895, device='cuda:0') tensor(0.7666, device='cuda:0') tensor(0.0702, device='cuda:0') 11723548 11723548
+319 tensor(0.4738, device='cuda:0') tensor(0.7588, device='cuda:0') tensor(0.0685, device='cuda:0') 11760643 11760643
+320 tensor(0.4970, device='cuda:0') tensor(0.7725, device='cuda:0') tensor(0.0709, device='cuda:0') 11797738 11797738
+321 tensor(0.4778, device='cuda:0') tensor(0.7607, device='cuda:0') tensor(0.0691, device='cuda:0') 11834833 11834833
+322 tensor(0.4915, device='cuda:0') tensor(0.7708, device='cuda:0') tensor(0.0713, device='cuda:0') 11871928 11871928
+323 tensor(0.4822, device='cuda:0') tensor(0.7652, device='cuda:0') tensor(0.0698, device='cuda:0') 11909023 11909023
+324 tensor(0.4923, device='cuda:0') tensor(0.7762, device='cuda:0') tensor(0.0711, device='cuda:0') 11946120 11946120
+325 tensor(0.4873, device='cuda:0') tensor(0.7674, device='cuda:0') tensor(0.0708, device='cuda:0') 11983216 11983216
+326 tensor(0.5003, device='cuda:0') tensor(0.7768, device='cuda:0') tensor(0.0734, device='cuda:0') 12020310 12020310
+327 tensor(0.5035, device='cuda:0') tensor(0.7765, device='cuda:0') tensor(0.0732, device='cuda:0') 12057404 12057404
+328 tensor(0.4945, device='cuda:0') tensor(0.7734, device='cuda:0') tensor(0.0725, device='cuda:0') 12094498 12094498
+329 tensor(0.5199, device='cuda:0') tensor(0.7924, device='cuda:0') tensor(0.0756, device='cuda:0') 12131593 12131593
+330 tensor(0.4854, device='cuda:0') tensor(0.7613, device='cuda:0') tensor(0.0701, device='cuda:0') 12168690 12168690
+331 tensor(0.4963, device='cuda:0') tensor(0.7700, device='cuda:0') tensor(0.0739, device='cuda:0') 12205785 12205785
+332 tensor(0.4886, device='cuda:0') tensor(0.7749, device='cuda:0') tensor(0.0751, device='cuda:0') 12242879 12242879
+333 tensor(0.4856, device='cuda:0') tensor(0.7706, device='cuda:0') tensor(0.0721, device='cuda:0') 12279973 12279973
+334 tensor(0.4848, device='cuda:0') tensor(0.7728, device='cuda:0') tensor(0.0718, device='cuda:0') 12317064 12317064
+335 tensor(0.4903, device='cuda:0') tensor(0.7818, device='cuda:0') tensor(0.0737, device='cuda:0') 12354155 12354155
+336 tensor(0.4933, device='cuda:0') tensor(0.7833, device='cuda:0') tensor(0.0741, device='cuda:0') 12391245 12391245
+337 tensor(0.4994, device='cuda:0') tensor(0.7927, device='cuda:0') tensor(0.0758, device='cuda:0') 12428335 12428335
+338 tensor(0.4909, device='cuda:0') tensor(0.7823, device='cuda:0') tensor(0.0737, device='cuda:0') 12465425 12465425
+339 tensor(0.4844, device='cuda:0') tensor(0.7746, device='cuda:0') tensor(0.0730, device='cuda:0') 12502515 12502515
+340 tensor(0.4807, device='cuda:0') tensor(0.7701, device='cuda:0') tensor(0.0719, device='cuda:0') 12539605 12539605
+341 tensor(0.4918, device='cuda:0') tensor(0.7793, device='cuda:0') tensor(0.0735, device='cuda:0') 12576695 12576695
+342 tensor(0.4844, device='cuda:0') tensor(0.7738, device='cuda:0') tensor(0.0723, device='cuda:0') 12613785 12613785
+343 tensor(0.4929, device='cuda:0') tensor(0.7843, device='cuda:0') tensor(0.0744, device='cuda:0') 12650875 12650875
+344 tensor(0.4806, device='cuda:0') tensor(0.7716, device='cuda:0') tensor(0.0724, device='cuda:0') 12687965 12687965
+345 tensor(0.4906, device='cuda:0') tensor(0.7814, device='cuda:0') tensor(0.0742, device='cuda:0') 12725055 12725055
+346 tensor(0.4761, device='cuda:0') tensor(0.7670, device='cuda:0') tensor(0.0722, device='cuda:0') 12762145 12762145
+347 tensor(0.4922, device='cuda:0') tensor(0.7822, device='cuda:0') tensor(0.0749, device='cuda:0') 12799235 12799235
+348 tensor(0.4761, device='cuda:0') tensor(0.7662, device='cuda:0') tensor(0.0726, device='cuda:0') 12836325 12836325
+349 tensor(0.4885, device='cuda:0') tensor(0.7783, device='cuda:0') tensor(0.0741, device='cuda:0') 12873415 12873415
+350 tensor(0.4844, device='cuda:0') tensor(0.7731, device='cuda:0') tensor(0.0736, device='cuda:0') 12910505 12910505
+351 tensor(0.4932, device='cuda:0') tensor(0.7802, device='cuda:0') tensor(0.0747, device='cuda:0') 12947595 12947595
+352 tensor(0.4891, device='cuda:0') tensor(0.7749, device='cuda:0') tensor(0.0738, device='cuda:0') 12984685 12984685
+353 tensor(0.5011, device='cuda:0') tensor(0.7839, device='cuda:0') tensor(0.0755, device='cuda:0') 13021775 13021775
+354 tensor(0.4893, device='cuda:0') tensor(0.7729, device='cuda:0') tensor(0.0738, device='cuda:0') 13058865 13058865
+355 tensor(0.5016, device='cuda:0') tensor(0.7880, device='cuda:0') tensor(0.0758, device='cuda:0') 13095955 13095955
+356 tensor(0.4899, device='cuda:0') tensor(0.7748, device='cuda:0') tensor(0.0729, device='cuda:0') 13133045 13133045
+357 tensor(0.4979, device='cuda:0') tensor(0.7838, device='cuda:0') tensor(0.0753, device='cuda:0') 13170135 13170135
+358 tensor(0.4876, device='cuda:0') tensor(0.7748, device='cuda:0') tensor(0.0734, device='cuda:0') 13207225 13207225
+359 tensor(0.5215, device='cuda:0') tensor(0.8055, device='cuda:0') tensor(0.0785, device='cuda:0') 13244315 13244315
+360 tensor(0.5030, device='cuda:0') tensor(0.7915, device='cuda:0') tensor(0.0772, device='cuda:0') 13281405 13281405
+361 tensor(0.5261, device='cuda:0') tensor(0.8107, device='cuda:0') tensor(0.0795, device='cuda:0') 13318495 13318495
+362 tensor(0.5150, device='cuda:0') tensor(0.8040, device='cuda:0') tensor(0.0785, device='cuda:0') 13355585 13355585
+363 tensor(0.5184, device='cuda:0') tensor(0.8094, device='cuda:0') tensor(0.0786, device='cuda:0') 13392675 13392675
+364 tensor(0.5145, device='cuda:0') tensor(0.8033, device='cuda:0') tensor(0.0780, device='cuda:0') 13429765 13429765
+365 tensor(0.5199, device='cuda:0') tensor(0.8093, device='cuda:0') tensor(0.0784, device='cuda:0') 13466855 13466855
+366 tensor(0.5156, device='cuda:0') tensor(0.8034, device='cuda:0') tensor(0.0780, device='cuda:0') 13503945 13503945
+367 tensor(0.5347, device='cuda:0') tensor(0.8212, device='cuda:0') tensor(0.0799, device='cuda:0') 13541035 13541035
+368 tensor(0.5091, device='cuda:0') tensor(0.7961, device='cuda:0') tensor(0.0760, device='cuda:0') 13578125 13578125
+369 tensor(0.5335, device='cuda:0') tensor(0.8206, device='cuda:0') tensor(0.0806, device='cuda:0') 13615215 13615215
+370 tensor(0.5109, device='cuda:0') tensor(0.7966, device='cuda:0') tensor(0.0784, device='cuda:0') 13652305 13652305
+371 tensor(0.5339, device='cuda:0') tensor(0.8148, device='cuda:0') tensor(0.0811, device='cuda:0') 13689395 13689395
+372 tensor(0.5059, device='cuda:0') tensor(0.7881, device='cuda:0') tensor(0.0772, device='cuda:0') 13726485 13726485
+373 tensor(0.5109, device='cuda:0') tensor(0.7976, device='cuda:0') tensor(0.0785, device='cuda:0') 13763577 13763577
+374 tensor(0.5019, device='cuda:0') tensor(0.7885, device='cuda:0') tensor(0.0766, device='cuda:0') 13800671 13800671
+375 tensor(0.5024, device='cuda:0') tensor(0.7906, device='cuda:0') tensor(0.0764, device='cuda:0') 13837764 13837764
+376 tensor(0.5006, device='cuda:0') tensor(0.7872, device='cuda:0') tensor(0.0749, device='cuda:0') 13874859 13874859
+377 tensor(0.5091, device='cuda:0') tensor(0.8059, device='cuda:0') tensor(0.0762, device='cuda:0') 13911956 13911956
+378 tensor(0.5151, device='cuda:0') tensor(0.8140, device='cuda:0') tensor(0.0752, device='cuda:0') 13949054 13949054
+379 tensor(0.5186, device='cuda:0') tensor(0.8220, device='cuda:0') tensor(0.0725, device='cuda:0') 13986161 13986161
+380 tensor(0.5231, device='cuda:0') tensor(0.8234, device='cuda:0') tensor(0.0713, device='cuda:0') 14023271 14023271
+381 tensor(0.5167, device='cuda:0') tensor(0.8074, device='cuda:0') tensor(0.0710, device='cuda:0') 14060387 14060387
+382 tensor(0.5308, device='cuda:0') tensor(0.8234, device='cuda:0') tensor(0.0721, device='cuda:0') 14097506 14097506
+383 tensor(0.5319, device='cuda:0') tensor(0.8275, device='cuda:0') tensor(0.0728, device='cuda:0') 14134625 14134625
+384 tensor(0.5349, device='cuda:0') tensor(0.8304, device='cuda:0') tensor(0.0731, device='cuda:0') 14171745 14171745
+385 tensor(0.5348, device='cuda:0') tensor(0.8266, device='cuda:0') tensor(0.0745, device='cuda:0') 14208865 14208865
+386 tensor(0.5360, device='cuda:0') tensor(0.8249, device='cuda:0') tensor(0.0732, device='cuda:0') 14245985 14245985
+387 tensor(0.5242, device='cuda:0') tensor(0.8171, device='cuda:0') tensor(0.0712, device='cuda:0') 14283105 14283105
+388 tensor(0.5418, device='cuda:0') tensor(0.8324, device='cuda:0') tensor(0.0718, device='cuda:0') 14320225 14320225
+389 tensor(0.5379, device='cuda:0') tensor(0.8353, device='cuda:0') tensor(0.0714, device='cuda:0') 14357345 14357345
+390 tensor(0.5464, device='cuda:0') tensor(0.8369, device='cuda:0') tensor(0.0717, device='cuda:0') 14394465 14394465
+391 tensor(0.5408, device='cuda:0') tensor(0.8357, device='cuda:0') tensor(0.0719, device='cuda:0') 14431585 14431585
+392 tensor(0.5452, device='cuda:0') tensor(0.8322, device='cuda:0') tensor(0.0714, device='cuda:0') 14468705 14468705
+393 tensor(0.5379, device='cuda:0') tensor(0.8290, device='cuda:0') tensor(0.0715, device='cuda:0') 14505825 14505825
+394 tensor(0.5543, device='cuda:0') tensor(0.8403, device='cuda:0') tensor(0.0730, device='cuda:0') 14542945 14542945
+395 tensor(0.5441, device='cuda:0') tensor(0.8329, device='cuda:0') tensor(0.0725, device='cuda:0') 14580065 14580065
+396 tensor(0.5587, device='cuda:0') tensor(0.8419, device='cuda:0') tensor(0.0738, device='cuda:0') 14617185 14617185
+397 tensor(0.5494, device='cuda:0') tensor(0.8329, device='cuda:0') tensor(0.0739, device='cuda:0') 14654305 14654305
+398 tensor(0.5694, device='cuda:0') tensor(0.8487, device='cuda:0') tensor(0.0757, device='cuda:0') 14691425 14691425
+399 tensor(0.5613, device='cuda:0') tensor(0.8439, device='cuda:0') tensor(0.0756, device='cuda:0') 14728545 14728545
+400 tensor(0.5858, device='cuda:0') tensor(0.8649, device='cuda:0') tensor(0.0779, device='cuda:0') 14765665 14765665
+401 tensor(0.5720, device='cuda:0') tensor(0.8579, device='cuda:0') tensor(0.0772, device='cuda:0') 14802785 14802785
+402 tensor(0.5854, device='cuda:0') tensor(0.8675, device='cuda:0') tensor(0.0775, device='cuda:0') 14839905 14839905
+403 tensor(0.5786, device='cuda:0') tensor(0.8622, device='cuda:0') tensor(0.0779, device='cuda:0') 14877025 14877025
+404 tensor(0.5803, device='cuda:0') tensor(0.8614, device='cuda:0') tensor(0.0774, device='cuda:0') 14914145 14914145
+405 tensor(0.5706, device='cuda:0') tensor(0.8548, device='cuda:0') tensor(0.0772, device='cuda:0') 14951265 14951265
+406 tensor(0.5613, device='cuda:0') tensor(0.8437, device='cuda:0') tensor(0.0749, device='cuda:0') 14988385 14988385
+407 tensor(0.5664, device='cuda:0') tensor(0.8502, device='cuda:0') tensor(0.0753, device='cuda:0') 15025505 15025505
+408 tensor(0.5768, device='cuda:0') tensor(0.8623, device='cuda:0') tensor(0.0761, device='cuda:0') 15062625 15062625
+409 tensor(0.5666, device='cuda:0') tensor(0.8488, device='cuda:0') tensor(0.0746, device='cuda:0') 15099745 15099745
+410 tensor(0.5843, device='cuda:0') tensor(0.8618, device='cuda:0') tensor(0.0765, device='cuda:0') 15136865 15136865
+411 tensor(0.5744, device='cuda:0') tensor(0.8560, device='cuda:0') tensor(0.0755, device='cuda:0') 15173985 15173985
+412 tensor(0.6125, device='cuda:0') tensor(0.8861, device='cuda:0') tensor(0.0801, device='cuda:0') 15211105 15211105
+413 tensor(0.5889, device='cuda:0') tensor(0.8719, device='cuda:0') tensor(0.0774, device='cuda:0') 15248225 15248225
+414 tensor(0.6200, device='cuda:0') tensor(0.8979, device='cuda:0') tensor(0.0806, device='cuda:0') 15285345 15285345
+415 tensor(0.6020, device='cuda:0') tensor(0.8827, device='cuda:0') tensor(0.0784, device='cuda:0') 15322465 15322465
+416 tensor(0.6509, device='cuda:0') tensor(0.9372, device='cuda:0') tensor(0.0847, device='cuda:0') 15359585 15359585
+417 tensor(0.6046, device='cuda:0') tensor(0.8874, device='cuda:0') tensor(0.0791, device='cuda:0') 15396705 15396705
+418 tensor(0.6311, device='cuda:0') tensor(0.9130, device='cuda:0') tensor(0.0817, device='cuda:0') 15433825 15433825
+419 tensor(0.6311, device='cuda:0') tensor(0.9161, device='cuda:0') tensor(0.0813, device='cuda:0') 15470945 15470945
+420 tensor(0.6178, device='cuda:0') tensor(0.8969, device='cuda:0') tensor(0.0796, device='cuda:0') 15508063 15508063
+421 tensor(0.6179, device='cuda:0') tensor(0.8842, device='cuda:0') tensor(0.0797, device='cuda:0') 15545179 15545179
+422 tensor(0.6209, device='cuda:0') tensor(0.8900, device='cuda:0') tensor(0.0810, device='cuda:0') 15582295 15582295
+423 tensor(0.6195, device='cuda:0') tensor(0.8823, device='cuda:0') tensor(0.0803, device='cuda:0') 15619409 15619409
+424 tensor(0.6188, device='cuda:0') tensor(0.8783, device='cuda:0') tensor(0.0817, device='cuda:0') 15656521 15656521
+425 tensor(0.6120, device='cuda:0') tensor(0.8755, device='cuda:0') tensor(0.0813, device='cuda:0') 15693632 15693632
+426 tensor(0.6267, device='cuda:0') tensor(0.8885, device='cuda:0') tensor(0.0844, device='cuda:0') 15730741 15730741
+427 tensor(0.6133, device='cuda:0') tensor(0.8788, device='cuda:0') tensor(0.0842, device='cuda:0') 15767846 15767846
+428 tensor(0.6233, device='cuda:0') tensor(0.8914, device='cuda:0') tensor(0.0896, device='cuda:0') 15804952 15804952
+429 tensor(0.6167, device='cuda:0') tensor(0.8839, device='cuda:0') tensor(0.0867, device='cuda:0') 15842055 15842055
+430 tensor(0.6274, device='cuda:0') tensor(0.9001, device='cuda:0') tensor(0.0930, device='cuda:0') 15879155 15879155
+431 tensor(0.6227, device='cuda:0') tensor(0.8946, device='cuda:0') tensor(0.0943, device='cuda:0') 15916255 15916255
+432 tensor(0.6246, device='cuda:0') tensor(0.8947, device='cuda:0') tensor(0.0930, device='cuda:0') 15953354 15953354
+433 tensor(0.6129, device='cuda:0') tensor(0.8850, device='cuda:0') tensor(0.0943, device='cuda:0') 15990453 15990453
+434 tensor(0.6078, device='cuda:0') tensor(0.8761, device='cuda:0') tensor(0.0919, device='cuda:0') 16027552 16027552
+435 tensor(0.5984, device='cuda:0') tensor(0.8686, device='cuda:0') tensor(0.0935, device='cuda:0') 16064651 16064651
+436 tensor(0.5915, device='cuda:0') tensor(0.8587, device='cuda:0') tensor(0.0901, device='cuda:0') 16101750 16101750
+437 tensor(0.5784, device='cuda:0') tensor(0.8495, device='cuda:0') tensor(0.0901, device='cuda:0') 16138849 16138849
+438 tensor(0.5779, device='cuda:0') tensor(0.8489, device='cuda:0') tensor(0.0889, device='cuda:0') 16175947 16175947
+439 tensor(0.5592, device='cuda:0') tensor(0.8318, device='cuda:0') tensor(0.0880, device='cuda:0') 16213045 16213045
+440 tensor(0.5628, device='cuda:0') tensor(0.8346, device='cuda:0') tensor(0.0865, device='cuda:0') 16250143 16250143
+441 tensor(0.5463, device='cuda:0') tensor(0.8209, device='cuda:0') tensor(0.0864, device='cuda:0') 16287241 16287241
+442 tensor(0.5551, device='cuda:0') tensor(0.8279, device='cuda:0') tensor(0.0856, device='cuda:0') 16324339 16324339
+443 tensor(0.5371, device='cuda:0') tensor(0.8130, device='cuda:0') tensor(0.0856, device='cuda:0') 16361437 16361437
+444 tensor(0.5524, device='cuda:0') tensor(0.8255, device='cuda:0') tensor(0.0853, device='cuda:0')2026-09-03 01:47: Average Horizon, MAE: 0.55, RMSE: 0.85, MAPE: 8.0142%, CORR:0.7573
+ 16398535 16398535
+445 tensor(0.5270, device='cuda:0') tensor(0.8047, device='cuda:0') tensor(0.0845, device='cuda:0') 16435633 16435633
+446 tensor(0.5534, device='cuda:0') tensor(0.8231, device='cuda:0') tensor(0.0848, device='cuda:0') 16472731 16472731
+447 tensor(0.5258, device='cuda:0') tensor(0.8019, device='cuda:0') tensor(0.0829, device='cuda:0') 16509829 16509829
+448 tensor(0.5469, device='cuda:0') tensor(0.8111, device='cuda:0') tensor(0.0827, device='cuda:0') 16546927 16546927
+449 tensor(0.5268, device='cuda:0') tensor(0.8006, device='cuda:0') tensor(0.0822, device='cuda:0') 16584025 16584025
+450 tensor(0.5514, device='cuda:0') tensor(0.8107, device='cuda:0') tensor(0.0819, device='cuda:0') 16621123 16621123
+451 tensor(0.5227, device='cuda:0') tensor(0.7990, device='cuda:0') tensor(0.0813, device='cuda:0') 16658221 16658221
+452 tensor(0.5489, device='cuda:0') tensor(0.8100, device='cuda:0') tensor(0.0816, device='cuda:0') 16695319 16695319
+453 tensor(0.5169, device='cuda:0') tensor(0.7902, device='cuda:0') tensor(0.0796, device='cuda:0') 16732417 16732417
+454 tensor(0.5140, device='cuda:0') tensor(0.7824, device='cuda:0') tensor(0.0770, device='cuda:0') 16769515 16769515
+455 tensor(0.5683, device='cuda:0') tensor(0.8308, device='cuda:0') tensor(0.0815, device='cuda:0') 16806613 16806613
+456 tensor(0.5137, device='cuda:0') tensor(0.7768, device='cuda:0') tensor(0.0744, device='cuda:0') 16843711 16843711
+457 tensor(0.4924, device='cuda:0') tensor(0.7589, device='cuda:0') tensor(0.0718, device='cuda:0') 16880809 16880809
+458 tensor(0.4746, device='cuda:0') tensor(0.7484, device='cuda:0') tensor(0.0694, device='cuda:0') 16917907 16917907
+459 tensor(0.4751, device='cuda:0') tensor(0.7438, device='cuda:0') tensor(0.0681, device='cuda:0') 16955005 16955005
+460 tensor(0.4769, device='cuda:0') tensor(0.7465, device='cuda:0') tensor(0.0683, device='cuda:0') 16992103 16992103
+461 tensor(0.4800, device='cuda:0') tensor(0.7460, device='cuda:0') tensor(0.0679, device='cuda:0') 17029201 17029201
+462 tensor(0.4859, device='cuda:0') tensor(0.7524, device='cuda:0') tensor(0.0690, device='cuda:0') 17066299 17066299
+463 tensor(0.5028, device='cuda:0') tensor(0.7697, device='cuda:0') tensor(0.0700, device='cuda:0') 17103397 17103397
+464 tensor(0.4914, device='cuda:0') tensor(0.7579, device='cuda:0') tensor(0.0698, device='cuda:0') 17140495 17140495
+465 tensor(0.4984, device='cuda:0') tensor(0.7689, device='cuda:0') tensor(0.0701, device='cuda:0') 17177593 17177593
+466 tensor(0.4874, device='cuda:0') tensor(0.7587, device='cuda:0') tensor(0.0700, device='cuda:0') 17214691 17214691
+last batch torch.Size([1, 48, 896, 1]) torch.Size([1, 48, 896, 1])
+466 17214691 17214691
+PREFLIGHT_OK batch_size=1

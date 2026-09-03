@@ -76,9 +76,16 @@
   "arm": "zero_shot",
   "exposure": "HELD_OUT_ZERO_SHOT",
   "exposure_note": "absent from OpenCity's pre-training corpus, so this IS a zero-shot result",
-  "status": "CUDA_OOM",
-  "failure": "CUDA out of memory at batch_size 8 on a 22 GB A10G \u2014 this city has far more nodes than PEMS07M (228); needs a smaller batch, not a different method",
-  "metrics": {},
+  "status": "OK",
+  "failure": null,
+  "metrics": {
+   "average": {
+    "mae": 0.7,
+    "rmse": 1.19,
+    "mape": 14.8437,
+    "corr": 0.7691
+   }
+  },
   "upstream": {
    "repo": "HKUDS/OpenCity",
    "sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
@@ -90,7 +97,7 @@
    "checkout_verified_by": "git status --porcelain on the instance -> empty"
   },
   "settings": {
-   "batch_size": 8,
+   "batch_size": 1,
    "embed_dim": 512,
    "skip_dim": 512,
    "enc_depth": 6,
@@ -123,7 +130,8 @@
    "checkout_verified_clean": true,
    "checkout_evidence": "results/forecasting/opencity_logs/oc_clean.txt (0 bytes)",
    "hardware": "AWS g5.xlarge, NVIDIA A10G 22 GB"
-  }
+  },
+  "preflight": "PREFLIGHT_OK batch_size=1"
  },
  {
   "dataset": "TrafficSH",
@@ -131,9 +139,16 @@
   "arm": "zero_shot",
   "exposure": "HELD_OUT_ZERO_SHOT",
   "exposure_note": "absent from OpenCity's pre-training corpus, so this IS a zero-shot result",
-  "status": "CUDA_OOM",
-  "failure": "CUDA out of memory at batch_size 8 on a 22 GB A10G \u2014 this city has far more nodes than PEMS07M (228); needs a smaller batch, not a different method",
-  "metrics": {},
+  "status": "OK",
+  "failure": null,
+  "metrics": {
+   "average": {
+    "mae": 0.55,
+    "rmse": 0.85,
+    "mape": 8.0142,
+    "corr": 0.7573
+   }
+  },
   "upstream": {
    "repo": "HKUDS/OpenCity",
    "sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
@@ -145,7 +160,7 @@
    "checkout_verified_by": "git status --porcelain on the instance -> empty"
   },
   "settings": {
-   "batch_size": 8,
+   "batch_size": 1,
    "embed_dim": 512,
    "skip_dim": 512,
    "enc_depth": 6,
@@ -160,7 +175,7 @@
    "mape": 8.01,
    "source": "OpenCity, Li et al. 2024 (arXiv 2408.10269), Table 1 \u2014 OpenCity-plus, zero-shot"
   },
-  "verdict": "NOT_ATTEMPTED",
+  "verdict": "REPRODUCTION_PASS",
   "provenance": {
    "opencity_git_sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
    "checkpoint": "OpenCity-plus.pth",
@@ -181,7 +196,14 @@
    "checkout_verified_clean": true,
    "checkout_evidence": "results/forecasting/opencity_logs/oc_clean.txt (0 bytes)",
    "hardware": "AWS g5.xlarge, NVIDIA A10G 22 GB"
-  }
+  },
+  "preflight": "PREFLIGHT_OK batch_size=1",
+  "reproduction_diff_pct": {
+   "mae": 0.0,
+   "rmse": 0.0,
+   "mape": 0.052
+  },
+  "verdict_tolerance_pct": 5.0
  },
  {
   "dataset": "TrafficTJ",
@@ -189,9 +211,16 @@
   "arm": "zero_shot",
   "exposure": "HELD_OUT_ZERO_SHOT",
   "exposure_note": "absent from OpenCity's pre-training corpus, so this IS a zero-shot result",
-  "status": "CUDA_OOM",
-  "failure": "CUDA out of memory at batch_size 8 on a 22 GB A10G \u2014 this city has far more nodes than PEMS07M (228); needs a smaller batch, not a different method",
-  "metrics": {},
+  "status": "OK",
+  "failure": null,
+  "metrics": {
+   "average": {
+    "mae": 0.76,
+    "rmse": 1.26,
+    "mape": 15.4416,
+    "corr": 0.74
+   }
+  },
   "upstream": {
    "repo": "HKUDS/OpenCity",
    "sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
@@ -203,7 +232,7 @@
    "checkout_verified_by": "git status --porcelain on the instance -> empty"
   },
   "settings": {
-   "batch_size": 8,
+   "batch_size": 1,
    "embed_dim": 512,
    "skip_dim": 512,
    "enc_depth": 6,
@@ -236,6 +265,7 @@
    "checkout_verified_clean": true,
    "checkout_evidence": "results/forecasting/opencity_logs/oc_clean.txt (0 bytes)",
    "hardware": "AWS g5.xlarge, NVIDIA A10G 22 GB"
-  }
+  },
+  "preflight": "PREFLIGHT_OK batch_size=1"
  }
 ]

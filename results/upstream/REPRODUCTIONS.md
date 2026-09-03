@@ -26,12 +26,9 @@ Tolerance: 5% relative error against the published figure.
   - needs a CUDA host: upstream client.py calls get_memory_usage('cuda') unconditionally, and we do not edit their code to work around it
   - _PeMSD7 data ships inside the repo (15 MB), so this is the cheapest genuine federated reproduction available and is attempted first. Its server/client processes talk over real TCP sockets, which is exactly where the communication impairment adapter attaches._
 
-**OpenCity / cross-city (zero-shot)**
-  - TrafficSH / NJ / TJ have not produced metrics yet: CUDA OOM on a 22 GB A10G. The batch size we thought we were setting was being discarded (upstream honours --batch_size, not -batch_size); fixed, with a preflight that compares the parsed value against the requested one, and rerunning.
-  - _CRITICAL for how this is reported: METR_LA and PEMS_BAY are in OpenCity's pre-training corpus, so neither can support a zero-shot claim. Only held-out cities (PEMS07M, TrafficSH/NJ/TJ, SZ_DIDI, CD_DIDI, NYC_BIKE-3, CHI_TAXI) can._
-
 ## Notes
 
 - **STAEformer / METR-LA** — Reproduced through the shared harness, not yet through XDZhelheim/STAEformer itself. Until that run exists this is a harness reproduction, not a repo reproduction, and is labelled as such.
+- **OpenCity / cross-city (zero-shot)** — CRITICAL for how this is reported: METR_LA and PEMS_BAY are in OpenCity's pre-training corpus, so neither can support a zero-shot claim. Only held-out cities (PEMS07M, TrafficSH/NJ/TJ, SZ_DIDI, CD_DIDI, NYC_BIKE-3, CHI_TAXI) can.
 
 Regenerate: `python pipeline/upstream/reproduction_record.py`. Pins: `upstream/UPSTREAM_PINS.yaml`. Fetch record: `artifacts/upstream_fetch_record.json`.

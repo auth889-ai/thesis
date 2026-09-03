@@ -117,9 +117,7 @@
   "published": 4.5,
   "published_source": "OpenCity, Li et al. 2024 (arXiv 2408.10269), Table 1 \u2014 OpenCity-plus, zero-shot, PEMS07M: MAE 4.50 / RMSE 8.21 / MAPE 12.20 %",
   "ours": 4.5,
-  "blockers": [
-   "TrafficSH / NJ / TJ have not produced metrics yet: CUDA OOM on a 22 GB A10G. The batch size we thought we were setting was being discarded (upstream honours --batch_size, not -batch_size); fixed, with a preflight that compares the parsed value against the requested one, and rerunning."
-  ],
+  "blockers": [],
   "note": "CRITICAL for how this is reported: METR_LA and PEMS_BAY are in OpenCity's pre-training corpus, so neither can support a zero-shot claim. Only held-out cities (PEMS07M, TrafficSH/NJ/TJ, SZ_DIDI, CD_DIDI, NYC_BIKE-3, CHI_TAXI) can.",
   "verdict": "REPRODUCTION_PASS",
   "diff_pct": 0.0,
