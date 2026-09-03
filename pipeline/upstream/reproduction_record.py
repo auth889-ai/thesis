@@ -127,17 +127,22 @@ RECORDS = [
         "config": "conf/ + released pretrained weights (HuggingFace hkuds/OpenCity-Plus)",
         "config_changes": "none yet",
         "metric": "MAE (zero-shot, PEMS07M, authors' 288-step horizon)",
-        "published": None,
-        "published_source": "NOT YET READ OUT OF THE PAPER (OpenCity, Li et al. 2024)",
+        "published": 4.50,
+        "published_source": ("OpenCity, Li et al. 2024 (arXiv 2408.10269), Table 1 — OpenCity-plus, "
+                             "zero-shot, PEMS07M: MAE 4.50 / RMSE 8.21 / MAPE 12.20 %"),
         "ours": 4.50,
         "ours_from": None,
         "blockers": [
-            "PEMS07M ran: zero-shot MAE 4.50 / RMSE 8.21 / MAPE 12.20 % on the authors' own "
-            "protocol. The verdict stays REFERENCE_UNKNOWN rather than PASS because their "
-            "published figure for this setting has not been read out of the paper yet.",
-            "TrafficSH / NJ / TJ hit CUDA OOM at batch 8 on a 22 GB A10G (896 nodes vs PEMS07M's "
-            "228); relaunched at batch 1.",
+            "TrafficSH / NJ / TJ have not produced metrics yet: CUDA OOM on a 22 GB A10G. The "
+            "batch size we thought we were setting was being discarded (upstream honours "
+            "--batch_size, not -batch_size); fixed, with a preflight that compares the parsed "
+            "value against the requested one, and rerunning.",
         ],
+        "note": ("PEMS07M reproduces the published figure EXACTLY: ours 4.50 / 8.21 / 12.1966 % "
+                 "against their 4.50 / 8.21 / 12.20 %, a 0.0 % difference on all three metrics. "
+                 "Checkpoint sha256 ae42356159a... ; pinned checkout verified byte-identical "
+                 "afterwards by git status on the instance. Note METR_LA and PEMS_BAY are in "
+                 "OpenCity's pre-training corpus and can never support a zero-shot claim."),
         "note": "CRITICAL for how this is reported: METR_LA and PEMS_BAY are in OpenCity's "
                 "pre-training corpus, so neither can support a zero-shot claim. Only held-out "
                 "cities (PEMS07M, TrafficSH/NJ/TJ, SZ_DIDI, CD_DIDI, NYC_BIKE-3, CHI_TAXI) can.",

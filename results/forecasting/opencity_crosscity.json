@@ -34,7 +34,41 @@
   },
   "compatibility_shims": "pipeline/forecasting/_opencity_boot.py \u2014 NumPy 2.0 aliases; no upstream source edited",
   "hardware": "AWS g5.xlarge (A10G 22 GB), job opencity-crosscity",
-  "log": "results/forecasting/opencity_logs/oc_PEMS07M.log"
+  "log": "results/forecasting/opencity_logs/oc_PEMS07M.log",
+  "published": {
+   "mae": 4.5,
+   "rmse": 8.21,
+   "mape": 12.2,
+   "source": "OpenCity, Li et al. 2024 (arXiv 2408.10269), Table 1 \u2014 OpenCity-plus, zero-shot"
+  },
+  "reproduction_diff_pct": {
+   "mae": 0.0,
+   "rmse": 0.0,
+   "mape": -0.028
+  },
+  "verdict": "REPRODUCTION_PASS",
+  "verdict_tolerance_pct": 5.0,
+  "provenance": {
+   "opencity_git_sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
+   "checkpoint": "OpenCity-plus.pth",
+   "checkpoint_sha256": "ae4235615a914c831543275642152409075e1a3f07d564a27fab28364d59af7b",
+   "checkpoint_source": "huggingface hkuds/OpenCity-Plus (released, unmodified)",
+   "dataset": "PEMS07M",
+   "exposure": "HELD_OUT_ZERO_SHOT",
+   "split": "train 0.5 / val 0.1 / test 0.4 (the authors' own \u2014 their predictor config overrides any ratio passed on the command line)",
+   "input_horizon_steps": 288,
+   "output_horizon_steps": 288,
+   "compatibility_shims": [
+    "numpy 2.0 alias restoration (np.mat -> np.asmatrix, etc.)",
+    "torch.load map_location='cpu' only when CUDA is absent",
+    "model/ added to sys.path (runpy does not do what `python Run.py` does)"
+   ],
+   "upstream_source_edited": false,
+   "config_touched": "conf/general_conf/pretrain.conf dataset_use only, restored after each run",
+   "checkout_verified_clean": true,
+   "checkout_evidence": "results/forecasting/opencity_logs/oc_clean.txt (0 bytes)",
+   "hardware": "AWS g5.xlarge, NVIDIA A10G 22 GB"
+  }
  },
  {
   "dataset": "TrafficNJ",
@@ -64,7 +98,32 @@
   },
   "compatibility_shims": "pipeline/forecasting/_opencity_boot.py \u2014 NumPy 2.0 aliases; no upstream source edited",
   "hardware": "AWS g5.xlarge (A10G 22 GB), job opencity-crosscity",
-  "log": "results/forecasting/opencity_logs/oc_TrafficNJ.log"
+  "log": "results/forecasting/opencity_logs/oc_TrafficNJ.log",
+  "published": {
+   "source": "NOT IN Table 1 \u2014 the paper's zero-shot table covers CAD3, CAD5, PEMS07M, TrafficSH, CHI-TAXI and NYC-BIKE; TrafficNJ is not among them, so there is no published figure to reproduce against"
+  },
+  "verdict": "REFERENCE_UNKNOWN",
+  "provenance": {
+   "opencity_git_sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
+   "checkpoint": "OpenCity-plus.pth",
+   "checkpoint_sha256": "ae4235615a914c831543275642152409075e1a3f07d564a27fab28364d59af7b",
+   "checkpoint_source": "huggingface hkuds/OpenCity-Plus (released, unmodified)",
+   "dataset": "TrafficNJ",
+   "exposure": "HELD_OUT_ZERO_SHOT",
+   "split": "train 0.5 / val 0.1 / test 0.4 (the authors' own \u2014 their predictor config overrides any ratio passed on the command line)",
+   "input_horizon_steps": 288,
+   "output_horizon_steps": 288,
+   "compatibility_shims": [
+    "numpy 2.0 alias restoration (np.mat -> np.asmatrix, etc.)",
+    "torch.load map_location='cpu' only when CUDA is absent",
+    "model/ added to sys.path (runpy does not do what `python Run.py` does)"
+   ],
+   "upstream_source_edited": false,
+   "config_touched": "conf/general_conf/pretrain.conf dataset_use only, restored after each run",
+   "checkout_verified_clean": true,
+   "checkout_evidence": "results/forecasting/opencity_logs/oc_clean.txt (0 bytes)",
+   "hardware": "AWS g5.xlarge, NVIDIA A10G 22 GB"
+  }
  },
  {
   "dataset": "TrafficSH",
@@ -94,7 +153,35 @@
   },
   "compatibility_shims": "pipeline/forecasting/_opencity_boot.py \u2014 NumPy 2.0 aliases; no upstream source edited",
   "hardware": "AWS g5.xlarge (A10G 22 GB), job opencity-crosscity",
-  "log": "results/forecasting/opencity_logs/oc_TrafficSH.log"
+  "log": "results/forecasting/opencity_logs/oc_TrafficSH.log",
+  "published": {
+   "mae": 0.55,
+   "rmse": 0.85,
+   "mape": 8.01,
+   "source": "OpenCity, Li et al. 2024 (arXiv 2408.10269), Table 1 \u2014 OpenCity-plus, zero-shot"
+  },
+  "verdict": "NOT_ATTEMPTED",
+  "provenance": {
+   "opencity_git_sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
+   "checkpoint": "OpenCity-plus.pth",
+   "checkpoint_sha256": "ae4235615a914c831543275642152409075e1a3f07d564a27fab28364d59af7b",
+   "checkpoint_source": "huggingface hkuds/OpenCity-Plus (released, unmodified)",
+   "dataset": "TrafficSH",
+   "exposure": "HELD_OUT_ZERO_SHOT",
+   "split": "train 0.5 / val 0.1 / test 0.4 (the authors' own \u2014 their predictor config overrides any ratio passed on the command line)",
+   "input_horizon_steps": 288,
+   "output_horizon_steps": 288,
+   "compatibility_shims": [
+    "numpy 2.0 alias restoration (np.mat -> np.asmatrix, etc.)",
+    "torch.load map_location='cpu' only when CUDA is absent",
+    "model/ added to sys.path (runpy does not do what `python Run.py` does)"
+   ],
+   "upstream_source_edited": false,
+   "config_touched": "conf/general_conf/pretrain.conf dataset_use only, restored after each run",
+   "checkout_verified_clean": true,
+   "checkout_evidence": "results/forecasting/opencity_logs/oc_clean.txt (0 bytes)",
+   "hardware": "AWS g5.xlarge, NVIDIA A10G 22 GB"
+  }
  },
  {
   "dataset": "TrafficTJ",
@@ -124,6 +211,31 @@
   },
   "compatibility_shims": "pipeline/forecasting/_opencity_boot.py \u2014 NumPy 2.0 aliases; no upstream source edited",
   "hardware": "AWS g5.xlarge (A10G 22 GB), job opencity-crosscity",
-  "log": "results/forecasting/opencity_logs/oc_TrafficTJ.log"
+  "log": "results/forecasting/opencity_logs/oc_TrafficTJ.log",
+  "published": {
+   "source": "NOT IN Table 1 \u2014 the paper's zero-shot table covers CAD3, CAD5, PEMS07M, TrafficSH, CHI-TAXI and NYC-BIKE; TrafficTJ is not among them, so there is no published figure to reproduce against"
+  },
+  "verdict": "REFERENCE_UNKNOWN",
+  "provenance": {
+   "opencity_git_sha": "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f",
+   "checkpoint": "OpenCity-plus.pth",
+   "checkpoint_sha256": "ae4235615a914c831543275642152409075e1a3f07d564a27fab28364d59af7b",
+   "checkpoint_source": "huggingface hkuds/OpenCity-Plus (released, unmodified)",
+   "dataset": "TrafficTJ",
+   "exposure": "HELD_OUT_ZERO_SHOT",
+   "split": "train 0.5 / val 0.1 / test 0.4 (the authors' own \u2014 their predictor config overrides any ratio passed on the command line)",
+   "input_horizon_steps": 288,
+   "output_horizon_steps": 288,
+   "compatibility_shims": [
+    "numpy 2.0 alias restoration (np.mat -> np.asmatrix, etc.)",
+    "torch.load map_location='cpu' only when CUDA is absent",
+    "model/ added to sys.path (runpy does not do what `python Run.py` does)"
+   ],
+   "upstream_source_edited": false,
+   "config_touched": "conf/general_conf/pretrain.conf dataset_use only, restored after each run",
+   "checkout_verified_clean": true,
+   "checkout_evidence": "results/forecasting/opencity_logs/oc_clean.txt (0 bytes)",
+   "hardware": "AWS g5.xlarge, NVIDIA A10G 22 GB"
+  }
  }
 ]

@@ -222,13 +222,25 @@ def write_outputs(records: list[dict]) -> None:
          "`predictor.linear` and trains that head on the target city |",
          "",
          "## Results\n",
-         "| dataset | exposure | arm | MAE | RMSE | MAPE | status |",
-         "|---|---|---|---|---|---|---|"]
+         "Published figures are OpenCity's own Table 1 (arXiv 2408.10269) for OpenCity-plus in the "
+         "zero-shot setting — the same model, dataset and protocol.\n",
+         "| dataset | exposure | ours MAE | published MAE | diff | ours RMSE | pub RMSE | ours MAPE | pub MAPE | verdict |",
+         "|---|---|---|---|---|---|---|---|---|---|"]
     for r in allrecs:
         a = (r.get("metrics") or {}).get("average") or {}
+        pub = r.get("published") or {}
+        d = (r.get("reproduction_diff_pct") or {}).get("mae")
         tag = "**HELD OUT**" if r["exposure"] == "HELD_OUT_ZERO_SHOT" else "seen in pre-training"
-        L.append(f"| {r['dataset']} | {tag} | {r['arm']} | {a.get('mae', '–')} | "
-                 f"{a.get('rmse', '–')} | {a.get('mape', '–')} | {r['status']} |")
+        L.append(f"| {r['dataset']} | {tag} | {a.get('mae', '–')} | {pub.get('mae', '–')} | "
+                 f"{(str(d) + ' %') if d is not None else '–'} | {a.get('rmse', '–')} | "
+                 f"{pub.get('rmse', '–')} | {a.get('mape', '–')} | {pub.get('mape', '–')} | "
+                 f"**{r.get('verdict', r['status'])}** |")
+    fails = [r for r in allrecs if r["status"] != "OK"]
+    if fails:
+        L += ["", "### Runs that did not produce a metric\n"]
+        for r in fails:
+            L.append(f"- **{r['dataset']}** — {r['status']}: {r.get('failure') or 'see log'}")
+        L.append("")
 
     if own:
         L += ["", "## Our city-specific models, for comparison\n",

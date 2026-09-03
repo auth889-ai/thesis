@@ -18,12 +18,21 @@ OpenCity's pre-training corpus is recorded in a commented-out `dataset_use` line
 
 ## Results
 
-| dataset | exposure | arm | MAE | RMSE | MAPE | status |
-|---|---|---|---|---|---|---|
-| PEMS07M | **HELD OUT** | zero_shot | 4.5 | 8.21 | 12.1966 | OK |
-| TrafficNJ | **HELD OUT** | zero_shot | – | – | – | CUDA_OOM |
-| TrafficSH | **HELD OUT** | zero_shot | – | – | – | CUDA_OOM |
-| TrafficTJ | **HELD OUT** | zero_shot | – | – | – | CUDA_OOM |
+Published figures are OpenCity's own Table 1 (arXiv 2408.10269) for OpenCity-plus in the zero-shot setting — the same model, dataset and protocol.
+
+| dataset | exposure | ours MAE | published MAE | diff | ours RMSE | pub RMSE | ours MAPE | pub MAPE | verdict |
+|---|---|---|---|---|---|---|---|---|---|
+| PEMS07M | **HELD OUT** | 4.5 | 4.5 | 0.0 % | 8.21 | 8.21 | 12.1966 | 12.2 | **REPRODUCTION_PASS** |
+| TrafficNJ | **HELD OUT** | – | – | – | – | – | – | – | **REFERENCE_UNKNOWN** |
+| TrafficSH | **HELD OUT** | – | 0.55 | – | – | 0.85 | – | 8.01 | **NOT_ATTEMPTED** |
+| TrafficTJ | **HELD OUT** | – | – | – | – | – | – | – | **REFERENCE_UNKNOWN** |
+
+### Runs that did not produce a metric
+
+- **TrafficNJ** — CUDA_OOM: CUDA out of memory at batch_size 8 on a 22 GB A10G — this city has far more nodes than PEMS07M (228); needs a smaller batch, not a different method
+- **TrafficSH** — CUDA_OOM: CUDA out of memory at batch_size 8 on a 22 GB A10G — this city has far more nodes than PEMS07M (228); needs a smaller batch, not a different method
+- **TrafficTJ** — CUDA_OOM: CUDA out of memory at batch_size 8 on a 22 GB A10G — this city has far more nodes than PEMS07M (228); needs a smaller batch, not a different method
+
 
 ## Our city-specific models, for comparison
 

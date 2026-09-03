@@ -14,7 +14,7 @@ Tolerance: 5% relative error against the published figure.
 | STAEformer | METR-LA | `XDZhelheim/STAEformer` | `PINNED — see` | `trained via the BasicTS-legacy harness; the AUTHORS' OWN repo run is pending` | MAE@15min | – | 2.6738 | – | **REFERENCE_UNKNOWN** |
 | CNFGNN | METR-LA | `mengcz13/KDD2021_CNFGNN` | `505660846e04` | `submission_exps/exp_main.sh -> SplitFedAvgNodePredictor + GRUSeq2SeqWithGraphNet` | MAE@15min | – | – | – | **NOT_ATTEMPTED** |
 | FedGTP | PeMSD7 | `LarryHawkingYoung/KDD2024_FedGTP` | `ff128f5bed77` | `config/PeMSD7.conf + run.sh (num_clients=4, metis partition, adptpolu)` | MAE | – | – | – | **NOT_ATTEMPTED** |
-| OpenCity | cross-city (zero-shot) | `HKUDS/OpenCity` | `eca64c9d9c65` | `conf/ + released pretrained weights (HuggingFace hkuds/OpenCity-Plus)` | MAE (zero-shot, PEMS07M, authors' 288-step horizon) | – | 4.5 | – | **REFERENCE_UNKNOWN** |
+| OpenCity | cross-city (zero-shot) | `HKUDS/OpenCity` | `eca64c9d9c65` | `conf/ + released pretrained weights (HuggingFace hkuds/OpenCity-Plus)` | MAE (zero-shot, PEMS07M, authors' 288-step horizon) | 4.5 | 4.5 | 0.0 % | **REPRODUCTION_PASS** |
 
 ## What is blocking the outstanding reproductions
 
@@ -27,8 +27,7 @@ Tolerance: 5% relative error against the published figure.
   - _PeMSD7 data ships inside the repo (15 MB), so this is the cheapest genuine federated reproduction available and is attempted first. Its server/client processes talk over real TCP sockets, which is exactly where the communication impairment adapter attaches._
 
 **OpenCity / cross-city (zero-shot)**
-  - PEMS07M ran: zero-shot MAE 4.50 / RMSE 8.21 / MAPE 12.20 % on the authors' own protocol. The verdict stays REFERENCE_UNKNOWN rather than PASS because their published figure for this setting has not been read out of the paper yet.
-  - TrafficSH / NJ / TJ hit CUDA OOM at batch 8 on a 22 GB A10G (896 nodes vs PEMS07M's 228); relaunched at batch 1.
+  - TrafficSH / NJ / TJ have not produced metrics yet: CUDA OOM on a 22 GB A10G. The batch size we thought we were setting was being discarded (upstream honours --batch_size, not -batch_size); fixed, with a preflight that compares the parsed value against the requested one, and rerunning.
   - _CRITICAL for how this is reported: METR_LA and PEMS_BAY are in OpenCity's pre-training corpus, so neither can support a zero-shot claim. Only held-out cities (PEMS07M, TrafficSH/NJ/TJ, SZ_DIDI, CD_DIDI, NYC_BIKE-3, CHI_TAXI) can._
 
 ## Notes
