@@ -163,7 +163,8 @@ def corridor_list():
 
 
 # ---------------------------------------------------------------------------
-# CITY LAYER — any city, created at runtime. No city is hard-coded here.
+# CITY LAYER — arbitrary cities, created at runtime. No city is hard-coded here.
+# Instantiating a city is NOT a forecasting claim: capability is gated separately.
 # ---------------------------------------------------------------------------
 
 def _city_bits():

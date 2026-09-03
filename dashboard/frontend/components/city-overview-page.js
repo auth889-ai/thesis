@@ -23,8 +23,12 @@ const CAP = {
 export class CityOverviewPage extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
+      <div class="note"><b>What this system claims.</b> The software can instantiate a road-network and traffic-management pipeline for arbitrary cities, while forecasting capability is enabled only when the required live / history / schema conditions are satisfied.
+        Creating a city gives you a road graph and a digital twin; it does not give you a validated
+        forecast, and the capability badge on each city says which you have.</div>
       <section class="card">
-        <h2>Add a city <small>any city on earth — geocoded from OpenStreetMap, not hard-coded</small></h2>
+        <h2>Add a city <small>arbitrary cities, geocoded from OpenStreetMap — creating a city is not a
+          forecasting claim</small></h2>
         <div class="form">
           <label>City name <input id="cityname" placeholder="e.g. Lagos, Nigeria" /></label>
           <button id="add" class="btn primary">Create city</button>

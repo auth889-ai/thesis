@@ -1,4 +1,8 @@
-"""The road graph for any city, and the STABLE OBSERVATION NODES a forecast is defined on.
+"""The road graph for an arbitrary city, and the STABLE OBSERVATION NODES a forecast is defined on.
+
+Scope, stated once and precisely: this builds a road network and observation nodes for any city
+OSM covers. It does NOT imply the city can be forecast. Forecasting is enabled separately, by
+CityCapabilities, only when the live / history / schema conditions are met.
 
 This replaces the mistake at the centre of the old design: treating an origin-destination route
 query as if it were a sensor. An OD route is not a stable object — it changes with traffic, the

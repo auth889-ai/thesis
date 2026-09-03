@@ -1,5 +1,10 @@
 # DhakaFlow
 
+> **What this system claims.** The software can instantiate a road-network and traffic-management pipeline for arbitrary cities, while forecasting capability is enabled only when the required live / history / schema conditions are satisfied.
+>
+> It does **not** claim accurate forecasting for every city.
+
+
 **Traffic prediction that is reproduced against the published literature, routing that is proven
 in a digital twin of real roads, and a communication layer that is measured rather than assumed.**
 

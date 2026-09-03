@@ -143,5 +143,6 @@ class ChronosAdapter(ForecastAdapter):
         d.update({"checkpoint": self.model_id, "family": "univariate foundation model",
                   "needs_graph": False, "min_context_steps": MIN_CONTEXT,
                   "upstream": "amazon-science/chronos-forecasting",
-                  "why_available_here": "works on any city, however few nodes it has"})
+                  "why_available_here": ("serves cities with too few nodes for a graph model — availability, "
+                                        "not validated accuracy for that city")})
         return d
