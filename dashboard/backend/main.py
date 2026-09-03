@@ -335,6 +335,24 @@ async def stream(request: Request):
                              headers={"Cache-Control": "no-cache", "X-Accel-Buffering": "no"})
 
 
+@app.on_event("startup")
+def _start_observatory() -> None:
+    """Begin accumulating the rolling window as soon as the server is up.
+
+    The buffer only means anything if it is filling, and the audit's finding was that it never
+    could. Starting it here is what makes readiness a real countdown: leave the server running and
+    the 288-step window fills in about a day. Sampling is off by default in tests, where a live
+    API call per tick would be both slow and pointless.
+    """
+    import os
+    if os.environ.get("DHAKAFLOW_NO_OBSERVATORY"):
+        return
+    try:
+        observatory_mod.observatory.start("dhaka")
+    except Exception:                              # noqa: BLE001 - never block startup
+        pass
+
+
 FRONTEND = config.REPO / "dashboard/frontend"
 if FRONTEND.exists():
     app.mount("/static", StaticFiles(directory=FRONTEND), name="static")
