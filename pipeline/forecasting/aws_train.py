@@ -100,7 +100,8 @@ NAME=@NAME@; BUCKET=@BUCKET@; OCSHA=@OCSHA@
 export CITIES="@OCDATASETS@"
 OCBATCH=@OCBATCH@
 # Fragmentation is the difference between fitting and not on the big-node cities.
-export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
+export PYTORCH_ALLOC_CONF=expandable_segments:True
+export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True   # older torch name
 ( sleep $((@MAXH@ * 3600)); shutdown -h now ) &
 aws s3 cp s3://$BUCKET/jobs/$NAME/ /home/ec2-user/in/ --recursive || true
 cd /home/ec2-user
@@ -141,8 +142,17 @@ for CITY in $CITIES; do
   sed -i "s/^dataset_use *=.*/dataset_use = ['$CITY']/" $CONF
   grep '^dataset_use' $CONF
   cd model
-  DF_OC_SCRIPT=/home/ec2-user/oc/model/Run.py timeout 7200 $PY /home/ec2-user/oc/_opencity_boot.py       -mode test -model OpenCity -load_pretrain_path OpenCity-plus.pth -batch_size 8       --embed_dim 512 --skip_dim 512 --enc_depth 6 2>&1 | tee /tmp/oc_${CITY}.log
+  DF_OC_SCRIPT=/home/ec2-user/oc/model/Run.py timeout 7200 $PY /home/ec2-user/oc/_opencity_boot.py       -mode test -model OpenCity -load_pretrain_path OpenCity-plus.pth -batch_size $OCBATCH --batch_size $OCBATCH --embed_dim 512 --skip_dim 512 --enc_depth 6 2>&1 | tee /tmp/oc_${CITY}.log
   cd ..
+  # PREFLIGHT: upstream copies the predictor config over anything passed with a single hyphen, so
+  # a value we "set" can be silently discarded -- that is exactly how attempt 4 ran at 64 while we
+  # believed it was 1. Compare what upstream PARSED against what we asked for, and mark the run.
+  PARSED=$(grep -m1 "^batch_size : " /tmp/oc_${CITY}.log | awk '{print $3}')
+  if [ -n "$PARSED" ] && [ "$PARSED" != "$OCBATCH" ]; then
+    echo "PREFLIGHT_MISMATCH batch_size requested=$OCBATCH parsed=$PARSED" | tee -a /tmp/oc_${CITY}.log
+  else
+    echo "PREFLIGHT_OK batch_size=$PARSED" | tee -a /tmp/oc_${CITY}.log
+  fi
   cp /tmp/pretrain.conf.orig $CONF
   aws s3 cp /tmp/oc_${CITY}.log s3://$BUCKET/jobs/$NAME/logs/ || true
 done

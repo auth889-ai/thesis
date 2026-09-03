@@ -4,7 +4,7 @@
 /opt/pytorch/lib64/python3.12/site-packages/tslearn/bases/bases.py:16: UserWarning: h5py not installed, hdf5 features will not be supported.
 Install h5py to use hdf5 features: http://docs.h5py.org/
   warn(h5py_msg)
-2026-09-02 18:23: Experiment log path in: /home/ec2-user/oc/model_weights/OpenCity
+2026-09-02 18:32: Experiment log path in: /home/ec2-user/oc/model_weights/OpenCity
 /home/ec2-user/oc
 Number of isolated points: 0
 mode : test
@@ -306,4 +306,5 @@ Traceback (most recent call last):
   File "/home/ec2-user/oc/model/OpenCity/OpenCity.py", line 201, in forward
     tc_attn = (tc_q @ tc_k.transpose(-2, -1)) * self.scale
                ~~~~~^~~~~~~~~~~~~~~~~~~~~~~~
-torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.58 GiB. GPU 0 has a total capacity of 22.06 GiB of which 331.44 MiB is free. Including non-PyTorch memory, this process has 21.73 GiB memory in use. Of the allocated memory 21.43 GiB is allocated by PyTorch, and 6.86 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+torch.OutOfMemoryError: CUDA out of memory. Tried to allocate 1.58 GiB. GPU 0 has a total capacity of 22.06 GiB of which 319.44 MiB is free. Including non-PyTorch memory, this process has 21.74 GiB memory in use. Of the allocated memory 21.42 GiB is allocated by PyTorch, and 22.93 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)
+[W902 18:32:04.184185067 AllocatorConfig.cpp:28] Warning: PYTORCH_CUDA_ALLOC_CONF is deprecated, use PYTORCH_ALLOC_CONF instead (function operator())
