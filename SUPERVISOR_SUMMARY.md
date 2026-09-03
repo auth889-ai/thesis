@@ -3,7 +3,7 @@
 **Traffic prediction first, route optimisation second.** Every number below is read from a file
 in this package, and every file names the one command that regenerates it. Nothing is typed by hand.
 
-Verified at commit `f1d1420`. Tests: **242 passed, 5 skipped**. CI: **green**.
+Verified at commit `9b5eb4f`. Tests: **242 passed, 5 skipped**. CI: **green**.
 
 ## What you asked me to fix — and what was done
 
@@ -303,52 +303,65 @@ the paper text, and no new architecture is invented.
 
 | # | experiment | official source | status |
 |---|---|---|---|
-| 1 | STAEformer reproduced from the authors' own repo, not only via the shared harness | `XDZhelheim/STAEformer` (fetched, SHA pinned) | pending GPU |
-| 2 | Congestion-aware metrics: congestion-period MAE, precision/recall/F1, warning lead time | — | **done** — `results/forecasting/congestion_metrics.md` |
-| 3 | CNFGNN reproduced | `mengcz13/KDD2021_CNFGNN` @ `5056608` (fetched, verified) | blocked on the authors' Zenodo dataset + a py<3.8 environment |
-| 4 | FedGTP reproduced | `LarryHawkingYoung/KDD2024_FedGTP` @ `ff128f5` (fetched, verified) | launcher done; blocked on GPU access |
-| 5 | Centralized vs FedAvg vs CNFGNN vs FedGTP under **A** ideal, **B** MOSAIC V2X profile, **C** latency stress, **D** loss stress | thin adapter over 3 & 4 | **adapter built and tested**; runs pending GPU |
-| 6 | Cross-city: city-specific vs OpenCity zero-shot vs fine-tuned, on METR-LA + PEMS-BAY + a held-out third city | `HKUDS/OpenCity` @ `eca64c9` (fetched, verified) | notebook ready; weights not yet fetched |
-| 7 | End-to-end chain: link quality → advisory delivery → rerouting → SUMO delay | composition of 5 and the routing stack | **running** — first result below |
-| — | Real user pilot (3 users, live advisories) | — | pending, marked PENDING in the evidence audit |
+| 1 | STAEformer from the authors' own repo (not only the shared harness) | `XDZhelheim/STAEformer` | fetched, not run |
+| 2 | Congestion-aware metrics (congestion MAE, P/R/F1, warning lead time) | — | **DONE** |
+| 3 | CNFGNN reproduced | `mengcz13/KDD2021_CNFGNN` @ `5056608` | fetched, **not attempted** (needs their Zenodo data + py<3.8) |
+| 4 | FedGTP reproduced | `LarryHawkingYoung/KDD2024_FedGTP` @ `ff128f5` | launcher + impairment adapter built and unit-tested; **not run** |
+| 5 | Federated under V2X impairment (A ideal / B MOSAIC / C latency / D loss) | our adapter over FedAvg | **DONE** — 4/8/16 clients on AWS |
+| 6 | Cross-city with OpenCity | `HKUDS/OpenCity` @ `eca64c9` | **ZERO-SHOT DONE, 2 exact reproductions**; fine-tuned/few-shot arms **not run** |
+| 7 | End-to-end chain: link quality → advisory delivery → SUMO delay | composition | **DONE** — result is null |
+| 8 | Live Dhaka Mode (5-page real-time app on the Google Routes API) | — | **DONE** |
+| — | Dhaka → OpenCity schema adaptation | — | adapter built; reports `NOT_YET_VALID` |
+| — | Real user pilot | — | pending |
 | — | Thesis chapters | — | not written |
 
-### Experiment 7 — result: the chain cannot yet be tested, and that is the finding
+### Experiment 6 — OpenCity, the gate that is closed
 
-Three runs, each overturning the last:
-
-| run | seeds | delivery spread | result |
+| dataset | ours (MAE / RMSE / MAPE) | published (Table 1) | verdict |
 |---|---|---|---|
-| first | 3 | 0.857 → 0.778 | +4.4 % vehicle-hours, +21 % waiting — looked like a clean causal effect |
-| wider | 10 | 0.857 → 0.544 | effect **vanished**: 5/10 seeds either way, no trend |
-| decisive | 10 | 0.857 → 0.544, plus an *unaware* reference arm | `INCONCLUSIVE_UNDERPOWERED` |
+| PEMS07M | 4.50 / 8.21 / 12.1966 % | 4.50 / 8.21 / 12.20 % | **REPRODUCTION_PASS** |
+| TrafficSH | 0.55 / 0.85 / 8.0142 % | 0.55 / 0.85 / 8.01 % | **REPRODUCTION_PASS** |
+| TrafficNJ | 0.70 / 1.19 / 14.8437 % | not in Table 1 | REFERENCE_UNKNOWN |
+| TrafficTJ | 0.76 / 1.26 / 15.4416 % | not in Table 1 | REFERENCE_UNKNOWN |
 
-The first result was seed noise. Ten seeds and a delivery spread wide enough to remove **37 % of
-all advisories** (2,268 → 1,444 delivered) produced no detectable change in network delay.
+Both cities with a published reference reproduce it to **0.0 %** on all three metrics. Released
+weights used as published; checkpoint reloads standalone at 26,026,016 parameters, matching the
+26 M the paper states. The pinned checkout was byte-identical after every run, verified by
+`git status` on the instance.
 
-The reference arm explains why. Advising every equipped vehicle over a perfect link beats advising
-nobody by **−1.96 % vehicle-hours on 8 of 10 seeds** — a real effect, but a small one. If degrading
-the link removes a proportional share of a 2 % benefit, the quantity being measured is a *fraction
-of one percent*, which is well inside the seed-to-seed spread. **The experiment is underpowered for
-the hypothesis, not evidence against it.**
+**METR-LA and PEMS-BAY are in OpenCity's pre-training corpus**, so neither can support a zero-shot
+claim — two of the three cities originally planned for this comparison were unusable, and that is
+recorded rather than glossed.
 
-That is a useful negative result rather than a dead end: it says the causal chain must be tested in
-a regime where routing gives a large, unanimous benefit — higher compliance, heavier congestion, or
-a network where rerouting matters more — so that degrading delivery has something substantial to
-erode. Without the reference arm this run would have been reported as "communication quality does
-not affect routing", which would have been wrong.
+### Experiment 5 — the V2X result, which is null
 
-The verdict is computed by the script from the seed data, so it cannot be talked up in prose.
+| clients | centralized | federated | federated + V2X | uplink | updates lost |
+|---|---|---|---|---|---|
+| 4 | 4.9755 | 4.9819 | 4.9795 | 1.8 MB | 2/120 |
+| 8 | 4.9755 | 4.9903 | 4.9826 | 3.6 MB | 6/240 |
+| 16 | 4.9755 | 5.0048 | 5.0032 | 7.2 MB | 12/480 |
 
-→ `results/routing/impairment_chain_decisive.md`
+At an ITS-G5 delivery ratio of 0.975 the simulated link costs essentially nothing. What costs
+accuracy is partitioning (+0.1 % at 4 clients → +0.6 % at 16). The routing chain came back null
+too (`INCONCLUSIVE_UNDERPOWERED`). Communication is not the bottleneck at realistic link quality —
+a defensible finding, but not the one the plan expected.
 
-### The reproduction ledger
+### Known weaknesses, stated plainly
 
-`results/upstream/REPRODUCTIONS.md` records, per (model, dataset), the pinned SHA, the authors'
-own config path, their published number, ours, and a **computed** verdict. Graph WaveNet passes on
-both cities. STID and STAEformer are `REFERENCE_UNKNOWN` — we have our numbers but have not yet
-read the authors' published figures out of the papers, and that is deliberately not counted as a
-pass. Nothing is invented to fill a slot.
+1. **Most headline findings are null.** Each is honest; together they do not yet form a thesis
+   narrative. The strongest positive results — the Athens signal-coordination experiment (73 %
+   delay reduction, 6/6 seeds, real drone-measured vehicles), the congestion-metrics finding, and
+   the NLP domain-shift result — are currently buried among them.
+2. **OpenCity is reproduced, not exploited.** Running an author's model on the author's data with
+   the author's config and getting the author's numbers validates our pipeline and contributes
+   nothing new. Only the zero-shot arm ran.
+3. **The live Dhaka prediction is weak, and the reason is data.** It predicts a 4-class congestion
+   label because the recorder stores only derived verdicts, so persistence is the modal predictor.
+   Dhaka has no public sensor network: our graph is 12 API-derived corridors against the hundreds
+   of nodes OpenCity's pre-training graphs hold. `dhaka_opencity_schema.py --check` reports the
+   gap as a measurable countdown rather than an opinion.
+4. **CNFGNN and FedGTP have not been run**, so the four-method comparison in the brief is
+   incomplete.
 
 Until experiments 1-7 report, the claims in this document are limited to what sections 1-5
 actually measured.
