@@ -139,3 +139,40 @@ def test_chronos_returns_uncertainty_and_declares_its_blind_spot():
     assert p["uses_road_graph"] is False, "it cannot see the network and must say so"
     assert p["pretraining_exposure"] == "UNVERIFIED", (
         "no zero-shot claim may be made without verifying the pre-training corpus")
+
+
+# --------------------------------------------------------------------------
+# Model selection must be explainable, and must never silently substitute.
+# --------------------------------------------------------------------------
+
+def test_selection_states_which_model_and_why():
+    from pipeline.forecasting.adapters.registry import select
+    d = select(city(T=40, N=12))
+    assert d["selected_model"], "something must be selected"
+    assert d["reason"], "the choice must be explained"
+    assert "candidates" in d and d["candidates"]
+
+
+def test_a_requested_model_that_cannot_serve_is_refused_not_swapped():
+    """The failure this prevents: asking for OpenCity and being handed persistence's answer
+    under OpenCity's name."""
+    from pipeline.forecasting.adapters.registry import select
+    d = select(city(T=40, N=12), requested="OpenCity-plus")
+    assert d["selected_model"] is None
+    assert "cannot serve" in d["reason"]
+    assert d["requested_model"] == "OpenCity-plus"
+
+
+def test_fallback_is_declared_and_names_what_was_skipped():
+    from pipeline.forecasting.adapters.registry import select
+    pytest.importorskip("chronos", reason="chronos-forecasting not installed")
+    d = select(city(T=40, N=12))
+    assert d["fallback"] is True
+    assert d["fallback_from"], "a fallback must name the models that could not serve"
+
+
+def test_a_graph_capable_city_is_not_sent_to_the_univariate_model():
+    """Ordering matters: where a spatio-temporal model can run, it should win."""
+    from pipeline.forecasting.adapters.registry import select
+    d = select(city(T=40, N=12))
+    assert d["selected_model"] != "persistence", "a real model must beat the floor when available"

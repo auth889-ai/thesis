@@ -1,6 +1,6 @@
 # RESULTS — DhakaFlow rebuild
 
-Generated 2026-09-03T11:22 @ `bcd76e0` by `python results/build_results.py`.
+Generated 2026-09-04T03:25 @ `8c8017d` by `python results/build_results.py`.
 
 Every table below is read from a file written by the pipeline named next to it. Nothing here is typed by hand.
 
