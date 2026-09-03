@@ -18,7 +18,16 @@ import "./live-status.js";
 
 const REFRESH_MS = 120000;
 const SEG_COLOUR = {NORMAL: "#22c55e", SLOW: "#eab308", TRAFFIC_JAM: "#ef4444", UNKNOWN: "#64748b"};
-const DHAKA = [90.400, 23.780];
+// No hard-coded city centre. The map follows the ACTIVE CITY chosen on City Overview,
+// falling back to a world view rather than assuming Dhaka.
+const WORLD = [0, 20];
+function activeCityCentre() {
+  try {
+    const c = JSON.parse(localStorage.getItem("dhakaflow.cityCentre") || "null");
+    if (Array.isArray(c) && c.length === 2) return [c[1], c[0]];   // stored lat,lon -> lng,lat
+  } catch { /* fall through to the world view */ }
+  return WORLD;
+}
 
 export class LiveTrafficPage extends HTMLElement {
   connectedCallback() {
@@ -61,7 +70,7 @@ export class LiveTrafficPage extends HTMLElement {
                         attribution: BASEMAP_ATTRIBUTION}},
         layers: [{id: "osm", type: "raster", source: "osm"}],
       },
-      center: DHAKA, zoom: 11.4, attributionControl: true,
+      center: activeCityCentre(), zoom: activeCityCentre() === WORLD ? 2 : 11.4, attributionControl: true,
     });
     this._map.addControl(new maplibregl.NavigationControl({showCompass: false}), "top-left");
     // The container is zero-height while the custom element is still being laid out, so the map

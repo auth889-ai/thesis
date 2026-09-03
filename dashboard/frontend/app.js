@@ -9,6 +9,10 @@
  * hand a selected corridor to the next, which is what makes the demo flow end to end.
  */
 import {stream} from "./services/stream.js";
+import "./components/city-overview-page.js";
+import "./components/forecast-page.js";
+import "./components/crosscity-page.js";
+import "./components/network-panel.js";
 import "./components/live-traffic-page.js";
 import "./components/prediction-page.js";
 import "./components/route-advisor-page.js";
@@ -16,14 +20,20 @@ import "./components/counterfactual-page.js";
 import "./components/research-page.js";
 
 const PAGES = {
+  city:           {tag: "city-overview-page",  title: "City Overview",
+                   sub: "Any city on earth — geocoded from OpenStreetMap, with what its data lets it claim"},
   live:           {tag: "live-traffic-page",   title: "Live Traffic",
-                   sub: "Real Dhaka corridors from the Google Routes API, refreshed every two minutes"},
-  prediction:     {tag: "prediction-page",     title: "Prediction",
-                   sub: "Live state now, then 5 / 15 / 30 / 60 minutes ahead"},
-  advisor:        {tag: "route-advisor-page",  title: "Route Advisor",
-                   sub: "Live alternatives between two points, traffic-aware"},
-  counterfactual: {tag: "counterfactual-page", title: "Counterfactual",
-                   sub: "Take the live state into SUMO and test an intervention"},
+                   sub: "Current conditions from the Google Routes API"},
+  forecast:       {tag: "forecast-page",       title: "Traffic Forecast",
+                   sub: "Whichever model can honestly serve this city — or a labelled baseline"},
+  crosscity:      {tag: "crosscity-page",      title: "Cross-City AI",
+                   sub: "Research datasets and what the foundation model actually did on them"},
+  network:        {tag: "network-panel",       title: "Federated / V2X",
+                   sub: "Eclipse MOSAIC ITS-G5: delivery, latency, loss, and their effect on learning"},
+  advisor:        {tag: "route-advisor-page",  title: "Route Optimizer",
+                   sub: "Live alternatives between any two coordinates"},
+  counterfactual: {tag: "counterfactual-page", title: "SUMO Digital Twin",
+                   sub: "Take the live state into simulation and test an intervention"},
   research:       {tag: "research-page",       title: "Research Evidence",
                    sub: "Benchmark reproductions that support the system"},
 };
@@ -32,7 +42,7 @@ const outlet = document.getElementById("outlet");
 let mounted = null;
 
 function parseHash() {
-  const raw = location.hash.slice(1) || "live";
+  const raw = location.hash.slice(1) || "city";
   const [key] = raw.split(":");
   return PAGES[key] ? key : "live";
 }

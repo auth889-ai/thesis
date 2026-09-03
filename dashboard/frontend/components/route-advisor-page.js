@@ -13,7 +13,16 @@ import {BASEMAP_TILES, BASEMAP_ATTRIBUTION} from "../services/basemap.js";
 import "./live-status.js";
 
 const SEG_COLOUR = {NORMAL: "#22c55e", SLOW: "#eab308", TRAFFIC_JAM: "#ef4444", UNKNOWN: "#64748b"};
-const DHAKA = [90.400, 23.780];
+// No hard-coded city centre. The map follows the ACTIVE CITY chosen on City Overview,
+// falling back to a world view rather than assuming Dhaka.
+const WORLD = [0, 20];
+function activeCityCentre() {
+  try {
+    const c = JSON.parse(localStorage.getItem("dhakaflow.cityCentre") || "null");
+    if (Array.isArray(c) && c.length === 2) return [c[1], c[0]];   // stored lat,lon -> lng,lat
+  } catch { /* fall through to the world view */ }
+  return WORLD;
+}
 
 export class RouteAdvisorPage extends HTMLElement {
   connectedCallback() {
@@ -22,9 +31,16 @@ export class RouteAdvisorPage extends HTMLElement {
       <section class="card">
         <h2>Plan a trip <small>real alternatives from the live API</small></h2>
         <div class="form">
-          <label>From <select id="from"></select></label>
-          <label>To <select id="to"></select></label>
+          <label>Origin <input id="from" placeholder="lat, lon — or click the map" /></label>
+          <label>Destination <input id="to" placeholder="lat, lon — or click the map" /></label>
           <button id="go" class="btn primary">Get routes</button>
+          <button id="pick" class="btn">Pick on map</button>
+        </div>
+        <p class="muted" id="hint">Click the map to set origin, then destination. Any coordinates
+          work — <code>/api/live/routes</code> takes latitude and longitude, not a fixed corridor list.</p>
+        <div class="form">
+          <label>Demo presets <select id="preset"></select></label>
+          <button id="usepreset" class="btn">Use preset</button>
         </div>
       </section>
       <div class="split">
@@ -46,18 +62,33 @@ export class RouteAdvisorPage extends HTMLElement {
   disconnectedCallback() { this._map?.remove(); }
 
   async boot() {
+    // Presets exist only as demo shortcuts. The primary interaction is arbitrary coordinates,
+    // which the live routes endpoint has always supported — the old UI simply never exposed it.
     const list = await api.corridorList();
     this._places = {};
     (list.corridors || []).forEach(c => {
       this._places[c.origin.place] = c.origin;
       this._places[c.destination.place] = c.destination;
     });
-    const opts = Object.keys(this._places).sort().map(p =>
-      `<option value="${p}">${p.replace(/_/g, " ")}</option>`).join("");
-    this.querySelector("#from").innerHTML = opts;
-    this.querySelector("#to").innerHTML = opts;
-    this.querySelector("#from").value = "karwanbazar";
-    this.querySelector("#to").value = "shahbagh";
+    this.querySelector("#preset").innerHTML = (list.corridors || [])
+      .map(c => `<option value="${c.id}">${c.name}</option>`).join("");
+    this._presets = Object.fromEntries((list.corridors || []).map(c => [c.id, c]));
+    this.querySelector("#usepreset").addEventListener("click", () => {
+      const c = this._presets[this.querySelector("#preset").value];
+      if (!c) return;
+      this.querySelector("#from").value = `${c.origin.lat}, ${c.origin.lng}`;
+      this.querySelector("#to").value = `${c.destination.lat}, ${c.destination.lng}`;
+      this.run();
+    });
+    this.querySelector("#pick").addEventListener("click", () => {
+      this._picking = "from";
+      this.querySelector("#hint").textContent = "Click the map to set the ORIGIN.";
+    });
+  }
+
+  parsePoint(text) {
+    const m = (text || "").split(",").map(x => parseFloat(x.trim()));
+    return (m.length === 2 && m.every(Number.isFinite)) ? {lat: m[0], lng: m[1]} : null;
   }
 
   initMap() {
@@ -68,19 +99,36 @@ export class RouteAdvisorPage extends HTMLElement {
         sources: {osm: {type: "raster", tiles: [BASEMAP_TILES], tileSize: 256, maxzoom: 19,
                         attribution: BASEMAP_ATTRIBUTION}},
         layers: [{id: "osm", type: "raster", source: "osm"}]},
-      center: DHAKA, zoom: 11.5});
+      center: activeCityCentre(), zoom: activeCityCentre() === WORLD ? 2 : 11.5});
     requestAnimationFrame(() => this._map.resize());
     new ResizeObserver(() => this._map.resize()).observe(el);
     this._map.on("error", (e) => console.error("[map]", e?.error?.message ?? e));
+    this._map.on("click", (e) => {
+      const v = `${e.lngLat.lat.toFixed(5)}, ${e.lngLat.lng.toFixed(5)}`;
+      if (this._picking === "from" || !this.querySelector("#from").value) {
+        this.querySelector("#from").value = v;
+        this._picking = "to";
+        this.querySelector("#hint").textContent = "Now click the DESTINATION.";
+      } else {
+        this.querySelector("#to").value = v;
+        this._picking = null;
+        this.querySelector("#hint").textContent = "Origin and destination set.";
+        this.run();
+      }
+    });
     const ready = () => { this._ready = true; };
     this._map.on("load", ready);
     this._map.on("idle", ready);
   }
 
   async run() {
-    const o = this._places[this.querySelector("#from").value];
-    const d = this._places[this.querySelector("#to").value];
-    if (!o || !d) return;
+    const o = this.parsePoint(this.querySelector("#from").value);
+    const d = this.parsePoint(this.querySelector("#to").value);
+    if (!o || !d) {
+      this.querySelector("#hint").textContent =
+        "Enter coordinates as `lat, lon` for both ends, or click the map.";
+      return;
+    }
     this.querySelector("#routes").innerHTML = `<h2>Options</h2><p class="muted">Calling the live API…</p>`;
     const res = await api.liveRoutes(o, d);
     this._res = res;

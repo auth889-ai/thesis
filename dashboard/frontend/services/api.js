@@ -45,6 +45,17 @@ async function post(path, body) {
 }
 
 export const api = {
+  // city layer — no city is hard-coded in the frontend
+  cities:        () => get("/api/cities"),
+  city:          (id) => get(`/api/city/${encodeURIComponent(id)}`),
+  createCity:    (name, bbox) => post("/api/city", bbox ? {name, bbox} : {name}),
+  buildGraph:    (id, maxNodes = 250) => post(`/api/city/${encodeURIComponent(id)}/graph`, {max_nodes: maxNodes}),
+  cityNodes:     (id) => get(`/api/city/${encodeURIComponent(id)}/nodes`),
+  datasets:      () => get("/api/datasets"),
+  models:        (id) => get(`/api/models?city_id=${encodeURIComponent(id)}`),
+  observatory:   (id) => get(`/api/observatory?city_id=${encodeURIComponent(id)}`),
+  observatoryStart: (id) => post("/api/observatory/start", {city_id: id}),
+  cityForecast:  (id, horizons = "5,15,30,60") => get(`/api/forecast/${encodeURIComponent(id)}?horizons=${horizons}`),
   // live
   liveCorridors: (force = false) => get(`/api/live/corridors${force ? "?force=true" : ""}`),
   liveCorridor:  (id, force = false) => get(`/api/live/corridor/${encodeURIComponent(id)}${force ? "?force=true" : ""}`),
