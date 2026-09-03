@@ -78,3 +78,28 @@ def test_a_new_city_defaults_to_live_only_not_to_a_forecast(tmp_path):
 def test_slug_is_stable():
     assert slug("São Paulo, Brazil") == slug("São Paulo, Brazil")
     assert slug("New York City") == "new_york_city"
+
+
+# --------------------------------------------------------------------------
+# Generic SUMO: any instantiated city can become a scenario — labelled honestly.
+# --------------------------------------------------------------------------
+
+def test_generated_scenarios_are_labelled_synthetic():
+    """A generated scenario has a REAL network and INVENTED demand. Conflating the two is how a
+    mechanism demo gets quoted as a measurement of a city's traffic."""
+    import json
+    from pipeline.city.sumo_scenario import scenario_dir
+    m = scenario_dir("nairobi_kenya") / "MANIFEST.json"
+    if not m.exists():
+        pytest.skip("no generated scenario on this machine")
+    d = json.loads(m.read_text())
+    assert d["label"] == "SYNTHETIC_WHAT_IF"
+    assert d["demand_reality"] == "SYNTHETIC_WHAT_IF"
+    assert "REAL" in d["network_reality"], "the network genuinely is OSM geometry"
+    assert "never be quoted alongside" in d["warning"]
+
+
+def test_calibrated_cases_are_not_produced_by_the_generic_path():
+    """Dhaka R1 and Athens pNEUMA are separate evidence and must not be regenerated as synthetic."""
+    from pipeline.city.sumo_scenario import CALIBRATED
+    assert "dhaka_r1" in CALIBRATED and "athens_pneuma" in CALIBRATED
