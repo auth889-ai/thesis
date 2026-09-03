@@ -58,9 +58,23 @@ def test_city_specific_checkpoint_refuses_a_different_city():
 
 
 def test_baseline_is_labelled_as_a_baseline():
-    r = forecast(city(), [5, 15, 30, 60])
+    """When only a floor can run, the answer must say so.
+
+    A 4-step history is below every real model's minimum context, so persistence is genuinely all
+    that is left — and that is exactly when mislabelling would be most misleading.
+    """
+    r = forecast(city(T=4, N=12), [5, 15])
+    assert r["model_used"] is not None
     assert r["is_baseline"] is True, "with no real model available the answer must be flagged"
     assert r["forecast"]["is_baseline"] is True
+
+
+def test_a_real_model_is_preferred_over_a_baseline_when_one_can_run():
+    """The complement: with enough history, a pretrained model must win over the floor."""
+    pytest.importorskip("chronos", reason="chronos-forecasting not installed")
+    r = forecast(city(T=40, N=12), [15])
+    assert r["is_baseline"] is False
+    assert r["model_used"] == "Chronos-Bolt"
 
 
 def test_refusals_are_reported_so_the_ui_can_explain_itself():
@@ -84,3 +98,44 @@ def test_not_available_carries_reasons():
     with pytest.raises(NotAvailable) as e:
         OpenCityAdapter().forecast(city(T=10), [15])
     assert e.value.reasons
+
+
+# --------------------------------------------------------------------------
+# Chronos: the model that serves the cities the graph models must refuse.
+# --------------------------------------------------------------------------
+
+def _chronos():
+    pytest.importorskip("chronos", reason="chronos-forecasting not installed")
+    from pipeline.forecasting.adapters.chronos_adapter import ChronosAdapter
+    return ChronosAdapter()
+
+
+def test_chronos_accepts_a_twelve_node_city_that_opencity_refuses():
+    """The point of including it: a small city is not a deficient graph to a univariate model."""
+    small = city(T=40, N=12)
+    assert _chronos().check(small)["ok"] is True
+    assert OpenCityAdapter().check(small)["ok"] is False
+
+
+def test_chronos_still_refuses_too_short_a_context():
+    """Serving small cities is not the same as serving no data."""
+    chk = _chronos().check(city(T=3, N=12))
+    assert not chk["ok"]
+    assert any("observations" in r for r in chk["reasons"])
+
+
+def test_chronos_is_not_labelled_a_baseline():
+    ad = _chronos()
+    assert ad.is_baseline is False
+    f = ad.forecast(city(T=40, N=12), [15])
+    assert f.is_baseline is False
+    assert f.checkpoint, "a foundation model must report the checkpoint it used"
+
+
+def test_chronos_returns_uncertainty_and_declares_its_blind_spot():
+    f = _chronos().forecast(city(T=40, N=12), [15, 60])
+    p = f.provenance
+    assert p["lower_q10"] and p["upper_q90"], "quantiles are the point of using it"
+    assert p["uses_road_graph"] is False, "it cannot see the network and must say so"
+    assert p["pretraining_exposure"] == "UNVERIFIED", (
+        "no zero-shot claim may be made without verifying the pre-training corpus")

@@ -12,13 +12,18 @@ from __future__ import annotations
 from .base import CityData, Forecast, ForecastAdapter, NotAvailable
 from .baselines import HistoricalAverageAdapter, PersistenceAdapter
 from .checkpoint_models import GraphWaveNetAdapter, STAEformerAdapter, STIDAdapter
+from .chronos_adapter import ChronosAdapter
 from .opencity import OpenCityAdapter
 
 # Strongest first: a foundation model that transfers, then city-specific networks, then floors.
 def all_adapters(dataset_hint: str | None = None) -> list[ForecastAdapter]:
     ds = dataset_hint or "METR-LA"
+    # Strongest-and-applicable first. Chronos sits above the baselines because it is a real
+    # pretrained model that serves cities the graph models must refuse, and below them because it
+    # cannot see the road network.
     return [OpenCityAdapter(),
             STAEformerAdapter(ds), GraphWaveNetAdapter(ds), STIDAdapter(ds),
+            ChronosAdapter(),
             HistoricalAverageAdapter(), PersistenceAdapter()]
 
 
