@@ -1,0 +1,56 @@
+{
+ "generated_utc": "2026-09-03T02:04:56.237468+00:00",
+ "source": {
+  "reality": "SYNTHETIC_WHAT_IF",
+  "note": "levels supplied on the command line \u2014 a mechanism check, NEVER evidence about Dhaka",
+  "levels": {
+   "shahbagh_to_farmgate": 0.0
+  }
+ },
+ "demand": "DHAKA_SIMULATED_DEMAND (live feed supplies congestion state, never demand)",
+ "network": "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+ "scale": 0.25,
+ "horizon_s": 1800,
+ "compliance": 0.3,
+ "edges_congested": 0,
+ "weights": {
+  "out": "/Users/jannatulferdouseva/thesis/results/routing/live_chain_weights.xml",
+  "edges_written": 26,
+  "corridors": {
+   "shahbagh_to_farmgate": {
+    "level": 0.0,
+    "multiplier": 1.08,
+    "edges": 26
+   }
+  },
+  "provenance": {
+   "reality": "SYNTHETIC_WHAT_IF",
+   "note": "levels supplied on the command line \u2014 a mechanism check, NEVER evidence about Dhaka",
+   "levels": {
+    "shahbagh_to_farmgate": 0.0
+   }
+  },
+  "band_midpoints": {
+   "0": 1.08,
+   "1": 1.33,
+   "2": 1.75,
+   "3": 2.5
+  },
+  "bands": {
+   "0": "FREE_FLOW ratio<1.15",
+   "1": "SLOW 1.15-1.5",
+   "2": "CONGESTED 1.5-2.0",
+   "3": "SEVERE >=2.0 (open band)"
+  }
+ },
+ "runs": [],
+ "decision": {
+  "decision": "NO_ACTION",
+  "reason": "every monitored corridor is at free flow \u2014 nothing to route around; acting would be intervention without evidence",
+  "seeds": [
+   11,
+   12,
+   13
+  ]
+ }
+}
