@@ -513,7 +513,8 @@ def experiment_chain_runs(limit: int = 20):
                         "stage": rec.get("stage"), "started_utc": rec.get("started_utc"),
                         "arms_done": rec.get("arms_done"), "arms_total": rec.get("arms_total"),
                         "finished": (d / "run.json").exists()})
-    return {"runs": out, "dir": str(ic.RUNS.relative_to(config.REPO))}
+    return {"runs": out, "dir": (str(ic.RUNS.relative_to(config.REPO))
+                                 if ic.RUNS.is_relative_to(config.REPO) else str(ic.RUNS))}
 
 
 @app.get("/api/experiment/chain/run/{run_id}", tags=["experiment"])

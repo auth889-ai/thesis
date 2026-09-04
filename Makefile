@@ -15,8 +15,8 @@ help:            ## list targets
 status:          ## what exists, what is real, what is missing
 	$(PY) main.py status
 
-test:            ## the test suite (~1 min, no SUMO, no API)
-	$(PY) -m pytest tests -q
+test:            ## the test suite: pipeline + backend API (~1 min, no SUMO, no live API)
+	$(PY) -m pytest -q
 
 app:             ## the dashboard on http://127.0.0.1:8000
 	cd dashboard/backend && $(PY) -m uvicorn main:app --host 127.0.0.1 --port 8000
