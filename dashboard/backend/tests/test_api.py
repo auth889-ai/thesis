@@ -121,3 +121,60 @@ def test_chain_run_rejects_unknown_options_and_paths(client, tmp_path, monkeypat
         if seen: break
         time.sleep(0.1)
     assert seen.get("seeds") == "11" and "__class__" not in seen
+
+
+# ------------------------------------------------------------------ the operations screen
+
+def test_places_and_place_resolution(client):
+    p = client.get("/api/places").json()["places"]
+    assert any(x["id"] == "farmgate" for x in p)
+    import analyze
+    assert analyze.resolve_place("23.75, 90.39")["source"] == "coordinates"
+    assert analyze.resolve_place("Farmgate")["source"] == "known place"
+    assert analyze.resolve_place("karwan bazar")["label"] == "karwanbazar"
+
+
+def test_runs_along_needs_coverage_not_just_a_touch():
+    import analyze
+    a, b = (23.7573, 90.3854), (23.7389, 90.3958)              # farmgate -> shahbagh
+    poly = [(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t) for t in (0, .25, .5, .75, 1)]
+    along = [(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t) for t in (0.1, 0.3, 0.5, 0.7, 0.9)]
+    touch = [(a[0] + 0.0005 * k, a[1]) for k in range(5)]        # hovers near one end only
+    assert analyze.runs_along(along, poly) and not analyze.runs_along(touch, poly)
+
+
+def test_analyze_job_reports_real_stages_and_refuses_honestly(client, monkeypatch):
+    import analyze
+    monkeypatch.setattr(analyze, "resolve_place", lambda t, city="dhaka": (_ for _ in ()).throw(ValueError(f"could not find '{t}'")))
+    j = client.post("/api/analyze", json={"origin": "nowhere-xyz", "destination": "shahbagh"}).json()
+    for _ in range(100):
+        s = client.get(f"/api/analyze/{j['job']}").json()
+        if s["status"] != "running": break
+        time.sleep(0.1)
+    assert s["status"] == "failed" and "could not find" in s["error"]
+    assert s["stage"] in ("failed", "Fetching traffic")
+
+
+def test_verdict_ci_labels_from_paired_seeds():
+    from pipeline.routing import integrated_chain as ic
+    def run(arm, seed, vh):
+        return {"arm": arm, "seed": seed, "routes_changed": 0, "advisories_delivered": 0,
+                "metrics": {"total_vehicle_hours": vh, "mean_travel_time_s": 1, "p95_travel_time_s": 1,
+                            "total_waiting_s": 1, "mean_time_loss_s": 1, "mean_queue_veh": 1, "max_queue_veh": 1,
+                            "arrived": 1, "teleports": 0}}
+    runs = [run("baseline", s, 100.0) for s in (1, 2, 3)] + [run("prediction_aware", s, v) for s, v in ((1, 95.0), (2, 96.0), (3, 94.0))] \
+         + [run("reactive", s, v) for s, v in ((1, 90.0), (2, 110.0), (3, 100.0))]
+    ci = ic.summarise(runs)["verdict_ci"]
+    assert ci["prediction_aware"]["label"] == "HELPED" and ci["prediction_aware"]["wins"] == 3
+    assert ci["prediction_aware"]["ci95"][1] < 0
+    assert ci["reactive"]["label"] == "INCONCLUSIVE"
+
+
+def test_operate_cities_starts_with_dhaka(client):
+    c = client.get("/api/operate/cities").json()["cities"]
+    assert c[0] == {"id": "dhaka", "label": "Dhaka", "forecast": True}
+    assert all(not x["forecast"] for x in c[1:])
+
+
+def test_twin_compare_requires_a_network(client):
+    assert "error" in client.post("/api/twin/compare", json={}).json()

@@ -41,7 +41,8 @@ TOOLS = [
          "compliance": {"type": "number", "description": "0-1"},
          "arm": {"type": "string", "enum": list(ARMS)},
          "step_delay_ms": {"type": "integer", "description": "playback delay per step, 0-1000"},
-         "continuous": {"type": "boolean", "description": "run until stopped: the hour of demand is replayed hourly and corridor speeds follow the live road every 5 min"}},
+         "continuous": {"type": "boolean", "description": "run until stopped: the hour of demand is replayed hourly and corridor speeds follow the live road every 5 min"},
+         "network": {"type": "string", "description": "network id: dhaka_r1 (calibrated) or a generated city id from list_networks"}},
                       "additionalProperties": False}},
     {"name": "stop_simulation", "description": "Stop the running simulation and score it.",
      "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
@@ -50,6 +51,8 @@ TOOLS = [
     {"name": "resume_simulation", "description": "Resume a paused simulation.",
      "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
     {"name": "get_status", "description": "Current status, parameters and KPIs of the live simulation.",
+     "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
+    {"name": "list_networks", "description": "Networks the twin can run: the calibrated Dhaka R1 and cities generated from OSM.",
      "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
 ]
 
@@ -63,6 +66,7 @@ def _clamp(p: dict) -> dict:
     if "arm" in p and p["arm"] in ARMS: q["arm"] = p["arm"]
     if "step_delay_ms" in p: q["step_delay_ms"] = min(max(int(p["step_delay_ms"]), 0), 1000)
     if "continuous" in p: q["continuous"] = bool(p["continuous"])
+    if "network" in p and p["network"]: q["network"] = str(p["network"])
     return q
 
 
@@ -78,6 +82,9 @@ def execute(name: str, args: dict) -> dict:
         return live_sim.resume()
     if name == "get_status":
         return live_sim.state(with_vehicles=False)
+    if name == "list_networks":
+        from live_sim import networks
+        return {"networks": networks()}
     return {"error": f"unknown tool {name}"}
 
 
@@ -131,6 +138,11 @@ def parse(message: str) -> tuple[str, dict]:
         v = float(x.group(1)); p["compliance"] = v / 100 if v > 1 else v
     if re.search(r"continuous|forever|keep running|non-?stop|indefinite|until (i )?stop|live[- ]coupled", m):
         p["continuous"] = True
+    from live_sim import networks
+    for n in networks():                                   # "in nairobi", "on the gulshan network"
+        key = n["id"].split("_")[0]
+        if n["id"] != "dhaka_r1" and re.search(rf"\b{re.escape(key)}", m):
+            p["network"] = n["id"]
     if "prediction" in m or "forecast" in m: p["arm"] = "prediction_aware"
     elif "reactive" in m: p["arm"] = "reactive"
     elif "baseline" in m or "no rerout" in m: p["arm"] = "baseline"
@@ -156,9 +168,10 @@ def _rules(message: str) -> dict:
     if tool == "start_simulation":
         if out.get("started"):
             p = out["params"]
-            reply = (f"Started a live run ({p['arm']}): demand ×{p['scale']:.2f}, "
-                     + ("continuous — until stopped, demand replayed hourly, corridor speeds from the live road every 5 min, "
-                        if p.get("continuous") else f"{p['duration_s']} s, ")
+            reply = (f"Started a live run ({p['arm']}) on {p['network']} ({p.get('demand_reality')} demand): demand ×{p['scale']:.2f}, "
+                     + ("continuous — until stopped, demand replayed hourly"
+                        + (", corridor speeds from the live road every 5 min" if p.get("network", "dhaka_r1") == "dhaka_r1" else "")
+                        + ", " if p.get("continuous") else f"{p['duration_s']} s, ")
                      + f"seed {p['seed']}, compliance {p['compliance']:.0%}. Run {out['run_id']}.")
         else:
             reply = f"Could not start: {out.get('reason')}."

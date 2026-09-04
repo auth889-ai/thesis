@@ -45,9 +45,21 @@ import simulate
 import forecast_log
 import live_sim as live_sim_mod
 import sim_agent
+import analyze
+import twin_compare
 
 app = FastAPI(title="DhakaFlow", version="1.0.0", docs_url="/api/docs",
               description="Live Dhaka traffic, forecasting, routing and V2X evidence.")
+
+
+@app.middleware("http")
+async def _no_stale_frontend(request: Request, call_next):
+    """The interface is ES modules; a browser that caches them shows yesterday's app after every
+    change. Static files are always revalidated, so a plain reload shows the current code."""
+    resp = await call_next(request)
+    if request.url.path.startswith("/static") or request.url.path in ("/", "/index.html"):
+        resp.headers["Cache-Control"] = "no-store"
+    return resp
 
 
 @app.get("/api/traffic", response_model=schemas.TrafficResponse, tags=["traffic"])
@@ -660,6 +672,99 @@ def sim_live_history():
 def sim_agent_chat(payload: dict):
     """Natural language -> the same start/pause/resume/stop the buttons call."""
     return sim_agent.chat(str(payload.get("message", "")), payload.get("history") or [])
+
+
+_NET_JOBS: dict[str, dict] = {}
+
+
+@app.get("/api/operate/cities", tags=["operate"])
+def operate_cities():
+    """Cities the operations screen offers: Dhaka (observed, forecastable) plus any registered
+    city — and any other name typed in is geocoded on the spot."""
+    reg, _ = _city_bits()
+    out = [{"id": "dhaka", "label": "Dhaka", "forecast": True}]
+    for cid in reg.list_ids():
+        sp = reg.get(cid)
+        if sp and sp.display_name and not analyze.is_dhaka(sp.display_name):
+            out.append({"id": cid, "label": sp.display_name, "forecast": False})
+    return {"cities": out}
+
+
+@app.get("/api/places", tags=["operate"])
+def places_list():
+    """Known places for the origin / destination inputs; free text and 'lat, lng' also work."""
+    return {"places": analyze.places()}
+
+
+@app.post("/api/analyze", tags=["operate"])
+def analyze_start(payload: dict):
+    """ANALYZE TRAFFIC: origin, destination, departure, horizon -> current, forecast, decision.
+    Runs in the background so the page can show each stage as it really happens."""
+    return {"job": analyze.start(payload or {}), "poll": "/api/analyze/{job}"}
+
+
+@app.get("/api/analyze/{job}", tags=["operate"])
+def analyze_status(job: str):
+    return analyze.status(job)
+
+
+@app.post("/api/twin/compare", tags=["twin"])
+def twin_compare_start(payload: dict):
+    """Baseline vs reactive on any generated network, paired seeds, CI verdict. Background job."""
+    if not payload.get("network"):
+        return {"error": "network required"}
+    return {"job": twin_compare.start(payload), "poll": "/api/twin/compare/{job}"}
+
+
+@app.get("/api/twin/compare/{job}", tags=["twin"])
+def twin_compare_status(job: str):
+    return twin_compare.status(job)
+
+
+@app.get("/api/twin/networks", tags=["twin"])
+def twin_networks():
+    """Every network the twin can run — the calibrated one, then cities generated from OSM."""
+    return {"networks": live_sim_mod.networks()}
+
+
+@app.post("/api/twin/network", tags=["twin"])
+def twin_generate_network(payload: dict):
+    """Any area on Earth -> a runnable SUMO scenario: OSM extract -> netconvert -> trips -> duarouter.
+
+    Body: {"city_id": ...} for a registered city, or {"name": ..., "bbox": [south, west, north, east]}
+    from the map view. The network is REAL (OSM geometry, SUMO's own converter); the demand is
+    GENERATED and every artefact says so. Runs in the background; poll the job."""
+    import sys as _sys
+    import uuid as _uuid
+    _sys.path.insert(0, str(config.REPO))
+    from pipeline.city import sumo_scenario
+    from pipeline.city.registry import registry
+    job = "net_" + _uuid.uuid4().hex[:8]
+    _NET_JOBS[job] = {"job": job, "status": "running", "stage": "creating city"}
+
+    def work():
+        try:
+            cid = payload.get("city_id")
+            if not cid:
+                name, bbox = (payload.get("name") or "").strip(), payload.get("bbox")
+                if not name or not bbox or len(bbox) != 4:
+                    raise ValueError("give city_id, or name + bbox [south, west, north, east]")
+                spec = registry.create_from_bbox(name, tuple(float(x) for x in bbox))
+                cid = spec.city_id
+            _NET_JOBS[job].update(city_id=cid, stage="OSM extract -> netconvert -> demand")
+            man = sumo_scenario.build(cid, seed=int(payload.get("seed", 11)),
+                                      period=float(payload.get("period", 2.0)),
+                                      end=int(payload.get("end", 3600)))
+            _NET_JOBS[job].update(status="done", stage="done", manifest=man)
+        except BaseException as exc:                       # noqa: BLE001
+            _NET_JOBS[job].update(status="failed", error=f"{type(exc).__name__}: {exc}")
+    threading.Thread(target=work, name=job, daemon=True).start()
+    return {"started": True, "job": job, "poll": f"/api/twin/network/{job}"}
+
+
+@app.get("/api/twin/network/{job}", tags=["twin"])
+def twin_network_job(job: str):
+    return _NET_JOBS.get(job) or {"job": job, "status": "unknown"}
 
 
 @app.get("/api/config/map", tags=["meta"])

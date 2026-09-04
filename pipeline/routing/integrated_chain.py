@@ -244,7 +244,32 @@ def summarise(runs: list[dict]) -> dict:
                 }
     elif base:
         verdict = {}
-    return {"arms": rows, "verdict": verdict}
+    # HELPED / HURT / INCONCLUSIVE from the paired per-seed differences, with a 95 % CI (t-based)
+    ci = {}
+    if base:
+        for arm in ("reactive", "prediction_aware"):
+            per = []
+            for r in by.get(arm, []):
+                b = next((x for x in by["baseline"] if x["seed"] == r["seed"]), None)
+                if b:
+                    bv = b["metrics"]["total_vehicle_hours"] or 1
+                    per.append((r["metrics"]["total_vehicle_hours"] - bv) / bv * 100)
+            if not per:
+                continue
+            n = len(per); mean = sum(per) / n
+            sd = (sum((x - mean) ** 2 for x in per) / (n - 1)) ** 0.5 if n > 1 else None
+            tcrit = {2: 12.706, 3: 4.303, 4: 3.182, 5: 2.776, 6: 2.571, 7: 2.447, 8: 2.365,
+                     9: 2.306, 10: 2.262}.get(n, 1.96)
+            half = tcrit * sd / n ** 0.5 if sd is not None else None
+            lo, hi = (mean - half, mean + half) if half is not None else (None, None)
+            wins = sum(1 for x in per if x < 0)
+            label = ("INCONCLUSIVE" if n < 2 or half is None else
+                     "HELPED" if hi < 0 else "HURT" if lo > 0 else "INCONCLUSIVE")
+            ci[arm] = {"label": label, "mean_pct": round(mean, 2),
+                       "ci95": [None if lo is None else round(lo, 2), None if hi is None else round(hi, 2)],
+                       "wins": wins, "seeds": n, "per_seed_pct": [round(x, 2) for x in per],
+                       "metric": "total vehicle-hours vs baseline, paired per seed"}
+    return {"arms": rows, "verdict": verdict, "verdict_ci": ci}
 
 
 def write_report(rec: dict, out: Path) -> Path:

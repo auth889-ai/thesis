@@ -13,10 +13,11 @@ import {api} from "../services/api.js";
 
 export class ForecastPage extends HTMLElement {
   connectedCallback() {
-    this.city = localStorage.getItem("dhakaflow.city") || "dhaka";
+    this.city = "dhaka";                       // the city with observations; others are offered below
     this.innerHTML = `
       <section class="card">
-        <h2>How accurate is it? <small>predicted vs. what was later recorded — city: <b>${this.city}</b></small></h2>
+        <h2>How accurate is it? <small>predicted vs. what was later recorded — city: <b>${this.city}</b></small>
+          <span class="muted" style="font-weight:400">Forecasts here are measured on Dhaka's recorded corridors. For any other city, upload its series below (OpenCity) or use Mission Control for live ETAs.</span></h2>
         <div id="accuracy"><p class="muted">Loading the backtest…</p></div>
       </section>
       <section class="card">

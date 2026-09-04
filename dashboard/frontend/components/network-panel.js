@@ -26,10 +26,12 @@ class NetworkPanel extends BasePanel {
           p.delivery_ratio === null ? "–" : `${num(p.delivery_ratio * 100, 1)} %`,
           num(p.latency_ms, 1), int(p.route_switches)])))}
     </div>
-    ${d.latency_loss.length ? this.card("Advisory delivery under injected latency and loss",
-      this.table(Object.keys(d.latency_loss[0]).slice(0, 6).map(k => ({h: k.replace(/_/g, " "), num: true})),
-                 d.latency_loss.map(r => Object.values(r).slice(0, 6))),
-      "how much delay and packet loss an advisory survives") : ""}
+    ${d.latency_loss.length ? this.card("How much delay and packet loss an advisory survives",
+      `<div class="chart tall"><canvas id="lossloss-chart"></canvas></div>
+       <details class="why"><summary>the measured table</summary>${this.table(
+         Object.keys(d.latency_loss[0]).slice(0, 6).map(k => ({h: k.replace(/_/g, " "), num: true})),
+         d.latency_loss.map(r => Object.values(r).slice(0, 6)))}</details>`,
+      "fraction of advisories that arrive before the decision point · solid = repeated at 1 Hz, dashed = single shot") : ""}
     ${this.provenance(d)}`;
   }
 
@@ -37,6 +39,7 @@ class NetworkPanel extends BasePanel {
     const el = this.querySelector("#network-chart");
     if (!el || !window.Chart || !d?.available) return;
     const base = window.chartDefaults();
+    this.drawLoss(d, base);
     this.chart?.destroy();
     this.chart = new Chart(el, {
       type: "line",
@@ -52,4 +55,23 @@ class NetworkPanel extends BasePanel {
     });
   }
 }
+NetworkPanel.prototype.drawLoss = function (d, base) {
+  const el = this.querySelector("#lossloss-chart");
+  if (!el || !d.latency_loss?.length) return;
+  const rows = d.latency_loss.map(r => ({lat: +r.added_latency_ms, loss: +r.loss_pct,
+    single: +r.frac_delivered_single_shot, repeat: +r.frac_delivered_1hz_repeat}));
+  const losses = [...new Set(rows.map(r => r.loss))].sort((a, b) => a - b);
+  const lats = [...new Set(rows.map(r => r.lat))].sort((a, b) => a - b);
+  const colours = ["#22c55e", "#f59e0b", "#a855f7", "#ef4444", "#3b82f6"];
+  const ds = [];
+  lats.forEach((lat, i) => {
+    const pick = (k) => losses.map(l => { const r = rows.find(x => x.lat === lat && x.loss === l); return r ? r[k] : null; });
+    ds.push({label: `+${lat} ms, repeated 1 Hz`, data: pick("repeat"), borderColor: colours[i % 5], backgroundColor: colours[i % 5], pointRadius: 3, tension: 0.2});
+    ds.push({label: `+${lat} ms, single shot`, data: pick("single"), borderColor: colours[i % 5], backgroundColor: colours[i % 5], borderDash: [5, 4], pointRadius: 2, tension: 0.2});
+  });
+  this.lossChart?.destroy();
+  this.lossChart = new Chart(el, {type: "line", data: {labels: losses.map(l => `${l} % loss`), datasets: ds},
+    options: {...base, scales: {...base.scales,
+      y: {...base.scales.y, min: 0.4, max: 1, title: {display: true, text: "advisories delivered in time", color: window.axisColor()}}}}});
+};
 customElements.define("network-panel", NetworkPanel);

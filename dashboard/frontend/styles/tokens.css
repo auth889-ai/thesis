@@ -1,15 +1,20 @@
 /* Design tokens. Every colour and spacing value in the app resolves to one of these, so a theme
-   change is a token change, never a hunt through components. */
+   change is a token change, never a hunt through components.
+   Palette: warm cream page, white cards, dark-olive primary, sage secondary, muted-maroon accent,
+   charcoal text, light borders — an urban-mobility operations application. */
 :root {
-  --bg: #0b1220; --surface: #111a2b; --surface-2: #16203a; --line: #1f2b40;
-  --ink: #e8eef7; --ink-muted: #8fa0b8;
-  --accent: #3b82f6; --good: #22c55e; --warn: #f59e0b; --bad: #ef4444; --violet: #8b5cf6;
+  --bg: #f6f2ea; --surface: #ffffff; --surface-2: #f3efe6; --line: #e3dccd;
+  --ink: #2b2b2b; --ink-muted: #6b6b64;
+  --accent: #4a5d23;      /* dark olive — primary */
+  --sage: #8a9a5b;        /* secondary */
+  --maroon: #7b2d3b;      /* accent */
+  --good: #3f7d3a; --warn: #b07a12; --bad: #a63d40; --violet: #7b2d3b;
   --radius: 12px; --radius-sm: 8px;
   --gap: 14px; --pad: 16px;
   --font: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
-:root[data-theme="light"] {
-  --bg: #f4f6fa; --surface: #ffffff; --surface-2: #f8fafc; --line: #e3e8f0;
-  --ink: #0f1b2d; --ink-muted: #5b6b82;
+:root[data-theme="dark"] {
+  --bg: #1d1f1a; --surface: #262922; --surface-2: #2e322a; --line: #3a3e34;
+  --ink: #ece8dd; --ink-muted: #a8a79c;
 }

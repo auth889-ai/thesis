@@ -19,24 +19,27 @@ import "./components/prediction-page.js";
 import "./components/route-advisor-page.js";
 import "./components/counterfactual-page.js";
 import "./components/live-twin-page.js";
+import "./components/results-page.js";
 import "./components/research-page.js";
 
 const PAGES = {
   mission:        {tag: "mission-control",     title: "Mission Control",
-                   sub: "What is happening · what the model predicted · what was done · did it help"},
+                   sub: "Current traffic · forecast · route decision — and a simulation to test it"},
+  results:        {tag: "results-page",        title: "Results",
+                   sub: "What the experiments measured: forecast accuracy, routing arms, penetration, coverage"},
   city:           {tag: "city-overview-page",  title: "City Overview",
                    sub: "Any city on earth — geocoded from OpenStreetMap, with what its data lets it claim"},
   live:           {tag: "live-traffic-page",   title: "Live Traffic",
                    sub: "Current conditions from the Google Routes API"},
-  forecast:       {tag: "forecast-page",       title: "Traffic Forecast",
+  forecast:       {tag: "forecast-page",       title: "Forecast Lab",
                    sub: "Whichever model can honestly serve this city — or a labelled baseline"},
   crosscity:      {tag: "crosscity-page",      title: "Cross-City AI",
                    sub: "Research datasets and what the foundation model actually did on them"},
   network:        {tag: "network-panel",       title: "Federated / V2X",
                    sub: "Eclipse MOSAIC ITS-G5: delivery, latency, loss, and their effect on learning"},
-  advisor:        {tag: "route-advisor-page",  title: "Route Optimizer",
-                   sub: "Live alternatives between any two coordinates"},
-  twin:           {tag: "live-twin-page",      title: "Live Twin",
+  advisor:        {tag: "route-advisor-page",  title: "Plan Route",
+                   sub: "Live alternatives between any two points"},
+  twin:           {tag: "live-twin-page",      title: "Digital Twin",
                    sub: "The SUMO digital twin stepping on the map — drive it with the controls or the agent"},
   counterfactual: {tag: "counterfactual-page", title: "SUMO Digital Twin",
                    sub: "Take the live state into simulation and test an intervention"},

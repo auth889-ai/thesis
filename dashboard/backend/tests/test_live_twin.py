@@ -82,3 +82,32 @@ def test_continuous_mode_replays_demand_and_couples_to_the_live_road(client):
 def test_opencity_predict_endpoint_refuses_honestly_when_the_window_is_short(client):
     d = client.post("/api/opencity/dhaka/predict", json={"source": "recorded"}).json()
     assert d["ok"] is False and "9 nodes" in d["error"]          # 6 recorded corridors
+
+
+def test_networks_list_starts_with_the_calibrated_twin(client):
+    d = client.get("/api/twin/networks").json()
+    assert d["networks"][0]["id"] == "dhaka_r1" and d["networks"][0]["demand"] == "CALIBRATED"
+    for n in d["networks"][1:]:
+        assert n["demand"] == "SYNTHETIC_WHAT_IF" and n["edges"] > 0
+
+
+def test_start_refuses_an_unknown_network(client):
+    r = client.post("/api/sim/live/start", json={"network": "atlantis"}).json()
+    assert r["started"] is False and "generate" in r["reason"]
+
+
+@pytest.mark.slow
+def test_generated_city_runs_in_the_twin(client):
+    import live_sim
+    gen = [n for n in live_sim.networks() if n["id"] != "dhaka_r1"]
+    if not gen:
+        pytest.skip("no generated city in this checkout")
+    r = client.post("/api/sim/live/start", json={"network": gen[0]["id"], "duration_s": 120,
+                                                 "scale": 0.5, "arm": "reactive", "step_delay_ms": 20}).json()
+    assert r["started"] and r["params"]["demand_reality"] == "SYNTHETIC_WHAT_IF"
+    for _ in range(600):
+        s = client.get("/api/sim/live/state").json()
+        if s["status"] in ("done", "failed"): break
+        time.sleep(0.2)
+    assert s["status"] == "done", s.get("message")
+    assert s["result"]["metrics"]["arrived"] > 0

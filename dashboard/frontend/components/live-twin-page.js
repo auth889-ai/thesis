@@ -22,6 +22,12 @@ export class LiveTwinPage extends HTMLElement {
             <span><i style="background:#f59e0b"></i>10–30</span><span><i style="background:#ef4444"></i>&lt; 10 (queue)</span>
             <span><i style="background:#a855f7"></i>equipped (follows advice)</span></div>
           <div class="toolbar">
+            <label>Network <select id="network"></select></label>
+            <input id="areaname" placeholder="name this area…" size="16">
+            <button id="generate" class="btn">⬚ Generate network from this map view</button>
+            <span id="gen" class="muted"></span>
+          </div>
+          <div class="toolbar">
             <button id="start" class="btn primary">▶ Start</button>
             <button id="pause" class="btn">⏸ Pause</button>
             <button id="resume" class="btn">⏵ Continue</button>
@@ -57,8 +63,10 @@ export class LiveTwinPage extends HTMLElement {
       </div>`;
     this._hist = [];
     this.initMap();
-    for (const id of ["start", "pause", "resume", "stop", "history"])
+    this.loadNetworks();
+    for (const id of ["start", "pause", "resume", "stop", "history", "generate"])
       this.querySelector(`#${id}`).addEventListener("click", () => this[id]());
+    this.querySelector("#network").addEventListener("change", () => this.centerOn(this.querySelector("#network").value));
     this.querySelector("#ask").addEventListener("submit", (e) => { e.preventDefault(); this.send(); });
     this.querySelectorAll("input[type=range]").forEach(r =>
       r.addEventListener("input", () => r.nextElementSibling.textContent = r.value));
@@ -87,7 +95,38 @@ export class LiveTwinPage extends HTMLElement {
     const v = (id) => Number(this.querySelector(`#${id}`).value);
     return {scale: v("scale"), duration_s: v("duration_s"), compliance: v("compliance"),
             seed: v("seed"), step_delay_ms: v("step_delay_ms"), arm: this.querySelector("#arm").value,
-            continuous: this.querySelector("#continuous").checked};
+            continuous: this.querySelector("#continuous").checked, network: this.querySelector("#network").value};
+  }
+
+  async loadNetworks(select) {
+    const d = await api.twinNetworks();
+    this._nets = d.networks || [];
+    const sel = this.querySelector("#network");
+    sel.innerHTML = this._nets.map(n => `<option value="${n.id}">${n.name} — ${n.demand === "CALIBRATED" ? "calibrated demand, live-coupled" : "generated demand (what-if)"}${n.edges ? `, ${n.edges} edges` : ""}</option>`).join("");
+    if (select) { sel.value = select; this.centerOn(select); }
+  }
+
+  centerOn(id) {
+    const n = (this._nets || []).find(x => x.id === id);
+    if (n && this._map) this._map.flyTo({center: n.center, zoom: n.bbox ? 13 : 12.6});
+  }
+
+  /* Any area on Earth: the current map view -> OSM -> netconvert -> generated demand -> runnable. */
+  async generate() {
+    const b = this._map.getBounds();
+    const name = this.querySelector("#areaname").value.trim() ||
+                 `area ${b.getCenter().lat.toFixed(3)},${b.getCenter().lng.toFixed(3)}`;
+    const gen = this.querySelector("#gen");
+    gen.textContent = "generating… (OSM extract → netconvert → demand)";
+    const r = await api.twinGenerate({name, bbox: [b.getSouth(), b.getWest(), b.getNorth(), b.getEast()]});
+    if (!r.started) { gen.textContent = r.error || "could not start"; return; }
+    for (let i = 0; i < 600; i++) {
+      await new Promise(res => setTimeout(res, 1000));
+      const j = await api.twinNetJob(r.job);
+      gen.textContent = `${j.status}: ${j.stage || j.error || ""}`;
+      if (j.status === "done") { await this.loadNetworks(j.city_id); gen.textContent = `ready: ${j.manifest.edges} edges, ${j.manifest.traffic_lights} signals — demand is GENERATED (what-if)`; return; }
+      if (j.status === "failed") return;
+    }
   }
   async start()   { const r = await api.simStart(this.params()); if (!r.started) this.note(r.reason); }
   async pause()   { await api.simPause(); }
@@ -110,6 +149,11 @@ export class LiveTwinPage extends HTMLElement {
   async poll() {
     if (this._dead) return;
     const s = await api.simState(true);
+    if (!this._autostarted && (s.status === "idle" || s.status === "done" || s.status === "stopped" || s.status === "failed")) {
+      // the twin is only meaningful running: open the page and SUMO is already stepping Dhaka live
+      this._autostarted = true;
+      api.simStart({network: "dhaka_r1", continuous: true, arm: "reactive", step_delay_ms: 100});
+    }
     this.render(s);
     this._t = setTimeout(() => this.poll(), s.status === "running" ? POLL_MS : 1500);
   }
@@ -128,7 +172,10 @@ export class LiveTwinPage extends HTMLElement {
     const live = k.live_applied_utc ? ` · live road state applied ${ago(k.live_applied_utc)}` +
       (k.live_multipliers ? ` (${Object.values(k.live_multipliers).filter(m => m > 1.15).length} corridors slowed)` : "") : "";
     this.note(s.message || (s.status === "running" && s.params
-      ? `${s.params.arm} · demand ×${s.params.scale} · seed ${s.params.seed}${s.params.continuous ? ` · hour ${k.hour || 1}, continuous` : ""}${live}` : ""));
+      ? `${s.params.network || "dhaka_r1"} (${s.params.demand_reality || "CALIBRATED"} demand) · ${s.params.arm} · demand ×${s.params.scale} · seed ${s.params.seed}${s.params.continuous ? ` · hour ${k.hour || 1}, continuous` : ""}${live}` : ""));
+    if (s.status === "running" && s.params?.center && this._lastCentered !== s.run_id && this._map) {
+      this._lastCentered = s.run_id; this._map.flyTo({center: s.params.center, zoom: s.params.network === "dhaka_r1" ? 12.6 : 13});
+    }
     if (s.status === "done" && s.result && this._lastDone !== s.run_id) {
       this._lastDone = s.run_id;
       const m = s.result.metrics;

@@ -32,7 +32,46 @@ MAX_VEHICLES_SHOWN = 2000
 ARMS = ("baseline", "reactive", "prediction_aware")
 DEFAULTS = {"scale": None, "duration_s": 900, "seed": 11, "compliance": 0.3, "arm": "reactive",
             "levels": "observed", "step_delay_ms": 100, "v2x": "ideal", "horizon_min": 15,
-            "continuous": False}
+            "continuous": False, "network": "dhaka_r1"}
+DHAKA_CENTER = (90.395, 23.755)
+
+
+def networks() -> list[dict]:
+    """Every network the twin can run: the calibrated Dhaka R1, then any city generated from OSM."""
+    from pipeline.city.registry import CITY_DIR
+    out = [{"id": "dhaka_r1", "name": "Dhaka R1 (calibrated)", "demand": "CALIBRATED",
+            "center": list(DHAKA_CENTER), "live_coupled": True,
+            "note": "frozen OSM network, calibrated demand, live corridor state from Google"}]
+    if CITY_DIR.exists():
+        for d in sorted(CITY_DIR.iterdir()):
+            m = d / "sumo" / "MANIFEST.json"
+            if m.exists():
+                try:
+                    man = json.loads(m.read_text())
+                except json.JSONDecodeError:
+                    continue
+                s_, w, n, e = man["bbox"]
+                out.append({"id": man["city_id"], "name": man.get("display_name") or man["city_id"],
+                            "demand": man["demand_reality"], "center": [(w + e) / 2, (s_ + n) / 2],
+                            "bbox": man["bbox"], "edges": man["edges"], "traffic_lights": man["traffic_lights"],
+                            "live_coupled": False, "generated_utc": man["generated_utc"],
+                            "note": man["warning"]})
+    return out
+
+
+def resolve_network(network: str) -> dict:
+    from pipeline.routing import predictive_routing as pr
+    if network in ("dhaka_r1", "", None):
+        return {"id": "dhaka_r1", "net": Path(pr.DEFAULT_NET), "routes": Path(pr.DEFAULT_ROUTES),
+                "demand": "CALIBRATED", "center": DHAKA_CENTER, "live_coupled": True}
+    from pipeline.city.sumo_scenario import scenario_dir
+    m = scenario_dir(network) / "MANIFEST.json"
+    if not m.exists():
+        raise ValueError(f"no generated network for {network!r}; generate it first")
+    man = json.loads(m.read_text())
+    s_, w, n, e = man["bbox"]
+    return {"id": network, "net": config.REPO / man["files"]["net"], "routes": config.REPO / man["files"]["routes"],
+            "demand": man["demand_reality"], "center": ((w + e) / 2, (s_ + n) / 2), "live_coupled": False}
 LIVE_REFRESH_S = 300          # the provider's own cadence; the recorder samples at the same rate
 DEMAND_PERIOD_S = 3600        # the calibrated demand file covers one hour; it is replayed hourly
 
@@ -55,13 +94,15 @@ class LiveSim:
         except json.JSONDecodeError:
             return []
 
-    def _net_obj(self):
-        if self._net is None:
+    def _net_obj(self, path: Path):
+        if not isinstance(self._net, dict):
+            self._net = {}
+        key = str(path)
+        if key not in self._net:
             import sumolib
             from pipeline.core.network_file import ensure_net
-            from pipeline.routing import predictive_routing as pr
-            self._net = sumolib.net.readNet(str(ensure_net(Path(pr.DEFAULT_NET))))
-        return self._net
+            self._net[key] = sumolib.net.readNet(str(ensure_net(Path(path))))
+        return self._net[key]
 
     def _set(self, **kw) -> None:
         with self._lock:
@@ -77,6 +118,12 @@ class LiveSim:
         cfg = {**DEFAULTS, **{k: v for k, v in (params or {}).items() if v is not None}}
         if cfg["arm"] not in ARMS:
             return {"started": False, "reason": f"arm must be one of {ARMS}"}
+        try:
+            netinfo = resolve_network(cfg["network"])
+        except ValueError as exc:
+            return {"started": False, "reason": str(exc)}
+        cfg["network"] = netinfo["id"]; cfg["demand_reality"] = netinfo["demand"]
+        cfg["center"] = list(netinfo["center"])
         if cfg["scale"] is None:
             sc = config.REPO / "results/routing/SCALE_CHOICE.json"
             cfg["scale"] = json.loads(sc.read_text()).get("scale", 0.25) if sc.exists() else 0.25
@@ -138,14 +185,17 @@ class LiveSim:
         note(f"thread {threading.current_thread().name} cfg={cfg}")
 
         try:
-            net = self._net_obj()
-            a = argparse.Namespace(net=str(pr.DEFAULT_NET), routes=str(pr.DEFAULT_ROUTES),
+            netinfo = resolve_network(cfg["network"])
+            net = self._net_obj(netinfo["net"])
+            a = argparse.Namespace(net=str(netinfo["net"]), routes=str(netinfo["routes"]),
                                    scale=cfg["scale"], horizon=cfg["duration_s"],
                                    compliance=cfg["compliance"], v2x=cfg["v2x"],
                                    horizon_min=cfg["horizon_min"])
             # 1. the observed congestion, made real on the corridor edges in every arm
             self._set(message="reading the observed congestion state")
             levels = {}
+            if not netinfo["live_coupled"]:
+                cfg["levels"] = ""                    # no observed corridors on a generated city
             if cfg["levels"] == "observed":
                 _, observed = recorded_city_data("dhaka", "peak")
                 levels = {k: float(v) for k, v in observed["levels"].items()}
@@ -156,6 +206,9 @@ class LiveSim:
             deliver_p, v2x = ic.delivery_fraction(cfg["v2x"])
             # 2. the forecast, only for the arm that routes on it
             routes, changed, advised, forecast = Path(a.routes), 0, 0, None
+            if cfg["arm"] == "prediction_aware" and not netinfo["live_coupled"]:
+                raise RuntimeError("prediction_aware needs the observed corridors; a generated city "
+                                   "has none yet — use baseline or reactive there")
             if cfg["arm"] == "prediction_aware":
                 self._set(message="running the forecast and pricing the edges")
                 res = fetch_forecast("dhaka", cfg["horizon_min"], None, source="recorded", as_of="peak")
@@ -257,7 +310,7 @@ class LiveSim:
                 conn.simulationStep()
                 t = int(conn.simulation.getTime())
                 if cfg["continuous"]:
-                    if time.time() - last_live >= LIVE_REFRESH_S:
+                    if netinfo["live_coupled"] and time.time() - last_live >= LIVE_REFRESH_S:
                         last_live = time.time()
                         try:
                             apply_live()
