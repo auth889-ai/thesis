@@ -40,14 +40,43 @@ export class CrossCityPage extends HTMLElement {
       </tr>`;
     }).join("");
 
+    // the chart is the content; the reasoning folds away
+    const bars = Object.entries(cat)
+      .map(([k, e]) => ({
+        name: k, held: e.exposure === "HELD_OUT_ZERO_SHOT",
+        specific: (e.model_results || []).length
+          ? Math.min(...e.model_results.map(r => r["mae@15min"] ?? Infinity)) : null,
+        zeroshot: e.opencity_zero_shot?.mae ?? null,
+        published: e.opencity_zero_shot?.published ?? null,
+        verdict: e.opencity_verdict || null,
+      }))
+      .filter(b => b.specific != null || b.zeroshot != null);
+    const verdicts = bars.filter(b => b.zeroshot != null);
+
     this.querySelector("#body").innerHTML = `
-      <div class="note">
-        <b>Exposure decides what may be claimed.</b> A dataset inside OpenCity's pre-training corpus
-        cannot support a zero-shot claim about that city, no matter how good the metric is. Two of
-        the three cities originally planned for this comparison — METR-LA and PEMS-BAY — turned out
-        to be inside it.
-      </div>
-      <div class="note warn"><b>${d.protocol_warning || ""}</b></div>
+      <section class="card">
+        <h2>Foundation model vs city-specific models
+          <small>MAE, lower is better · held-out cities are the only ones a zero-shot claim can stand on</small></h2>
+        <div class="chart short"><canvas id="cc-chart"></canvas></div>
+        <div class="hcards tight">${verdicts.map(b => `
+          <div class="hcard"><div class="hcard-h">${b.name}</div>
+            <div class="stat-v">${b.zeroshot}<small class="muted"> MAE</small></div>
+            <div class="muted">published ${b.published ?? "—"}</div>
+            <div class="tag ${b.verdict === "REPRODUCTION_PASS" ? "NORMAL" : "UNKNOWN"}">${
+              b.verdict === "REPRODUCTION_PASS" ? "reproduces published" : "no published reference"}</div>
+          </div>`).join("")}</div>
+        <details class="why"><summary>Why exposure decides what may be claimed</summary>
+          <div class="note">A dataset inside OpenCity's pre-training corpus cannot support a zero-shot
+            claim about that city, no matter how good the metric is. Two of the three cities originally
+            planned for this comparison — METR-LA and PEMS-BAY — turned out to be inside it.</div>
+          <div class="note warn"><b>${d.protocol_warning || ""}</b></div>
+          <div class="note">Official <code>HKUDS/OpenCity</code> at pinned SHA <code>eca64c9</code>,
+            released <code>OpenCity-plus</code> weights used as published, evaluated with the authors'
+            own <code>-mode test</code> command on an A10G; the pinned checkout verified byte-identical
+            after every run. A missing published reference is not a failure and not a pass — no verdict
+            is invented.</div>
+        </details>
+      </section>
       <section class="card">
         <h2>Research datasets <small>${d.count} registered · arrays stay on Drive / S3 / HuggingFace</small></h2>
         <div class="tablewrap"><table>
@@ -57,22 +86,34 @@ export class CrossCityPage extends HTMLElement {
             <th>OpenCity zero-shot MAE</th><th>verdict</th>
           </tr></thead><tbody>${rows}</tbody></table></div>
         <p class="muted">${d.storage_note || ""}</p>
-      </section>
-      <section class="card">
-        <h2>What OpenCity actually did here</h2>
-        <p class="muted">Official <code>HKUDS/OpenCity</code> at pinned SHA <code>eca64c9</code>,
-        released <code>OpenCity-plus</code> weights used as published, evaluated with the authors'
-        own <code>-mode test</code> command on an A10G. The pinned checkout was verified
-        byte-identical after every run.</p>
-        <div class="statgrid">
-          ${stat("PEMS07M", "4.50 / 8.21 / 12.20 %", "matches published exactly — REPRODUCTION_PASS", "ok")}
-          ${stat("TrafficSH", "0.55 / 0.85 / 8.01 %", "matches published exactly — REPRODUCTION_PASS", "ok")}
-          ${stat("TrafficNJ", "0.70 / 1.19 / 14.84 %", "no published reference — REFERENCE_UNKNOWN")}
-          ${stat("TrafficTJ", "0.76 / 1.26 / 15.44 %", "no published reference — REFERENCE_UNKNOWN")}
-        </div>
-        <p class="muted">A missing reference is not a failure and not a pass. Where the authors
-        published no figure for a dataset, no verdict is invented.</p>
       </section>`;
+    this.draw(bars);
+  }
+
+  draw(bars) {
+    if (typeof Chart === "undefined" || !bars.length) return;
+    const muted = window.axisColor();
+    this._chart?.destroy();
+    this._chart = new Chart(this.querySelector("#cc-chart"), {
+      type: "bar",
+      data: {labels: bars.map(b => `${b.name}${b.held ? "" : " (in pre-training)"}`),
+             datasets: [
+               {label: "best city-specific model, MAE@15", data: bars.map(b => b.specific),
+                backgroundColor: "#60a5fa"},
+               {label: "OpenCity zero-shot, MAE (held-out city)", data: bars.map(b => b.zeroshot),
+                backgroundColor: "#a855f7"},
+               {label: "published reference", data: bars.map(b => b.published), type: "line",
+                borderColor: "#f59e0b", backgroundColor: "#f59e0b", showLine: false, pointStyle: "crossRot",
+                pointRadius: 7, pointBorderWidth: 2},
+             ]},
+      options: {...window.chartDefaults(), interaction: {mode: "index", intersect: false},
+        plugins: {...window.chartDefaults().plugins,
+          legend: {labels: {color: muted, boxWidth: 10, usePointStyle: true}}},
+        scales: {...window.chartDefaults().scales,
+          y: {...window.chartDefaults().scales.y, beginAtZero: true,
+              title: {display: true, color: muted,
+                      text: "MAE in each dataset's own unit — compare within a dataset, never across"}}}},
+    });
   }
 }
 

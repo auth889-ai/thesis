@@ -28,12 +28,12 @@ const TABS = [
 export class ResearchPage extends HTMLElement {
   connectedCallback() {
     this.innerHTML = `
-      <div class="note">
-        <b>Benchmark validation, not a Dhaka result.</b> Everything on this page is measured on
-        public benchmarks — METR-LA (Los Angeles) and PEMS-BAY (Bay Area) loop detectors. It shows
-        the modelling pipeline reproduces published work. It is <b>not</b> evidence about Dhaka
-        forecasting accuracy, and none is claimed.
-      </div>
+      <details class="why"><summary>Benchmark validation, not a Dhaka result</summary>
+        <div class="note">Everything on this page is measured on public benchmarks — METR-LA
+          (Los Angeles) and PEMS-BAY (Bay Area) loop detectors. It shows the modelling pipeline
+          reproduces published work. It is <b>not</b> evidence about Dhaka forecasting accuracy,
+          and none is claimed.</div>
+      </details>
       <div class="tabs">${TABS.map((t, i) =>
         `<button data-tab="${t.id}" ${i === 0 ? 'aria-current="true"' : ""}>${t.label}</button>`).join("")}</div>
       <p class="muted" id="tabnote">${TABS[0].note}</p>

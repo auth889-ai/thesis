@@ -127,3 +127,96 @@ def test_the_smoke_run_record_holds_measured_outputs():
         assert m["total_vehicle_hours"] > 0 and m["arrived"] > 0
         assert m["mean_queue_veh"] is not None
         assert (REPO / r["out_dir"] / "tripinfo.xml").exists()
+
+
+# ------------------------------------------------------------------ forecast-quality ablation
+
+def test_random_forecast_keeps_shape_but_carries_no_model():
+    res = {"forecast": {"values": {15: [2.0, 2.5, 1.0]}, "node_ids": ["a", "b", "c"],
+                        "model": "Chronos-Bolt", "checkpoint": "x", "is_baseline": False}}
+    out = ic.randomise_forecast(res, seed=7)
+    f = out["forecast"]
+    assert f["model"] == "random" and f["is_baseline"] is True and f["checkpoint"] is None
+    assert len(f["values"][15]) == 3 and all(0.0 <= v <= 3.0 for v in f["values"][15])
+    again = ic.randomise_forecast({"forecast": {"values": {15: [0, 0, 0]}, "node_ids": ["a", "b", "c"]}}, 7)
+    assert again["forecast"]["values"][15] == f["values"][15]        # seeded, reproducible
+
+
+def test_random_forecast_without_a_forecast_is_a_no_op():
+    assert ic.randomise_forecast({"forecast": None}, 1) == {"forecast": None}
+
+
+def test_every_forecast_kind_is_explained():
+    assert set(ic.FORECAST_KINDS) == {"model", "oracle", "random"}
+    assert all(ic.FORECAST_KINDS.values())
+
+
+def test_ablation_pairs_the_prediction_arm_with_its_own_seed():
+    from pipeline.routing import forecast_quality_ablation as ab
+    rec = {"seeds": [1, 2],
+           "runs": [{"arm": "baseline", "seed": 1, "metrics": {"total_vehicle_hours": 100.0}},
+                    {"arm": "prediction_aware", "seed": 1, "metrics": {"total_vehicle_hours": 90.0}},
+                    {"arm": "baseline", "seed": 2, "metrics": {"total_vehicle_hours": 200.0}},
+                    {"arm": "prediction_aware", "seed": 2, "metrics": {"total_vehicle_hours": 210.0}}]}
+    v = ab.paired(rec, "prediction_aware")
+    assert v["per_seed_pct"] == [-10.0, 5.0] and v["seeds_improved"] == "1/2"
+    assert v["claim"] == "NOT_ESTABLISHED"
+
+
+def test_route_sensitivity_counts_vehicles_routed_differently(tmp_path, monkeypatch):
+    from pipeline.routing import forecast_quality_ablation as ab
+    monkeypatch.setattr(ic, "RUNS", tmp_path)
+    def write(rid, routes):
+        d = tmp_path / rid / "prediction_aware_s1"
+        d.mkdir(parents=True)
+        (d / "routes_advised.rou.xml").write_text("<routes>" + "".join(
+            f'<vehicle id="{v}" depart="0"><route edges="{e}"/></vehicle>' for v, e in routes.items())
+            + "</routes>")
+    write("r_a", {"v1": "e1 e2", "v2": "e3"})
+    write("r_b", {"v1": "e1 e9", "v2": "e3"})
+    s = ab.route_sensitivity({"A": "r_a", "B": "r_b"}, 1)
+    assert s["vehicles_routed_differently"] == {"A vs B": 1}
+
+
+# ------------------------------------------------------------------ the live backtest
+
+def test_backtest_scores_every_model_on_identical_pairs_and_persistence_has_zero_skill():
+    from pipeline.forecasting import live_backtest as bt
+    rng = np.random.default_rng(0)
+    T, N = 60, 3
+    vals = np.clip(np.rint(rng.uniform(0, 3, (T, N))), 0, 3).astype(float)
+    mask = np.ones((T, N), bool)
+    mask[30, 1] = False                                   # one gap, never imputed
+    vals[30, 1] = np.nan
+    bins = np.arange(T) * 300.0
+    rec = bt.backtest(vals, mask, ["a", "b", "c"], bins,
+                      bt.adapters(["persistence", "historical_average"]), [15, 30], stride=5)
+    rows = {(r["model"], r["horizon_min"]): r for r in rec["rows"]}
+    assert rows[("persistence", 15)]["skill_vs_persistence"] == 0.0
+    assert rows[("persistence", 15)]["n_pairs"] == rows[("historical_average", 15)]["n_pairs"]
+    assert 0.0 <= rows[("persistence", 15)]["class_accuracy"] <= 1.0
+    assert rec["traces"][15] and "actual" in rec["traces"][15][0]
+
+
+# ------------------------------------------------------------------ the forecast ledger
+
+def test_forecast_ledger_logs_then_grades_only_reached_targets(tmp_path, monkeypatch):
+    import sys
+    sys.path.insert(0, str(REPO / "dashboard/backend"))
+    import forecast_log as fl
+    monkeypatch.setattr(fl, "DB", tmp_path / "ledger.sqlite")
+    # three corridors, a forecast issued at bin 2 for +15 min (= bin 5) and +60 min (= bin 14)
+    bins = np.arange(10) * 300.0 + 1_700_000_000
+    vals = np.tile(np.array([[1.0, 2.0, 0.0]]), (10, 1)); mask = np.ones((10, 3), bool)
+    monkeypatch.setattr(fl, "_actuals", lambda city: (bins, ["a", "b", "c"], vals, mask))
+    issued = fl.datetime.fromtimestamp(bins[2], fl.timezone.utc).isoformat()
+    res = {"forecast": {"inference_utc": issued, "horizons_min": [15, 60], "model": "m",
+                        "is_baseline": False, "unit": "congestion_level_0_3", "node_ids": ["a", "b", "c"],
+                        "values": {15: [1.0, 1.0, 1.0], 60: [2.0, 2.0, 2.0]}}}
+    assert fl.log(res, "dhaka") == 6
+    assert fl.log(res, "dhaka") == 6 and fl.score("dhaka")["logged"] == 6   # idempotent
+    s = fl.score("dhaka")
+    assert s["scored"] == 3                                   # +60 min lies beyond the record
+    r = s["rows"][0]
+    assert r["horizon_min"] == 15 and r["n"] == 3
+    assert abs(r["mae"] - 2 / 3) < 1e-3 and abs(r["class_accuracy"] - 1 / 3) < 1e-3   # rounded to 4 dp

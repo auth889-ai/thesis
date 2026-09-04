@@ -108,13 +108,10 @@ def observed_levels(vals, mask, bins, idx: int) -> tuple[dict, dict]:
     return levels, ages
 
 
-def recorded_forecast(city: str, horizon_min: int, model: str | None = None,
-                      as_of: str = "latest", src: Path = RECORDED_SRC) -> dict:
-    """Run a REAL model over the recorded live window, in this process.
-
-    Returns the same shape the API returns, plus the observed state at the as-of bin so the SUMO
-    scenario can reproduce exactly the congestion the model was forecasting FROM.
-    """
+def recorded_city_data(city: str = "dhaka", as_of: str = "latest",
+                       src: Path = RECORDED_SRC) -> tuple[CityData, dict]:
+    """The recorded REAL_LIVE window cut at the as-of bin, as a CityData, plus what was observed
+    there. This is the one place the recorder's file becomes model input."""
     if not src.exists():
         raise SystemExit(f"missing recorded series {src}; run pipeline/forecasting/record_live.py")
     rows = live_state.load_rows(src)
@@ -122,16 +119,14 @@ def recorded_forecast(city: str, horizon_min: int, model: str | None = None,
         raise SystemExit(f"{src} holds no usable congestion rows")
     vals, mask, corridors, bins = live_state.build(rows)
     idx = resolve_as_of(as_of, vals, mask, bins)
-    v, m, b = vals[: idx + 1], mask[: idx + 1], bins[: idx + 1]
+    v, b = vals[: idx + 1], bins[: idx + 1]
     cd = CityData(city_id=city, node_ids=list(corridors), values=v.astype("float32"),
                   interval_s=live_state.BIN_S, target="corridor congestion level",
                   unit=LEVEL_UNIT,
                   timestamps=[datetime.fromtimestamp(float(x), timezone.utc).isoformat() for x in b],
                   reality="REAL_LIVE (recorded, replayed)")
-    out = run_forecast(cd, [horizon_min], model)
     lv, ages = observed_levels(vals, mask, bins, idx)
-    out["input"] = cd.describe()
-    out["observed"] = {
+    observed = {
         "as_of_bin": idx,
         "as_of_utc": datetime.fromtimestamp(float(bins[idx]), timezone.utc).isoformat(),
         "levels": {str(corridors[n]): lv[n] for n in lv},
@@ -141,6 +136,21 @@ def recorded_forecast(city: str, horizon_min: int, model: str | None = None,
         "bins_seen_by_model": idx + 1,
         "bins_available": int(vals.shape[0]),
     }
+    return cd, observed
+
+
+def recorded_forecast(city: str, horizon_min: int | list[int], model: str | None = None,
+                      as_of: str = "latest", src: Path = RECORDED_SRC) -> dict:
+    """Run a REAL model over the recorded live window, in this process.
+
+    Returns the same shape the API returns, plus the observed state at the as-of bin so the SUMO
+    scenario can reproduce exactly the congestion the model was forecasting FROM.
+    """
+    cd, observed = recorded_city_data(city, as_of, src)
+    hs = list(horizon_min) if isinstance(horizon_min, (list, tuple)) else [int(horizon_min)]
+    out = run_forecast(cd, hs, model)
+    out["input"] = cd.describe()
+    out["observed"] = observed
     return out
 
 
@@ -219,7 +229,46 @@ def _price_from_speeds(f: dict, horizon_min: int, net_path: Path, cmap: dict) ->
                                                    for k, v in speeds.items()}}
 
 
-def _price_from_levels(f: dict, horizon_min: int, cmap: dict) -> tuple[dict, set, dict]:
+def expand_coverage(net_path: Path, edge_mult: dict[str, float], hops: int) -> tuple[dict, dict]:
+    """Carry each corridor's multiplier outward to every drivable edge within `hops` connections.
+
+    The recorder observes six corridors; the router sees 6,527 edges. With only the corridor
+    edges priced, a forecast changes nothing off-corridor, and E3 showed the router then cannot
+    tell a real forecast from noise. Propagating a corridor's state to its neighbourhood is a
+    stated ASSUMPTION — congestion is spatially correlated, a corridor's neighbours are in a
+    similar state — and it is the knob that tests whether pricing coverage is the bottleneck.
+    Nearest corridor wins; where two are equally near, the worse one does.
+    """
+    import sumolib
+    net = sumolib.net.readNet(str(net_path))
+    mult = dict(edge_mult)
+    frontier = set(edge_mult)
+    for _ in range(int(hops)):
+        nxt = {}
+        for eid in frontier:
+            try:
+                e = net.getEdge(eid)
+            except KeyError:
+                continue
+            for o in list(e.getOutgoing()) + list(e.getIncoming()):
+                oid = o.getID()
+                if oid in mult or not o.allows("passenger"):
+                    continue
+                nxt[oid] = max(nxt.get(oid, 0.0), mult[eid])
+        mult.update(nxt)
+        frontier = set(nxt)
+    geo = {}
+    for eid in mult:
+        try:
+            e = net.getEdge(eid)
+        except KeyError:
+            continue
+        geo[eid] = max(e.getLength() / (e.getSpeed() or 13.9), 0.1)
+    return mult, {"network_edges": len(net.getEdges()), "free_flow_s": geo}
+
+
+def _price_from_levels(f: dict, horizon_min: int, cmap: dict, net_path: Path | None = None,
+                       hops: int = 0) -> tuple[dict, set, dict]:
     """Predicted congestion CLASS per corridor -> per-edge travel time = free flow x multiplier.
 
     The recorder persists an ordinal class, so the forecast is a class too. Turning it back into a
@@ -229,7 +278,7 @@ def _price_from_levels(f: dict, horizon_min: int, cmap: dict) -> tuple[dict, set
     """
     vals = f["values"].get(str(horizon_min)) or f["values"].get(horizon_min)
     levels = dict(zip(f["node_ids"], vals))
-    edge_tt, covered, per_corridor = {}, set(), {}
+    edge_tt, covered, per_corridor, edge_mult = {}, set(), {}, {}
     for corridor, rec in cmap.items():
         lv = levels.get(corridor)
         if lv is None or not np.isfinite(lv):
@@ -241,8 +290,27 @@ def _price_from_levels(f: dict, horizon_min: int, cmap: dict) -> tuple[dict, set
         for eid, free in (rec.get("edge_free_tt_s") or {}).items():
             # worst corridor wins where two corridors share an edge, as in live_to_edges
             edge_tt[eid] = round(max(edge_tt.get(eid, 0.0), float(free) * m), 3)
+            edge_mult[eid] = max(edge_mult.get(eid, 0.0), m)
             covered.add(eid)
-    return edge_tt, covered, {"rule": "free-flow travel time x congestion-class band midpoint",
+    propagation = {"hops": int(hops), "propagated_edges": 0, "network_edges": None}
+    if hops and net_path is not None and edge_mult:
+        mult, info = expand_coverage(net_path, edge_mult, hops)
+        for eid, m in mult.items():
+            if eid in edge_tt:
+                continue
+            free = info["free_flow_s"].get(eid)
+            if free is None:
+                continue
+            edge_tt[eid] = round(free * m, 3)
+            covered.add(eid)
+        propagation.update(propagated_edges=len(edge_tt) - len(edge_mult),
+                           network_edges=info["network_edges"],
+                           assumption=("a corridor's congestion class is carried to every drivable "
+                                       "edge within the given number of connections; nearest "
+                                       "corridor wins, ties to the worse one"))
+    return edge_tt, covered, {"rule": "free-flow travel time x congestion-class band midpoint"
+                                      + (f", propagated {hops} hops" if hops else ""),
+                              "propagation": propagation,
                               "band_midpoints": BAND_MID, "bands": BAND_DOC,
                               "assumption": ("a class carries no magnitude; the midpoint of the "
                                              "ratio band that defines it is used, and SEVERE is an "
@@ -253,7 +321,7 @@ def _price_from_levels(f: dict, horizon_min: int, cmap: dict) -> tuple[dict, set
                                                    for k, v in levels.items()}}
 
 
-def build_table(res: dict, horizon_min: int, net_path: Path) -> dict:
+def build_table(res: dict, horizon_min: int, net_path: Path, coverage_hops: int = 0) -> dict:
     """Turn the forecast's predicted values into per-edge travel times.
 
     Two units reach here and they are priced differently, never interchangeably: derived SPEEDS
@@ -267,16 +335,18 @@ def build_table(res: dict, horizon_min: int, net_path: Path) -> dict:
     cmap = corridor_records()
     all_edges = {e for rec in cmap.values() for e in rec["edges"]}
     if str(f.get("unit", "")).startswith("congestion_level"):
-        edge_tt, covered, pricing = _price_from_levels(f, horizon_min, cmap)
+        edge_tt, covered, pricing = _price_from_levels(f, horizon_min, cmap, net_path, coverage_hops)
     else:
         edge_tt, covered, pricing = _price_from_speeds(f, horizon_min, net_path, cmap)
     pricing["input_unit"] = f.get("unit")
 
     return {
         "edge_travel_times": edge_tt,
-        "covered_edges": len(covered),
+        "covered_edges": len(covered & all_edges),
+        "priced_edges": len(edge_tt),
+        "coverage_hops": int(coverage_hops),
         "mapped_edges": len(all_edges),
-        "coverage": round(len(covered) / len(all_edges), 4) if all_edges else 0.0,
+        "coverage": round(len(covered & all_edges) / len(all_edges), 4) if all_edges else 0.0,
         "pricing": pricing,
         "uncovered_note": ("edges no observation node covers keep their free-flow time and are NOT "
                            "included here; inventing costs for them would make the routing result "
@@ -327,11 +397,13 @@ def main() -> int:
                         "api = ask the running backend's rolling buffer")
     p.add_argument("--as-of", default="latest",
                    help="recorded source only: 'latest', 'peak', a bin index or an ISO timestamp")
+    p.add_argument("--coverage-hops", type=int, default=0,
+                   help="carry each corridor's state to edges within this many connections (0 = corridor edges only)")
     a = p.parse_args()
 
     res = fetch_forecast(a.city, a.horizon_min, a.model, a.api, a.source, a.as_of)
     net = ensure_net()
-    table = build_table(res, a.horizon_min, net)
+    table = build_table(res, a.horizon_min, net, a.coverage_hops)
     path = write_weights(table, a.out, a.begin, a.end)
     f = table["forecast"]
     print(f"[costs] model {f['model']} (baseline={f['is_baseline']}), horizon {f['horizon_min']} min")
@@ -341,6 +413,7 @@ def main() -> int:
         print(f"[costs] as-of {o['as_of_utc']} (bin {o['as_of_bin']}, "
               f"{o['bins_seen_by_model']} bins seen by the model)")
     print(f"[costs] priced by: {table['pricing']['rule']} (input unit {table['pricing']['input_unit']})")
+    print(f"[costs] {table['priced_edges']} edges priced in total (hops={table['coverage_hops']})")
     print(f"[costs] {table['covered_edges']}/{table['mapped_edges']} mapped edges priced "
           f"({table['coverage']:.0%} coverage)")
     print(f"[costs] wrote {path.relative_to(REPO)}")

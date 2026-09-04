@@ -41,6 +41,7 @@ import readers
 import schemas
 import credentials as key_store
 import simulate
+import forecast_log
 
 app = FastAPI(title="DhakaFlow", version="1.0.0", docs_url="/api/docs",
               description="Live Dhaka traffic, forecasting, routing and V2X evidence.")
@@ -283,21 +284,63 @@ def observatory_sample(payload: dict | None = None):
 
 
 @app.get("/api/forecast/{city_id}", tags=["predict"])
-def city_forecast(city_id: str, horizons: str = "5,15,30,60"):
+def city_forecast(city_id: str, horizons: str = "5,15,30,60", source: str = "auto",
+                  model: str | None = None):
     """The real forecast path: whichever model can honestly serve this city, or a LABELLED baseline.
 
-    Replaces the four-class empirical transition model as the main prediction. The response always
-    carries the model used, whether it was a baseline, and why every other model refused.
+    `source` says which observations the model is given. `observatory` is the rolling in-memory
+    buffer (derived speeds; empty after a restart). `recorded` is the REAL_LIVE series the
+    recorder wrote to disk over days (derived congestion classes). `auto` uses the buffer when it
+    holds enough steps for a model to serve and the recorded window otherwise — and the response
+    says which, so a click after a restart gets a real model over real history, never a floor
+    dressed as the system's forecast.
     """
     import sys
     sys.path.insert(0, str(config.REPO))
     from pipeline.forecasting.adapters.registry import forecast as run_forecast
     hs = [int(h) for h in horizons.split(",") if h.strip().isdigit()]
     cd = observatory_mod.observatory.city_data(city_id)
-    out = run_forecast(cd, hs)
-    out["input"] = cd.describe()
+    use_recorded = source == "recorded" or (source == "auto" and cd.shape[0] < 8
+                                            and city_id == "dhaka")
+    if use_recorded:
+        from pipeline.routing.forecast_to_costs import recorded_forecast
+        out = recorded_forecast(city_id, hs, model, "latest")
+        out["source"] = "recorded"
+    else:
+        out = run_forecast(cd, hs, model)
+        out["input"] = cd.describe()
+        out["source"] = "observatory"
     out["readiness"] = observatory_mod.observatory.readiness(city_id)
+    try:
+        out["logged_rows"] = forecast_log.log(out, city_id, source=out["source"])
+    except Exception as exc:                        # noqa: BLE001 - the ledger must not break a forecast
+        out["logged_rows"] = f"not logged: {type(exc).__name__}: {exc}"
     return out
+
+
+@app.get("/api/forecast/{city_id}/scoreboard", tags=["predict"])
+def city_forecast_scoreboard(city_id: str):
+    """The system's own track record: forecasts it issued, graded against what was recorded next.
+
+    Unlike the backtest (a replay), these were written down BEFORE their target time and cannot
+    be revised. The scheduler issues one every five minutes while the server runs.
+    """
+    return forecast_log.score(city_id)
+
+
+@app.get("/api/forecast/{city_id}/accuracy", tags=["predict"])
+def city_forecast_accuracy(city_id: str):
+    """How accurate the forecast is on THIS city's own recorded data — a rolling-origin backtest.
+
+    Every model is cut at each origin bin, forecasts from that history only, and is scored on
+    what the recorder later wrote. Read from the evidence file; the command regenerates it.
+    """
+    f = config.REPO / "results/forecasting/live_backtest.json"
+    if city_id != "dhaka" or not f.exists():
+        return {"available": False, "city_id": city_id,
+                "missing": "results/forecasting/live_backtest.json",
+                "command": "python pipeline/forecasting/live_backtest.py"}
+    return {"available": True, **json.loads(f.read_text())}
 
 
 # ---------------------------------------------------------------------------
@@ -318,6 +361,33 @@ def history(city_id: str, horizons: str = "5,15,30,60"):
     rows, nodes = observatory_mod.observatory.series(city_id)
     hs = [int(h) for h in horizons.split(",") if h.strip().isdigit()]
     cd = observatory_mod.observatory.city_data(city_id)
+    if city_id == "dhaka" and cd.shape[0] < 8:
+        # the buffer is too short for any model: draw the recorded REAL_LIVE day instead, and
+        # forecast from it — the same window E1 was measured on, so its accuracy can be quoted
+        from pipeline.routing.forecast_to_costs import recorded_city_data
+        rcd, observed = recorded_city_data(city_id, "latest")
+        out = run_forecast(rcd, hs)
+        window = 288
+        v = rcd.values[-window:]
+        ts = rcd.timestamps[-window:]
+        acc = config.REPO / "results/forecasting/live_backtest.json"
+        accuracy = None
+        if acc.exists():
+            bt = json.loads(acc.read_text())
+            m = (out.get("forecast") or {}).get("model")
+            accuracy = {"rows": [r for r in bt["rows"] if r["model"] in (m, "persistence")],
+                        "origins": bt["origins_evaluated"], "bins": bt["bins"]}
+        return {
+            "city_id": city_id, "nodes": rcd.node_ids,
+            "history": [{"utc": t, "values": [None if x != x else round(float(x), 3) for x in row]}
+                        for t, row in zip(ts, v)],
+            "interval_s": rcd.interval_s, "unit": rcd.unit,
+            "forecast": out.get("forecast"), "decision": out.get("decision"),
+            "observed": observed, "accuracy": accuracy,
+            "readiness": observatory_mod.observatory.readiness(city_id),
+            "source": ("recorded REAL_LIVE series on disk (derived congestion classes), last 24 h, "
+                       "+ the common forecast interface"),
+        }
     out = run_forecast(cd, hs) if cd.shape[0] else {"forecast": None, "decision": None}
     return {
         "city_id": city_id,
@@ -331,6 +401,25 @@ def history(city_id: str, horizons: str = "5,15,30,60"):
         "readiness": observatory_mod.observatory.readiness(city_id),
         "source": "observatory rolling buffer (derived speeds) + the common forecast interface",
     }
+
+
+@app.get("/api/experiment/sweep", tags=["experiment"])
+def experiment_sweep(grid: str = "compliance"):
+    """E4: the penetration curve, every point a full three-arm paired-seed run."""
+    f = config.REPO / f"results/routing/sweep_{grid}.json"
+    if not f.exists():
+        return {"available": False, "missing": str(f.relative_to(config.REPO)),
+                "command": f"make sweep" if grid == "compliance" else "make sweep-v2x"}
+    return {"available": True, **json.loads(f.read_text())}
+
+
+@app.get("/api/experiment/ablation", tags=["experiment"])
+def experiment_ablation():
+    """E3: oracle / model / persistence / random through the same chain."""
+    f = config.REPO / "results/routing/ablation_forecast_quality.json"
+    if not f.exists():
+        return {"available": False, "missing": str(f.relative_to(config.REPO)), "command": "make ablation"}
+    return {"available": True, **json.loads(f.read_text())}
 
 
 @app.get("/api/experiment/chain", tags=["experiment"])
@@ -527,6 +616,7 @@ def _start_observatory() -> None:
     if os.environ.get("DHAKAFLOW_NO_OBSERVATORY"):
         return
     try:
+        forecast_log.start_scheduler("dhaka")
         observatory_mod.observatory.start("dhaka")
     except Exception:                              # noqa: BLE001 - never block startup
         pass

@@ -1,0 +1,356 @@
+{
+ "generated_utc": "2026-09-04T12:12:17.879871+00:00",
+ "question": "does forecast quality change the routing outcome?",
+ "held_fixed": {
+  "seeds": "11,12,13,14,15",
+  "horizon_s": 1800,
+  "compliance": 0.3,
+  "v2x": "ideal",
+  "as_of": "peak",
+  "scenario": "observed levels at as-of"
+ },
+ "objective": "total vehicle-hours, prediction_aware vs baseline, paired per seed",
+ "rows": [
+  {
+   "forecast": "Chronos-Bolt",
+   "kind": "model",
+   "meaning": "the registry's model (or --model), run over real recorded history",
+   "coverage_hops": 0,
+   "priced_edges": 79,
+   "run_id": "chain_20260904T120325Z_abl_h0_chronosbolt_a6e2ca",
+   "model_reported": "Chronos-Bolt",
+   "baseline_vehicle_hours": 218.74,
+   "reactive_vehicle_hours": 214.57,
+   "prediction_aware_vehicle_hours": 217.44,
+   "prediction_aware": {
+    "mean_travel_time_s": 358.8,
+    "p95_travel_time_s": 635.2,
+    "total_waiting_s": 62777.0,
+    "mean_queue_veh": 77.83,
+    "arrived": 1648.6,
+    "teleports": 13.8,
+    "reroutes": 1842.0
+   },
+   "vs_baseline": {
+    "per_seed_pct": [
+     1.77,
+     2.09,
+     -3.03,
+     -0.03,
+     -3.74
+    ],
+    "mean_pct": -0.59,
+    "seeds_improved": "3/5",
+    "claim": "NOT_ESTABLISHED"
+   },
+   "reactive_vs_baseline": {
+    "per_seed_pct": [
+     -2.93,
+     -4.85,
+     -4.45,
+     7.34,
+     -4.58
+    ],
+    "mean_pct": -1.89,
+    "seeds_improved": "4/5",
+    "claim": "NOT_ESTABLISHED"
+   }
+  },
+  {
+   "forecast": "random",
+   "kind": "random",
+   "meaning": "uniform random congestion level per corridor, seeded \u2014 the floor",
+   "coverage_hops": 0,
+   "priced_edges": 79,
+   "run_id": "chain_20260904T120449Z_abl_h0_random_8bb066",
+   "model_reported": "random",
+   "baseline_vehicle_hours": 218.74,
+   "reactive_vehicle_hours": 214.57,
+   "prediction_aware_vehicle_hours": 217.44,
+   "prediction_aware": {
+    "mean_travel_time_s": 358.8,
+    "p95_travel_time_s": 635.2,
+    "total_waiting_s": 62777.0,
+    "mean_queue_veh": 77.83,
+    "arrived": 1648.6,
+    "teleports": 13.8,
+    "reroutes": 1842.0
+   },
+   "vs_baseline": {
+    "per_seed_pct": [
+     1.77,
+     2.09,
+     -3.03,
+     -0.03,
+     -3.74
+    ],
+    "mean_pct": -0.59,
+    "seeds_improved": "3/5",
+    "claim": "NOT_ESTABLISHED"
+   },
+   "reactive_vs_baseline": {
+    "per_seed_pct": [
+     -2.93,
+     -4.85,
+     -4.45,
+     7.34,
+     -4.58
+    ],
+    "mean_pct": -1.89,
+    "seeds_improved": "4/5",
+    "claim": "NOT_ESTABLISHED"
+   }
+  },
+  {
+   "forecast": "Chronos-Bolt",
+   "kind": "model",
+   "meaning": "the registry's model (or --model), run over real recorded history",
+   "coverage_hops": 3,
+   "priced_edges": 441,
+   "run_id": "chain_20260904T120609Z_abl_h3_chronosbolt_8a5cd4",
+   "model_reported": "Chronos-Bolt",
+   "baseline_vehicle_hours": 218.74,
+   "reactive_vehicle_hours": 214.57,
+   "prediction_aware_vehicle_hours": 217.68,
+   "prediction_aware": {
+    "mean_travel_time_s": 358.9,
+    "p95_travel_time_s": 635.2,
+    "total_waiting_s": 60746.0,
+    "mean_queue_veh": 75.58,
+    "arrived": 1655.2,
+    "teleports": 10.8,
+    "reroutes": 1935.0
+   },
+   "vs_baseline": {
+    "per_seed_pct": [
+     2.44,
+     4.0,
+     -3.11,
+     -4.23,
+     -1.52
+    ],
+    "mean_pct": -0.48,
+    "seeds_improved": "3/5",
+    "claim": "NOT_ESTABLISHED"
+   },
+   "reactive_vs_baseline": {
+    "per_seed_pct": [
+     -2.93,
+     -4.85,
+     -4.45,
+     7.34,
+     -4.58
+    ],
+    "mean_pct": -1.89,
+    "seeds_improved": "4/5",
+    "claim": "NOT_ESTABLISHED"
+   }
+  },
+  {
+   "forecast": "random",
+   "kind": "random",
+   "meaning": "uniform random congestion level per corridor, seeded \u2014 the floor",
+   "coverage_hops": 3,
+   "priced_edges": 441,
+   "run_id": "chain_20260904T120730Z_abl_h3_random_fdb37b",
+   "model_reported": "random",
+   "baseline_vehicle_hours": 218.74,
+   "reactive_vehicle_hours": 214.57,
+   "prediction_aware_vehicle_hours": 219.01,
+   "prediction_aware": {
+    "mean_travel_time_s": 357.2,
+    "p95_travel_time_s": 636.8,
+    "total_waiting_s": 58783.0,
+    "mean_queue_veh": 81.69,
+    "arrived": 1640.6,
+    "teleports": 14.6,
+    "reroutes": 1900.8
+   },
+   "vs_baseline": {
+    "per_seed_pct": [
+     -3.16,
+     -2.69,
+     3.22,
+     3.91,
+     -0.72
+    ],
+    "mean_pct": 0.11,
+    "seeds_improved": "3/5",
+    "claim": "NOT_ESTABLISHED"
+   },
+   "reactive_vs_baseline": {
+    "per_seed_pct": [
+     -2.93,
+     -4.85,
+     -4.45,
+     7.34,
+     -4.58
+    ],
+    "mean_pct": -1.89,
+    "seeds_improved": "4/5",
+    "claim": "NOT_ESTABLISHED"
+   }
+  },
+  {
+   "forecast": "Chronos-Bolt",
+   "kind": "model",
+   "meaning": "the registry's model (or --model), run over real recorded history",
+   "coverage_hops": 8,
+   "priced_edges": 1324,
+   "run_id": "chain_20260904T120851Z_abl_h8_chronosbolt_4663ca",
+   "model_reported": "Chronos-Bolt",
+   "baseline_vehicle_hours": 218.74,
+   "reactive_vehicle_hours": 214.57,
+   "prediction_aware_vehicle_hours": 216.6,
+   "prediction_aware": {
+    "mean_travel_time_s": 359.9,
+    "p95_travel_time_s": 648.6,
+    "total_waiting_s": 61613.0,
+    "mean_queue_veh": 70.69,
+    "arrived": 1667.8,
+    "teleports": 11.2,
+    "reroutes": 1988.0
+   },
+   "vs_baseline": {
+    "per_seed_pct": [
+     2.59,
+     -3.19,
+     -1.18,
+     -2.74,
+     -0.23
+    ],
+    "mean_pct": -0.95,
+    "seeds_improved": "4/5",
+    "claim": "NOT_ESTABLISHED"
+   },
+   "reactive_vs_baseline": {
+    "per_seed_pct": [
+     -2.93,
+     -4.85,
+     -4.45,
+     7.34,
+     -4.58
+    ],
+    "mean_pct": -1.89,
+    "seeds_improved": "4/5",
+    "claim": "NOT_ESTABLISHED"
+   }
+  },
+  {
+   "forecast": "random",
+   "kind": "random",
+   "meaning": "uniform random congestion level per corridor, seeded \u2014 the floor",
+   "coverage_hops": 8,
+   "priced_edges": 1324,
+   "run_id": "chain_20260904T121011Z_abl_h8_random_10e9fe",
+   "model_reported": "random",
+   "baseline_vehicle_hours": 218.74,
+   "reactive_vehicle_hours": 214.57,
+   "prediction_aware_vehicle_hours": 214.99,
+   "prediction_aware": {
+    "mean_travel_time_s": 354.2,
+    "p95_travel_time_s": 597.6,
+    "total_waiting_s": 55232.0,
+    "mean_queue_veh": 69.57,
+    "arrived": 1664.4,
+    "teleports": 11.2,
+    "reroutes": 1957.0
+   },
+   "vs_baseline": {
+    "per_seed_pct": [
+     -0.4,
+     3.64,
+     -5.55,
+     -0.88,
+     -5.44
+    ],
+    "mean_pct": -1.73,
+    "seeds_improved": "4/5",
+    "claim": "NOT_ESTABLISHED"
+   },
+   "reactive_vs_baseline": {
+    "per_seed_pct": [
+     -2.93,
+     -4.85,
+     -4.45,
+     7.34,
+     -4.58
+    ],
+    "mean_pct": -1.89,
+    "seeds_improved": "4/5",
+    "claim": "NOT_ESTABLISHED"
+   }
+  }
+ ],
+ "mean_pct_by_forecast": {
+  "Chronos-Bolt": -0.59,
+  "random": -0.59
+ },
+ "claims": {
+  "Chronos-Bolt": "NOT_ESTABLISHED",
+  "random": "NOT_ESTABLISHED"
+ },
+ "coverage_hops": [
+  0,
+  3,
+  8
+ ],
+ "route_sensitivity": {
+  "seed": 11,
+  "advised_vehicles": {
+   "Chronos-Bolt": 2263,
+   "random": 2263
+  },
+  "vehicles_routed_differently": {
+   "Chronos-Bolt vs random": 0
+  },
+  "how_to_read": "0 between two forecasts = the router made identical decisions on both; the forecast's numbers never reached the road"
+ },
+ "route_sensitivity_by_hops": {
+  "0": {
+   "seed": 11,
+   "advised_vehicles": {
+    "Chronos-Bolt": 2263,
+    "random": 2263
+   },
+   "vehicles_routed_differently": {
+    "Chronos-Bolt vs random": 0
+   },
+   "how_to_read": "0 between two forecasts = the router made identical decisions on both; the forecast's numbers never reached the road"
+  },
+  "3": {
+   "seed": 11,
+   "advised_vehicles": {
+    "Chronos-Bolt": 2263,
+    "random": 2263
+   },
+   "vehicles_routed_differently": {
+    "Chronos-Bolt vs random": 286
+   },
+   "how_to_read": "0 between two forecasts = the router made identical decisions on both; the forecast's numbers never reached the road"
+  },
+  "8": {
+   "seed": 11,
+   "advised_vehicles": {
+    "Chronos-Bolt": 2263,
+    "random": 2263
+   },
+   "vehicles_routed_differently": {
+    "Chronos-Bolt vs random": 321
+   },
+   "how_to_read": "0 between two forecasts = the router made identical decisions on both; the forecast's numbers never reached the road"
+  }
+ },
+ "reading": "the real model and RANDOM noise produced identical routes: the forecast's numbers never reached the router. With only the mapped corridor edges priced, the route decision is insensitive to forecast magnitude in the plausible range, so no accuracy gain could change the outcome \u2014 pricing COVERAGE is the bottleneck, not the model",
+ "coverage_reading": "growing the priced coverage to 8 hops (1324 edges) makes the router route 321 vehicles differently for the model than for noise, so coverage WAS the first bottleneck; with the forecast now reaching the road, the model's outcome is +0.78 pp relative to noise \u2014 it does NOT beat noise, consistent with its negative skill against persistence (E1): the second bottleneck is the model itself",
+ "runs": {
+  "Chronos-Bolt@0": "chain_20260904T120325Z_abl_h0_chronosbolt_a6e2ca",
+  "random@0": "chain_20260904T120449Z_abl_h0_random_8bb066",
+  "Chronos-Bolt@3": "chain_20260904T120609Z_abl_h3_chronosbolt_8a5cd4",
+  "random@3": "chain_20260904T120730Z_abl_h3_random_fdb37b",
+  "Chronos-Bolt@8": "chain_20260904T120851Z_abl_h8_chronosbolt_4663ca",
+  "random@8": "chain_20260904T121011Z_abl_h8_random_10e9fe"
+ },
+ "label": "SIMULATED COUNTERFACTUAL on the calibrated Dhaka twin",
+ "command": "python pipeline/routing/forecast_quality_ablation.py --seeds 11,12,13,14,15"
+}

@@ -1,0 +1,155 @@
+{
+ "run_id": "chain_20260904T062308Z_sw_compliance_c100_ideal_cadaf0",
+ "status": "done",
+ "stage": "done",
+ "started_utc": "2026-09-04T06:23:08.489345+00:00",
+ "config": {
+  "seeds": "11,12,13,14,15",
+  "horizon": 1800,
+  "horizon_min": 15,
+  "compliance": 1.0,
+  "v2x": "ideal",
+  "city": "dhaka",
+  "model": null,
+  "api": "http://127.0.0.1:8000",
+  "source": "recorded",
+  "as_of": "peak",
+  "levels": "observed",
+  "tag": "_sw_compliance_c100_ideal",
+  "scale": 0.25,
+  "net": "/Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+  "routes": "/Users/jannatulferdouseva/thesis/artifacts/gates/routes_repeat_1h.rou.xml.gz",
+  "forecast_kind": "model"
+ },
+ "command": "python pipeline/routing/integrated_chain.py --seeds 11,12,13,14,15 --horizon 1800 --v2x ideal --source recorded --as-of peak --levels observed",
+ "arms_done": 15,
+ "arms_total": 15,
+ "forecast": {
+  "model": "Chronos-Bolt",
+  "checkpoint": "amazon/chronos-bolt-small",
+  "is_baseline": false,
+  "horizon_min": 15,
+  "unit": "congestion_level_0_3",
+  "inference_utc": "2026-09-04T06:23:10.193888+00:00",
+  "input_window_steps": 525,
+  "selection_reason": "no spatio-temporal model can serve this city, but there is enough univariate history for a pretrained foundation model",
+  "fallback": true
+ },
+ "forecast_input": "[525, 6] over 6 nodes, congestion_level_0_3, REAL_LIVE (recorded, replayed), up to 2026-09-03T11:45:00+00:00",
+ "coverage": {
+  "covered": 79,
+  "mapped": 79
+ },
+ "edges_congested": 79,
+ "last": "prediction_aware_s15",
+ "finished_utc": "2026-09-04T08:25:03.094408+00:00",
+ "wall_s": 7314.8,
+ "summary": {
+  "arms": [
+   {
+    "arm": "baseline",
+    "seeds": [
+     11,
+     12,
+     13,
+     14,
+     15
+    ],
+    "total_vehicle_hours": 218.74,
+    "mean_travel_time_s": 364.7,
+    "p95_travel_time_s": 611.6,
+    "total_waiting_s": 57210.0,
+    "mean_time_loss_s": 102.1,
+    "mean_queue_veh": 57.93,
+    "max_queue_veh": 171.0,
+    "arrived": 1684.6,
+    "teleports": 1.8,
+    "reroutes": 0.0,
+    "advisories_delivered": 0.0,
+    "vehicle_hours_pct": 0.0,
+    "travel_time_pct": 0.0,
+    "waiting_pct": 0.0,
+    "p95_pct": 0.0,
+    "queue_pct": 0.0
+   },
+   {
+    "arm": "reactive",
+    "seeds": [
+     11,
+     12,
+     13,
+     14,
+     15
+    ],
+    "total_vehicle_hours": 228.86,
+    "mean_travel_time_s": 340.4,
+    "p95_travel_time_s": 627.8,
+    "total_waiting_s": 58608.0,
+    "mean_time_loss_s": 109.2,
+    "mean_queue_veh": 141.55,
+    "max_queue_veh": 565.0,
+    "arrived": 1481.4,
+    "teleports": 21.4,
+    "reroutes": 11770.2,
+    "advisories_delivered": 0.0,
+    "vehicle_hours_pct": 4.63,
+    "travel_time_pct": -6.66,
+    "waiting_pct": 2.44,
+    "p95_pct": 2.65,
+    "queue_pct": 144.35
+   },
+   {
+    "arm": "prediction_aware",
+    "seeds": [
+     11,
+     12,
+     13,
+     14,
+     15
+    ],
+    "total_vehicle_hours": 243.2,
+    "mean_travel_time_s": 385.2,
+    "p95_travel_time_s": 838.6,
+    "total_waiting_s": 100189.0,
+    "mean_time_loss_s": 155.2,
+    "mean_queue_veh": 174.41,
+    "max_queue_veh": 444.0,
+    "arrived": 1341.8,
+    "teleports": 21.2,
+    "reroutes": 6235.6,
+    "advisories_delivered": 7712.6,
+    "vehicle_hours_pct": 11.18,
+    "travel_time_pct": 5.62,
+    "waiting_pct": 75.12,
+    "p95_pct": 37.12,
+    "queue_pct": 201.07
+   }
+  ],
+  "verdict": {
+   "reactive": {
+    "per_seed_pct": [
+     -3.89,
+     7.48,
+     -3.97,
+     3.29,
+     19.91
+    ],
+    "seeds_improved": "2/5",
+    "claim": "NOT_ESTABLISHED",
+    "why": "only 2 of 5 paired seeds improved; a mean that the seeds do not support is not a result"
+   },
+   "prediction_aware": {
+    "per_seed_pct": [
+     13.82,
+     2.85,
+     10.28,
+     18.97,
+     10.27
+    ],
+    "seeds_improved": "0/5",
+    "claim": "NOT_ESTABLISHED",
+    "why": "only 0 of 5 paired seeds improved; a mean that the seeds do not support is not a result"
+   }
+  }
+ }
+}

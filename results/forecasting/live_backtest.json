@@ -1,0 +1,3083 @@
+{
+ "generated_utc": "2026-09-04T05:53:41.949224+00:00",
+ "city": "dhaka",
+ "unit": "congestion_level_0_3",
+ "source": "artifacts/live_dhaka/normalized/google_routes_runtime_reference.jsonl",
+ "reality": "REAL_LIVE derived congestion classes (RUNTIME_REFERENCE)",
+ "protocol": "rolling origin: at every origin bin the series is cut there, each model forecasts from that history only, and is scored on what was later recorded; all models scored on identical pairs",
+ "bins": 742,
+ "nodes": 6,
+ "origins_evaluated": 241,
+ "stride_bins": 3,
+ "span_utc": [
+  "2026-09-01T16:05:00+00:00",
+  "2026-09-04T05:50:00+00:00"
+ ],
+ "horizons_min": [
+  15,
+  30,
+  60
+ ],
+ "rows": [
+  {
+   "model": "Chronos-Bolt",
+   "is_baseline": false,
+   "horizon_min": 15,
+   "mae": 0.1604,
+   "rmse": 0.3994,
+   "class_accuracy": 0.8741,
+   "skill_vs_persistence": -0.2287,
+   "n_pairs": 858
+  },
+  {
+   "model": "persistence",
+   "is_baseline": true,
+   "horizon_min": 15,
+   "mae": 0.1305,
+   "rmse": 0.3771,
+   "class_accuracy": 0.8753,
+   "skill_vs_persistence": 0.0,
+   "n_pairs": 858
+  },
+  {
+   "model": "historical_average",
+   "is_baseline": true,
+   "horizon_min": 15,
+   "mae": 0.6367,
+   "rmse": 0.8083,
+   "class_accuracy": 0.3205,
+   "skill_vs_persistence": -3.8773,
+   "n_pairs": 858
+  },
+  {
+   "model": "Chronos-Bolt",
+   "is_baseline": false,
+   "horizon_min": 30,
+   "mae": 0.2102,
+   "rmse": 0.5317,
+   "class_accuracy": 0.8369,
+   "skill_vs_persistence": -0.3374,
+   "n_pairs": 840
+  },
+  {
+   "model": "persistence",
+   "is_baseline": true,
+   "horizon_min": 30,
+   "mae": 0.1571,
+   "rmse": 0.4364,
+   "class_accuracy": 0.8583,
+   "skill_vs_persistence": 0.0,
+   "n_pairs": 840
+  },
+  {
+   "model": "historical_average",
+   "is_baseline": true,
+   "horizon_min": 30,
+   "mae": 0.6599,
+   "rmse": 0.836,
+   "class_accuracy": 0.3012,
+   "skill_vs_persistence": -3.1996,
+   "n_pairs": 840
+  },
+  {
+   "model": "Chronos-Bolt",
+   "is_baseline": false,
+   "horizon_min": 60,
+   "mae": 0.2717,
+   "rmse": 0.6734,
+   "class_accuracy": 0.7908,
+   "skill_vs_persistence": -0.2764,
+   "n_pairs": 822
+  },
+  {
+   "model": "persistence",
+   "is_baseline": true,
+   "horizon_min": 60,
+   "mae": 0.2129,
+   "rmse": 0.5162,
+   "class_accuracy": 0.8114,
+   "skill_vs_persistence": 0.0,
+   "n_pairs": 822
+  },
+  {
+   "model": "historical_average",
+   "is_baseline": true,
+   "horizon_min": 60,
+   "mae": 0.6726,
+   "rmse": 0.8499,
+   "class_accuracy": 0.2883,
+   "skill_vs_persistence": -2.1594,
+   "n_pairs": 822
+  }
+ ],
+ "verdict": {
+  "15": {
+   "chronos_beats_persistence": false,
+   "mae_chronos": 0.1604,
+   "mae_persistence": 0.1305,
+   "best_model": "persistence"
+  },
+  "30": {
+   "chronos_beats_persistence": false,
+   "mae_chronos": 0.2102,
+   "mae_persistence": 0.1571,
+   "best_model": "persistence"
+  },
+  "60": {
+   "chronos_beats_persistence": false,
+   "mae_chronos": 0.2717,
+   "mae_persistence": 0.2129,
+   "best_model": "persistence"
+  }
+ },
+ "traces": {
+  "15": [
+   {
+    "target_utc": "2026-09-01T17:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T17:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T17:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T17:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T18:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T20:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T21:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T21:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T22:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T23:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T23:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T23:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T23:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T00:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T00:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T00:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T00:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T01:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T01:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T01:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T01:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T02:00:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T02:15:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.185,
+    "persistence": 0.333,
+    "historical_average": 0.008
+   },
+   {
+    "target_utc": "2026-09-02T02:30:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.33,
+    "persistence": 0.333,
+    "historical_average": 0.02
+   },
+   {
+    "target_utc": "2026-09-02T03:15:00+00:00",
+    "actual": 1.167,
+    "Chronos-Bolt": 1.78,
+    "persistence": 1.167,
+    "historical_average": 0.072
+   },
+   {
+    "target_utc": "2026-09-02T03:30:00+00:00",
+    "actual": 0.5,
+    "Chronos-Bolt": 1.355,
+    "persistence": 1.167,
+    "historical_average": 0.103
+   },
+   {
+    "target_utc": "2026-09-02T03:45:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.691,
+    "persistence": 0.5,
+    "historical_average": 0.126
+   },
+   {
+    "target_utc": "2026-09-02T04:00:00+00:00",
+    "actual": 1.0,
+    "Chronos-Bolt": 0.585,
+    "persistence": 0.667,
+    "historical_average": 0.138
+   },
+   {
+    "target_utc": "2026-09-02T04:15:00+00:00",
+    "actual": 0.833,
+    "Chronos-Bolt": 0.799,
+    "persistence": 1.0,
+    "historical_average": 0.156
+   },
+   {
+    "target_utc": "2026-09-02T04:30:00+00:00",
+    "actual": 1.0,
+    "Chronos-Bolt": 0.754,
+    "persistence": 0.833,
+    "historical_average": 0.17
+   },
+   {
+    "target_utc": "2026-09-02T04:45:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.824,
+    "persistence": 1.0,
+    "historical_average": 0.188
+   },
+   {
+    "target_utc": "2026-09-02T05:00:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.817,
+    "persistence": 0.667,
+    "historical_average": 0.209
+   },
+   {
+    "target_utc": "2026-09-02T05:45:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.609,
+    "persistence": 0.667,
+    "historical_average": 0.229
+   },
+   {
+    "target_utc": "2026-09-02T09:30:00+00:00",
+    "actual": 1.5,
+    "Chronos-Bolt": 1.081,
+    "persistence": 1.167,
+    "historical_average": 0.318
+   },
+   {
+    "target_utc": "2026-09-02T10:15:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 1.335,
+    "persistence": 1.667,
+    "historical_average": 0.351
+   },
+   {
+    "target_utc": "2026-09-02T10:30:00+00:00",
+    "actual": 1.667,
+    "Chronos-Bolt": 1.645,
+    "persistence": 1.833,
+    "historical_average": 0.38
+   },
+   {
+    "target_utc": "2026-09-02T10:45:00+00:00",
+    "actual": 2.0,
+    "Chronos-Bolt": 1.671,
+    "persistence": 1.667,
+    "historical_average": 0.408
+   },
+   {
+    "target_utc": "2026-09-02T11:00:00+00:00",
+    "actual": 1.667,
+    "Chronos-Bolt": 1.837,
+    "persistence": 2.0,
+    "historical_average": 0.435
+   },
+   {
+    "target_utc": "2026-09-02T11:15:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 1.737,
+    "persistence": 1.667,
+    "historical_average": 0.461
+   },
+   {
+    "target_utc": "2026-09-02T11:30:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 1.793,
+    "persistence": 1.833,
+    "historical_average": 0.485
+   },
+   {
+    "target_utc": "2026-09-02T11:45:00+00:00",
+    "actual": 2.0,
+    "Chronos-Bolt": 1.88,
+    "persistence": 1.833,
+    "historical_average": 0.512
+   },
+   {
+    "target_utc": "2026-09-02T12:00:00+00:00",
+    "actual": 2.5,
+    "Chronos-Bolt": 1.98,
+    "persistence": 2.0,
+    "historical_average": 0.541
+   },
+   {
+    "target_utc": "2026-09-02T12:15:00+00:00",
+    "actual": 2.167,
+    "Chronos-Bolt": 2.239,
+    "persistence": 2.5,
+    "historical_average": 0.573
+   },
+   {
+    "target_utc": "2026-09-02T12:30:00+00:00",
+    "actual": 2.167,
+    "Chronos-Bolt": 2.144,
+    "persistence": 2.167,
+    "historical_average": 0.602
+   },
+   {
+    "target_utc": "2026-09-02T12:45:00+00:00",
+    "actual": 2.333,
+    "Chronos-Bolt": 2.168,
+    "persistence": 2.167,
+    "historical_average": 0.631
+   },
+   {
+    "target_utc": "2026-09-02T13:00:00+00:00",
+    "actual": 2.333,
+    "Chronos-Bolt": 2.255,
+    "persistence": 2.333,
+    "historical_average": 0.659
+   },
+   {
+    "target_utc": "2026-09-02T13:15:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 2.222,
+    "persistence": 2.333,
+    "historical_average": 0.685
+   },
+   {
+    "target_utc": "2026-09-02T13:30:00+00:00",
+    "actual": 2.167,
+    "Chronos-Bolt": 1.863,
+    "persistence": 1.833,
+    "historical_average": 0.708
+   },
+   {
+    "target_utc": "2026-09-02T13:45:00+00:00",
+    "actual": 2.333,
+    "Chronos-Bolt": 2.108,
+    "persistence": 2.167,
+    "historical_average": 0.731
+   },
+   {
+    "target_utc": "2026-09-02T14:30:00+00:00",
+    "actual": 1.333,
+    "Chronos-Bolt": 2.284,
+    "persistence": 2.5,
+    "historical_average": 0.781
+   },
+   {
+    "target_utc": "2026-09-02T14:45:00+00:00",
+    "actual": 1.333,
+    "Chronos-Bolt": 1.609,
+    "persistence": 1.333,
+    "historical_average": 0.784
+   },
+   {
+    "target_utc": "2026-09-02T15:00:00+00:00",
+    "actual": 1.333,
+    "Chronos-Bolt": 1.536,
+    "persistence": 1.333,
+    "historical_average": 0.787
+   },
+   {
+    "target_utc": "2026-09-02T16:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.021,
+    "persistence": 0.0,
+    "historical_average": 0.785
+   },
+   {
+    "target_utc": "2026-09-02T16:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.012,
+    "persistence": 0.0,
+    "historical_average": 0.775
+   },
+   {
+    "target_utc": "2026-09-02T16:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.764
+   },
+   {
+    "target_utc": "2026-09-02T17:00:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.753
+   },
+   {
+    "target_utc": "2026-09-02T17:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.107,
+    "persistence": 0.333,
+    "historical_average": 0.744
+   },
+   {
+    "target_utc": "2026-09-02T17:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.734
+   },
+   {
+    "target_utc": "2026-09-02T17:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.724
+   },
+   {
+    "target_utc": "2026-09-02T18:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.715
+   },
+   {
+    "target_utc": "2026-09-02T18:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.705
+   },
+   {
+    "target_utc": "2026-09-02T18:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.006,
+    "persistence": 0.0,
+    "historical_average": 0.696
+   },
+   {
+    "target_utc": "2026-09-02T18:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.687
+   },
+   {
+    "target_utc": "2026-09-02T19:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.678
+   },
+   {
+    "target_utc": "2026-09-02T19:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.669
+   },
+   {
+    "target_utc": "2026-09-02T19:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.661
+   },
+   {
+    "target_utc": "2026-09-02T19:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.653
+   },
+   {
+    "target_utc": "2026-09-02T20:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.645
+   },
+   {
+    "target_utc": "2026-09-02T21:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.622
+   },
+   {
+    "target_utc": "2026-09-02T21:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.615
+   },
+   {
+    "target_utc": "2026-09-02T21:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.608
+   },
+   {
+    "target_utc": "2026-09-02T21:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.601
+   },
+   {
+    "target_utc": "2026-09-02T22:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.595
+   },
+   {
+    "target_utc": "2026-09-02T22:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.007,
+    "persistence": 0.0,
+    "historical_average": 0.588
+   },
+   {
+    "target_utc": "2026-09-02T22:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.006,
+    "persistence": 0.0,
+    "historical_average": 0.582
+   },
+   {
+    "target_utc": "2026-09-02T22:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.007,
+    "persistence": 0.0,
+    "historical_average": 0.575
+   },
+   {
+    "target_utc": "2026-09-02T23:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.007,
+    "persistence": 0.0,
+    "historical_average": 0.569
+   },
+   {
+    "target_utc": "2026-09-02T23:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.007,
+    "persistence": 0.0,
+    "historical_average": 0.563
+   },
+   {
+    "target_utc": "2026-09-02T23:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.008,
+    "persistence": 0.0,
+    "historical_average": 0.557
+   },
+   {
+    "target_utc": "2026-09-02T23:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.006,
+    "persistence": 0.0,
+    "historical_average": 0.551
+   },
+   {
+    "target_utc": "2026-09-03T00:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.005,
+    "persistence": 0.0,
+    "historical_average": 0.546
+   },
+   {
+    "target_utc": "2026-09-03T00:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.006,
+    "persistence": 0.0,
+    "historical_average": 0.54
+   },
+   {
+    "target_utc": "2026-09-03T00:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.006,
+    "persistence": 0.0,
+    "historical_average": 0.535
+   },
+   {
+    "target_utc": "2026-09-03T00:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.006,
+    "persistence": 0.0,
+    "historical_average": 0.529
+   },
+   {
+    "target_utc": "2026-09-03T01:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.005,
+    "persistence": 0.0,
+    "historical_average": 0.524
+   },
+   {
+    "target_utc": "2026-09-03T01:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.519
+   },
+   {
+    "target_utc": "2026-09-03T01:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.514
+   },
+   {
+    "target_utc": "2026-09-03T01:45:00+00:00",
+    "actual": 0.167,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.509
+   },
+   {
+    "target_utc": "2026-09-03T02:00:00+00:00",
+    "actual": 0.5,
+    "Chronos-Bolt": 0.043,
+    "persistence": 0.167,
+    "historical_average": 0.505
+   },
+   {
+    "target_utc": "2026-09-03T02:15:00+00:00",
+    "actual": 0.167,
+    "Chronos-Bolt": 0.38,
+    "persistence": 0.5,
+    "historical_average": 0.502
+   },
+   {
+    "target_utc": "2026-09-03T02:30:00+00:00",
+    "actual": 0.5,
+    "Chronos-Bolt": 0.186,
+    "persistence": 0.167,
+    "historical_average": 0.5
+   },
+   {
+    "target_utc": "2026-09-03T02:45:00+00:00",
+    "actual": 0.833,
+    "Chronos-Bolt": 0.306,
+    "persistence": 0.5,
+    "historical_average": 0.501
+   },
+   {
+    "target_utc": "2026-09-03T03:00:00+00:00",
+    "actual": 0.833,
+    "Chronos-Bolt": 0.663,
+    "persistence": 0.833,
+    "historical_average": 0.503
+   },
+   {
+    "target_utc": "2026-09-03T03:15:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.783,
+    "persistence": 0.833,
+    "historical_average": 0.506
+   },
+   {
+    "target_utc": "2026-09-03T03:30:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.654,
+    "persistence": 0.667,
+    "historical_average": 0.509
+   },
+   {
+    "target_utc": "2026-09-03T04:15:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.343,
+    "persistence": 0.333,
+    "historical_average": 0.506
+   },
+   {
+    "target_utc": "2026-09-03T04:30:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.367,
+    "persistence": 0.333,
+    "historical_average": 0.505
+   },
+   {
+    "target_utc": "2026-09-03T04:45:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.645,
+    "persistence": 0.667,
+    "historical_average": 0.507
+   },
+   {
+    "target_utc": "2026-09-03T05:00:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.686,
+    "persistence": 0.667,
+    "historical_average": 0.508
+   },
+   {
+    "target_utc": "2026-09-03T05:15:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.72,
+    "persistence": 0.667,
+    "historical_average": 0.509
+   },
+   {
+    "target_utc": "2026-09-03T05:30:00+00:00",
+    "actual": 0.833,
+    "Chronos-Bolt": 0.668,
+    "persistence": 0.667,
+    "historical_average": 0.51
+   },
+   {
+    "target_utc": "2026-09-03T05:45:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.826,
+    "persistence": 0.833,
+    "historical_average": 0.512
+   },
+   {
+    "target_utc": "2026-09-03T06:00:00+00:00",
+    "actual": 1.167,
+    "Chronos-Bolt": 0.696,
+    "persistence": 0.667,
+    "historical_average": 0.514
+   },
+   {
+    "target_utc": "2026-09-03T06:15:00+00:00",
+    "actual": 1.5,
+    "Chronos-Bolt": 1.001,
+    "persistence": 1.167,
+    "historical_average": 0.517
+   },
+   {
+    "target_utc": "2026-09-03T07:30:00+00:00",
+    "actual": 1.333,
+    "Chronos-Bolt": 1.492,
+    "persistence": 1.5,
+    "historical_average": 0.531
+   },
+   {
+    "target_utc": "2026-09-03T07:45:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 1.36,
+    "persistence": 1.333,
+    "historical_average": 0.534
+   },
+   {
+    "target_utc": "2026-09-03T14:15:00+00:00",
+    "actual": 2.333,
+    "Chronos-Bolt": 2.293,
+    "persistence": 2.333,
+    "historical_average": 0.632
+   },
+   {
+    "target_utc": "2026-09-03T15:00:00+00:00",
+    "actual": 1.667,
+    "Chronos-Bolt": 1.858,
+    "persistence": 1.667,
+    "historical_average": 0.656
+   },
+   {
+    "target_utc": "2026-09-03T16:30:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.76,
+    "persistence": 0.5,
+    "historical_average": 0.671
+   },
+   {
+    "target_utc": "2026-09-03T16:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.566,
+    "persistence": 0.333,
+    "historical_average": 0.67
+   },
+   {
+    "target_utc": "2026-09-03T19:00:00+00:00",
+    "actual": 0.167,
+    "Chronos-Bolt": 0.009,
+    "persistence": 0.0,
+    "historical_average": 0.654
+   },
+   {
+    "target_utc": "2026-09-03T19:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.118,
+    "persistence": 0.167,
+    "historical_average": 0.651
+   },
+   {
+    "target_utc": "2026-09-03T19:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.019,
+    "persistence": 0.0,
+    "historical_average": 0.649
+   },
+   {
+    "target_utc": "2026-09-03T19:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.005,
+    "persistence": 0.0,
+    "historical_average": 0.648
+   },
+   {
+    "target_utc": "2026-09-03T20:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.643
+   },
+   {
+    "target_utc": "2026-09-03T20:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.005,
+    "persistence": 0.0,
+    "historical_average": 0.639
+   },
+   {
+    "target_utc": "2026-09-03T20:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.008,
+    "persistence": 0.0,
+    "historical_average": 0.635
+   },
+   {
+    "target_utc": "2026-09-03T20:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.004,
+    "persistence": 0.0,
+    "historical_average": 0.63
+   },
+   {
+    "target_utc": "2026-09-03T21:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.006,
+    "persistence": 0.0,
+    "historical_average": 0.626
+   },
+   {
+    "target_utc": "2026-09-03T21:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.622
+   },
+   {
+    "target_utc": "2026-09-03T21:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.618
+   },
+   {
+    "target_utc": "2026-09-03T21:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.614
+   },
+   {
+    "target_utc": "2026-09-03T23:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.003,
+    "persistence": 0.0,
+    "historical_average": 0.605
+   },
+   {
+    "target_utc": "2026-09-03T23:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.003,
+    "persistence": 0.0,
+    "historical_average": 0.604
+   },
+   {
+    "target_utc": "2026-09-04T00:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.597
+   },
+   {
+    "target_utc": "2026-09-04T00:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.593
+   },
+   {
+    "target_utc": "2026-09-04T00:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.59
+   },
+   {
+    "target_utc": "2026-09-04T00:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.0,
+    "persistence": 0.0,
+    "historical_average": 0.586
+   },
+   {
+    "target_utc": "2026-09-04T01:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.582
+   },
+   {
+    "target_utc": "2026-09-04T01:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.579
+   },
+   {
+    "target_utc": "2026-09-04T01:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.0,
+    "persistence": 0.0,
+    "historical_average": 0.575
+   },
+   {
+    "target_utc": "2026-09-04T01:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.572
+   },
+   {
+    "target_utc": "2026-09-04T02:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.568
+   },
+   {
+    "target_utc": "2026-09-04T02:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.565
+   },
+   {
+    "target_utc": "2026-09-04T03:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.557
+   },
+   {
+    "target_utc": "2026-09-04T03:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.554
+   },
+   {
+    "target_utc": "2026-09-04T03:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.552
+   },
+   {
+    "target_utc": "2026-09-04T03:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.548
+   },
+   {
+    "target_utc": "2026-09-04T04:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.545
+   },
+   {
+    "target_utc": "2026-09-04T04:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.542
+   },
+   {
+    "target_utc": "2026-09-04T04:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.0,
+    "persistence": 0.0,
+    "historical_average": 0.539
+   },
+   {
+    "target_utc": "2026-09-04T04:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.0,
+    "persistence": 0.0,
+    "historical_average": 0.536
+   },
+   {
+    "target_utc": "2026-09-04T05:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.533
+   }
+  ],
+  "30": [
+   {
+    "target_utc": "2026-09-01T17:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T17:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T17:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T20:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T20:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T21:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T23:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T23:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T23:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T23:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T00:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T00:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T00:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T00:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T01:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T01:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T01:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T01:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T02:00:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T02:15:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T02:30:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.194,
+    "persistence": 0.333,
+    "historical_average": 0.008
+   },
+   {
+    "target_utc": "2026-09-02T03:00:00+00:00",
+    "actual": 1.167,
+    "Chronos-Bolt": 0.909,
+    "persistence": 0.667,
+    "historical_average": 0.034
+   },
+   {
+    "target_utc": "2026-09-02T03:30:00+00:00",
+    "actual": 0.5,
+    "Chronos-Bolt": 2.134,
+    "persistence": 1.167,
+    "historical_average": 0.072
+   },
+   {
+    "target_utc": "2026-09-02T03:45:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 1.468,
+    "persistence": 1.167,
+    "historical_average": 0.103
+   },
+   {
+    "target_utc": "2026-09-02T04:00:00+00:00",
+    "actual": 1.0,
+    "Chronos-Bolt": 0.705,
+    "persistence": 0.5,
+    "historical_average": 0.126
+   },
+   {
+    "target_utc": "2026-09-02T04:15:00+00:00",
+    "actual": 0.833,
+    "Chronos-Bolt": 0.573,
+    "persistence": 0.667,
+    "historical_average": 0.138
+   },
+   {
+    "target_utc": "2026-09-02T04:30:00+00:00",
+    "actual": 1.0,
+    "Chronos-Bolt": 0.779,
+    "persistence": 1.0,
+    "historical_average": 0.156
+   },
+   {
+    "target_utc": "2026-09-02T04:45:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.763,
+    "persistence": 0.833,
+    "historical_average": 0.17
+   },
+   {
+    "target_utc": "2026-09-02T05:00:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.817,
+    "persistence": 1.0,
+    "historical_average": 0.188
+   },
+   {
+    "target_utc": "2026-09-02T05:30:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.636,
+    "persistence": 0.667,
+    "historical_average": 0.221
+   },
+   {
+    "target_utc": "2026-09-02T09:15:00+00:00",
+    "actual": 1.167,
+    "Chronos-Bolt": 0.96,
+    "persistence": 1.0,
+    "historical_average": 0.305
+   },
+   {
+    "target_utc": "2026-09-02T10:00:00+00:00",
+    "actual": 1.667,
+    "Chronos-Bolt": 1.166,
+    "persistence": 1.5,
+    "historical_average": 0.326
+   },
+   {
+    "target_utc": "2026-09-02T10:30:00+00:00",
+    "actual": 1.667,
+    "Chronos-Bolt": 1.227,
+    "persistence": 1.667,
+    "historical_average": 0.351
+   },
+   {
+    "target_utc": "2026-09-02T10:45:00+00:00",
+    "actual": 2.0,
+    "Chronos-Bolt": 1.54,
+    "persistence": 1.833,
+    "historical_average": 0.38
+   },
+   {
+    "target_utc": "2026-09-02T11:00:00+00:00",
+    "actual": 1.667,
+    "Chronos-Bolt": 1.63,
+    "persistence": 1.667,
+    "historical_average": 0.408
+   },
+   {
+    "target_utc": "2026-09-02T11:15:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 1.745,
+    "persistence": 2.0,
+    "historical_average": 0.435
+   },
+   {
+    "target_utc": "2026-09-02T11:30:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 1.669,
+    "persistence": 1.667,
+    "historical_average": 0.461
+   },
+   {
+    "target_utc": "2026-09-02T11:45:00+00:00",
+    "actual": 2.0,
+    "Chronos-Bolt": 1.757,
+    "persistence": 1.833,
+    "historical_average": 0.485
+   },
+   {
+    "target_utc": "2026-09-02T12:00:00+00:00",
+    "actual": 2.5,
+    "Chronos-Bolt": 1.848,
+    "persistence": 1.833,
+    "historical_average": 0.512
+   },
+   {
+    "target_utc": "2026-09-02T12:15:00+00:00",
+    "actual": 2.167,
+    "Chronos-Bolt": 1.912,
+    "persistence": 2.0,
+    "historical_average": 0.541
+   },
+   {
+    "target_utc": "2026-09-02T12:30:00+00:00",
+    "actual": 2.167,
+    "Chronos-Bolt": 2.132,
+    "persistence": 2.5,
+    "historical_average": 0.573
+   },
+   {
+    "target_utc": "2026-09-02T12:45:00+00:00",
+    "actual": 2.333,
+    "Chronos-Bolt": 2.071,
+    "persistence": 2.167,
+    "historical_average": 0.602
+   },
+   {
+    "target_utc": "2026-09-02T13:00:00+00:00",
+    "actual": 2.333,
+    "Chronos-Bolt": 2.106,
+    "persistence": 2.167,
+    "historical_average": 0.631
+   },
+   {
+    "target_utc": "2026-09-02T13:15:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 2.188,
+    "persistence": 2.333,
+    "historical_average": 0.659
+   },
+   {
+    "target_utc": "2026-09-02T13:30:00+00:00",
+    "actual": 2.167,
+    "Chronos-Bolt": 2.116,
+    "persistence": 2.333,
+    "historical_average": 0.685
+   },
+   {
+    "target_utc": "2026-09-02T13:45:00+00:00",
+    "actual": 2.333,
+    "Chronos-Bolt": 1.805,
+    "persistence": 1.833,
+    "historical_average": 0.708
+   },
+   {
+    "target_utc": "2026-09-02T14:15:00+00:00",
+    "actual": 2.5,
+    "Chronos-Bolt": 2.168,
+    "persistence": 2.333,
+    "historical_average": 0.756
+   },
+   {
+    "target_utc": "2026-09-02T14:45:00+00:00",
+    "actual": 1.333,
+    "Chronos-Bolt": 2.195,
+    "persistence": 2.5,
+    "historical_average": 0.781
+   },
+   {
+    "target_utc": "2026-09-02T15:00:00+00:00",
+    "actual": 1.333,
+    "Chronos-Bolt": 1.553,
+    "persistence": 1.333,
+    "historical_average": 0.784
+   },
+   {
+    "target_utc": "2026-09-02T15:30:00+00:00",
+    "actual": 1.0,
+    "Chronos-Bolt": 1.269,
+    "persistence": 1.333,
+    "historical_average": 0.796
+   },
+   {
+    "target_utc": "2026-09-02T16:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.952,
+    "persistence": 1.0,
+    "historical_average": 0.803
+   },
+   {
+    "target_utc": "2026-09-02T16:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.037,
+    "persistence": 0.0,
+    "historical_average": 0.785
+   },
+   {
+    "target_utc": "2026-09-02T16:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.01,
+    "persistence": 0.0,
+    "historical_average": 0.775
+   },
+   {
+    "target_utc": "2026-09-02T17:00:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": -0.006,
+    "persistence": 0.0,
+    "historical_average": 0.764
+   },
+   {
+    "target_utc": "2026-09-02T17:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.753
+   },
+   {
+    "target_utc": "2026-09-02T17:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.06,
+    "persistence": 0.333,
+    "historical_average": 0.744
+   },
+   {
+    "target_utc": "2026-09-02T17:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.734
+   },
+   {
+    "target_utc": "2026-09-02T18:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.724
+   },
+   {
+    "target_utc": "2026-09-02T18:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.003,
+    "persistence": 0.0,
+    "historical_average": 0.715
+   },
+   {
+    "target_utc": "2026-09-02T18:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.705
+   },
+   {
+    "target_utc": "2026-09-02T18:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.696
+   },
+   {
+    "target_utc": "2026-09-02T19:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.687
+   },
+   {
+    "target_utc": "2026-09-02T19:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.678
+   },
+   {
+    "target_utc": "2026-09-02T19:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.669
+   },
+   {
+    "target_utc": "2026-09-02T19:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.661
+   },
+   {
+    "target_utc": "2026-09-02T20:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.653
+   },
+   {
+    "target_utc": "2026-09-02T21:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.622
+   },
+   {
+    "target_utc": "2026-09-02T21:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.615
+   },
+   {
+    "target_utc": "2026-09-02T21:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.608
+   },
+   {
+    "target_utc": "2026-09-02T22:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.601
+   },
+   {
+    "target_utc": "2026-09-02T22:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.595
+   },
+   {
+    "target_utc": "2026-09-02T22:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.588
+   },
+   {
+    "target_utc": "2026-09-02T22:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.582
+   },
+   {
+    "target_utc": "2026-09-02T23:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.005,
+    "persistence": 0.0,
+    "historical_average": 0.575
+   },
+   {
+    "target_utc": "2026-09-02T23:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.006,
+    "persistence": 0.0,
+    "historical_average": 0.569
+   },
+   {
+    "target_utc": "2026-09-02T23:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.005,
+    "persistence": 0.0,
+    "historical_average": 0.563
+   },
+   {
+    "target_utc": "2026-09-02T23:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.006,
+    "persistence": 0.0,
+    "historical_average": 0.557
+   },
+   {
+    "target_utc": "2026-09-03T00:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.551
+   },
+   {
+    "target_utc": "2026-09-03T00:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.546
+   },
+   {
+    "target_utc": "2026-09-03T00:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.54
+   },
+   {
+    "target_utc": "2026-09-03T00:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.005,
+    "persistence": 0.0,
+    "historical_average": 0.535
+   },
+   {
+    "target_utc": "2026-09-03T01:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.529
+   },
+   {
+    "target_utc": "2026-09-03T01:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.524
+   },
+   {
+    "target_utc": "2026-09-03T01:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.519
+   },
+   {
+    "target_utc": "2026-09-03T01:45:00+00:00",
+    "actual": 0.167,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.514
+   },
+   {
+    "target_utc": "2026-09-03T02:00:00+00:00",
+    "actual": 0.5,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.509
+   },
+   {
+    "target_utc": "2026-09-03T02:15:00+00:00",
+    "actual": 0.167,
+    "Chronos-Bolt": 0.027,
+    "persistence": 0.167,
+    "historical_average": 0.505
+   },
+   {
+    "target_utc": "2026-09-03T02:30:00+00:00",
+    "actual": 0.5,
+    "Chronos-Bolt": 0.322,
+    "persistence": 0.5,
+    "historical_average": 0.502
+   },
+   {
+    "target_utc": "2026-09-03T02:45:00+00:00",
+    "actual": 0.833,
+    "Chronos-Bolt": 0.182,
+    "persistence": 0.167,
+    "historical_average": 0.5
+   },
+   {
+    "target_utc": "2026-09-03T03:00:00+00:00",
+    "actual": 0.833,
+    "Chronos-Bolt": 0.248,
+    "persistence": 0.5,
+    "historical_average": 0.501
+   },
+   {
+    "target_utc": "2026-09-03T03:15:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.56,
+    "persistence": 0.833,
+    "historical_average": 0.503
+   },
+   {
+    "target_utc": "2026-09-03T03:30:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.708,
+    "persistence": 0.833,
+    "historical_average": 0.506
+   },
+   {
+    "target_utc": "2026-09-03T04:00:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.613,
+    "persistence": 0.667,
+    "historical_average": 0.508
+   },
+   {
+    "target_utc": "2026-09-03T04:30:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.323,
+    "persistence": 0.333,
+    "historical_average": 0.506
+   },
+   {
+    "target_utc": "2026-09-03T04:45:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.364,
+    "persistence": 0.333,
+    "historical_average": 0.505
+   },
+   {
+    "target_utc": "2026-09-03T05:00:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.603,
+    "persistence": 0.667,
+    "historical_average": 0.507
+   },
+   {
+    "target_utc": "2026-09-03T05:15:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.619,
+    "persistence": 0.667,
+    "historical_average": 0.508
+   },
+   {
+    "target_utc": "2026-09-03T05:30:00+00:00",
+    "actual": 0.833,
+    "Chronos-Bolt": 0.598,
+    "persistence": 0.667,
+    "historical_average": 0.509
+   },
+   {
+    "target_utc": "2026-09-03T05:45:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.587,
+    "persistence": 0.667,
+    "historical_average": 0.51
+   },
+   {
+    "target_utc": "2026-09-03T06:00:00+00:00",
+    "actual": 1.167,
+    "Chronos-Bolt": 0.734,
+    "persistence": 0.833,
+    "historical_average": 0.512
+   },
+   {
+    "target_utc": "2026-09-03T06:15:00+00:00",
+    "actual": 1.5,
+    "Chronos-Bolt": 0.67,
+    "persistence": 0.667,
+    "historical_average": 0.514
+   },
+   {
+    "target_utc": "2026-09-03T07:45:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 1.405,
+    "persistence": 1.5,
+    "historical_average": 0.531
+   },
+   {
+    "target_utc": "2026-09-03T12:15:00+00:00",
+    "actual": 2.667,
+    "Chronos-Bolt": 2.228,
+    "persistence": 2.667,
+    "historical_average": 0.589
+   },
+   {
+    "target_utc": "2026-09-03T14:45:00+00:00",
+    "actual": 1.667,
+    "Chronos-Bolt": 2.313,
+    "persistence": 2.333,
+    "historical_average": 0.645
+   },
+   {
+    "target_utc": "2026-09-03T16:15:00+00:00",
+    "actual": 0.5,
+    "Chronos-Bolt": 1.306,
+    "persistence": 1.0,
+    "historical_average": 0.671
+   },
+   {
+    "target_utc": "2026-09-03T16:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.809,
+    "persistence": 0.5,
+    "historical_average": 0.671
+   },
+   {
+    "target_utc": "2026-09-03T17:15:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.344,
+    "persistence": 0.0,
+    "historical_average": 0.668
+   },
+   {
+    "target_utc": "2026-09-03T18:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.026,
+    "persistence": 0.0,
+    "historical_average": 0.658
+   },
+   {
+    "target_utc": "2026-09-03T19:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.012,
+    "persistence": 0.0,
+    "historical_average": 0.654
+   },
+   {
+    "target_utc": "2026-09-03T19:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.105,
+    "persistence": 0.167,
+    "historical_average": 0.651
+   },
+   {
+    "target_utc": "2026-09-03T19:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.021,
+    "persistence": 0.0,
+    "historical_average": 0.649
+   },
+   {
+    "target_utc": "2026-09-03T20:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.014,
+    "persistence": 0.0,
+    "historical_average": 0.648
+   },
+   {
+    "target_utc": "2026-09-03T20:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.643
+   },
+   {
+    "target_utc": "2026-09-03T20:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.011,
+    "persistence": 0.0,
+    "historical_average": 0.639
+   },
+   {
+    "target_utc": "2026-09-03T20:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.012,
+    "persistence": 0.0,
+    "historical_average": 0.635
+   },
+   {
+    "target_utc": "2026-09-03T21:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.013,
+    "persistence": 0.0,
+    "historical_average": 0.63
+   },
+   {
+    "target_utc": "2026-09-03T21:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.009,
+    "persistence": 0.0,
+    "historical_average": 0.626
+   },
+   {
+    "target_utc": "2026-09-03T21:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.007,
+    "persistence": 0.0,
+    "historical_average": 0.622
+   },
+   {
+    "target_utc": "2026-09-03T21:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.006,
+    "persistence": 0.0,
+    "historical_average": 0.618
+   },
+   {
+    "target_utc": "2026-09-03T23:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.005,
+    "persistence": 0.0,
+    "historical_average": 0.605
+   },
+   {
+    "target_utc": "2026-09-03T23:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.005,
+    "persistence": 0.0,
+    "historical_average": 0.602
+   },
+   {
+    "target_utc": "2026-09-04T00:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.004,
+    "persistence": 0.0,
+    "historical_average": 0.597
+   },
+   {
+    "target_utc": "2026-09-04T00:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.006,
+    "persistence": 0.0,
+    "historical_average": 0.593
+   },
+   {
+    "target_utc": "2026-09-04T00:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.003,
+    "persistence": 0.0,
+    "historical_average": 0.59
+   },
+   {
+    "target_utc": "2026-09-04T01:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.003,
+    "persistence": 0.0,
+    "historical_average": 0.586
+   },
+   {
+    "target_utc": "2026-09-04T01:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.582
+   },
+   {
+    "target_utc": "2026-09-04T01:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.579
+   },
+   {
+    "target_utc": "2026-09-04T01:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.575
+   },
+   {
+    "target_utc": "2026-09-04T02:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.572
+   },
+   {
+    "target_utc": "2026-09-04T02:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.568
+   },
+   {
+    "target_utc": "2026-09-04T02:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.561
+   },
+   {
+    "target_utc": "2026-09-04T03:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.557
+   },
+   {
+    "target_utc": "2026-09-04T03:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.554
+   },
+   {
+    "target_utc": "2026-09-04T03:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.003,
+    "persistence": 0.0,
+    "historical_average": 0.552
+   },
+   {
+    "target_utc": "2026-09-04T04:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.548
+   },
+   {
+    "target_utc": "2026-09-04T04:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.545
+   },
+   {
+    "target_utc": "2026-09-04T04:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.542
+   },
+   {
+    "target_utc": "2026-09-04T04:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.004,
+    "persistence": 0.0,
+    "historical_average": 0.539
+   },
+   {
+    "target_utc": "2026-09-04T05:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.536
+   },
+   {
+    "target_utc": "2026-09-04T05:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.533
+   }
+  ],
+  "60": [
+   {
+    "target_utc": "2026-09-01T17:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T18:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T18:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T19:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T21:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T21:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T23:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-01T23:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T00:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T00:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T00:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T00:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T01:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T01:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T01:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T01:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T02:00:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T02:15:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T02:30:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.0
+   },
+   {
+    "target_utc": "2026-09-02T03:00:00+00:00",
+    "actual": 1.167,
+    "Chronos-Bolt": 0.224,
+    "persistence": 0.333,
+    "historical_average": 0.008
+   },
+   {
+    "target_utc": "2026-09-02T03:15:00+00:00",
+    "actual": 1.167,
+    "Chronos-Bolt": 0.35,
+    "persistence": 0.333,
+    "historical_average": 0.02
+   },
+   {
+    "target_utc": "2026-09-02T03:30:00+00:00",
+    "actual": 0.5,
+    "Chronos-Bolt": 1.156,
+    "persistence": 0.667,
+    "historical_average": 0.034
+   },
+   {
+    "target_utc": "2026-09-02T04:00:00+00:00",
+    "actual": 1.0,
+    "Chronos-Bolt": 2.776,
+    "persistence": 1.167,
+    "historical_average": 0.072
+   },
+   {
+    "target_utc": "2026-09-02T04:15:00+00:00",
+    "actual": 0.833,
+    "Chronos-Bolt": 1.753,
+    "persistence": 1.167,
+    "historical_average": 0.103
+   },
+   {
+    "target_utc": "2026-09-02T04:30:00+00:00",
+    "actual": 1.0,
+    "Chronos-Bolt": 0.755,
+    "persistence": 0.5,
+    "historical_average": 0.126
+   },
+   {
+    "target_utc": "2026-09-02T04:45:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.577,
+    "persistence": 0.667,
+    "historical_average": 0.138
+   },
+   {
+    "target_utc": "2026-09-02T05:00:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.763,
+    "persistence": 1.0,
+    "historical_average": 0.156
+   },
+   {
+    "target_utc": "2026-09-02T05:30:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.759,
+    "persistence": 1.0,
+    "historical_average": 0.188
+   },
+   {
+    "target_utc": "2026-09-02T05:45:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.721,
+    "persistence": 0.667,
+    "historical_average": 0.209
+   },
+   {
+    "target_utc": "2026-09-02T10:15:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 0.865,
+    "persistence": 1.167,
+    "historical_average": 0.318
+   },
+   {
+    "target_utc": "2026-09-02T10:30:00+00:00",
+    "actual": 1.667,
+    "Chronos-Bolt": 1.049,
+    "persistence": 1.5,
+    "historical_average": 0.326
+   },
+   {
+    "target_utc": "2026-09-02T11:00:00+00:00",
+    "actual": 1.667,
+    "Chronos-Bolt": 1.166,
+    "persistence": 1.667,
+    "historical_average": 0.351
+   },
+   {
+    "target_utc": "2026-09-02T11:15:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 1.447,
+    "persistence": 1.833,
+    "historical_average": 0.38
+   },
+   {
+    "target_utc": "2026-09-02T11:30:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 1.506,
+    "persistence": 1.667,
+    "historical_average": 0.408
+   },
+   {
+    "target_utc": "2026-09-02T11:45:00+00:00",
+    "actual": 2.0,
+    "Chronos-Bolt": 1.615,
+    "persistence": 2.0,
+    "historical_average": 0.435
+   },
+   {
+    "target_utc": "2026-09-02T12:00:00+00:00",
+    "actual": 2.5,
+    "Chronos-Bolt": 1.573,
+    "persistence": 1.667,
+    "historical_average": 0.461
+   },
+   {
+    "target_utc": "2026-09-02T12:15:00+00:00",
+    "actual": 2.167,
+    "Chronos-Bolt": 1.654,
+    "persistence": 1.833,
+    "historical_average": 0.485
+   },
+   {
+    "target_utc": "2026-09-02T12:30:00+00:00",
+    "actual": 2.167,
+    "Chronos-Bolt": 1.704,
+    "persistence": 1.833,
+    "historical_average": 0.512
+   },
+   {
+    "target_utc": "2026-09-02T12:45:00+00:00",
+    "actual": 2.333,
+    "Chronos-Bolt": 1.785,
+    "persistence": 2.0,
+    "historical_average": 0.541
+   },
+   {
+    "target_utc": "2026-09-02T13:00:00+00:00",
+    "actual": 2.333,
+    "Chronos-Bolt": 1.988,
+    "persistence": 2.5,
+    "historical_average": 0.573
+   },
+   {
+    "target_utc": "2026-09-02T13:15:00+00:00",
+    "actual": 1.833,
+    "Chronos-Bolt": 1.962,
+    "persistence": 2.167,
+    "historical_average": 0.602
+   },
+   {
+    "target_utc": "2026-09-02T13:30:00+00:00",
+    "actual": 2.167,
+    "Chronos-Bolt": 1.95,
+    "persistence": 2.167,
+    "historical_average": 0.631
+   },
+   {
+    "target_utc": "2026-09-02T13:45:00+00:00",
+    "actual": 2.333,
+    "Chronos-Bolt": 2.043,
+    "persistence": 2.333,
+    "historical_average": 0.659
+   },
+   {
+    "target_utc": "2026-09-02T14:15:00+00:00",
+    "actual": 2.5,
+    "Chronos-Bolt": 1.685,
+    "persistence": 1.833,
+    "historical_average": 0.708
+   },
+   {
+    "target_utc": "2026-09-02T14:30:00+00:00",
+    "actual": 1.333,
+    "Chronos-Bolt": 1.884,
+    "persistence": 2.167,
+    "historical_average": 0.731
+   },
+   {
+    "target_utc": "2026-09-02T14:45:00+00:00",
+    "actual": 1.333,
+    "Chronos-Bolt": 2.014,
+    "persistence": 2.333,
+    "historical_average": 0.756
+   },
+   {
+    "target_utc": "2026-09-02T15:30:00+00:00",
+    "actual": 1.0,
+    "Chronos-Bolt": 1.418,
+    "persistence": 1.333,
+    "historical_average": 0.784
+   },
+   {
+    "target_utc": "2026-09-02T16:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 1.085,
+    "persistence": 1.333,
+    "historical_average": 0.796
+   },
+   {
+    "target_utc": "2026-09-02T16:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.767,
+    "persistence": 1.0,
+    "historical_average": 0.803
+   },
+   {
+    "target_utc": "2026-09-02T17:00:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.045,
+    "persistence": 0.0,
+    "historical_average": 0.785
+   },
+   {
+    "target_utc": "2026-09-02T17:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.008,
+    "persistence": 0.0,
+    "historical_average": 0.775
+   },
+   {
+    "target_utc": "2026-09-02T17:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.764
+   },
+   {
+    "target_utc": "2026-09-02T17:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.009,
+    "persistence": 0.0,
+    "historical_average": 0.753
+   },
+   {
+    "target_utc": "2026-09-02T18:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.007,
+    "persistence": 0.333,
+    "historical_average": 0.744
+   },
+   {
+    "target_utc": "2026-09-02T18:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.734
+   },
+   {
+    "target_utc": "2026-09-02T18:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.724
+   },
+   {
+    "target_utc": "2026-09-02T18:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.715
+   },
+   {
+    "target_utc": "2026-09-02T19:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.705
+   },
+   {
+    "target_utc": "2026-09-02T19:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.006,
+    "persistence": 0.0,
+    "historical_average": 0.696
+   },
+   {
+    "target_utc": "2026-09-02T19:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.687
+   },
+   {
+    "target_utc": "2026-09-02T19:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.678
+   },
+   {
+    "target_utc": "2026-09-02T20:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.669
+   },
+   {
+    "target_utc": "2026-09-02T20:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.645
+   },
+   {
+    "target_utc": "2026-09-02T21:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.637
+   },
+   {
+    "target_utc": "2026-09-02T21:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.622
+   },
+   {
+    "target_utc": "2026-09-02T22:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.615
+   },
+   {
+    "target_utc": "2026-09-02T22:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.608
+   },
+   {
+    "target_utc": "2026-09-02T22:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.601
+   },
+   {
+    "target_utc": "2026-09-02T22:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.595
+   },
+   {
+    "target_utc": "2026-09-02T23:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.588
+   },
+   {
+    "target_utc": "2026-09-02T23:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.582
+   },
+   {
+    "target_utc": "2026-09-02T23:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.575
+   },
+   {
+    "target_utc": "2026-09-02T23:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.005,
+    "persistence": 0.0,
+    "historical_average": 0.569
+   },
+   {
+    "target_utc": "2026-09-03T00:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.563
+   },
+   {
+    "target_utc": "2026-09-03T00:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.557
+   },
+   {
+    "target_utc": "2026-09-03T00:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.551
+   },
+   {
+    "target_utc": "2026-09-03T00:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.546
+   },
+   {
+    "target_utc": "2026-09-03T01:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.54
+   },
+   {
+    "target_utc": "2026-09-03T01:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.535
+   },
+   {
+    "target_utc": "2026-09-03T01:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.529
+   },
+   {
+    "target_utc": "2026-09-03T01:45:00+00:00",
+    "actual": 0.167,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.524
+   },
+   {
+    "target_utc": "2026-09-03T02:00:00+00:00",
+    "actual": 0.5,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.519
+   },
+   {
+    "target_utc": "2026-09-03T02:15:00+00:00",
+    "actual": 0.167,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.514
+   },
+   {
+    "target_utc": "2026-09-03T02:30:00+00:00",
+    "actual": 0.5,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.509
+   },
+   {
+    "target_utc": "2026-09-03T02:45:00+00:00",
+    "actual": 0.833,
+    "Chronos-Bolt": 0.011,
+    "persistence": 0.167,
+    "historical_average": 0.505
+   },
+   {
+    "target_utc": "2026-09-03T03:00:00+00:00",
+    "actual": 0.833,
+    "Chronos-Bolt": 0.276,
+    "persistence": 0.5,
+    "historical_average": 0.502
+   },
+   {
+    "target_utc": "2026-09-03T03:15:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.178,
+    "persistence": 0.167,
+    "historical_average": 0.5
+   },
+   {
+    "target_utc": "2026-09-03T03:30:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.172,
+    "persistence": 0.5,
+    "historical_average": 0.501
+   },
+   {
+    "target_utc": "2026-09-03T04:00:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.607,
+    "persistence": 0.833,
+    "historical_average": 0.506
+   },
+   {
+    "target_utc": "2026-09-03T04:15:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.581,
+    "persistence": 0.667,
+    "historical_average": 0.509
+   },
+   {
+    "target_utc": "2026-09-03T04:30:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.56,
+    "persistence": 0.667,
+    "historical_average": 0.508
+   },
+   {
+    "target_utc": "2026-09-03T05:00:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.345,
+    "persistence": 0.333,
+    "historical_average": 0.506
+   },
+   {
+    "target_utc": "2026-09-03T05:15:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.341,
+    "persistence": 0.333,
+    "historical_average": 0.505
+   },
+   {
+    "target_utc": "2026-09-03T05:30:00+00:00",
+    "actual": 0.833,
+    "Chronos-Bolt": 0.472,
+    "persistence": 0.667,
+    "historical_average": 0.507
+   },
+   {
+    "target_utc": "2026-09-03T05:45:00+00:00",
+    "actual": 0.667,
+    "Chronos-Bolt": 0.469,
+    "persistence": 0.667,
+    "historical_average": 0.508
+   },
+   {
+    "target_utc": "2026-09-03T06:00:00+00:00",
+    "actual": 1.167,
+    "Chronos-Bolt": 0.471,
+    "persistence": 0.667,
+    "historical_average": 0.509
+   },
+   {
+    "target_utc": "2026-09-03T06:15:00+00:00",
+    "actual": 1.5,
+    "Chronos-Bolt": 0.512,
+    "persistence": 0.667,
+    "historical_average": 0.51
+   },
+   {
+    "target_utc": "2026-09-03T07:15:00+00:00",
+    "actual": 1.5,
+    "Chronos-Bolt": 1.203,
+    "persistence": 1.5,
+    "historical_average": 0.524
+   },
+   {
+    "target_utc": "2026-09-03T11:45:00+00:00",
+    "actual": 2.667,
+    "Chronos-Bolt": 1.796,
+    "persistence": 2.167,
+    "historical_average": 0.568
+   },
+   {
+    "target_utc": "2026-09-03T15:00:00+00:00",
+    "actual": 1.667,
+    "Chronos-Bolt": 2.115,
+    "persistence": 2.333,
+    "historical_average": 0.632
+   },
+   {
+    "target_utc": "2026-09-03T15:45:00+00:00",
+    "actual": 1.0,
+    "Chronos-Bolt": 1.811,
+    "persistence": 1.667,
+    "historical_average": 0.656
+   },
+   {
+    "target_utc": "2026-09-03T16:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 1.33,
+    "persistence": 1.0,
+    "historical_average": 0.671
+   },
+   {
+    "target_utc": "2026-09-03T17:15:00+00:00",
+    "actual": 0.333,
+    "Chronos-Bolt": 0.855,
+    "persistence": 0.5,
+    "historical_average": 0.671
+   },
+   {
+    "target_utc": "2026-09-03T18:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.355,
+    "persistence": 0.333,
+    "historical_average": 0.664
+   },
+   {
+    "target_utc": "2026-09-03T19:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.053,
+    "persistence": 0.0,
+    "historical_average": 0.658
+   },
+   {
+    "target_utc": "2026-09-03T19:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.034,
+    "persistence": 0.0,
+    "historical_average": 0.654
+   },
+   {
+    "target_utc": "2026-09-03T20:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.109,
+    "persistence": 0.167,
+    "historical_average": 0.651
+   },
+   {
+    "target_utc": "2026-09-03T20:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.029,
+    "persistence": 0.0,
+    "historical_average": 0.649
+   },
+   {
+    "target_utc": "2026-09-03T20:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.016,
+    "persistence": 0.0,
+    "historical_average": 0.648
+   },
+   {
+    "target_utc": "2026-09-03T20:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.643
+   },
+   {
+    "target_utc": "2026-09-03T21:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.639
+   },
+   {
+    "target_utc": "2026-09-03T21:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.635
+   },
+   {
+    "target_utc": "2026-09-03T21:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.63
+   },
+   {
+    "target_utc": "2026-09-03T21:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.008,
+    "persistence": 0.0,
+    "historical_average": 0.626
+   },
+   {
+    "target_utc": "2026-09-03T22:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.006,
+    "persistence": 0.0,
+    "historical_average": 0.61
+   },
+   {
+    "target_utc": "2026-09-03T23:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.005,
+    "persistence": 0.0,
+    "historical_average": 0.605
+   },
+   {
+    "target_utc": "2026-09-04T00:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.604
+   },
+   {
+    "target_utc": "2026-09-04T00:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.602
+   },
+   {
+    "target_utc": "2026-09-04T00:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.597
+   },
+   {
+    "target_utc": "2026-09-04T01:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.593
+   },
+   {
+    "target_utc": "2026-09-04T01:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.59
+   },
+   {
+    "target_utc": "2026-09-04T01:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.586
+   },
+   {
+    "target_utc": "2026-09-04T01:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.582
+   },
+   {
+    "target_utc": "2026-09-04T02:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.579
+   },
+   {
+    "target_utc": "2026-09-04T02:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.575
+   },
+   {
+    "target_utc": "2026-09-04T02:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.568
+   },
+   {
+    "target_utc": "2026-09-04T03:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.003,
+    "persistence": 0.0,
+    "historical_average": 0.565
+   },
+   {
+    "target_utc": "2026-09-04T03:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.004,
+    "persistence": 0.0,
+    "historical_average": 0.561
+   },
+   {
+    "target_utc": "2026-09-04T03:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.001,
+    "persistence": 0.0,
+    "historical_average": 0.557
+   },
+   {
+    "target_utc": "2026-09-04T04:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.002,
+    "persistence": 0.0,
+    "historical_average": 0.554
+   },
+   {
+    "target_utc": "2026-09-04T04:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.552
+   },
+   {
+    "target_utc": "2026-09-04T04:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": -0.0,
+    "persistence": 0.0,
+    "historical_average": 0.548
+   },
+   {
+    "target_utc": "2026-09-04T04:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.545
+   },
+   {
+    "target_utc": "2026-09-04T05:00:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.0,
+    "persistence": 0.0,
+    "historical_average": 0.542
+   },
+   {
+    "target_utc": "2026-09-04T05:15:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.002,
+    "persistence": 0.0,
+    "historical_average": 0.539
+   },
+   {
+    "target_utc": "2026-09-04T05:30:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.536
+   },
+   {
+    "target_utc": "2026-09-04T05:45:00+00:00",
+    "actual": 0.0,
+    "Chronos-Bolt": 0.001,
+    "persistence": 0.0,
+    "historical_average": 0.533
+   }
+  ]
+ },
+ "wall_s": 11.4,
+ "command": "python pipeline/forecasting/live_backtest.py"
+}

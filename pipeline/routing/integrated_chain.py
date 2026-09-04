@@ -94,6 +94,11 @@ def run_arm(a, arm: str, seed: int, slow: dict, weights: Path, deliver_p: float,
     routes, changed, advised = Path(a.routes), 0, 0
 
     if arm == "prediction_aware":
+        if getattr(a, "forecast_kind", "model") == "oracle":
+            # the truth from this seed's own baseline run: the ceiling any forecast could reach
+            weights = run_dir / f"baseline_s{seed}" / "edgedata.xml"
+            if not weights.exists():
+                raise SystemExit(f"oracle needs the baseline run for seed {seed} first ({weights})")
         vehicles = lc.read_routes(routes)
         eq = [(v, d, r) for v, d, r in vehicles
               if pr.equipped(v, a.compliance) and float(d) < a.horizon]
@@ -157,6 +162,8 @@ def run_arm(a, arm: str, seed: int, slow: dict, weights: Path, deliver_p: float,
 
     m = pr.parse_metrics(out, horizon=a.horizon)
     rec = {"arm": arm, "seed": seed, "edges_slowed": applied,
+           "forecast_kind": getattr(a, "forecast_kind", "model") if arm == "prediction_aware" else None,
+           "weights_used": str(weights) if arm == "prediction_aware" else None,
            "advisories_delivered": advised, "routes_changed": changed or reroutes,
            "wall_s": round(time.time() - t0, 1), "out_dir": str(out.relative_to(REPO)),
            "metrics": m}
@@ -305,7 +312,36 @@ def new_run_id(tag: str = "") -> str:
 
 DEFAULTS = dict(seeds="11", horizon=1800, horizon_min=15, compliance=0.3, v2x="ideal",
                 city="dhaka", model=None, api="http://127.0.0.1:8000", source="recorded",
-                as_of="peak", levels="observed", tag="", scale=None, net=None, routes=None)
+                as_of="peak", levels="observed", tag="", scale=None, net=None, routes=None,
+                forecast_kind="model", coverage_hops=0)
+
+# What the prediction arm is allowed to route on. This is the forecast-QUALITY ablation: the
+# same chain, the same seeds, only the forecast changes — so the outcome difference is
+# attributable to forecast quality and nothing else.
+FORECAST_KINDS = {
+    "model":   "the registry's model (or --model), run over real recorded history",
+    "oracle":  "the truth: this seed's own baseline edge travel times — the ceiling",
+    "random":  "uniform random congestion level per corridor, seeded — the floor",
+}
+
+
+def randomise_forecast(res: dict, seed: int) -> dict:
+    """Replace the model's values with seeded uniform levels in [0, 3]. Same shape, no skill."""
+    import numpy as np
+    f = res.get("forecast")
+    if not f:
+        return res
+    rng = np.random.default_rng(seed)
+    f["values"] = {h: [round(float(x), 3) for x in rng.uniform(0.0, 3.0, len(f["node_ids"]))]
+                   for h in f["values"]}
+    f["model"] = "random"
+    f["checkpoint"] = None
+    f["is_baseline"] = True
+    f["provenance"] = {"method": f"uniform random levels, seed {seed}",
+                       "why_reported": "the floor: routing on a forecast with no information"}
+    res["model_used"] = "random"
+    res["is_baseline"] = True
+    return res
 
 
 def run_chain(progress=None, **opts) -> dict:
@@ -348,9 +384,13 @@ def run_chain(progress=None, **opts) -> dict:
     # 1. FORECAST — a real model, run now, over real observations
     print(f"[chain] run {run_id}")
     print("[chain] 1/4 forecast")
+    if a.forecast_kind not in FORECAST_KINDS:
+        raise SystemExit(f"unknown forecast kind {a.forecast_kind!r}; have {sorted(FORECAST_KINDS)}")
     res = fetch_forecast(a.city, a.horizon_min, a.model, a.api, a.source, a.as_of)
+    if a.forecast_kind == "random":
+        res = randomise_forecast(res, seeds[0])
     net = ensure_net(Path(a.net))
-    table = build_table(res, a.horizon_min, net)
+    table = build_table(res, a.horizon_min, net, int(a.coverage_hops))
     weights = run_dir / "forecast_weights.xml"
     write_weights(table, weights, 0.0, float(a.horizon))
     (run_dir / "forecast_table.json").write_text(json.dumps(table, indent=1, default=str))
@@ -359,8 +399,8 @@ def run_chain(progress=None, **opts) -> dict:
     fin = (f"{inp.get('shape')} over {inp.get('nodes')} nodes, {inp.get('unit')}, "
            f"{inp.get('reality')}, up to {inp.get('last_utc')}")
     print(f"        {fc['model']} (baseline={fc['is_baseline']}), input {fin}")
-    print(f"        {table['covered_edges']}/{table['mapped_edges']} edges priced "
-          f"({table['pricing']['rule']})")
+    print(f"        {table.get('priced_edges', table['covered_edges'])} edges priced, "
+          f"{table['covered_edges']}/{table['mapped_edges']} corridor edges ({table['pricing']['rule']})")
     emit(stage="v2x", forecast=fc, forecast_input=fin,
          coverage={"covered": table["covered_edges"], "mapped": table["mapped_edges"]})
 
@@ -390,9 +430,11 @@ def run_chain(progress=None, **opts) -> dict:
         "chain": "CITY -> DATA -> FORECAST -> ROUTE COST -> ROUTING -> SUMO",
         "command": command, "config": cfg,
         "forecast": fc, "forecast_source": a.source, "forecast_input": fin,
+        "forecast_kind": a.forecast_kind, "forecast_kind_meaning": FORECAST_KINDS[a.forecast_kind],
         "forecast_input_detail": inp,
         "observed": table.get("observed"),
-        "coverage": {"covered": table["covered_edges"], "mapped": table["mapped_edges"]},
+        "coverage": {"covered": table["covered_edges"], "mapped": table["mapped_edges"],
+                     "priced": table.get("priced_edges"), "hops": int(a.coverage_hops)},
         "pricing": table["pricing"],
         "predicted_speeds": table.get("predicted_speeds"),
         "predicted_levels": table.get("predicted_levels"),
@@ -443,6 +485,10 @@ def main() -> int:
     p.add_argument("--levels", default="observed",
                    help="'observed' (the recorded state at the as-of bin) or explicit "
                         "corridor=level pairs")
+    p.add_argument("--forecast-kind", default="model", choices=sorted(FORECAST_KINDS),
+                   help="what the prediction arm routes on: model | oracle (truth) | random")
+    p.add_argument("--coverage-hops", type=int, default=0,
+                   help="carry each corridor's forecast to edges within N connections (0 = corridors only)")
     p.add_argument("--tag", default="")
     p.add_argument("--run-id", default=None)
     p.add_argument("--scale", type=float, default=None)

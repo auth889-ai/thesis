@@ -1,52 +1,54 @@
-# DhakaFlow rebuild command surface.
+# DhakaFlow — every result, one target each. `make` with no argument lists them.
 #
-# `make results` only aggregates existing evidence into results/RESULTS.md.
-# `make local-results` regenerates local, non-billed evidence.
-# `make live-capture` deliberately spends a small number of Google API requests.
-PY ?= python
-SEEDS ?= 11,12,13
-HORIZON ?= 7200
+# The four experiments below are the thesis. Each reads real inputs, runs the real chain and writes
+# results/<area>/<name>.json; `make figures` draws those files and nothing else.
+PY    ?= python
+SEEDS ?= 11,12,13,14,15
+H     ?= 1800
 
-.PHONY: all data predict route network nlp live-advice live-advice-real live-summary live-capture results local-results clean
+.DEFAULT_GOAL := help
+.PHONY: help status test app backtest chain ablation coverage sweep sweep-v2x figures results all clean-runs
 
-all: results
+help:            ## list targets
+	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-12s %s\n", $$1, $$2}'
 
-data:            ## twin sensor dataset (Dhaka R1, 250 sensors, 5-min) -> predict/data/dhaka_twin
-	$(PY) predict/make_twin_dataset.py --seeds $(SEEDS)
+status:          ## what exists, what is real, what is missing
+	$(PY) main.py status
 
-predict:         ## forecast -> SUMO weight tables (route/weights/*.xml)
-	$(PY) predict/forecast_to_weights.py --source oracle --seeds $(SEEDS) --horizon $(HORIZON)
+test:            ## the test suite (~1 min, no SUMO, no API)
+	$(PY) -m pytest tests -q
 
-route:           ## all routing arms x paired seeds -> route/results/arms.json
-	$(PY) route/run_arms.py --seeds $(SEEDS) --horizon $(HORIZON)
-	$(PY) route/stats.py --horizon $(HORIZON)
-	$(PY) route/decision_guard.py --horizon $(HORIZON)
+app:             ## the dashboard on http://127.0.0.1:8000
+	cd dashboard/backend && $(PY) -m uvicorn main:app --host 127.0.0.1 --port 8000
 
-network:         ## MOSAIC V2X penetration sweep -> network/results/penetration.csv
-	$(PY) network/penetration_sweep.py
+# ---------------------------------------------------------------- the four experiments
+backtest:        ## E1 how accurate is the forecast on Dhaka's own recorded data (rolling origin, ~15 s)
+	$(PY) pipeline/forecasting/live_backtest.py
 
-nlp:             ## incident-text classifier + event feed -> nlp/results/
-	$(PY) nlp/train_classifier.py
-	$(PY) nlp/event_feed.py --demo
+chain:           ## E2 forecast -> edge costs -> routing -> SUMO, three arms, paired seeds (~1 min)
+	$(PY) pipeline/routing/integrated_chain.py --seeds $(SEEDS) --horizon $(H) --as-of peak --tag _ideal
 
-live-advice:     ## free fixture route-advisor smoke; no API calls
-	$(PY) live/route_advisor.py --dry-run --corridor farmgate_to_shahbagh --out live/results/route_advice_fixture.jsonl
+ablation:        ## E3 does forecast QUALITY reach the road: oracle / model / persistence / random (~5 min)
+	$(PY) pipeline/routing/forecast_quality_ablation.py --seeds $(SEEDS) --horizon $(H)
 
-live-advice-real: ## one real Google Routes advisory; stores compliant metadata only
-	$(PY) live/route_advisor.py --live --yes --corridor farmgate_to_shahbagh --out live/results/route_advice.jsonl
+coverage:        ## E5 is pricing COVERAGE the bottleneck: model vs noise at 0 / 3 / 8 hops (~10 min)
+	$(PY) pipeline/routing/forecast_quality_ablation.py --seeds $(SEEDS) --horizon $(H) \
+	    --hops 0,3,8 --conditions Chronos-Bolt,random --out results/routing/ablation_coverage.json
 
-live-summary:    ## summarize compliant runtime-reference records; no API calls
-	$(PY) predict/summarize_live_reference.py
+sweep:           ## E4 penetration curve: compliance 0..100 % x seeds (~10 min)
+	$(PY) pipeline/routing/chain_sweep.py --grid compliance --seeds $(SEEDS) --horizon $(H)
 
-live-capture:    ## deliberate billed live reference capture, then summarize
-	$(PY) predict/run_live_capture.py
-	$(PY) predict/summarize_live_reference.py
+sweep-v2x:       ## E4b V2X condition x compliance heatmap (~45 min)
+	$(PY) pipeline/routing/chain_sweep.py --grid v2x --compliance 0.1,0.2,0.4 --seeds $(SEEDS) --horizon $(H)
 
-results:         ## audit and collect existing tables into results/RESULTS.md; no simulations/API calls
+figures:         ## F1-F4 from the JSON evidence -> results/figures/
+	$(PY) pipeline/results/make_figures.py
+
+results:         ## audit every evidence file and rebuild results/RESULTS.md (no simulation)
 	$(PY) results/evidence_audit.py
 	$(PY) results/build_results.py
 
-local-results: data predict route network nlp live-summary results
+all: backtest chain ablation coverage sweep figures results   ## everything above, in order (~30 min)
 
-clean:
-	rm -rf route/results/*_s*_h* predict/results/* network/results/* nlp/results/*
+clean-runs:      ## remove per-run SUMO outputs (the JSON summaries stay)
+	rm -rf results/routing/runs/chain_*

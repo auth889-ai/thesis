@@ -58,7 +58,12 @@ export const api = {
   history:       (id, horizons = "5,15,30,60") => get(`/api/history/${encodeURIComponent(id)}?horizons=${horizons}`),
   experiment:    (tag = "_ideal") => get(`/api/experiment/chain?tag=${encodeURIComponent(tag)}`),
   netConditions: () => get("/api/networking/conditions"),
-  cityForecast:  (id, horizons = "5,15,30,60") => get(`/api/forecast/${encodeURIComponent(id)}?horizons=${horizons}`),
+  cityForecast:  (id, horizons = "5,15,30,60", source = "auto") =>
+                   get(`/api/forecast/${encodeURIComponent(id)}?horizons=${horizons}&source=${source}`),
+  forecastAccuracy: (id) => get(`/api/forecast/${encodeURIComponent(id)}/accuracy`),
+  scoreboard:    (id) => get(`/api/forecast/${encodeURIComponent(id)}/scoreboard`),
+  sweep:         (grid = "compliance") => get(`/api/experiment/sweep?grid=${grid}`),
+  ablation:      () => get("/api/experiment/ablation"),
   // live
   liveCorridors: (force = false) => get(`/api/live/corridors${force ? "?force=true" : ""}`),
   liveCorridor:  (id, force = false) => get(`/api/live/corridor/${encodeURIComponent(id)}${force ? "?force=true" : ""}`),

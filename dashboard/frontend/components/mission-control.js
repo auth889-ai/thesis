@@ -112,7 +112,10 @@ export class MissionControl extends HTMLElement {
 
   async load() {
     await this.pickCity();
-    await Promise.all([this.loadLive(), this.loadForecast(), this.loadNet(), this.loadSumo()]);
+    // the route decision (panel 4) prices the future with panel 2's forecast, so it must be able
+    // to wait for it without serialising everything else
+    this._fcReady = this.loadForecast();
+    await Promise.all([this.loadLive(), this._fcReady, this.loadNet(), this.loadSumo()]);
   }
 
   async pickCity() {
@@ -186,7 +189,7 @@ export class MissionControl extends HTMLElement {
   /* ----------------------------------------------------------- 2. forecast */
   async loadForecast() {
     if (this._dead) return;
-    const d = await api.history(this.city);
+    const [d, sb] = await Promise.all([api.history(this.city), api.scoreboard(this.city)]);
     this._hist = d;
     const f = d.forecast;
     const box = this.querySelector("#fcmeta");
@@ -195,31 +198,30 @@ export class MissionControl extends HTMLElement {
       box.innerHTML = `<b>${d.decision?.reason || "no forecast"}</b>`;
       return;
     }
+    const isLevel = String(d.unit || "").startsWith("congestion_level");
+    const unitLabel = isLevel ? "congestion level (0 free … 3 severe)" : "m/s";
     this.querySelector("#fcsub").textContent =
-      `${f.model}${f.is_baseline ? " (BASELINE)" : ""} · ${f.input_window_steps} steps in`;
+      `${f.model}${f.is_baseline ? " (BASELINE)" : ""} · ${f.input_window_steps} steps in · ${
+        d.history?.length || 0} shown`;
 
     // mean across nodes of observed history, then the forecast points
-    const hist = (d.history || []).map(r => {
-      const v = r.values.filter(x => x !== null);
-      return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
-    });
-    const fc = f.horizons_min.map(h => {
-      const v = (f.values[h] || []).filter(x => x !== null && !Number.isNaN(x));
-      return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
-    });
+    const mean = (arr) => { const v = arr.filter(x => x !== null && !Number.isNaN(x));
+                            return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null; };
+    const hist = (d.history || []).map(r => mean(r.values));
+    const fc = f.horizons_min.map(h => mean(f.values[h] || []));
     const lo = f.provenance?.lower_q10, hi = f.provenance?.upper_q90;
-    const band = (q) => q ? f.horizons_min.map(h => {
-      const v = (q[h] || []).filter(x => x !== null && !Number.isNaN(x));
-      return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
-    }) : null;
+    const band = (q) => q ? f.horizons_min.map(h => mean(q[h] || [])) : null;
 
-    const labels = [...hist.map((_, i) => `-${(hist.length - i - 1) * (d.interval_s / 60) | 0}m`),
-                    "NOW", ...f.horizons_min.map(h => `+${h}m`)];
+    const hhmm = (iso) => { const t = new Date(iso); return isNaN(t) ? "" :
+      t.toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"}); };
+    const labels = [...(d.history || []).map(r => hhmm(r.utc)), "NOW",
+                    ...f.horizons_min.map(h => `+${h}m`)];
     const nH = hist.length;
     const pad = new Array(nH).fill(null);
     const ds = [
       {label: "observed", data: [...hist, hist.at(-1), ...new Array(fc.length).fill(null)],
-       borderColor: "#60a5fa", backgroundColor: "#60a5fa", tension: 0.25, pointRadius: 2},
+       borderColor: "#60a5fa", backgroundColor: "#60a5fa", tension: 0.25, pointRadius: nH > 60 ? 0 : 2,
+       borderWidth: 1.6},
       {label: f.model, data: [...pad, hist.at(-1), ...fc],
        borderColor: "#a855f7", backgroundColor: "#a855f7", borderDash: [5, 3], tension: 0.25, pointRadius: 3},
     ];
@@ -231,27 +233,48 @@ export class MissionControl extends HTMLElement {
                pointRadius: 0});
     }
     this._chart?.destroy();
+    const base = window.chartDefaults();
     this._chart = new Chart(this.querySelector("#fcchart"), {
       type: "line", data: {labels, datasets: ds},
-      options: {...window.chartDefaults(),
-        plugins: {...window.chartDefaults().plugins,
+      options: {...base,
+        plugins: {...base.plugins,
           legend: {display: true, labels: {color: window.axisColor(), boxWidth: 10, usePointStyle: true}}},
-        scales: {...window.chartDefaults().scales,
-          y: {...window.chartDefaults().scales.y, title: {display: true, text: "m/s", color: window.axisColor()}}}},
+        scales: {...base.scales,
+          x: {...base.scales.x, ticks: {color: window.axisColor(), maxTicksLimit: 12, maxRotation: 0}},
+          y: {...base.scales.y, ...(isLevel ? {min: 0, max: 3} : {}),
+              title: {display: true, text: unitLabel, color: window.axisColor()}}}},
     });
 
     this.querySelector("#fchorizons").innerHTML = f.horizons_min.map((h, i) => {
       const v = fc[i];
-      const risk = v === null ? "—" : (v < 4 ? "HIGH" : v < 6 ? "MEDIUM" : "LOW");
+      const risk = v === null ? "—"
+        : isLevel ? (v >= 2 ? "HIGH" : v >= 1 ? "MEDIUM" : "LOW")
+                  : (v < 4 ? "HIGH" : v < 6 ? "MEDIUM" : "LOW");
       const tone = risk === "HIGH" ? "TRAFFIC_JAM" : risk === "MEDIUM" ? "SLOW" : "NORMAL";
       return `<div class="hcard"><div class="hcard-h">+${h} min</div>
-        <div class="stat-v">${v === null ? "—" : v.toFixed(2)} <small class="muted">m/s</small></div>
+        <div class="stat-v">${v === null ? "—" : v.toFixed(2)} <small class="muted">${isLevel ? "level" : "m/s"}</small></div>
         <div class="tag ${tone}">${risk} risk</div></div>`;
     }).join("");
 
-    box.innerHTML = `checkpoint <code>${f.checkpoint || "—"}</code> · inferred ${ago(f.inference_utc)}
+    // how good is this forecast — the replayed backtest, and the live ledger the server keeps
+    const acc = d.accuracy?.rows || [];
+    const row = (m, h) => acc.find(r => r.model === m && r.horizon_min === h);
+    const a15 = row(f.model, 15), p15 = row("persistence", 15);
+    const accLine = a15
+      ? `<b>Accuracy (E1, ${d.accuracy.origins} rolling origins):</b> +15 min class accuracy
+         <b>${(a15.class_accuracy * 100).toFixed(1)} %</b>, MAE ${a15.mae}${p15 ? ` vs persistence ${p15.mae}` : ""}
+         — <span class="${a15.skill_vs_persistence > 0 ? "ok" : "bad"}">${
+           a15.skill_vs_persistence > 0 ? "beats" : "does not beat"} the persistence floor
+         (skill ${(a15.skill_vs_persistence * 100).toFixed(0)} %)</span>. `
+      : "";
+    const sbLine = sb && sb.logged !== undefined
+      ? `<b>Track record:</b> ${sb.logged} forecasts written to the ledger before their target time,
+         ${sb.scored} graded so far${(sb.rows || []).filter(r => r.horizon_min === 15 && !r.is_baseline)
+           .map(r => ` — live +15 min MAE ${r.mae}, class accuracy ${(r.class_accuracy * 100).toFixed(0)} %`)[0] || ""}. `
+      : "";
+    box.innerHTML = `${accLine}${sbLine}checkpoint <code>${f.checkpoint || "—"}</code> · inferred ${ago(f.inference_utc)}
       ${f.provenance?.uses_road_graph === false ? " · does not use the road graph" : ""}
-      ${f.provenance?.pretraining_exposure ? ` · exposure ${f.provenance.pretraining_exposure}` : ""}`;
+      · <span class="muted">${d.source || ""}</span>`;
   }
 
   /* ---------------------------------------------------------- 3. networking */
@@ -304,7 +327,7 @@ export class MissionControl extends HTMLElement {
     const jam = live.corridors.find(c => c.category === "TRAFFIC_JAM" && c.is_live) || live.corridors[0];
     const o = {lat: jam.origin.lat, lng: jam.origin.lng};
     const dst = {lat: jam.destination.lat, lng: jam.destination.lng};
-    const r = await api.liveRoutes(o, dst);
+    const [r] = await Promise.all([api.liveRoutes(o, dst), this._fcReady]);
     const box = this.querySelector("#routebox");
     if (!r.is_live || !(r.routes || []).length) {
       box.innerHTML = `<p class="badge bad">API UNAVAILABLE — ${r.request_status}</p>`;
@@ -317,12 +340,26 @@ export class MissionControl extends HTMLElement {
     this.drawMap();
 
     const f = this._hist?.forecast;
-    const meanFc = f ? (() => {
-      const v = (f.values[15] || []).filter(x => x !== null && !Number.isNaN(x));
+    const isLevel = String(this._hist?.unit || "").startsWith("congestion_level");
+    // the corridor the route runs on, if the forecast names it; else the mean over nodes
+    const pick = (vals) => {
+      const i = (f?.node_ids || []).indexOf(jam.id);
+      if (i >= 0 && vals[i] !== null && !Number.isNaN(vals[i])) return vals[i];
+      const v = vals.filter(x => x !== null && !Number.isNaN(x));
       return v.length ? v.reduce((a, b) => a + b, 0) / v.length : null;
-    })() : null;
-    const nowSpeed = best.distance_m && best.duration_s ? best.distance_m / best.duration_s : null;
-    const futureEta = (meanFc && best.distance_m) ? best.distance_m / meanFc : null;
+    };
+    const meanFc = f ? pick(f.values[15] || []) : null;
+    // a congestion CLASS becomes a travel-time multiplier through the documented band midpoints
+    // (pipeline/forecasting/live_to_edges.py) — the same rule the routing chain prices edges with
+    const MID = [1.08, 1.33, 1.75, 2.50];
+    const mult = (lv) => { const x = Math.min(Math.max(lv, 0), 3), lo = Math.floor(x), hi = Math.ceil(x);
+                           return lo === hi ? MID[lo] : MID[lo] + (x - lo) * (MID[hi] - MID[lo]); };
+    const futureEta = meanFc === null ? null
+      : isLevel ? (best.static_duration_s || best.duration_s) * mult(meanFc)
+                : (best.distance_m ? best.distance_m / meanFc : null);
+    const fcNote = meanFc === null ? "no forecast"
+      : isLevel ? `forecast level ${meanFc.toFixed(2)} → ×${mult(meanFc).toFixed(2)} free-flow`
+                : `at forecast ${meanFc.toFixed(2)} m/s`;
 
     box.innerHTML = `
       <div class="labelrow"><span class="badge live">LIVE</span>
@@ -330,8 +367,7 @@ export class MissionControl extends HTMLElement {
       <div class="statgrid tight">
         ${st("Fastest now", mins(best.duration_s), `${km(best.distance_m)} · ${CATEGORY_LABEL[best.category] || ""}`)}
         ${st("Static ETA", mins(best.static_duration_s), "no traffic")}
-        ${st("Predicted +15 min", futureEta ? mins(futureEta) : "—",
-             meanFc ? `at forecast ${meanFc.toFixed(2)} m/s` : "no forecast")}
+        ${st("Predicted +15 min", futureEta ? mins(futureEta) : "—", fcNote)}
         ${st("Alternatives", String(r.alternatives), alt ? `best alt ${mins(alt.duration_s)}` : "none returned")}
       </div>
       <div class="note ${futureEta && futureEta > best.duration_s ? "warn" : "ok"}">
@@ -347,38 +383,111 @@ export class MissionControl extends HTMLElement {
   /* ------------------------------------------------------------- 5. SUMO */
   async loadSumo() {
     if (this._dead) return;
-    const d = await api.experiment("_ideal");
+    const [d, sw, ab] = await Promise.all([api.experiment("_ideal"), api.sweep("compliance"), api.ablation()]);
     const box = this.querySelector("#sumobox");
-    if (!d.available) {
-      box.innerHTML = `<p class="muted">No experiment recorded yet.<br>
-        <code>${d.command}</code></p>`;
+    if (!d.available && !sw.available) {
+      box.innerHTML = `<p class="muted">No experiment recorded yet.<br><code>${d.command}</code></p>`;
       return;
     }
+    const label = {baseline: "Baseline", reactive: "Reactive", prediction_aware: "Prediction-aware"};
     const arms = d.summary?.arms || [];
     const v = d.summary?.verdict || {};
-    const label = {baseline: "Baseline", reactive: "Reactive", prediction_aware: "Prediction-aware"};
+
+    // the finding in one line, from the sweep: where prediction-aware routing helps and where it hurts
+    let headline = "";
+    if (sw.available) {
+      const pts = [...sw.points].sort((x, y) => x.compliance - y.compliance);
+      const pa = pts.filter(p => p.compliance > 0).map(p => ({c: p.compliance, ...p.arms.prediction_aware}));
+      const wins = pa.filter(p => p.seeds_improved === p.n_seeds);
+      const worst = pa.reduce((m, p) => p.vs_baseline_pct_mean > m.vs_baseline_pct_mean ? p : m, pa[0]);
+      headline = wins.length
+        ? `Pre-departure rerouting <b>helps at ${wins.map(p => Math.round(p.c * 100) + " %").join(", ")} penetration</b>
+           (${wins.map(p => p.vs_baseline_pct_mean.toFixed(1) + " %").join(", ")} vehicle-hours, every seed) and
+           <b>hurts above ${Math.round(worst.c * 100) >= 40 ? "40" : Math.round(worst.c * 100)} %</b>
+           (${worst.vs_baseline_pct_mean > 0 ? "+" : ""}${worst.vs_baseline_pct_mean.toFixed(1)} % at ${Math.round(worst.c * 100)} %).`
+        : `No penetration level improved every seed.`;
+    }
+    const abl = ab.available ? ab : null;
+
     box.innerHTML = `
-      <p class="muted">${d.seeds.length} paired seeds · identical network, demand and horizon ·
-        forecast ${d.forecast.model} · V2X ${d.v2x.condition} (delivery ${d.delivery_fraction})</p>
-      <div class="tablewrap"><table>
-        <thead><tr><th>arm</th><th class="num">veh-h</th><th class="num">vs base</th>
-          <th class="num">mean TT</th><th class="num">p95 TT</th><th class="num">waiting</th>
-          <th class="num">arrivals</th><th class="num">teleports</th><th class="num">reroutes</th></tr></thead>
-        <tbody>${arms.map(a => `<tr>
-          <td><b>${label[a.arm] || a.arm}</b></td>
-          <td class="num">${a.total_vehicle_hours}</td>
-          <td class="num ${a.vehicle_hours_pct < 0 ? "ok" : a.vehicle_hours_pct > 0 ? "bad" : ""}">${
-            a.arm === "baseline" ? "—" : (a.vehicle_hours_pct > 0 ? "+" : "") + a.vehicle_hours_pct + "%"}</td>
-          <td class="num">${a.mean_travel_time_s}s</td>
-          <td class="num">${a.p95_travel_time_s}s</td>
-          <td class="num">${Math.round(a.total_waiting_s).toLocaleString()}</td>
-          <td class="num">${a.arrived}</td>
-          <td class="num">${a.teleports}</td>
-          <td class="num">${a.reroutes}</td></tr>`).join("")}</tbody></table></div>
-      ${Object.entries(v).map(([arm, x]) => `
-        <div class="note ${x.claim === "IMPROVES" ? "ok" : "warn"}">
-          <b>${label[arm] || arm}: ${x.claim}</b> — ${x.seeds_improved} seeds improved.
-          <span class="muted">${x.why}</span></div>`).join("")}`;
+      ${headline ? `<div class="note ok"><b>Finding.</b> ${headline}
+        ${abl ? ` ${abl.reading.charAt(0).toUpperCase() + abl.reading.slice(1)}.` : ""}</div>` : ""}
+      <div class="two">
+        <div>
+          <h3>Penetration curve <small class="muted">E4 · ${sw.available ? sw.seeds.split(",").length + " paired seeds, band ±1 sd" : "not run"}</small></h3>
+          <div class="chart short"><canvas id="sweepchart"></canvas></div>
+        </div>
+        <div>
+          <h3>Which forecast the routing used <small class="muted">E3 · vehicle-hours vs baseline</small></h3>
+          ${abl ? `<div class="hcards tight abl">${abl.rows.map(r => `
+            <div class="hcard"><div class="hcard-h">${r.forecast}</div>
+              <div class="stat-v ${r.vs_baseline.mean_pct < 0 ? "ok" : "bad"}">${r.vs_baseline.mean_pct > 0 ? "+" : ""}${r.vs_baseline.mean_pct.toFixed(2)} %</div>
+              <div class="tag ${r.vs_baseline.claim === "IMPROVES" ? "NORMAL" : "SLOW"}">${r.vs_baseline.seeds_improved} seeds</div>
+            </div>`).join("")}</div>
+            <p class="muted">Chronos vs random: <b>${abl.route_sensitivity.vehicles_routed_differently["Chronos-Bolt vs random"]}</b>
+              vehicles routed differently — the forecast's numbers did not reach the router.</p>` : `<p class="muted">not run — <code>make ablation</code></p>`}
+        </div>
+      </div>
+      <details class="why"><summary>The three arms at ${d.available ? (d.compliance * 100).toFixed(0) + " % compliance" : "—"} — every measured metric</summary>
+        ${d.available ? `<p class="muted">${d.seeds.length} paired seeds · identical network, demand and horizon ·
+          forecast ${d.forecast.model} · V2X ${d.v2x.condition} (delivery ${d.delivery_fraction}) · run <code>${d.run_id || ""}</code></p>
+        <div class="tablewrap"><table>
+          <thead><tr><th>arm</th><th class="num">veh-h</th><th class="num">vs base</th>
+            <th class="num">mean TT</th><th class="num">p95 TT</th><th class="num">waiting</th><th class="num">queue</th>
+            <th class="num">arrivals</th><th class="num">teleports</th><th class="num">reroutes</th></tr></thead>
+          <tbody>${arms.map(a => `<tr>
+            <td><b>${label[a.arm] || a.arm}</b></td>
+            <td class="num">${a.total_vehicle_hours}</td>
+            <td class="num ${a.vehicle_hours_pct < 0 ? "ok" : a.vehicle_hours_pct > 0 ? "bad" : ""}">${
+              a.arm === "baseline" ? "—" : (a.vehicle_hours_pct > 0 ? "+" : "") + a.vehicle_hours_pct + "%"}</td>
+            <td class="num">${a.mean_travel_time_s}s</td>
+            <td class="num">${a.p95_travel_time_s}s</td>
+            <td class="num">${Math.round(a.total_waiting_s).toLocaleString()}</td>
+            <td class="num">${a.mean_queue_veh ?? "—"}</td>
+            <td class="num">${a.arrived}</td>
+            <td class="num">${a.teleports}</td>
+            <td class="num">${a.reroutes}</td></tr>`).join("")}</tbody></table></div>
+        ${Object.entries(v).map(([arm, x]) => `
+          <div class="note ${x.claim === "IMPROVES" ? "ok" : "warn"}">
+            <b>${label[arm] || arm}: ${x.claim}</b> — ${x.seeds_improved} seeds improved.
+            <span class="muted">${x.why}</span></div>`).join("")}` : ""}
+      </details>`;
+    if (sw.available) this.drawSweep(sw);
+  }
+
+  drawSweep(sw) {
+    const el = this.querySelector("#sweepchart");
+    if (!el || typeof Chart === "undefined") return;
+    const pts = [...sw.points].sort((x, y) => x.compliance - y.compliance);
+    const x = pts.map(p => Math.round(p.compliance * 100));
+    const series = (arm, colour, name) => {
+      const m = pts.map(p => p.arms[arm]?.vs_baseline_pct_mean ?? null);
+      const s = pts.map(p => p.arms[arm]?.vs_baseline_pct_sd ?? 0);
+      const rgba = colour.replace(")", ",.15)").replace("rgb(", "rgba(");
+      return [
+        {label: name, data: m, borderColor: colour, backgroundColor: colour, tension: 0.25, pointRadius: 3},
+        {label: `${name} +sd`, data: m.map((v, i) => v === null ? null : v + s[i]), borderColor: "transparent",
+         pointRadius: 0, fill: "+1", backgroundColor: rgba},
+        {label: `${name} −sd`, data: m.map((v, i) => v === null ? null : v - s[i]), borderColor: "transparent",
+         pointRadius: 0},
+      ];
+    };
+    const base = window.chartDefaults();
+    this._sweep?.destroy();
+    this._sweep = new Chart(el, {
+      type: "line",
+      data: {labels: x, datasets: [
+        {label: "baseline", data: x.map(() => 0), borderColor: "#94a3b8", borderDash: [4, 4], pointRadius: 0},
+        ...series("reactive", "rgb(245,158,11)", "reactive"),
+        ...series("prediction_aware", "rgb(168,85,247)", "prediction-aware"),
+      ]},
+      options: {...base,
+        plugins: {...base.plugins, legend: {labels: {color: window.axisColor(), boxWidth: 10, usePointStyle: true,
+          filter: (item) => !/sd$/.test(item.text)}}},
+        scales: {...base.scales,
+          x: {...base.scales.x, title: {display: true, text: "equipped vehicles (%)", color: window.axisColor()}},
+          y: {...base.scales.y, title: {display: true, text: "vehicle-hours vs baseline (%)", color: window.axisColor()}}}},
+    });
   }
 }
 

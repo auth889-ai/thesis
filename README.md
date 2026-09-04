@@ -1,24 +1,41 @@
 # DhakaFlow
 
-> **What this system claims.** The software can instantiate a road-network and traffic-management pipeline for arbitrary cities, while forecasting capability is enabled only when the required live / history / schema conditions are satisfied.
->
-> It does **not** claim accurate forecasting for every city.
+**Does a better traffic forecast produce better traffic control?** A closed-loop test on a calibrated
+SUMO twin of Dhaka fed by real recorded congestion — forecast → future edge costs → route choice →
+simulation → measured outcome — with every number regenerable by one command.
 
+![penetration curve](results/figures/F1_penetration_curve.png)
 
-**Traffic prediction that is reproduced against the published literature, routing that is proven
-in a digital twin of real roads, and a communication layer that is measured rather than assumed.**
+**Finding.** Pre-departure rerouting of 10–20 % of vehicles reduces total vehicle-hours in every seed
+(−2.7 % at 20 %, 5/5) and *hurts* above 40 % (+13 % at 80 %). The benefit does not come from forecast
+accuracy: a pretrained foundation model (Chronos-Bolt) and random noise route **identically** (0 of
+2 263 advised vehicles differ), the model has negative skill against persistence on Dhaka's own data
+(−23 % at 15 min), and only the oracle forecast moves the outcome (−2.2 %). Between prediction and
+control, the first bottleneck is the **coverage of priced edges**: propagating the forecast 8 hops
+out from the observed corridors (79 → 1 324 priced edges) makes the router route 321 vehicles
+differently for the model than for noise — and the model then does no better than noise, consistent
+with its negative skill. Two bottlenecks, both measured: coverage first, then the model.
+
+| | |
+|---|---|
+| `make backtest` | forecast accuracy on Dhaka's recorded data, rolling origin (15 s) |
+| `make chain` | the full chain, three arms, paired seeds, run id (1 min) |
+| `make ablation` | oracle / model / persistence / random through the same chain (5 min) |
+| `make sweep` | the penetration curve above (10 min) |
+| `make coverage` | the same model vs noise at 0 / 3 / 8 hops of pricing coverage (10 min) |
+| `make figures` · `make test` · `make app` | figures · 291 tests · the dashboard |
+
+![ablation](results/figures/F2_forecast_quality_ablation.png)
+![coverage](results/figures/F5_coverage_ablation.png)
+
+Every figure reads one JSON in `results/`; every JSON names the run directory, seeds, SUMO version
+and git commit that produced it. `REPRODUCE.md` maps each claim to its command.
 
 ![tests](https://github.com/auth889-ai/thesis/actions/workflows/tests.yml/badge.svg)
 
-```
-live/sensor data ──► FORECAST ──► future edge travel times ──► ROUTE ──► SUMO counterfactual ──► ACT / NO ACTION
-                        │                                                        │
-                        └── federated across roadside units, over a V2X link measured in Eclipse MOSAIC
-```
-
 ---
 
-## Results
+## Benchmark validation (public data — supports the pipeline, says nothing about Dhaka)
 
 ### Traffic forecasting — METR-LA (207 real loop detectors, Los Angeles)
 
@@ -98,12 +115,11 @@ published federated work (CNFGNN KDD 2021, FedGTP KDD 2024) costs communication 
 ```bash
 git clone https://github.com/auth889-ai/thesis && cd thesis
 python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt          # SUMO 1.27 must be on PATH for chain/ablation/sweep
 
-python main.py status                  # what exists, what is real, what is missing
-python pipeline/forecasting/benchmark_floors.py     # forecasting floors on real data (no GPU, ~2 s)
-python pipeline/forecasting/comparison_table.py     # the Phase-1 gate, machine-readable
-python main.py demo                    # the Streamlit app
+make status      # what exists, what is real, what is missing
+make backtest    # 15 s — the first real number
+make app         # http://127.0.0.1:8000
 ```
 
 ## Data preparation
@@ -131,22 +147,25 @@ or open `notebooks/Predict_BasicTS_Colab.ipynb` on a Colab GPU.
 ## Project structure
 
 ```
-main.py               single entry point: status | predict | route | demo
-pipeline/forecasting/              STAGE 1 — forecasting
-  city_datasets.py      one loader interface per city (METR-LA, PEMS-BAY, PEMS04/08, Dhaka)
-                        -- software portability, NOT evidence of cross-city accuracy
-  benchmark_floors.py   persistence / HA / seasonal floors + protocol check vs published
-  aws_train.py          GPU training from the terminal, self-terminating
-  federated_forecast.py FedAvg across RSUs over a SIMULATED V2X link (Eclipse MOSAIC ITS-G5)
-  infer_from_checkpoint.py  reload a checkpoint, forecast an unseen window
-pipeline/routing/                STAGE 2 — routing, evaluated in SUMO with paired seeds
-  predictive_routing.py, run_arms.py, decision_guard.py, live_chain.py
-pipeline/networking/              V2X experiments (Eclipse MOSAIC): penetration, latency, loss
-pipeline/nlp/                  incident-text classifier and its event feed
-demo/                 Streamlit app
-results/              evidence collection -> results/RESULTS.md
-tests/rebuild/        60 tests, run in CI
-legacy/               retired code, kept for history only
+Makefile                      every result is one target; `make` lists them
+REPRODUCE.md                  claim -> command -> evidence file
+main.py                       `python main.py status`: inventory of data, models, evidence
+pipeline/
+  forecasting/                STAGE 1  data loaders, live recorder, adapters/ (one interface per model),
+                                       live_backtest.py (E1)
+  routing/                    STAGE 2  forecast_to_costs.py (forecast -> 79 priced SUMO edges),
+                                       integrated_chain.py (E2), forecast_quality_ablation.py (E3),
+                                       chain_sweep.py (E4), predictive_routing.py (SUMO arms)
+  networking/                 V2X experiments (Eclipse MOSAIC): penetration, latency, loss
+  results/make_figures.py     F1-F4 from the JSON evidence
+dashboard/backend, frontend   FastAPI + web components; POST /api/experiment/chain/run executes E2
+results/                      JSON evidence, per-run SUMO outputs (runs/<run_id>/), figures/
+artifacts/live_dhaka/         the recorded REAL_LIVE Dhaka series (derived congestion classes)
+paper_labs/02_dhaka_osm/      the frozen Dhaka R1 network build
+upstream/                     pinned third-party repos (manifests only)
+tests/                        291 tests, run in CI
+docs/                         plans, audits, the pre-rebuild reproduce table
+legacy/                       retired code, history only
 ```
 
 ## Upstream code
