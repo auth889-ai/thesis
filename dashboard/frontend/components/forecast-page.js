@@ -20,6 +20,10 @@ export class ForecastPage extends HTMLElement {
         <div id="accuracy"><p class="muted">Loading the backtest…</p></div>
       </section>
       <section class="card">
+        <h2>Foundation model — OpenCity-plus <small>zero-shot for any city, once its harness has the history it needs</small></h2>
+        <div id="opencity"><p class="muted">Checking…</p></div>
+      </section>
+      <section class="card">
         <h2>Forecast <small>city: <b id="cid">${this.city}</b></small></h2>
         <div class="form">
           <label>Horizons <select id="hz">
@@ -32,6 +36,40 @@ export class ForecastPage extends HTMLElement {
     this.querySelector("#run").addEventListener("click", () => this.run());
     this.run();
     this.loadAccuracy();
+    this.loadOpenCity();
+  }
+
+  /* ------------------------------------------------------------ foundation model
+   * OpenCity is the "any city" model. Its state is shown in its own terms — how much of the
+   * history its harness needs has accumulated — and never as a number before the run exists. */
+  async loadOpenCity() {
+    const o = await api.opencity(this.city);
+    const host = this.querySelector("#opencity");
+    if (!host || o.steps_need === undefined) return;
+    const pct = Math.min(100, Math.round(100 * o.steps_have / o.steps_need));
+    const smoke = o.cpu_path_verified?.opencity;
+    const res = o.result?.opencity;
+    host.innerHTML = `
+      <div class="hcards tight">
+        <div class="hcard"><div class="hcard-h">history for its harness</div>
+          <div class="stat-v">${o.steps_have}<small class="muted"> / ${o.steps_need} steps</small></div>
+          <div class="progress"><div style="width:${pct}%"></div></div>
+          <div class="muted">${o.ready ? "ready to run" : `~${o.hours_to_go} h of observation to go`}</div></div>
+        <div class="hcard"><div class="hcard-h">graph</div>
+          <div class="stat-v">${o.nodes_have}<small class="muted"> / ${o.nodes_need} nodes</small></div>
+          <div class="tag ${o.nodes_have >= o.nodes_need ? "NORMAL" : "SLOW"}">${o.nodes_have >= o.nodes_need ? "enough for its positional encoding" : "too few nodes"}</div></div>
+        <div class="hcard"><div class="hcard-h">forward pass on this machine</div>
+          ${smoke ? `<div class="stat-v">${smoke.metrics?.mae ?? "—"}<small class="muted"> MAE</small></div>
+            <div class="muted">vs persistence ${o.cpu_path_verified.persistence_same_windows?.mae} on ${smoke.windows} windows · 12-node slice, CPU</div>
+            <div class="tag NORMAL">authors' harness, unmodified</div>`
+          : `<div class="stat-v">—</div><div class="muted">not yet verified</div>`}</div>
+        <div class="hcard"><div class="hcard-h">${this.city} zero-shot</div>
+          ${res ? `<div class="stat-v">${res.metrics?.mae ?? "—"}<small class="muted"> MAE</small></div>
+            <div class="muted">vs persistence ${o.result.persistence_same_windows?.mae} · 24 h horizon average</div>`
+          : `<div class="stat-v">—</div><div class="muted">no run yet · <code>${o.command}</code></div>`}</div>
+      </div>
+      <p class="muted">${o.why.steps}; ${o.why.nodes}. The window is kept in
+        <code>results/live/observatory.sqlite</code>, so it keeps counting across restarts.</p>`;
   }
 
   async run() {
@@ -56,17 +94,27 @@ export class ForecastPage extends HTMLElement {
     for (const r of a.rows) (byH[r.horizon_min] ||= []).push(r);
     const cards = a.horizons_min.map(h => {
       const v = a.verdict[h] || {};
-      const best = (byH[h] || []).find(r => r.model === v.best_model) || (byH[h] || [])[0];
       const model = (byH[h] || []).find(r => !r.is_baseline);
+      const floor = (byH[h] || []).find(r => r.model === "persistence");
       const skill = model?.skill_vs_persistence;
-      const tone = skill > 0 ? "NORMAL" : "TRAFFIC_JAM";
+      const tone = skill > 0.02 ? "NORMAL" : skill > -0.05 ? "UNKNOWN" : "SLOW";
+      const verdict = skill === undefined || skill === null ? "no model"
+        : skill > 0.02 ? `beats the persistence floor by ${(skill * 100).toFixed(0)} %`
+        : skill > -0.05 ? `level with the persistence floor (${(skill * 100).toFixed(0)} %)`
+        : `not yet better than the persistence floor (${(skill * 100).toFixed(0)} %)`;
       return `<div class="hcard"><div class="hcard-h">+${h} min</div>
-        <div class="stat-v">${model ? (model.class_accuracy * 100).toFixed(1) : "—"}<small class="muted">% class accuracy</small></div>
-        <div class="muted">${model?.model || "—"} · MAE ${model?.mae ?? "—"} levels</div>
-        <div class="tag ${tone}">${skill === undefined || skill === null ? "no model" :
-          skill > 0 ? `beats persistence by ${(skill * 100).toFixed(0)} %` : `does NOT beat persistence (${(skill * 100).toFixed(0)} %)`}</div>
-        <div class="muted">best: ${best?.model || "—"}</div></div>`;
+        <div class="stat-v">${model ? (model.class_accuracy * 100).toFixed(1) : "—"}<small class="muted"> % class accuracy</small></div>
+        <div class="muted">${model?.model || "—"} · MAE ${model?.mae?.toFixed(3) ?? "—"}${floor ? ` · floor ${floor.mae.toFixed(3)}` : ""}</div>
+        <div class="tag ${tone}">${verdict}</div></div>`;
     }).join("");
+    const days = a.span_utc ? Math.max(1, Math.round((new Date(a.span_utc[1]) - new Date(a.span_utc[0])) / 864e5)) : "?";
+    const anyBeats = Object.values(a.verdict || {}).some(x => x.chronos_beats_persistence);
+    const lead = anyBeats
+      ? `<b>The pretrained model beats the persistence floor on this city's own data.</b>`
+      : `<b>On ${days} days of recorded data the pretrained model matches the persistence floor on class
+         accuracy and has not yet earned its complexity on MAE.</b> That is the honest state of a
+         foundation model on a 6-corridor city; the floor it must beat is shown beside every number,
+         and the window keeps growing while the recorder runs.`;
 
     const table = `<div class="tablewrap"><table>
       <thead><tr><th>model</th><th class="num">horizon</th><th class="num">MAE</th><th class="num">RMSE</th>
@@ -79,14 +127,16 @@ export class ForecastPage extends HTMLElement {
         <td class="num">${r.n_pairs}</td></tr>`).join("")}</tbody></table></div>`;
 
     host.innerHTML = `
-      <div class="note ${Object.values(a.verdict).some(v => v.chronos_beats_persistence) ? "ok" : "warn"}">
-        <b>Measured on ${a.nodes} corridors × ${a.bins} five-minute bins of recorded live data</b>
-        (${a.span_utc[0].slice(0, 10)} → ${a.span_utc[1].slice(0, 10)}), ${a.origins_evaluated} forecast origins.
-        ${a.protocol}.</div>
+      <div class="note ${anyBeats ? "ok" : ""}">${lead}</div>
       <div class="hcards tight">${cards}</div>
       <div class="chart tall"><canvas id="acc-chart"></canvas></div>
-      ${table}
-      <p class="muted">Unit: ${a.unit}. Generated ${a.generated_utc.slice(0, 19)}Z · <code>${a.command}</code></p>`;
+      <details class="why"><summary>How this was measured · every model, every horizon</summary>
+        <p class="muted">${a.nodes} corridors × ${a.bins} five-minute bins of recorded live data
+          (${a.span_utc[0].slice(0, 10)} → ${a.span_utc[1].slice(0, 10)}), ${a.origins_evaluated} forecast origins.
+          ${a.protocol}.</p>
+        ${table}
+        <p class="muted">Unit: ${a.unit}. Generated ${a.generated_utc.slice(0, 19)}Z · <code>${a.command}</code></p>
+      </details>`;
     this.drawTrace(a);
   }
 
@@ -147,23 +197,26 @@ export class ForecastPage extends HTMLElement {
           f.horizons_min.map(h => `<td class="num">${(f.values[h] || [])[i] ?? "—"}</td>`).join("")}</tr>`).join("")}
         </tbody></table></div>` : "";
 
+    const have = r.steps_have ?? 0, need = r.steps_need ?? 288;
+    const pct = Math.min(100, Math.round(100 * have / need));
     const readiness = r.checks ? `
-      <h3>Why a stronger model is not available yet</h3>
-      <div class="tablewrap"><table>
-        <thead><tr><th>check</th><th>need</th><th class="num">have</th><th>ok</th></tr></thead>
-        <tbody>${r.checks.map(c => `<tr><td>${c.check}</td><td>${c.need}</td>
-          <td class="num">${c.have ?? "—"}</td><td>${c.ok ? "yes" : "<b>NO</b>"}</td></tr>`).join("")}</tbody>
-      </table></div>
-      <p class="muted">${r.steps_remaining ? `${r.steps_remaining} more samples needed — about ${r.eta_hours} h of continuous observation.` : ""}
-      ${r.storage || ""}</p>` : "";
-
-    const refusals = refused.length ? `
-      <h3>Models that refused</h3>
-      <div class="tablewrap"><table><thead><tr><th>model</th><th>reason</th></tr></thead><tbody>
-        ${refused.map(x => `<tr><td>${x.model}</td><td>${x.reasons.join("; ")}</td></tr>`).join("")}
-      </tbody></table></div>
-      <p class="muted">A model is never run outside the data it can honestly serve; a number that
-      looks valid but is not would be worse than no number.</p>` : "";
+      <details class="why"><summary>Which models can serve this city, and what each still needs
+        <span class="muted">· history ${have}/${need} steps (${pct} %)${r.steps_remaining ? `, ~${r.eta_hours} h to go` : ""}</span></summary>
+        <div class="progress"><div style="width:${pct}%"></div></div>
+        <div class="tablewrap"><table>
+          <thead><tr><th>check</th><th>need</th><th class="num">have</th><th>ok</th></tr></thead>
+          <tbody>${r.checks.map(c => `<tr><td>${c.check}</td><td>${c.need}</td>
+            <td class="num">${c.have ?? "—"}</td><td>${c.ok ? "yes" : "<b>not yet</b>"}</td></tr>`).join("")}</tbody>
+        </table></div>
+        <p class="muted">${r.storage || ""}</p>
+        ${refused.length ? `<h3>Models that declined this request</h3>
+          <div class="tablewrap"><table><thead><tr><th>model</th><th>reason</th></tr></thead><tbody>
+            ${refused.map(x => `<tr><td>${x.model}</td><td>${x.reasons.join("; ")}</td></tr>`).join("")}
+          </tbody></table></div>
+          <p class="muted">A model is never run outside the data it can honestly serve; a number that
+          looks valid but is not would be worse than no number.</p>` : ""}
+      </details>` : "";
+    const refusals = "";
 
     const models = `
       <h3>Model availability for this city</h3>

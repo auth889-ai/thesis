@@ -16,12 +16,20 @@ a city with no traffic.
 """
 from __future__ import annotations
 
+import json
+import sqlite3
 import threading
 import time
 from collections import deque
 from datetime import datetime, timezone
+from pathlib import Path
 
 import corridors as _corridors
+
+# The derived speeds are OUR numbers (distance / duration, computed here), so they may be kept.
+# Keeping them is what lets the 288-step window ever be reached: a buffer that dies with the
+# process can never count past one uptime. Google route content is still never written.
+DB = Path(__file__).resolve().parents[2] / "results/live/observatory.sqlite"
 
 BIN_S = 300
 HIS = 288            # OpenCity's input window
@@ -42,6 +50,47 @@ class Observatory:
         self._started_utc: str | None = None
         self._samples = 0
         self._failures = 0
+        self._restored: set[str] = set()
+
+    # ------------------------------------------------------------ persistence
+    def _conn(self) -> sqlite3.Connection:
+        DB.parent.mkdir(parents=True, exist_ok=True)
+        c = sqlite3.connect(DB, timeout=10)
+        c.execute("""CREATE TABLE IF NOT EXISTS samples (
+            city TEXT NOT NULL, t REAL NOT NULL, utc TEXT NOT NULL, nodes TEXT NOT NULL,
+            values_json TEXT NOT NULL, PRIMARY KEY (city, t))""")
+        return c
+
+    def _restore(self, city_id: str) -> None:
+        """Load the persisted window once per city, before anything reads or appends."""
+        if city_id in self._restored:
+            return
+        self._restored.add(city_id)
+        try:
+            with self._conn() as c:
+                rows = c.execute("SELECT t, utc, nodes, values_json FROM samples WHERE city=? "
+                                 "ORDER BY t DESC LIMIT ?", (city_id, self.capacity)).fetchall()
+        except sqlite3.Error:
+            return
+        if not rows:
+            return
+        rows.reverse()
+        nodes = json.loads(rows[-1][2])
+        d = self._rows.setdefault(city_id, deque(maxlen=self.capacity))
+        for t, utc, n, v in rows:
+            if json.loads(n) == nodes:
+                d.append({"t": float(t), "utc": utc, "v": [float("nan") if x is None else float(x)
+                                                         for x in json.loads(v)]})
+        self._nodes.setdefault(city_id, nodes)
+
+    def _persist(self, city_id: str, row: dict, nodes: list[str]) -> None:
+        try:
+            with self._conn() as c:
+                c.execute("INSERT OR IGNORE INTO samples VALUES (?,?,?,?,?)",
+                          (city_id, row["t"], row["utc"], json.dumps(nodes),
+                           json.dumps([None if x != x else round(x, 4) for x in row["v"]])))
+        except sqlite3.Error:
+            pass                                    # the in-memory window still works
 
     # ----------------------------------------------------------- lifecycle
     def start(self, city_id: str = "dhaka") -> dict:
@@ -81,16 +130,19 @@ class Observatory:
             dist, dur = c.get("distance_m"), c.get("duration_s")
             if dist and dur and dur > 0:
                 row[i] = dist / dur                  # m/s, derived by us
+        rec = {"t": time.time(), "utc": datetime.now(timezone.utc).isoformat(), "v": row}
         with self._lock:
+            self._restore(city_id)
             self._nodes.setdefault(city_id, ids)
-            self._rows.setdefault(city_id, deque(maxlen=self.capacity)).append(
-                {"t": time.time(), "utc": datetime.now(timezone.utc).isoformat(), "v": row})
+            self._rows.setdefault(city_id, deque(maxlen=self.capacity)).append(rec)
             self._samples += 1
+            self._persist(city_id, rec, ids)
         return {"city_id": city_id, "observed": sum(1 for x in row if x == x), "nodes": len(ids)}
 
     # ------------------------------------------------------------ readiness
     def series(self, city_id: str = "dhaka"):
         with self._lock:
+            self._restore(city_id)
             rows = list(self._rows.get(city_id, []))
             nodes = list(self._nodes.get(city_id, []))
         return rows, nodes
@@ -124,8 +176,9 @@ class Observatory:
             "buffer_started_utc": self._started_utc,
             "running": bool(self._thread and self._thread.is_alive()),
             "samples_taken": self._samples, "sample_failures": self._failures,
-            "storage": ("in-memory ring of DERIVED speeds; Google route content is never written "
-                        "to disk, so a restart resets the window"),
+            "storage": ("DERIVED speeds (distance / duration, ours) are kept in "
+                        "results/live/observatory.sqlite so the window survives restarts; Google "
+                        "route content is never written"),
         }
 
     def status(self) -> dict:

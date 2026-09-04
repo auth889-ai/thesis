@@ -11,7 +11,8 @@ The Dhaka network ships as a 2 MB `.gz` and expands on first use; the recorded l
 | E3 | Chronos and random noise route **identically** (0 vehicles differ); pricing coverage, not the model, is the bottleneck; oracle −2.2 % | `make ablation` | `results/routing/ablation_forecast_quality.{json,md}` | 5 min |
 | E4 | Pre-departure rerouting helps at 10–20 % penetration (−2.7 %, 5/5 seeds) and hurts above 40 % | `make sweep` | `results/routing/sweep_compliance.json` | 10 min |
 | E5 | Is pricing coverage the bottleneck: the same model vs noise with the forecast propagated 0 / 3 / 8 hops from the observed corridors | `make coverage` | `results/routing/ablation_coverage.{json,md}` | 10 min |
-| F | Figures F1–F4 | `make figures` | `results/figures/*.png` | 5 s |
+| E6 | OpenCity-plus runs here through the authors' unmodified harness (CPU path: MAE 4.98 vs persistence 9.55 on a 12-node slice); the Dhaka zero-shot run needs 1,176 steps of the persisted live window | `make opencity-smoke`, then `make opencity` | `results/forecasting/opencity_df_smoke.json`, `opencity_df_dhaka_live.json` | 2 min / 4 days |
+| F | Figures F1–F5 | `make figures` | `results/figures/*.png` | 5 s |
 | — | 291 tests | `make test` | — | 1 min |
 
 Benchmark validation on public data (GWNet within 2 % of published on METR-LA / PEMS-BAY;

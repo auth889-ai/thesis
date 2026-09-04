@@ -56,6 +56,16 @@ def google_key() -> str:
     return load(GOOGLE_VAR)
 
 
+def mapbox_token() -> str:
+    """A Mapbox PUBLIC token (pk.…) for the basemap; it is meant for the browser. Optional."""
+    return load("MAPBOX_TOKEN")
+
+
+def anthropic_key() -> str:
+    """For the simulation agent. Optional: without it the agent uses a rule parser and says so."""
+    return load("ANTHROPIC_API_KEY")
+
+
 def here_key() -> str:
     for v in HERE_VARS:
         k = load(v)

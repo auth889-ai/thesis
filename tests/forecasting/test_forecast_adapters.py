@@ -38,9 +38,12 @@ def test_opencity_refuses_a_short_history():
 
 
 def test_opencity_refuses_a_tiny_graph():
-    chk = OpenCityAdapter().check(city(T=400, N=12))
+    """Its Laplacian positional encoding takes 8 eigenvectors: 6 corridors cannot feed it, 12 can."""
+    chk = OpenCityAdapter().check(city(T=400, N=6))
     assert not chk["ok"]
-    assert any("nodes" in r for r in chk["reasons"])
+    assert any("eigenvectors" in r for r in chk["reasons"])
+    ok12 = OpenCityAdapter().check(city(T=400, N=12))
+    assert not any("nodes" in r for r in ok12["reasons"])
 
 
 def test_opencity_refuses_a_city_inside_its_pretraining_corpus():

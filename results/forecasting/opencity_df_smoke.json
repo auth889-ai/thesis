@@ -1,0 +1,53 @@
+{
+ "generated_utc": "2026-09-04T13:05:51.045455+00:00",
+ "city": "dhaka",
+ "source": "metrla-smoke",
+ "dataset_name": "DF_SMOKE",
+ "shape": [
+  2000,
+  12
+ ],
+ "nodes": [
+  "metr_la_0",
+  "metr_la_1",
+  "metr_la_2",
+  "metr_la_3",
+  "metr_la_4",
+  "metr_la_5",
+  "metr_la_6",
+  "metr_la_7",
+  "metr_la_8",
+  "metr_la_9",
+  "metr_la_10",
+  "metr_la_11"
+ ],
+ "quantity": "speed mph (METR-LA slice)",
+ "reality": "REAL, IN OpenCity's pre-training corpus",
+ "opencity": {
+  "status": "OK",
+  "metrics": {
+   "mae": 4.98,
+   "rmse": 9.41,
+   "mape": 16.3602
+  },
+  "started_utc": "2026-09-04T13:05:40.716018+00:00",
+  "log_tail": "ze([512]) True\npredictor.encoder_blocks.4.st_attn.tc_v_conv.weight torch.Size([512, 512]) True\npredictor.encoder_blocks.4.st_attn.tc_v_conv.bias torch.Size([512]) True\npredictor.encoder_blocks.4.st_attn.GCN.fc1.weight torch.Size([512, 512]) True\npredictor.encoder_blocks.4.st_attn.GCN.mlp.weight torch.Size([512, 512]) True\npredictor.encoder_blocks.4.st_attn.GCN.mlp.bias torch.Size([512]) True\npredictor.encoder_blocks.4.mlp.w1.weight torch.Size([1024, 512]) True\npredictor.encoder_blocks.4.mlp.w2.weight torch.Size([512, 1024]) True\npredictor.encoder_blocks.4.mlp.w3.weight torch.Size([1024, 512]) True\npredictor.encoder_blocks.5.norm1.weight torch.Size([512]) True\npredictor.encoder_blocks.5.norm2.weight torch.Size([512]) True\npredictor.encoder_blocks.5.st_attn.t_q_conv.weight torch.Size([512, 512]) True\npredictor.encoder_blocks.5.st_attn.t_q_conv.bias torch.Size([512]) True\npredictor.encoder_blocks.5.st_attn.t_k_conv.weight torch.Size([512, 512]) True\npredictor.encoder_blocks.5.st_attn.t_k_conv.bias torch.Size([512]) True\npredictor.encoder_blocks.5.st_attn.t_v_conv.weight torch.Size([512, 512]) True\npredictor.encoder_blocks.5.st_attn.t_v_conv.bias torch.Size([512]) True\npredictor.encoder_blocks.5.st_attn.norm_tatt1.weight torch.Size([512]) True\npredictor.encoder_blocks.5.st_attn.norm_tatt2.weight torch.Size([512]) True\npredictor.encoder_blocks.5.st_attn.tc_q_conv.weight torch.Size([512, 512]) True\npredictor.encoder_blocks.5.st_attn.tc_q_conv.bias torch.Size([512]) True\npredictor.encoder_blocks.5.st_attn.tc_k_conv.weight torch.Size([512, 512]) True\npredictor.encoder_blocks.5.st_attn.tc_k_conv.bias torch.Size([512]) True\npredictor.encoder_blocks.5.st_attn.tc_v_conv.weight torch.Size([512, 512]) True\npredictor.encoder_blocks.5.st_attn.tc_v_conv.bias torch.Size([512]) True\npredictor.encoder_blocks.5.st_attn.GCN.fc1.weight torch.Size([512, 512]) True\npredictor.encoder_blocks.5.st_attn.GCN.mlp.weight torch.Size([512, 512]) True\npredictor.encoder_blocks.5.st_attn.GCN.mlp.bias torch.Size([512]) True\npredictor.encoder_blocks.5.mlp.w1.weight torch.Size([1024, 512]) True\npredictor.encoder_blocks.5.mlp.w2.weight torch.Size([512, 1024]) True\npredictor.encoder_blocks.5.mlp.w3.weight torch.Size([1024, 512]) True\npredictor.linear.weight torch.Size([288, 12288]) True\npredictor.linear.bias torch.Size([288]) True\nTotal params num: 25974816, Update params num: 25974816\n*****************Finish Parameter****************\nLoad saved model\n64 tensor(4.0727) tensor(7.3049) tensor(0.1208) 204850 204850\n128 tensor(4.9371) tensor(9.3434) tensor(0.1584) 406942 406942\n192 tensor(5.2945) tensor(10.1388) tensor(0.1802) 612902 612902\n225 tensor(6.2189) tensor(11.4481) tensor(0.2237) 719330 719330\nlast batch torch.Size([33, 288, 12, 1]) torch.Size([33, 288, 12, 1])\n225 719330 719330\n2026-09-04 19:05: Experiment log path in: /Users/jannatulferdouseva/.dhakaflow/upstream/OpenCity/model_weights/OpenCity\n2026-09-04 19:05: Average Horizon, MAE: 4.98, RMSE: 9.41, MAPE: 16.3602%, CORR:0.3033\n",
+  "windows": 825,
+  "test_ratio": 0.7,
+  "compatibility_shims": [
+   "[opencity-boot] compatibility shims: np.mat -> np.asmatrix, np.float_ -> np.float64, np.complex_ -> np.complex128, np.unicode_ -> np.str_, np.NaN -> np.nan, np.Inf -> np.inf, np.infty -> np.inf, torch.load(map_location='cpu') [no CUDA on this host]",
+   "[opencity-boot] compatibility shim: lib.data_process.load_st_dataset: DF_* names load whole, with their own time_add"
+  ],
+  "upstream_edited": false,
+  "model": "OpenCity-plus",
+  "weights": "OpenCity-plus.pth",
+  "command": "Run.py -mode test -model OpenCity -test_ratio 1.0 (authors' harness)",
+  "hardware": "this machine, CPU"
+ },
+ "persistence_same_windows": {
+  "mae": 9.5524,
+  "windows": 825
+ },
+ "horizon": "average over 288 steps (24 h), as the authors report it",
+ "claim": "MECHANICS ONLY \u2014 this slice is inside OpenCity's pre-training corpus"
+}

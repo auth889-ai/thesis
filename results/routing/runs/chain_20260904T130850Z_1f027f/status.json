@@ -1,0 +1,29 @@
+{
+ "run_id": "chain_20260904T130850Z_1f027f",
+ "status": "running",
+ "stage": "forecast",
+ "started_utc": "2026-09-04T13:08:50.142532+00:00",
+ "config": {
+  "seeds": "11",
+  "horizon": 1800,
+  "horizon_min": 15,
+  "compliance": 0.3,
+  "v2x": "ideal",
+  "city": "dhaka",
+  "model": null,
+  "api": "http://127.0.0.1:8000",
+  "source": "recorded",
+  "as_of": "peak",
+  "levels": "observed",
+  "tag": "",
+  "scale": 0.25,
+  "net": "/Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+  "routes": "/Users/jannatulferdouseva/thesis/artifacts/gates/routes_repeat_1h.rou.xml.gz",
+  "forecast_kind": "model",
+  "coverage_hops": 0,
+  "run_id": "chain_20260904T130850Z_1f027f"
+ },
+ "command": "python pipeline/routing/integrated_chain.py --seeds 11 --horizon 1800 --v2x ideal --source recorded --as-of peak --levels observed",
+ "arms_done": 0,
+ "arms_total": 3
+}

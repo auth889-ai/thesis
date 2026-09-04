@@ -68,6 +68,49 @@ def install() -> list[str]:
     return restored
 
 
+def install_generic_dataset() -> str:
+    """Let OpenCity's loader accept a dataset of OURS, whole, with its real clock.
+
+    `lib.data_process.load_st_dataset` dispatches on the dataset NAME; its final branch is not
+    generic but a hard-coded two-month slice (`[288*60 : 288*121]`) for one particular corpus, so
+    any array shorter than 17,280 steps arrives empty. Names beginning with `DF_` are routed here
+    instead: the array is used whole, NaN becomes 0 (their missing-value convention), and the
+    time features are produced by THEIR `time_add`, started at the real slot-of-day and weekday of
+    our first sample (DF_OC_DAY_START, DF_OC_WEEK_START) rather than at an assumed midnight.
+    Nothing else in their pipeline is touched, and every other dataset name goes to their code
+    exactly as before.
+    """
+    try:
+        from lib import data_process as dp
+    except ImportError:
+        return ""
+    original = dp.load_st_dataset
+
+    def load_st_dataset(dataset, args):
+        if not str(dataset).startswith("DF_"):
+            return original(dataset, args)
+        data_path = os.path.join(f"../data/{dataset}/{dataset}.npz")
+        data = np.load(data_path)["data"]
+        data[np.isnan(data)] = 0
+        interval, week_day = 5, 7
+        args.interval, args.week_day = interval, week_day
+        day_start = int(os.environ.get("DF_OC_DAY_START", "0"))
+        week_start = int(os.environ.get("DF_OC_WEEK_START", "7"))
+        day_data, week_data, _holiday = dp.time_add(data, week_start, interval=interval,
+                                                    weekday_only=False, holiday_list=None,
+                                                    day_start=day_start)
+        data = np.expand_dims(data, axis=-1)
+        day_data = np.expand_dims(day_data, axis=-1).astype(int)
+        week_data = np.expand_dims(week_data, axis=-1).astype(int)
+        data = np.concatenate([data, day_data, week_data], axis=-1)
+        print("Load %s Dataset shaped: " % dataset, data.shape, data[..., 0:1].max(),
+              data[..., 0:1].min(), data[..., 0:1].mean(), np.median(data[..., 0:1]), data.dtype)
+        return data
+
+    dp.load_st_dataset = load_st_dataset
+    return "lib.data_process.load_st_dataset: DF_* names load whole, with their own time_add"
+
+
 def main() -> None:
     restored = install()
     cpu = install_torch_cpu_load()
@@ -82,6 +125,9 @@ def main() -> None:
     # script's own directory first, and the repo root after it for `lib.*`.
     sys.path.insert(0, str(target.parent))
     sys.path.insert(1, str(target.parent.parent))
+    generic = install_generic_dataset()
+    if generic:
+        print(f"[opencity-boot] compatibility shim: {generic}", flush=True)
     sys.argv = [str(target)] + sys.argv[1:]
     runpy.run_path(str(target), run_name="__main__")
 

@@ -7,7 +7,7 @@ SEEDS ?= 11,12,13,14,15
 H     ?= 1800
 
 .DEFAULT_GOAL := help
-.PHONY: help status test app backtest chain ablation coverage sweep sweep-v2x figures results all clean-runs
+.PHONY: help status test app backtest chain ablation coverage sweep sweep-v2x opencity-smoke opencity figures results all clean-runs
 
 help:            ## list targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-12s %s\n", $$1, $$2}'
@@ -41,7 +41,13 @@ sweep:           ## E4 penetration curve: compliance 0..100 % x seeds (~10 min)
 sweep-v2x:       ## E4b V2X condition x compliance heatmap (~45 min)
 	$(PY) pipeline/routing/chain_sweep.py --grid v2x --compliance 0.1,0.2,0.4 --seeds $(SEEDS) --horizon $(H)
 
-figures:         ## F1-F4 from the JSON evidence -> results/figures/
+opencity-smoke:  ## OpenCity-plus forward pass through the authors' harness on this CPU (12-node slice, ~2 min)
+	$(PY) pipeline/forecasting/opencity_city_eval.py --source metrla-smoke
+
+opencity:        ## E6 OpenCity-plus zero-shot on the persisted live window (needs ~4 days of observation)
+	$(PY) pipeline/forecasting/opencity_city_eval.py --source observatory --city dhaka
+
+figures:         ## F1-F5 from the JSON evidence -> results/figures/
 	$(PY) pipeline/results/make_figures.py
 
 results:         ## audit every evidence file and rebuild results/RESULTS.md (no simulation)

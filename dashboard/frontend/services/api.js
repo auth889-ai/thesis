@@ -62,6 +62,16 @@ export const api = {
                    get(`/api/forecast/${encodeURIComponent(id)}?horizons=${horizons}&source=${source}`),
   forecastAccuracy: (id) => get(`/api/forecast/${encodeURIComponent(id)}/accuracy`),
   scoreboard:    (id) => get(`/api/forecast/${encodeURIComponent(id)}/scoreboard`),
+  opencity:      (id) => get(`/api/opencity/${encodeURIComponent(id)}`),
+  // the live twin
+  mapConfig:     () => get("/api/config/map"),
+  simStart:      (params) => post("/api/sim/live/start", params),
+  simPause:      () => post("/api/sim/live/pause", {}),
+  simResume:     () => post("/api/sim/live/resume", {}),
+  simStop:       () => post("/api/sim/live/stop", {}),
+  simState:      (vehicles = true) => get(`/api/sim/live/state?vehicles=${vehicles}`),
+  simHistory:    () => get("/api/sim/live/history"),
+  simAgent:      (message, history) => post("/api/sim/agent", {message, history}),
   sweep:         (grid = "compliance") => get(`/api/experiment/sweep?grid=${grid}`),
   ablation:      () => get("/api/experiment/ablation"),
   // live

@@ -42,6 +42,8 @@ import schemas
 import credentials as key_store
 import simulate
 import forecast_log
+import live_sim as live_sim_mod
+import sim_agent
 
 app = FastAPI(title="DhakaFlow", version="1.0.0", docs_url="/api/docs",
               description="Live Dhaka traffic, forecasting, routing and V2X evidence.")
@@ -283,6 +285,25 @@ def observatory_sample(payload: dict | None = None):
     return observatory_mod.observatory.sample(cid)
 
 
+def _recorded_len(city_id: str) -> int:
+    """How many 5-minute bins the recorder's on-disk series holds for this city (0 if none)."""
+    if city_id != "dhaka":
+        return 0
+    import sys
+    sys.path.insert(0, str(config.REPO))
+    from pipeline.forecasting import live_state
+    if not live_state.SRC.exists():
+        return 0
+    rows = live_state.load_rows(live_state.SRC)
+    return int(live_state.build(rows)[0].shape[0]) if rows else 0
+
+
+def _recorded_is_longer(city_id: str, cd) -> bool:
+    """The model is given whichever real history is LONGER — the in-memory buffer or the recorded
+    series on disk — never a short buffer just because it is newer."""
+    return _recorded_len(city_id) > int(cd.shape[0])
+
+
 @app.get("/api/forecast/{city_id}", tags=["predict"])
 def city_forecast(city_id: str, horizons: str = "5,15,30,60", source: str = "auto",
                   model: str | None = None):
@@ -300,8 +321,7 @@ def city_forecast(city_id: str, horizons: str = "5,15,30,60", source: str = "aut
     from pipeline.forecasting.adapters.registry import forecast as run_forecast
     hs = [int(h) for h in horizons.split(",") if h.strip().isdigit()]
     cd = observatory_mod.observatory.city_data(city_id)
-    use_recorded = source == "recorded" or (source == "auto" and cd.shape[0] < 8
-                                            and city_id == "dhaka")
+    use_recorded = source == "recorded" or (source == "auto" and _recorded_is_longer(city_id, cd))
     if use_recorded:
         from pipeline.routing.forecast_to_costs import recorded_forecast
         out = recorded_forecast(city_id, hs, model, "latest")
@@ -326,6 +346,20 @@ def city_forecast_scoreboard(city_id: str):
     be revised. The scheduler issues one every five minutes while the server runs.
     """
     return forecast_log.score(city_id)
+
+
+@app.get("/api/opencity/{city_id}", tags=["predict"])
+def opencity_status(city_id: str):
+    """Where the foundation model stands for this city, in the model's own terms.
+
+    OpenCity runs through the authors' harness as a batch job. This reports how much of the
+    history it needs has accumulated (the persisted observatory window), whether the CPU path has
+    been verified, and the result once the run exists — never a fabricated number in between.
+    """
+    import sys
+    sys.path.insert(0, str(config.REPO))
+    from pipeline.forecasting import opencity_city_eval as oce
+    return oce.readiness(city_id)
 
 
 @app.get("/api/forecast/{city_id}/accuracy", tags=["predict"])
@@ -361,9 +395,9 @@ def history(city_id: str, horizons: str = "5,15,30,60"):
     rows, nodes = observatory_mod.observatory.series(city_id)
     hs = [int(h) for h in horizons.split(",") if h.strip().isdigit()]
     cd = observatory_mod.observatory.city_data(city_id)
-    if city_id == "dhaka" and cd.shape[0] < 8:
-        # the buffer is too short for any model: draw the recorded REAL_LIVE day instead, and
-        # forecast from it — the same window E1 was measured on, so its accuracy can be quoted
+    if _recorded_is_longer(city_id, cd):
+        # the recorded REAL_LIVE series on disk is the longer history: draw that day and forecast
+        # from it — the same window E1 was measured on, so its accuracy can be quoted
         from pipeline.routing.forecast_to_costs import recorded_city_data
         rcd, observed = recorded_city_data(city_id, "latest")
         out = run_forecast(rcd, hs)
@@ -533,6 +567,62 @@ def experiment_chain_status(run_id: str):
             "arms_total": st.get("arms_total"), "error": live.get("error") or st.get("error"),
             "config": st.get("config"), "command": st.get("command"),
             "result": json.loads(done.read_text()) if done.exists() else None}
+
+
+# ---------------------------------------------------------------------------
+# THE LIVE TWIN: SUMO stepped under the viewer's eye, and an agent that drives it.
+# ---------------------------------------------------------------------------
+
+@app.post("/api/sim/live/start", tags=["twin"])
+def sim_live_start(payload: dict | None = None):
+    """Start a live SUMO run: scale, duration_s, seed, compliance, arm, step_delay_ms."""
+    return live_sim_mod.live_sim.start(payload or {})
+
+
+@app.post("/api/sim/live/pause", tags=["twin"])
+def sim_live_pause():
+    return live_sim_mod.live_sim.pause()
+
+
+@app.post("/api/sim/live/resume", tags=["twin"])
+def sim_live_resume():
+    return live_sim_mod.live_sim.resume()
+
+
+@app.post("/api/sim/live/stop", tags=["twin"])
+def sim_live_stop():
+    return live_sim_mod.live_sim.stop()
+
+
+@app.get("/api/sim/live/state", tags=["twin"])
+def sim_live_state(vehicles: bool = True):
+    """KPIs and every vehicle's position, as SUMO computed them this step."""
+    return live_sim_mod.live_sim.state(with_vehicles=vehicles)
+
+
+@app.get("/api/sim/live/history", tags=["twin"])
+def sim_live_history():
+    return {"runs": live_sim_mod.live_sim.history()}
+
+
+@app.post("/api/sim/agent", tags=["twin"])
+def sim_agent_chat(payload: dict):
+    """Natural language -> the same start/pause/resume/stop the buttons call."""
+    return sim_agent.chat(str(payload.get("message", "")), payload.get("history") or [])
+
+
+@app.get("/api/config/map", tags=["meta"])
+def map_config():
+    """Which basemap the browser should use. A Mapbox public token is meant for the browser;
+    without one the Esri street tiles are used. Never a secret key."""
+    tok = key_store.mapbox_token()
+    if tok:
+        return {"provider": "mapbox",
+                "tiles": f"https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/256/{{z}}/{{x}}/{{y}}?access_token={tok}",
+                "attribution": "© Mapbox © OpenStreetMap | Traffic © Google Routes API"}
+    return {"provider": "esri",
+            "tiles": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
+            "attribution": "Tiles © Esri | Traffic © Google Routes API"}
 
 
 @app.get("/api/networking/conditions", tags=["network"])

@@ -85,6 +85,43 @@ def delivered(vid: str, p: float, condition: str, seed: int) -> bool:
     return (int(h[:8], 16) / 0xFFFFFFFF) < p
 
 
+def predeparture_routes(a, seed: int, weights: Path, out: Path, deliver_p: float
+                        ) -> tuple[Path, int, int]:
+    """Equipped vehicles that RECEIVED their advisory get a route from duarouter on the forecast
+    travel-time table; everyone else keeps the static route. -> (merged route file, changed,
+    advised). Shared by the chain and the live twin so both price the future the same way."""
+    routes = Path(a.routes)
+    vehicles = lc.read_routes(routes)
+    eq = [(v, d, r) for v, d, r in vehicles
+          if pr.equipped(v, a.compliance) and float(d) < a.horizon]
+    got = [(v, d, r) for v, d, r in eq if delivered(v, deliver_p, a.v2x, seed)]
+    advised, changed = len(got), 0
+    if not got:
+        return routes, 0, 0
+    trips = out / "trips.xml"
+    trips.write_text("<routes>\n" + "".join(
+        f'  <trip id="{v}" depart="{d}" from="{r.split()[0]}" to="{r.split()[-1]}"/>\n'
+        for v, d, r in got) + "</routes>\n")
+    alt = out / "routes_advised.rou.xml"
+    subprocess.run(["duarouter", "--net-file", str(a.net), "--route-files", str(trips),
+                    "--weight-files", str(weights), "--weight-attribute", "traveltime",
+                    "--output-file", str(alt), "--ignore-errors", "--no-warnings",
+                    "--no-step-log", "--seed", str(seed), "--routing-threads", "4"],
+                   check=True, capture_output=True)
+    new = {v: r for v, d, r in lc.VEH_RE.findall(alt.read_text())}
+    merged = out / "routes_merged.rou.xml"
+    with open(merged, "w") as fh:
+        fh.write('<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
+                 'xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">\n')
+        for v, d, r in vehicles:
+            nr = new.get(v, r)
+            changed += nr != r
+            fh.write(f'    <vehicle id="{v}" depart="{d}">\n'
+                     f'        <route edges="{nr}" />\n    </vehicle>\n')
+        fh.write("</routes>\n")
+    return merged, changed, advised
+
+
 def run_arm(a, arm: str, seed: int, slow: dict, weights: Path, deliver_p: float,
             run_dir: Path) -> dict:
     """One SUMO run. `slow` makes the observed congestion real in EVERY arm."""
@@ -99,33 +136,7 @@ def run_arm(a, arm: str, seed: int, slow: dict, weights: Path, deliver_p: float,
             weights = run_dir / f"baseline_s{seed}" / "edgedata.xml"
             if not weights.exists():
                 raise SystemExit(f"oracle needs the baseline run for seed {seed} first ({weights})")
-        vehicles = lc.read_routes(routes)
-        eq = [(v, d, r) for v, d, r in vehicles
-              if pr.equipped(v, a.compliance) and float(d) < a.horizon]
-        got = [(v, d, r) for v, d, r in eq if delivered(v, deliver_p, a.v2x, seed)]
-        advised = len(got)
-        if got:
-            trips = out / "trips.xml"
-            trips.write_text("<routes>\n" + "".join(
-                f'  <trip id="{v}" depart="{d}" from="{r.split()[0]}" to="{r.split()[-1]}"/>\n'
-                for v, d, r in got) + "</routes>\n")
-            alt = out / "routes_advised.rou.xml"
-            subprocess.run(["duarouter", "--net-file", str(a.net), "--route-files", str(trips),
-                            "--weight-files", str(weights), "--weight-attribute", "traveltime",
-                            "--output-file", str(alt), "--ignore-errors", "--no-warnings",
-                            "--no-step-log", "--seed", str(seed), "--routing-threads", "4"],
-                           check=True, capture_output=True)
-            new = {v: r for v, d, r in lc.VEH_RE.findall(alt.read_text())}
-            routes = out / "routes_merged.rou.xml"
-            with open(routes, "w") as fh:
-                fh.write('<routes xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" '
-                         'xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/routes_file.xsd">\n')
-                for v, d, r in vehicles:
-                    nr = new.get(v, r)
-                    changed += nr != r
-                    fh.write(f'    <vehicle id="{v}" depart="{d}">\n'
-                             f'        <route edges="{nr}" />\n    </vehicle>\n')
-                fh.write("</routes>\n")
+        routes, changed, advised = predeparture_routes(a, seed, weights, out, deliver_p)
 
     ns = argparse.Namespace(net=str(a.net), routes=str(routes), seed=seed, scale=a.scale,
                             horizon=a.horizon, edgedata_period=300, time_to_teleport=300,

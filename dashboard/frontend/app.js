@@ -18,6 +18,7 @@ import "./components/live-traffic-page.js";
 import "./components/prediction-page.js";
 import "./components/route-advisor-page.js";
 import "./components/counterfactual-page.js";
+import "./components/live-twin-page.js";
 import "./components/research-page.js";
 
 const PAGES = {
@@ -35,6 +36,8 @@ const PAGES = {
                    sub: "Eclipse MOSAIC ITS-G5: delivery, latency, loss, and their effect on learning"},
   advisor:        {tag: "route-advisor-page",  title: "Route Optimizer",
                    sub: "Live alternatives between any two coordinates"},
+  twin:           {tag: "live-twin-page",      title: "Live Twin",
+                   sub: "The SUMO digital twin stepping on the map — drive it with the controls or the agent"},
   counterfactual: {tag: "counterfactual-page", title: "SUMO Digital Twin",
                    sub: "Take the live state into simulation and test an intervention"},
   research:       {tag: "research-page",       title: "Evidence & Methodology",

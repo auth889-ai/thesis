@@ -26,7 +26,7 @@ CKPT = WORKSPACE / "OpenCity/model_weights/OpenCity/OpenCity-plus.pth"
 CKPT_SHA = "ae4235615a914c831543275642152409075e1a3f07d564a27fab28364d59af7b"
 
 HIS = PRED = 288
-MIN_NODES = 20
+MIN_NODES = 9          # its Laplacian positional encoding takes 8 eigenvectors (lib/predifineGraph.cal_lape)
 
 
 class OpenCityAdapter(ForecastAdapter):
@@ -44,7 +44,8 @@ class OpenCityAdapter(ForecastAdapter):
         if T < HIS:
             reasons.append(f"input window needs {HIS} steps, this city has {T}")
         if N < MIN_NODES:
-            reasons.append(f"graph has {N} nodes; the pre-training corpus holds hundreds")
+            reasons.append(f"graph has {N} nodes; the model's positional encoding needs at least "
+                           f"{MIN_NODES} (8 Laplacian eigenvectors)")
         if city_data.city_id in self.corpus:
             reasons.append(f"{city_data.city_id} is IN OpenCity's pre-training corpus — a result "
                            f"here cannot be called zero-shot")
@@ -57,10 +58,11 @@ class OpenCityAdapter(ForecastAdapter):
         if not c["ok"]:
             raise NotAvailable(self.name, c["reasons"])
         raise NotAvailable(self.name, [
-            "live inference is not wired: OpenCity-plus needs its adjacency, the authors' config "
-            "stack and GPU-sized memory, so it runs as a batch job (aws_train.py --opencity), not "
-            "in the request path. Reproduction results are in results/forecasting/"
-            "opencity_crosscity.md; this adapter reports capability and refuses to fabricate."])
+            "OpenCity runs through the authors' own harness as a batch evaluation, not in the "
+            "request path: `python pipeline/forecasting/opencity_city_eval.py --source observatory` "
+            "(CPU path verified on a 12-node slice; see results/forecasting/opencity_df_smoke.json). "
+            "Its harness needs 1,176 steps of history; the persisted observatory window is "
+            "accumulating them. This adapter reports capability and never fabricates a value."])
 
     def reproduction(self) -> list[dict]:
         """The verified results, so the runtime can show what this model has actually done here."""
