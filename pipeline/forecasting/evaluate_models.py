@@ -222,8 +222,13 @@ def onset_lead(pred: np.ndarray, truth: np.ndarray, thr: np.ndarray) -> dict:
 
 
 def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
-             skip_chronos: bool = False) -> dict:
+             skip_chronos: bool = False, max_nodes: int = 0) -> dict:
     data = load(dataset)
+    if max_nodes and data.shape[1] > max_nodes:
+        # Deterministic node subsample. Chronos is univariate, so cost scales with windows x nodes;
+        # bounding nodes keeps a CPU run finite without biasing which nodes are chosen.
+        idx = np.linspace(0, data.shape[1] - 1, max_nodes).astype(int)
+        data = data[:, idx]
     T, N = data.shape
     tr_end, va_end = splits(T)
     train = data[:tr_end]
@@ -272,7 +277,7 @@ def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
     return {
         "dataset": dataset, "generated_utc": datetime.now(timezone.utc).isoformat(),
         "protocol": {
-            "windows": int(len(starts)), "context_steps": CONTEXT,
+            "windows": int(len(starts)), "context_steps": CONTEXT, "nodes_scored": int(N),
             "horizons_min": list(HORIZONS_MIN), "bin_min": BIN_MIN,
             "split": "chronological 70 / 10 / 20; windows sampled from the TEST region",
             "congestion_threshold": (f"{CONGESTION_RATIO} x per-node free-flow (85th percentile of "
@@ -332,13 +337,15 @@ def main() -> int:
     p.add_argument("--seed", type=int, default=11)
     p.add_argument("--chronos-model", default="amazon/chronos-bolt-small")
     p.add_argument("--skip-chronos", action="store_true")
+    p.add_argument("--max-nodes", type=int, default=0,
+                   help="deterministic node subsample; 0 uses every node")
     a = p.parse_args()
 
     targets = ["METR-LA", "PEMS-BAY", "PEMS07M"] if a.all else [a.dataset]
     out = []
     for ds in targets:
         print(f"[eval] {ds} …", flush=True)
-        r = evaluate(ds, a.windows, a.seed, a.chronos_model, a.skip_chronos)
+        r = evaluate(ds, a.windows, a.seed, a.chronos_model, a.skip_chronos, a.max_nodes)
         for name, res in sorted(r["results"].items()):
             h = res["horizons"].get(15, {})
             print(f"   {name:<20} MAE@15={h.get('mae'):<8} congMAE={h.get('congestion_mae')} "
