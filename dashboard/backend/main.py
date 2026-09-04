@@ -25,6 +25,7 @@ from __future__ import annotations
 
 import asyncio
 import json
+import threading
 from datetime import datetime, timezone
 
 from fastapi import FastAPI, Request
@@ -333,14 +334,115 @@ def history(city_id: str, horizons: str = "5,15,30,60"):
 
 
 @app.get("/api/experiment/chain", tags=["experiment"])
-def experiment_chain(tag: str = "_ideal"):
-    """The integrated prediction -> routing -> SUMO experiment, exactly as it was run."""
-    f = config.REPO / f"results/routing/integrated_chain{tag}.json"
+def experiment_chain(tag: str = "_ideal", run_id: str | None = None):
+    """A chain experiment that HAS run — the newest of `tag`, or the run you name.
+
+    This endpoint only reads; POST /api/experiment/chain/run executes a new one.
+    """
+    ic = _chain_module()
+    f = (ic.RUNS / run_id / "run.json") if run_id else \
+        (config.REPO / f"results/routing/integrated_chain{tag}.json")
     if not f.exists():
         return {"available": False,
                 "missing": str(f.relative_to(config.REPO)),
+                "run_it": "POST /api/experiment/chain/run",
                 "command": "python pipeline/routing/integrated_chain.py --seeds 11,12,13,14,15"}
     return {"available": True, **json.loads(f.read_text())}
+
+
+# ---------------------------------------------------------------------------
+# RUNNING the chain, not reading a past one. POST starts a real execution in a worker thread and
+# returns its run id immediately; the GET below reports what that execution has actually produced
+# so far. Nothing in this section synthesises a metric.
+# ---------------------------------------------------------------------------
+
+_CHAIN_LOCK = threading.Lock()
+_CHAIN_ACTIVE: dict[str, dict] = {}
+
+
+def _chain_module():
+    import sys
+    sys.path.insert(0, str(config.REPO))
+    from pipeline.routing import integrated_chain
+    return integrated_chain
+
+
+@app.post("/api/experiment/chain/run", tags=["experiment"])
+def experiment_chain_run(payload: dict | None = None):
+    """Execute the whole chain now: forecast -> future edge costs -> routing -> SUMO -> metrics.
+
+    Body (all optional): seeds, horizon, horizon_min, compliance, v2x, source, as_of, levels, tag.
+    Returns a run_id straight away — SUMO takes minutes, so the run is done on a worker thread and
+    polled through /api/experiment/chain/run/{run_id}.
+    """
+    ic = _chain_module()
+    opts = {k: v for k, v in (payload or {}).items()
+            if k in ic.DEFAULTS or k in ("run_id",)}
+    run_id = ic.new_run_id(str(opts.get("tag") or ""))
+    opts["run_id"] = run_id
+
+    with _CHAIN_LOCK:
+        busy = [r for r, st in _CHAIN_ACTIVE.items() if st.get("status") == "running"]
+        if busy:
+            return {"started": False, "reason": "a chain run is already in flight on this server",
+                    "running": busy}
+        _CHAIN_ACTIVE[run_id] = {"run_id": run_id, "status": "running", "stage": "starting"}
+
+    def _work():
+        try:
+            rec = ic.run_chain(**opts)
+            with _CHAIN_LOCK:
+                _CHAIN_ACTIVE[run_id] = {"run_id": run_id, "status": "done",
+                                         "summary": rec["summary"]}
+        except BaseException as exc:                    # noqa: BLE001 - reported, never swallowed
+            with _CHAIN_LOCK:
+                _CHAIN_ACTIVE[run_id] = {"run_id": run_id, "status": "failed",
+                                         "error": f"{type(exc).__name__}: {exc}"}
+            (ic.RUNS / run_id).mkdir(parents=True, exist_ok=True)
+            (ic.RUNS / run_id / "status.json").write_text(json.dumps(
+                {"run_id": run_id, "status": "failed",
+                 "error": f"{type(exc).__name__}: {exc}"}, indent=1))
+
+    threading.Thread(target=_work, name=f"chain-{run_id}", daemon=True).start()
+    return {"started": True, "run_id": run_id, "config": opts,
+            "poll": f"/api/experiment/chain/run/{run_id}",
+            "note": ("this is a real execution: a model forecast, a duarouter re-route on its "
+                     "output and three SUMO runs. Metrics appear only when they are measured.")}
+
+
+@app.get("/api/experiment/chain/runs", tags=["experiment"])
+def experiment_chain_runs(limit: int = 20):
+    """Every chain execution this repository holds, newest first."""
+    ic = _chain_module()
+    out = []
+    if ic.RUNS.exists():
+        for d in sorted((x for x in ic.RUNS.iterdir() if x.is_dir()), reverse=True)[:limit]:
+            st = d / "status.json"
+            rec = json.loads(st.read_text()) if st.exists() else {"run_id": d.name,
+                                                                  "status": "unknown"}
+            out.append({"run_id": d.name, "status": rec.get("status"),
+                        "stage": rec.get("stage"), "started_utc": rec.get("started_utc"),
+                        "arms_done": rec.get("arms_done"), "arms_total": rec.get("arms_total"),
+                        "finished": (d / "run.json").exists()})
+    return {"runs": out, "dir": str(ic.RUNS.relative_to(config.REPO))}
+
+
+@app.get("/api/experiment/chain/run/{run_id}", tags=["experiment"])
+def experiment_chain_status(run_id: str):
+    """What THIS execution measured. While it runs, the stage and the arms already finished."""
+    ic = _chain_module()
+    d = ic.RUNS / run_id
+    if ".." in run_id or "/" in run_id or not d.is_dir():
+        return {"found": False, "run_id": run_id}
+    st = json.loads((d / "status.json").read_text()) if (d / "status.json").exists() else {}
+    done = d / "run.json"
+    with _CHAIN_LOCK:
+        live = _CHAIN_ACTIVE.get(run_id, {})
+    return {"found": True, "run_id": run_id, "status": live.get("status", st.get("status")),
+            "stage": st.get("stage"), "arms_done": st.get("arms_done"),
+            "arms_total": st.get("arms_total"), "error": live.get("error") or st.get("error"),
+            "config": st.get("config"), "command": st.get("command"),
+            "result": json.loads(done.read_text()) if done.exists() else None}
 
 
 @app.get("/api/networking/conditions", tags=["network"])

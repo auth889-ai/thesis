@@ -68,6 +68,8 @@ def base_cmd(a, out: Path) -> list[str]:
            "--tripinfo-output", str(out / "tripinfo.xml"),
            "--tripinfo-output.write-unfinished",
            "--statistic-output", str(out / "statistic.xml"),
+           # per-step aggregate: `halting` is the standing queue, which tripinfo cannot express
+           "--summary-output", str(out / "summary.xml"),
            "--no-step-log", "--no-warnings", "--ignore-route-errors",
            "--time-to-teleport", str(a.time_to_teleport),
            # global travel-time smoothing used by rerouteTraveltime(currentTravelTime=True)
@@ -146,6 +148,31 @@ def run_traci(a, out: Path) -> dict:
     return {"rerouted_calls": n_calls, "equipped": len(eq_seen)}
 
 
+def parse_queue(out: Path) -> dict:
+    """summary.xml -> the standing queue over the run.
+
+    SUMO's per-step `halting` is the number of vehicles moving slower than 0.1 m/s, i.e. the
+    vehicles actually stopped in queue at that second. Averaging it over the simulated seconds
+    gives a queue figure that is commensurable across arms in a way a single snapshot is not.
+    """
+    f = out / "summary.xml"
+    if not f.exists():
+        return {"mean_queue_veh": None, "max_queue_veh": None, "queue_steps": 0}
+    halting, running = [], []
+    for st in ET.parse(f).getroot().iter("step"):
+        h = st.get("halting")
+        if h is None:
+            continue
+        halting.append(float(h))
+        running.append(float(st.get("running", 0)))
+    if not halting:
+        return {"mean_queue_veh": None, "max_queue_veh": None, "queue_steps": 0}
+    return {"mean_queue_veh": round(statistics.fmean(halting), 2),
+            "max_queue_veh": round(max(halting), 1),
+            "mean_running_veh": round(statistics.fmean(running), 2),
+            "queue_steps": len(halting)}
+
+
 def parse_metrics(out: Path, horizon: float | None = None) -> dict:
     """tripinfo + statistic -> metrics.  The commensurable objective across arms is
     total_vehicle_hours = [sum(duration of arrived) + sum(horizon - depart of unfinished)] / 3600,
@@ -188,6 +215,7 @@ def parse_metrics(out: Path, horizon: float | None = None) -> dict:
         "inserted": int(veh.get("inserted")) if veh is not None else None,
         "running_at_end": int(veh.get("running")) if veh is not None else None,
         "waiting_to_insert_at_end": int(veh.get("waiting")) if veh is not None else None,
+        **parse_queue(out),
     }
 
 

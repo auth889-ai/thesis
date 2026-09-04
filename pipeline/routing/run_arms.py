@@ -44,9 +44,8 @@ from multiprocessing.pool import ThreadPool
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
-ROUTE = REPO / "route"
-sys.path.insert(0, str(ROUTE))
-import predictive_routing as pr  # noqa: E402
+sys.path.insert(0, str(REPO))
+from pipeline.routing import predictive_routing as pr  # noqa: E402
 
 ALL_ARMS = ["static", "reactive", "predictive_oracle", "predictive_persistence", "due"]
 
