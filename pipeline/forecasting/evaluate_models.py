@@ -34,12 +34,22 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import sys
 import time
 from datetime import datetime, timezone
 from pathlib import Path
 
 import numpy as np
+
+# Bound the thread pools BEFORE torch or sklearn are imported. Left unbounded, sklearn's joblib
+# workers (n_jobs=-1) and torch's intra-op pool deadlock on this machine: the process sits at 0 %
+# CPU forever after the Chronos weights load. Diagnosed by finding an idle process an hour in.
+import os as _os
+for _v in ("OMP_NUM_THREADS", "MKL_NUM_THREADS", "OPENBLAS_NUM_THREADS", "NUMEXPR_NUM_THREADS"):
+    _os.environ.setdefault(_v, "4")
+
+N_JOBS = 4
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
@@ -116,7 +126,12 @@ def _tree_features(series: np.ndarray, lags: int) -> np.ndarray:
 
 
 def fit_trees(train: np.ndarray, steps: int, lags: int, seed: int, n_fit: int = 20000):
-    """One model per horizon, pooled across nodes — the standard tabular framing."""
+    """One model per horizon, pooled across nodes — the standard tabular framing.
+
+    Fitted under joblib's THREADING backend: the default process backend forks workers that
+    deadlock against torch's thread pool once Chronos has been loaded in the same interpreter.
+    """
+    import joblib
     from sklearn.ensemble import RandomForestRegressor
     from xgboost import XGBRegressor
     rng = np.random.default_rng(seed)
@@ -132,10 +147,11 @@ def fit_trees(train: np.ndarray, steps: int, lags: int, seed: int, n_fit: int = 
         k = h // BIN_MIN
         y = np.array([train[s + lags + k - 1, n] for s, n in zip(starts, nodes)])
         good = y > 0
-        rf = RandomForestRegressor(n_estimators=60, max_depth=12, random_state=seed, n_jobs=-1)
+        rf = RandomForestRegressor(n_estimators=60, max_depth=12, random_state=seed, n_jobs=N_JOBS)
         xg = XGBRegressor(n_estimators=200, max_depth=6, learning_rate=0.08,
-                          random_state=seed, n_jobs=-1, verbosity=0)
-        rf.fit(X[good], y[good])
+                          random_state=seed, n_jobs=N_JOBS, verbosity=0)
+        with joblib.parallel_backend("threading", n_jobs=N_JOBS):
+            rf.fit(X[good], y[good])
         xg.fit(X[good], y[good])
         models[h] = (rf, xg)
     return models
@@ -144,6 +160,7 @@ def fit_trees(train: np.ndarray, steps: int, lags: int, seed: int, n_fit: int = 
 def predict_chronos(ctx: np.ndarray, steps: int, model_id: str, batch: int = 512) -> np.ndarray:
     import torch
     from chronos import BaseChronosPipeline
+    torch.set_num_threads(N_JOBS)
     pipe = BaseChronosPipeline.from_pretrained(model_id, device_map="cpu", torch_dtype=torch.float32)
     W, C, N = ctx.shape
     flat = ctx.transpose(0, 2, 1).reshape(W * N, C)
@@ -221,59 +238,90 @@ def onset_lead(pred: np.ndarray, truth: np.ndarray, thr: np.ndarray) -> dict:
             "max_possible_lead_min": max(HORIZONS_MIN)}
 
 
-def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
-             skip_chronos: bool = False, max_nodes: int = 0) -> dict:
-    data = load(dataset)
-    if max_nodes and data.shape[1] > max_nodes:
-        # Deterministic node subsample. Chronos is univariate, so cost scales with windows x nodes;
-        # bounding nodes keeps a CPU run finite without biasing which nodes are chosen.
-        idx = np.linspace(0, data.shape[1] - 1, max_nodes).astype(int)
-        data = data[:, idx]
-    T, N = data.shape
+def _windows(data: np.ndarray, n_windows: int, seed: int, steps: int):
+    T = data.shape[0]
     tr_end, va_end = splits(T)
-    train = data[:tr_end]
-    thr = CONGESTION_RATIO * free_flow(train)
-    steps = max(HORIZONS_MIN) // BIN_MIN
-
     rng = np.random.default_rng(seed)
     lo, hi = va_end, T - CONTEXT - steps
     starts = np.sort(rng.choice(np.arange(lo, hi), size=min(n_windows, hi - lo), replace=False))
-    ctx = np.stack([data[s:s + CONTEXT] for s in starts])                    # (W, C, N)
-    truth = np.stack([data[s + CONTEXT:s + CONTEXT + steps] for s in starts])  # (W, H, N)
+    ctx = np.stack([data[s:s + CONTEXT] for s in starts])
+    truth = np.stack([data[s + CONTEXT:s + CONTEXT + steps] for s in starts])
+    return starts, ctx, truth
 
-    bins_per_day = 24 * 60 // BIN_MIN
-    ha_table = build_hist_avg(train, bins_per_day)
-    preds: dict[str, np.ndarray] = {
-        "persistence": predict_persistence(ctx, steps),
-        "historical_average": predict_hist_avg(starts, ha_table, steps, CONTEXT, bins_per_day),
-    }
 
-    t0 = time.time()
-    trees = fit_trees(train, steps, lags=12, seed=seed)
-    rf = np.zeros_like(truth); xg = np.zeros_like(truth)
-    feats = ctx[:, -12:, :]                                   # (W, 12, N)
-    flat = feats.transpose(0, 2, 1).reshape(-1, 12)
-    for h in HORIZONS_MIN:
-        k = h // BIN_MIN - 1
-        rf[:, k, :] = trees[h][0].predict(flat).reshape(len(starts), N)
-        xg[:, k, :] = trees[h][1].predict(flat).reshape(len(starts), N)
-    for h in HORIZONS_MIN:                                    # fill the unscored steps
-        k = h // BIN_MIN - 1
-        rf[:, k, :] = rf[:, k, :]; xg[:, k, :] = xg[:, k, :]
-    preds["random_forest"] = rf
-    preds["xgboost"] = xg
-    tree_s = round(time.time() - t0, 1)
+def stage(kind: str, dataset: str, n_windows: int, seed: int, chronos_model: str,
+          max_nodes: int, out_path: Path) -> None:
+    """Compute one model family's predictions and save them. Run as its OWN process.
 
-    chronos_s = None
-    if not skip_chronos:
-        t1 = time.time()
+    torch and the tree libraries cannot share an interpreter here: sklearn/XGBoost leave worker
+    pools that torch's thread pool deadlocks against, and the run sits at 0 % CPU indefinitely.
+    Two attempts to fix that in-process (bounding threads, then joblib's threading backend) both
+    still hung, so the families are isolated at the process boundary, which cannot deadlock.
+    """
+    data = load(dataset)
+    if max_nodes and data.shape[1] > max_nodes:
+        data = data[:, np.linspace(0, data.shape[1] - 1, max_nodes).astype(int)]
+    steps = max(HORIZONS_MIN) // BIN_MIN
+    starts, ctx, truth = _windows(data, n_windows, seed, steps)
+    tr_end, _ = splits(data.shape[0])
+    train = data[:tr_end]
+
+    preds = {}
+    if kind == "baselines":
+        bpd = 24 * 60 // BIN_MIN
+        preds["persistence"] = predict_persistence(ctx, steps)
+        preds["historical_average"] = predict_hist_avg(starts, build_hist_avg(train, bpd),
+                                                       steps, CONTEXT, bpd)
+    elif kind == "trees":
+        trees = fit_trees(train, steps, lags=12, seed=seed)
+        flat = ctx[:, -12:, :].transpose(0, 2, 1).reshape(-1, 12)
+        N = data.shape[1]
+        for name, i in (("random_forest", 0), ("xgboost", 1)):
+            out = np.zeros_like(truth)
+            for h in HORIZONS_MIN:
+                out[:, h // BIN_MIN - 1, :] = trees[h][i].predict(flat).reshape(len(starts), N)
+            preds[name] = out
+    elif kind == "chronos":
         preds["chronos"] = predict_chronos(ctx, steps, chronos_model)
-        chronos_s = round(time.time() - t1, 1)
+    else:
+        raise SystemExit(f"unknown stage {kind}")
 
-    results = {name: {"horizons": score(p, truth, thr),
-                      "onset_lead": onset_lead(p, truth, thr)}
+    np.savez_compressed(out_path, truth=truth, starts=starts,
+                        **{f"pred_{k}": v for k, v in preds.items()})
+
+
+def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
+             skip_chronos: bool = False, max_nodes: int = 0) -> dict:
+    import tempfile
+    data = load(dataset)
+    if max_nodes and data.shape[1] > max_nodes:
+        data = data[:, np.linspace(0, data.shape[1] - 1, max_nodes).astype(int)]
+    T, N = data.shape
+    tr_end, _ = splits(T)
+    thr = CONGESTION_RATIO * free_flow(data[:tr_end])
+    steps = max(HORIZONS_MIN) // BIN_MIN
+
+    kinds = ["baselines", "trees"] + ([] if skip_chronos else ["chronos"])
+    preds, truth, timings = {}, None, {}
+    with tempfile.TemporaryDirectory() as td:
+        for kind in kinds:
+            f = Path(td) / f"{kind}.npz"
+            t0 = time.time()
+            print(f"  [{kind}] …", flush=True)
+            subprocess.run([sys.executable, str(Path(__file__).resolve()), "--stage", kind,
+                            "--dataset", dataset, "--windows", str(n_windows), "--seed", str(seed),
+                            "--chronos-model", chronos_model, "--max-nodes", str(max_nodes),
+                            "--stage-out", str(f)], check=True)
+            timings[kind] = round(time.time() - t0, 1)
+            z = np.load(f)
+            truth = z["truth"] if truth is None else truth
+            starts = z["starts"]
+            for k in z.files:
+                if k.startswith("pred_"):
+                    preds[k[5:]] = z[k]
+
+    results = {name: {"horizons": score(p, truth, thr), "onset_lead": onset_lead(p, truth, thr)}
                for name, p in preds.items()}
-
     return {
         "dataset": dataset, "generated_utc": datetime.now(timezone.utc).isoformat(),
         "protocol": {
@@ -283,13 +331,13 @@ def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
             "congestion_threshold": (f"{CONGESTION_RATIO} x per-node free-flow (85th percentile of "
                                      f"that node's TRAIN-split observed values)"),
             "missing": "values of 0.0 are sensor outages and are excluded from every metric",
-            "trees_trained_on": "TRAIN split only", "seed": seed,
-            "fit_seconds": tree_s, "chronos_seconds": chronos_s,
+            "trees_trained_on": "TRAIN split only", "seed": seed, "stage_seconds": timings,
+            "isolation": ("each model family runs in its own process: torch and the tree libraries "
+                          "deadlock when they share an interpreter"),
             "not_compared_with": ("OpenCity — it is scored on a 288-step horizon under its authors' "
                                   "split; mixing protocols would be meaningless"),
         },
-        "nodes": int(N), "timesteps": int(T),
-        "results": results,
+        "nodes": int(N), "timesteps": int(T), "results": results,
     }
 
 
@@ -337,9 +385,15 @@ def main() -> int:
     p.add_argument("--seed", type=int, default=11)
     p.add_argument("--chronos-model", default="amazon/chronos-bolt-small")
     p.add_argument("--skip-chronos", action="store_true")
+    p.add_argument("--stage", default="", help="internal: run one model family")
+    p.add_argument("--stage-out", type=Path, default=None)
     p.add_argument("--max-nodes", type=int, default=0,
                    help="deterministic node subsample; 0 uses every node")
     a = p.parse_args()
+
+    if a.stage:
+        stage(a.stage, a.dataset, a.windows, a.seed, a.chronos_model, a.max_nodes, a.stage_out)
+        return 0
 
     targets = ["METR-LA", "PEMS-BAY", "PEMS07M"] if a.all else [a.dataset]
     out = []
