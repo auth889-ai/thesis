@@ -173,8 +173,47 @@ def test_verdict_ci_labels_from_paired_seeds():
 def test_operate_cities_starts_with_dhaka(client):
     c = client.get("/api/operate/cities").json()["cities"]
     assert c[0] == {"id": "dhaka", "label": "Dhaka", "forecast": True}
-    assert all(not x["forecast"] for x in c[1:])
+    # any other city is forecastable only once it is being observed (and says how many samples)
+    assert all(("steps" in x) and (x["forecast"] == (x["steps"] > 0)) for x in c[1:])
 
 
 def test_twin_compare_requires_a_network(client):
     assert "error" in client.post("/api/twin/compare", json={}).json()
+
+
+def test_prediction_lab_lists_real_datasets_and_runs_the_floor(client):
+    d = client.get("/api/predict-lab/datasets").json()["datasets"]
+    ids = {x["id"] for x in d}
+    if "METR_LA" not in ids:
+        pytest.skip("OpenCity datasets not present")
+    metr = next(x for x in d if x["id"] == "METR_LA")
+    assert metr["nodes"] == 207 and "OpenCity-plus" in metr["models"] and "GWNet" in metr["models"]
+    j = client.post("/api/predict-lab/run", json={"dataset": "METR_LA", "model": "persistence", "region": 3, "as_of": 20000}).json()
+    for _ in range(300):
+        s = client.get(f"/api/predict-lab/{j['job']}").json()
+        if s["status"] != "running": break
+        time.sleep(0.2)
+    assert s["status"] == "done", s.get("error")
+    r = s["result"]
+    assert len(r["history"]) == 72 and len(r["prediction"]) == 12 and r["as_of_utc"].startswith("2012-")
+    assert r["metrics"]["15"]["abs_error"] is not None if "15" in r["metrics"] else r["metrics"][15]["abs_error"] is not None
+
+
+def test_city_id_resolution_and_level_conversion():
+    import analyze
+    assert analyze.city_id_for("Dhaka") == "dhaka"
+    assert analyze.city_id_for("Nairobi") in ("nairobi_kenya", None)
+    from pipeline.forecasting.adapters.base import CityData
+    import numpy as np
+    cd = CityData(city_id="x", node_ids=["a", "b"], values=np.array([[10.0, 5.0]], dtype="float32"))
+    live = {"corridors": [{"id": "a", "distance_m": 1000, "static_duration_s": 100},     # free-flow 10 m/s
+                          {"id": "b", "distance_m": 1000, "static_duration_s": 100}]}
+    obs, pred = analyze.levels_from_speeds(cd, {"values": {15: [4.0, 10.0]}}, live)
+    assert obs == {"a": 0.0, "b": 2.5} and pred[15] == {"a": 2.5, "b": 0.0}
+
+
+def test_observe_endpoint_refuses_an_unknown_city_honestly(client, monkeypatch):
+    import city_corridors
+    monkeypatch.setattr(city_corridors, "ensure", lambda cid, k=12: (_ for _ in ()).throw(RuntimeError("no graph")))
+    d = client.post("/api/city/nairobi_kenya/observe", json={}).json()
+    assert d["ok"] is False and "corridors" in d["error"]

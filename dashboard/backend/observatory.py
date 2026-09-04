@@ -47,6 +47,7 @@ class Observatory:
         self._lock = threading.Lock()
         self._thread: threading.Thread | None = None
         self._stop = threading.Event()
+        self._wake = threading.Event()
         self._started_utc: str | None = None
         self._samples = 0
         self._failures = 0
@@ -93,12 +94,30 @@ class Observatory:
             pass                                    # the in-memory window still works
 
     # ----------------------------------------------------------- lifecycle
+    def cities(self) -> list[str]:
+        """Every city being observed, persisted so a restart keeps watching them."""
+        try:
+            with self._conn() as c:
+                c.execute("CREATE TABLE IF NOT EXISTS watched (city TEXT PRIMARY KEY, since TEXT)")
+                rows = [r[0] for r in c.execute("SELECT city FROM watched ORDER BY since").fetchall()]
+        except sqlite3.Error:
+            rows = []
+        return rows or ["dhaka"]
+
+    def watch(self, city_id: str) -> None:
+        with self._conn() as c:
+            c.execute("CREATE TABLE IF NOT EXISTS watched (city TEXT PRIMARY KEY, since TEXT)")
+            c.execute("INSERT OR IGNORE INTO watched VALUES (?, ?)", (city_id, datetime.now(timezone.utc).isoformat()))
+
     def start(self, city_id: str = "dhaka") -> dict:
+        """Watch a city (added to the persisted set) and make sure the sampling loop runs."""
+        self.watch(city_id)
         if self._thread and self._thread.is_alive():
+            self._wake.set()                         # sample the new city now, not next tick
             return self.status()
         self._stop.clear()
         self._started_utc = datetime.now(timezone.utc).isoformat()
-        self._thread = threading.Thread(target=self._loop, args=(city_id,), daemon=True)
+        self._thread = threading.Thread(target=self._loop, daemon=True)
         self._thread.start()
         return self.status()
 
@@ -106,21 +125,28 @@ class Observatory:
         self._stop.set()
         return self.status()
 
-    def _loop(self, city_id: str) -> None:
+    def _loop(self) -> None:
+        sampled: set[str] = set()
         while not self._stop.is_set():
-            try:
-                self.sample(city_id)
-            except Exception:                       # noqa: BLE001 - a bad tick must not kill it
-                with self._lock:
-                    self._failures += 1
-            self._stop.wait(self.interval_s)
+            for city in self.cities():
+                if self._stop.is_set():
+                    break
+                try:
+                    self.sample(city)
+                except Exception:                   # noqa: BLE001 - a bad tick must not kill it
+                    with self._lock:
+                        self._failures += 1
+            self._wake.clear()
+            self._wake.wait(self.interval_s)
 
     # ------------------------------------------------------------- sampling
     def sample(self, city_id: str = "dhaka") -> dict:
         """Take one live reading and append DERIVED speeds. Gaps stay NaN, never interpolated."""
         from live import service
-        snap = service.corridors()
-        ids = [c["id"] for c in _corridors.CORRIDORS]
+        snap = service.corridors_for(city_id)
+        ids = [c["id"] for c in snap.get("corridors", [])] if city_id != "dhaka" else [c["id"] for c in _corridors.CORRIDORS]
+        if not ids:
+            return {"city_id": city_id, "observed": 0, "nodes": 0}
         row = [float("nan")] * len(ids)
         idx = {c: i for i, c in enumerate(ids)}
         for c in snap.get("corridors", []):

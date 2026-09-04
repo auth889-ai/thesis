@@ -77,6 +77,57 @@ def is_dhaka(city: str) -> bool:
     return re.sub(r"[^a-z]", "", (city or "").lower()) in ("dhaka", "dhakabangladesh", "dhakar")
 
 
+def city_id_for(city: str) -> str | None:
+    """The registry id of a typed city name, if it is registered (no geocoding here)."""
+    if is_dhaka(city):
+        return "dhaka"
+    from pipeline.city.registry import registry, slug
+    key = re.sub(r"[^a-z0-9]", "", (city or "").lower())
+    hits = []
+    for cid in registry.list_ids():
+        sp = registry.get(cid)
+        names = {cid, slug(sp.display_name or ""), (sp.display_name or "").split(",")[0]}
+        if key in {re.sub(r"[^a-z0-9]", "", n.lower()) for n in names if n}:
+            hits.append(cid)
+    if not hits:
+        return None
+    try:                                    # the one already being observed wins
+        import observatory as obs_mod
+        watched = set(obs_mod.observatory.cities())
+        hits.sort(key=lambda c: (c not in watched, len(c)))
+    except Exception:                       # noqa: BLE001
+        pass
+    return hits[0]
+
+
+def levels_from_speeds(cd, forecast: dict | None, live: dict) -> tuple[dict, dict]:
+    """Observatory speeds (m/s) -> congestion levels per corridor, now and per horizon, using
+    each corridor's own free-flow speed from the live snapshot. Same bands as the recorder."""
+    import numpy as np
+    from live import classify
+    LV = {"NORMAL": 0.0, "SLOW": 1.0, "TRAFFIC_JAM": 2.5}
+    free = {}
+    for c in live.get("corridors", []):
+        if c.get("static_duration_s") and c.get("distance_m"):
+            free[c["id"]] = float(c["distance_m"]) / float(c["static_duration_s"])
+    obs, pred = {}, {hh: {} for hh in HORIZONS}
+    vals = np.asarray(cd.values) if cd.shape[0] else None
+    for i, cid in enumerate(cd.node_ids):
+        f0 = free.get(cid)
+        if not f0:
+            continue
+        if vals is not None:
+            col = vals[:, i]; fin = col[np.isfinite(col)]
+            if fin.size:
+                obs[cid] = LV[classify(f0 / max(float(fin[-1]), 0.1), 1.0)]
+        if forecast:
+            for hh in HORIZONS:
+                v = (forecast["values"].get(hh) or forecast["values"].get(str(hh)) or [None] * len(cd.node_ids))[i]
+                if v is not None and v == v:
+                    pred[hh][cid] = LV[classify(f0 / max(float(v), 0.1), 1.0)]
+    return obs, pred
+
+
 def resolve_place(text: str, city: str = "dhaka") -> dict:
     """'lat, lng' | a known Dhaka place | free text via OpenStreetMap's geocoder, inside the
     named city. Never silent: an unknown place is an error the page shows."""
@@ -159,15 +210,31 @@ def _run(job: str, p: dict) -> None:
 
         emit(stage="Running forecast", step=2)
         dhaka = is_dhaka(city)
+        cid = city_id_for(city)
+        import observatory as obs_mod
+        observe = {"city_id": cid, "watched": bool(cid) and cid in obs_mod.observatory.cities(),
+                   "steps_have": obs_mod.observatory.readiness(cid)["steps_have"] if cid else 0}
         if dhaka:
             from pipeline.routing.forecast_to_costs import recorded_forecast
             fc = recorded_forecast("dhaka", HORIZONS, None, "latest")
+            f = fc.get("forecast") or {}
+            pred = {hh: dict(zip(f.get("node_ids", []), f["values"].get(hh) or f["values"].get(str(hh)) or []))
+                    for hh in HORIZONS} if f else {hh: {} for hh in HORIZONS}
+            observed = dict((fc.get("observed") or {}).get("levels") or {})
+        elif cid and observe["steps_have"] >= 1:
+            # a city sir asked us to observe: its own corridors, its own live history, the same
+            # forecast interface — persistence from the first sample, Chronos from the eighth
+            from pipeline.forecasting.adapters.registry import forecast as run_forecast
+            cd_city = obs_mod.observatory.city_data(cid)
+            corr = service.corridors_for(cid)
+            fc = run_forecast(cd_city, HORIZONS)
+            f = fc.get("forecast") or {}
+            fc["input"] = cd_city.describe()
+            observed, pred = levels_from_speeds(cd_city, f or None, corr)
         else:
-            fc = {"forecast": None, "observed": {}, "input": {}}       # no observed corridors here
-        f = fc.get("forecast") or {}
-        pred = {hh: dict(zip(f.get("node_ids", []), f["values"].get(hh) or f["values"].get(str(hh)) or []))
-                for hh in HORIZONS} if f else {hh: {} for hh in HORIZONS}
-        observed = dict((fc.get("observed") or {}).get("levels") or {})
+            fc = {"forecast": None, "observed": {}, "input": {}}
+            f = {}; pred = {hh: {} for hh in HORIZONS}; observed = {}
+        forecastable = bool(f)
         # corridors the recorder never sampled (6 of the 12) are forecast from the persisted
         # observatory window instead — shorter history, same model, same units after conversion
         try:
@@ -206,7 +273,14 @@ def _run(job: str, p: dict) -> None:
         acc = _accuracy(f.get("model", ""))
 
         emit(stage="Evaluating alternatives", step=3)
-        axes = _corridor_polylines(corr) if dhaka else {}
+        if dhaka:
+            axes = _corridor_polylines(corr)
+        elif forecastable:
+            axes = {c["id"]: [tuple(pt) for sgm in (c.get("segments") or []) for pt in (sgm.get("coordinates") or [])]
+                    for c in corr.get("corridors", []) if c.get("is_live")}
+            axes = {k: v for k, v in axes.items() if len(v) >= 2}
+        else:
+            axes = {}
         live_by_id = {c["id"]: c for c in corr.get("corridors", [])}
         cards = []
         for i, r in enumerate(routes["routes"][:3]):
@@ -244,9 +318,9 @@ def _run(job: str, p: dict) -> None:
             c["status"] = ("RECOMMENDED" if c["key"] == best_pred["key"] else
                            "AVOID" if c["forecast"][h]["risk"] == "HIGH" else "ACCEPTABLE")
         covered_any = any(c["forecast"][h]["covered"] for c in cards)
-        if not dhaka:
+        if not forecastable:
             reason = (f"no forecast history for {city} yet — the fastest live route stands; "
-                      f"simulate this area to test rerouting")
+                      f"start observing {city} to get one, or simulate this area to test rerouting")
         elif not covered_any:
             reason = "no forecast-covered corridor on these routes; the fastest route now stands"
         elif best_pred["key"] == best_now["key"]:
@@ -256,10 +330,11 @@ def _run(job: str, p: dict) -> None:
             reason = (f"route {best_now['key']} is fastest now but its corridor is forecast "
                       f"{best_now['forecast'][h]['risk']} at +{h} min; route {best_pred['key']} "
                       f"saves about {round(saving / 60)} min")
-        a_h = acc.get(h) or {}
+        a_h = (acc.get(h) or {}) if dhaka else {}       # the backtest is Dhaka's; never borrowed
         cur_speed = (best_now["distance_m"] / best_now["eta_now_s"] * 3.6) if best_now.get("distance_m") else None
         layers = {"now": [{"id": c["id"], "level": None, "category": c.get("category"),
-                           "segments": c.get("segments") or []} for c in corr.get("corridors", []) if c.get("is_live")]}
+                           "segments": c.get("segments") or []} for c in corr.get("corridors", []) if c.get("is_live")]
+                  if (dhaka or forecastable) else {"now": []}}
         for hh in HORIZONS:
             layers[str(hh)] = [{"id": cid, "level": (None if pred[hh].get(cid) is None else round(float(pred[hh][cid]), 2)),
                                 "segments": (live_by_id.get(cid) or {}).get("segments") or []}
@@ -269,7 +344,7 @@ def _run(job: str, p: dict) -> None:
         pad = 0.006
         bbox = [min(lats) - pad, min(lngs) - pad, max(lats) + pad, max(lngs) + pad] if lats else None
         result = {
-            "city": city, "is_dhaka": dhaka, "bbox": bbox,
+            "city": city, "is_dhaka": dhaka, "forecastable": forecastable, "observe": observe, "bbox": bbox,
             "origin": o, "destination": d, "departure": dep, "horizon_min": h,
             "requested_horizon_min": horizon,
             "current": {"eta_s": best_now["eta_now_s"], "route": best_now["key"],
@@ -279,7 +354,8 @@ def _run(job: str, p: dict) -> None:
                          "covered": best_now["forecast"][h]["covered"],
                          "confidence": (f"{a_h['class_accuracy'] * 100:.0f} % class accuracy at +{h} min "
                                         f"on this city's recorded data" if a_h else
-                                        ("not yet measured" if dhaka else f"no observed corridors in {city} yet")),
+                                        (f"{observe['steps_have']} live samples so far — not yet scored" if forecastable
+                                         else f"no observed corridors in {city} yet")),
                          "class_accuracy": a_h.get("class_accuracy"), "model": f.get("model"),
                          "checkpoint": f.get("checkpoint"), "input_steps": f.get("input_window_steps"),
                          "observed_levels": observed},

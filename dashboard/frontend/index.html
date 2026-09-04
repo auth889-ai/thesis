@@ -3,34 +3,35 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DhakaFlow</title>
+<title>TrafficTwin</title>
 <link rel="stylesheet" href="/static/styles/app.css">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 </head>
 <body>
 <div class="app">
   <aside>
-    <div class="brand">Dhaka<span>Flow</span></div>
+    <div class="brand"><span class="brand-mark">TT</span><span>TrafficTwin</span><small>PREDICTION · ROUTING · SIMULATION · V2X</small></div>
     <nav>
       <button data-page="mission" aria-current="true">Mission Control</button>
-      <button data-page="advisor">Plan Route</button>
-      <button data-page="twin">Digital Twin</button>
+      <button data-page="predict">Prediction · ML/DL</button>
+      <button data-page="advisor">Route Optimization</button>
+      <button data-page="twin">Simulation · SUMO</button>
+      <button data-page="network">Networking · V2X</button>
       <button data-page="results">Results</button>
       <details class="navgroup-research">
         <summary>Research</summary>
-        <button data-page="forecast">Forecast Lab</button>
+        <button data-page="forecast">Dhaka Forecast Lab</button>
         <button data-page="crosscity">Cross-City AI</button>
-        <button data-page="network">Federated / V2X</button>
         <button data-page="research">Evidence &amp; Methodology</button>
         <button data-page="city">Cities</button>
       </details>
     </nav>
     <div class="conn">
       <div><span class="dot offline" id="dot"></span><span id="conn-label">connecting…</span></div>
-      <button id="theme" style="margin-top:10px;width:100%;background:none;border:1px solid var(--line);
-        color:var(--ink-muted);border-radius:8px;padding:6px;cursor:pointer;font:inherit">Toggle theme</button>
+      <button id="theme" class="theme-button"><i data-lucide="sun-moon"></i><span>Theme</span></button>
     </div>
   </aside>
   <main>

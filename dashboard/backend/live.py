@@ -294,6 +294,49 @@ class LiveService:
                         "segments": [], "speed_intervals": []})
         return rec
 
+    def corridor_from(self, cdef: dict, force: bool = False) -> dict:
+        """A corridor given as a dict {id, name, road, origin{lat,lng}, destination{lat,lng}} —
+        the shape city_corridors.derive() produces for any city."""
+        cid = cdef["id"]
+        now = time.monotonic()
+        if not force:
+            with self._lock:
+                hit = self._cache.get(cid)
+            if hit and now - hit[0] < TTL_S:
+                rec = dict(hit[1]); rec["cache_age_s"] = round(now - hit[0], 1); return rec
+        o, d = (cdef["origin"]["lat"], cdef["origin"]["lng"]), (cdef["destination"]["lat"], cdef["destination"]["lng"])
+        routes, status, latency = self._compute(o, d)
+        rec = {"id": cid, "name": cdef.get("name", cid), "road": cdef.get("road"),
+               "origin": {"lat": o[0], "lng": o[1]}, "destination": {"lat": d[0], "lng": d[1]},
+               "sumo_mapped": False, "source": "google_routes", "retrieved_at": _now(),
+               "is_live": status == "OK", "request_status": status, "request_latency_ms": latency,
+               "routing_preference": "TRAFFIC_AWARE_OPTIMAL", "cache_age_s": 0.0}
+        if status == "OK":
+            rec.update(routes[0])
+            with self._lock:
+                self._cache[cid] = (now, dict(rec))
+        else:
+            rec.update({"duration_s": None, "static_duration_s": None, "traffic_penalty_s": None,
+                        "distance_m": None, "category": "UNAVAILABLE", "geometry": [],
+                        "segments": [], "speed_intervals": []})
+        return rec
+
+    def corridors_for(self, city_id: str, force: bool = False) -> dict:
+        """The live state of every observation corridor of a city — Dhaka's hand-picked twelve,
+        or the list derived from the city's road graph."""
+        if city_id in ("dhaka", "", None):
+            return self.corridors(force=force)
+        import city_corridors
+        defs = city_corridors.load(city_id)
+        items = [self.corridor_from(c, force=force) for c in defs]
+        live = [i for i in items if i.get("is_live")]
+        counts = {cat: sum(1 for i in live if i.get("category") == cat) for cat in CATEGORIES}
+        return {"source": "google_routes", "retrieved_at": _now(), "is_live": bool(live),
+                "request_status": "OK" if live else (items[0]["request_status"] if items else "NO_CORRIDORS"),
+                "corridors": items, "city_id": city_id,
+                "summary": {"total": len(items), "live": len(live), "unavailable": len(items) - len(live),
+                            "by_category": counts}, "health": self.health()}
+
     def corridors(self, force: bool = False) -> dict:
         items = [self.corridor(c["id"], force=force) for c in _corridors.CORRIDORS]
         live = [i for i in items if i.get("is_live")]

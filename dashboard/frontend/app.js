@@ -20,26 +20,29 @@ import "./components/route-advisor-page.js";
 import "./components/counterfactual-page.js";
 import "./components/live-twin-page.js";
 import "./components/results-page.js";
+import "./components/prediction-page.js";
 import "./components/research-page.js";
 
 const PAGES = {
-  mission:        {tag: "mission-control",     title: "Mission Control",
-                   sub: "Current traffic · forecast · route decision — and a simulation to test it"},
+  mission:        {tag: "mission-control",     title: "Decision Studio",
+                   sub: "Current traffic, future risk, route decision, and a SUMO test in one workflow"},
+  predict:        {tag: "prediction-page",     title: "Prediction",
+                   sub: "Deep-learning traffic forecasting on real city data — pick a dataset, a region, a moment and a model"},
   results:        {tag: "results-page",        title: "Results",
                    sub: "What the experiments measured: forecast accuracy, routing arms, penetration, coverage"},
   city:           {tag: "city-overview-page",  title: "City Overview",
                    sub: "Any city on earth — geocoded from OpenStreetMap, with what its data lets it claim"},
   live:           {tag: "live-traffic-page",   title: "Live Traffic",
                    sub: "Current conditions from the Google Routes API"},
-  forecast:       {tag: "forecast-page",       title: "Forecast Lab",
+  forecast:       {tag: "forecast-page",       title: "Dhaka Forecast Lab",
                    sub: "Whichever model can honestly serve this city — or a labelled baseline"},
   crosscity:      {tag: "crosscity-page",      title: "Cross-City AI",
                    sub: "Research datasets and what the foundation model actually did on them"},
-  network:        {tag: "network-panel",       title: "Federated / V2X",
+  network:        {tag: "network-panel",       title: "Networking · V2X",
                    sub: "Eclipse MOSAIC ITS-G5: delivery, latency, loss, and their effect on learning"},
-  advisor:        {tag: "route-advisor-page",  title: "Plan Route",
+  advisor:        {tag: "route-advisor-page",  title: "Route Optimization",
                    sub: "Live alternatives between any two points"},
-  twin:           {tag: "live-twin-page",      title: "Digital Twin",
+  twin:           {tag: "live-twin-page",      title: "Simulation · SUMO digital twin",
                    sub: "The SUMO digital twin stepping on the map — drive it with the controls or the agent"},
   counterfactual: {tag: "counterfactual-page", title: "SUMO Digital Twin",
                    sub: "Take the live state into simulation and test an intervention"},
@@ -69,6 +72,7 @@ function show(key, arg = "") {
   if (location.hash !== target) history.replaceState(null, "", target);
   outlet.replaceChildren(document.createElement(page.tag));
   mounted = outlet.firstElementChild;
+  window.lucide?.createIcons({attrs: {"stroke-width": 1.8}});
 }
 
 document.querySelectorAll("nav button").forEach(b =>
@@ -113,3 +117,4 @@ stream.addEventListener("pulse", (e) => mounted?.onPulse?.(e.detail));
 stream.start();
 
 show(parseHash(), location.hash.split(":")[1] || "");
+window.lucide?.createIcons({attrs: {"stroke-width": 1.8}});

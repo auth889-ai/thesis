@@ -28,16 +28,23 @@ def _run(job: str, p: dict) -> None:
     arms = ("baseline", "reactive")
     total = len(seeds) * len(arms)
     runs, done = [], 0
+    live_sim.owner = job                       # nobody else starts the twin until we are done
     try:
+        for _ in range(120):                   # let a run started by hand finish first
+            if live_sim.state(with_vehicles=False).get("status") not in ("running", "paused", "starting"):
+                break
+            time.sleep(0.5)
+        else:
+            live_sim.stop()
         for seed in seeds:
             for arm in arms:
                 with _LOCK:
                     _JOBS[job].update(stage=f"Simulating {arm} · seed {seed}", done=done, total=total)
                 r = live_sim.start({"network": p["network"], "seed": seed, "arm": arm,
-                                    "duration_s": int(p.get("duration_s", 600)),
-                                    "scale": float(p.get("scale", 0.5)),
+                                    "duration_s": int(p.get("duration_s", 900)),
+                                    "scale": float(p.get("scale", 4.0)),
                                     "compliance": float(p.get("compliance", 0.3)),
-                                    "step_delay_ms": 0, "continuous": False})
+                                    "step_delay_ms": 0, "continuous": False}, owner=job)
                 if not r.get("started"):
                     raise RuntimeError(r.get("reason", "could not start the twin"))
                 for _ in range(1800):
@@ -56,13 +63,15 @@ def _run(job: str, p: dict) -> None:
         summary = ic.summarise(runs)
         with _LOCK:
             _JOBS[job].update(status="done", stage="done", result={
-                "network": p["network"], "seeds": seeds, "duration_s": int(p.get("duration_s", 600)),
-                "scale": float(p.get("scale", 0.5)), "compliance": float(p.get("compliance", 0.3)),
+                "network": p["network"], "seeds": seeds, "duration_s": int(p.get("duration_s", 900)),
+                "scale": float(p.get("scale", 4.0)), "compliance": float(p.get("compliance", 0.3)),
                 "runs": runs, "summary": summary, "finished_utc": datetime.now(timezone.utc).isoformat(),
                 "label": "SIMULATED — generated demand on a real OpenStreetMap network (what-if)"})
     except Exception as exc:                        # noqa: BLE001 - shown on the page
         with _LOCK:
             _JOBS[job].update(status="failed", stage="failed", error=f"{type(exc).__name__}: {exc}")
+    finally:
+        live_sim.owner = None
 
 
 def start(payload: dict) -> str:

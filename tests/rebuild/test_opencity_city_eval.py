@@ -83,3 +83,10 @@ def test_csv_contract_matches_the_authors_demo(tmp_path):
     assert vals.shape == (20, 3) and nodes == ["region_0", "region_1", "region_2"] and A.shape == (3, 3)
     with pytest.raises(SystemExit, match="9 nodes"):
         op.forward("DF_T", np.zeros((300, 3)), np.eye(3), None)
+
+
+def test_subgraph_centres_on_the_region_and_has_enough_nodes():
+    from pipeline.forecasting import opencity_predict as op
+    A = np.zeros((20, 20)); A[0, 1] = A[1, 0] = 0.9; A[0, 2] = A[2, 0] = 0.5; A[2, 3] = A[3, 2] = 0.7
+    idx = op.subgraph(A, 0, 12)
+    assert idx[0] == 0 and idx[1] == 1 and idx[2] == 2 and len(idx) == 12 and len(set(idx)) == 12

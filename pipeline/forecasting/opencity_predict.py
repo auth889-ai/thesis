@@ -56,6 +56,53 @@ def load_csv(csv: Path, adj: Path):
                                               "last_utc": times.iloc[-1].isoformat()}
 
 
+DATASET_START = {"METR_LA": "2012-03-01T00:00:00+00:00", "PEMS_BAY": "2017-01-01T00:00:00+00:00"}
+IN_PRETRAINING = {"METR_LA", "PEMS_BAY", "PEMS04", "PEMS08"}
+
+
+def local_datasets() -> list[dict]:
+    """The real datasets present in the pinned OpenCity checkout (their own layout)."""
+    out = []
+    for d in sorted((OC / "data").iterdir()) if (OC / "data").exists() else []:
+        f, a = d / f"{d.name}.npz", d / f"{d.name}_rn_adj.npy"
+        if d.name.startswith("DF_"):
+            continue                                    # a temporary sub-graph a run is using right now
+        if f.exists() and a.exists():
+            arr = np.load(f)["data"]
+            out.append({"id": d.name, "nodes": int(arr.shape[1]), "steps": int(arr.shape[0]),
+                        "start_utc": DATASET_START.get(d.name), "interval_min": 5,
+                        "exposure": "IN_PRETRAINING" if d.name in IN_PRETRAINING else "HELD_OUT_ZERO_SHOT"})
+    return out
+
+
+def subgraph(A: np.ndarray, region: int, n_nodes: int) -> list[int]:
+    """The region plus its strongest neighbours by adjacency weight — a real sub-graph OpenCity
+    can serve zero-shot (it needs >= 9 nodes), small enough for a CPU forward pass."""
+    w = np.asarray(A, dtype="float64").copy()
+    np.fill_diagonal(w, 0.0)
+    score = w[region] + w[:, region]
+    order = [int(i) for i in np.argsort(-score) if i != region and score[i] > 0]
+    if len(order) < n_nodes - 1:                        # pad with 2-hop neighbours, then anything
+        two = (w @ w)[region]
+        order += [int(i) for i in np.argsort(-two) if i != region and int(i) not in order]
+    return [region] + order[: max(MIN_NODES - 1, n_nodes - 1)]
+
+
+def from_dataset(name: str, region: int, n_nodes: int):
+    d = np.load(OC / "data" / name / f"{name}.npz")["data"].astype("float64")
+    if d.ndim == 3:
+        d = d[:, :, 0]
+    A = np.load(OC / "data" / name / f"{name}_rn_adj.npy")
+    idx = subgraph(A, region, n_nodes)
+    vals = d[:, idx]
+    vals[vals == 0] = np.nan                            # 0 encodes a missing reading in these files
+    return vals, [f"{name}#{i}" for i in idx], A[np.ix_(idx, idx)].astype("float32"), {
+        "quantity": {"METR_LA": "speed mph", "PEMS_BAY": "speed mph", "PEMS07M": "speed",
+                     "TrafficSH": "traffic index"}.get(name, "as released"),
+        "reality": "REAL" + (", IN OpenCity's pre-training corpus" if name in IN_PRETRAINING else ", held out (zero-shot)"),
+        "first_utc": DATASET_START.get(name), "region_index": region, "subgraph": idx}
+
+
 def _write_dataset(name: str, vals: np.ndarray, A: np.ndarray) -> Path:
     ddir = OC / "data" / name
     ddir.mkdir(parents=True, exist_ok=True)
@@ -142,8 +189,11 @@ def score(pred: np.ndarray, actual: np.ndarray, last: np.ndarray, horizons: list
 
 def main() -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    p.add_argument("--source", choices=["observatory", "recorded", "csv", "metrla-smoke"], default="observatory")
+    p.add_argument("--source", choices=["observatory", "recorded", "csv", "metrla-smoke", "dataset"], default="observatory")
     p.add_argument("--city", default="dhaka")
+    p.add_argument("--dataset", default="METR_LA", help="--source dataset: a dataset in the OpenCity checkout")
+    p.add_argument("--region", type=int, default=0, help="--source dataset: node index to centre the sub-graph on")
+    p.add_argument("--nodes", type=int, default=48, help="--source dataset: sub-graph size")
     p.add_argument("--csv", type=Path); p.add_argument("--adj", type=Path)
     p.add_argument("--as-of", type=int, default=None,
                    help="end the input window at this index (negative counts from the end); "
@@ -159,6 +209,8 @@ def main() -> int:
         vals, nodes, A, meta = load_csv(a.csv, a.adj); name = "DF_UPLOAD"
     elif a.source == "metrla-smoke":
         vals, nodes, A, meta = oce.metrla_smoke(steps=2000); name = "DF_SMOKE"
+    elif a.source == "dataset":
+        vals, nodes, A, meta = from_dataset(a.dataset, a.region, a.nodes); name = f"DF_{a.dataset.upper()}_R{a.region}"
     elif a.source == "observatory":
         vals, nodes, meta = oce.from_observatory(a.city); A = oce.geo_adjacency(nodes)
         name = f"DF_{a.city.upper()}_LIVE"
@@ -168,7 +220,12 @@ def main() -> int:
     T = vals.shape[0]
     end = T if a.as_of is None else (a.as_of if a.as_of > 0 else T + a.as_of)
     hist = vals[:end]
-    pred = forward(name, hist, A, meta.get("first_utc"))
+    first_utc = meta.get("first_utc")
+    if first_utc and a.source == "dataset":
+        # the window's own clock: the dataset start plus the offset of its first input step
+        from datetime import timedelta
+        first_utc = (datetime.fromisoformat(first_utc) + timedelta(minutes=5 * max(0, end - HIS))).isoformat()
+    pred = forward(name, hist, A, first_utc)
     horizons = [int(h) for h in a.horizons.split(",")]
     last = np.nan_to_num(hist[-1], nan=0.0)
     rec = {"generated_utc": datetime.now(timezone.utc).isoformat(), "model": "OpenCity-plus",
@@ -179,7 +236,15 @@ def main() -> int:
            "curve_mean": [round(float(np.nanmean(pred[i])), 3) for i in range(PRED)],
            "scored": score(pred, vals[end:end + PRED], last, horizons) if end < T else None,
            "claim": ("MECHANICS ONLY — the slice is inside the pre-training corpus" if a.source == "metrla-smoke"
+                     else "NOT zero-shot: this dataset is inside OpenCity's pre-training corpus"
+                     if a.source == "dataset" and a.dataset in IN_PRETRAINING
                      else "zero-shot: the city is absent from OpenCity's pre-training corpus"),
+           "region": {"index": meta.get("region_index"), "position_in_subset": 0,
+                      "subgraph": meta.get("subgraph")} if a.source == "dataset" else None,
+           "history_region": [None if x != x else round(float(x), 3) for x in hist[-72:, 0]] if a.source == "dataset" else None,
+           "prediction_region": [round(float(x), 3) for x in pred[:12, 0]] if a.source == "dataset" else None,
+           "actual_region": ([None if x != x else round(float(x), 3) for x in vals[end:end + 12, 0]]
+                             if a.source == "dataset" and end < T else None),
            "stack": "authors' parse_args / get_predictor_params / Traffic_model / load_st_dataset, "
                     "boot shims only (NumPy aliases, CPU load, DF_* loader branch)"}
     out = a.out or OUT / f"opencity_predict_{name.lower()}.json"

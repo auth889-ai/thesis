@@ -47,9 +47,11 @@ import live_sim as live_sim_mod
 import sim_agent
 import analyze
 import twin_compare
+import predict_lab
+import city_corridors
 
-app = FastAPI(title="DhakaFlow", version="1.0.0", docs_url="/api/docs",
-              description="Live Dhaka traffic, forecasting, routing and V2X evidence.")
+app = FastAPI(title="TrafficTwin", version="1.0.0", docs_url="/api/docs",
+              description="Traffic prediction (ML/DL), route optimization, SUMO simulation and V2X networking — for any city.")
 
 
 @app.middleware("http")
@@ -677,16 +679,88 @@ def sim_agent_chat(payload: dict):
 _NET_JOBS: dict[str, dict] = {}
 
 
+@app.post("/api/city/{city_id}/observe", tags=["city"])
+def city_observe(city_id: str, payload: dict | None = None):
+    """Start learning a city: derive its observation corridors from its road graph, sample them
+    live every five minutes (persisted), and serve forecasts as soon as the history allows.
+    Accepts a registered city id or a free city name (created and geocoded on the spot)."""
+    reg, catalog = _city_bits()
+    cid = analyze.city_id_for(city_id) or (city_id if reg.get(city_id) else None)
+    if cid == "dhaka":
+        observatory_mod.observatory.start("dhaka")
+        return {"ok": True, "city_id": "dhaka", "corridors": [], "readiness": observatory_mod.observatory.readiness("dhaka")}
+    if not cid:
+        try:
+            cid = reg.create_from_name(city_id).city_id
+        except Exception as exc:                       # noqa: BLE001
+            return {"ok": False, "error": f"cannot find city {city_id!r}: {type(exc).__name__}: {exc}"}
+    try:
+        cs = city_corridors.ensure(cid, int((payload or {}).get("corridors", city_corridors.DEFAULT_K)))
+        if (payload or {}).get("routes"):
+            cs = city_corridors.add_routes(cid, payload["routes"])
+    except Exception as exc:                           # noqa: BLE001
+        return {"ok": False, "city_id": cid, "error": f"could not derive corridors: {type(exc).__name__}: {exc}"}
+    observatory_mod.observatory.start(cid)
+    import time as _t
+    _t.sleep(2.5)                                       # the wake-up sample is running; let it land
+    return {"ok": True, "city_id": cid, "corridors": cs, "readiness": observatory_mod.observatory.readiness(cid),
+            "next": {"persistence": "after the first sample", "Chronos-Bolt": "after 8 samples (~40 min)",
+                     "OpenCity-plus": "after 288 samples (24 h) with >= 9 corridors"}}
+
+
+@app.get("/api/city/{city_id}/observe", tags=["city"])
+def city_observe_status(city_id: str):
+    city_id = analyze.city_id_for(city_id) or city_id
+    r = observatory_mod.observatory.readiness(city_id)
+    return {"city_id": city_id, "corridors": city_corridors.load(city_id) if city_id != "dhaka" else None,
+            "watched": city_id in observatory_mod.observatory.cities(), "readiness": r,
+            "live": live_service.service.corridors_for(city_id) if city_corridors.load(city_id) or city_id == "dhaka" else None}
+
+
+@app.get("/api/predict-lab/datasets", tags=["predict"])
+def predict_lab_datasets():
+    """Real datasets present locally and the models that can serve each."""
+    return {"datasets": predict_lab.datasets()}
+
+
+@app.post("/api/predict-lab/upload", tags=["predict"])
+async def predict_lab_upload(csv: UploadFile = File(...), name: str = Form("my city"), quantity: str = Form("speed_kmh"),
+                             adj: UploadFile | None = File(None), coords: UploadFile | None = File(None)):
+    """Any city, your data: a CSV (wide `time,<road>...` or long `time,road,value`), optionally a
+    coordinates CSV or an adjacency `.npy`, becomes a dataset every model on the page can serve."""
+    import user_datasets
+    try:
+        meta = user_datasets.save(name, await csv.read(), quantity,
+                                  adj_bytes=(await adj.read()) if adj and adj.filename else None,
+                                  coords_bytes=(await coords.read()) if coords and coords.filename else None)
+    except Exception as exc:                            # noqa: BLE001 - the page shows the reason
+        return {"ok": False, "error": f"{type(exc).__name__}: {exc}"}
+    return {"ok": True, "dataset": f"user:{meta['id']}", "meta": meta, "models": user_datasets.models_for(meta)}
+
+
+@app.post("/api/predict-lab/run", tags=["predict"])
+def predict_lab_run(payload: dict):
+    """A real forward pass: dataset, region, moment, model -> prediction, scored where possible."""
+    return {"job": predict_lab.start(payload or {}), "poll": "/api/predict-lab/{job}"}
+
+
+@app.get("/api/predict-lab/{job}", tags=["predict"])
+def predict_lab_status(job: str):
+    return predict_lab.status(job)
+
+
 @app.get("/api/operate/cities", tags=["operate"])
 def operate_cities():
     """Cities the operations screen offers: Dhaka (observed, forecastable) plus any registered
     city — and any other name typed in is geocoded on the spot."""
     reg, _ = _city_bits()
     out = [{"id": "dhaka", "label": "Dhaka", "forecast": True}]
+    watched = set(observatory_mod.observatory.cities())
     for cid in reg.list_ids():
         sp = reg.get(cid)
         if sp and sp.display_name and not analyze.is_dhaka(sp.display_name):
-            out.append({"id": cid, "label": sp.display_name, "forecast": False})
+            out.append({"id": cid, "label": sp.display_name, "forecast": cid in watched,
+                        "steps": observatory_mod.observatory.readiness(cid)["steps_have"] if cid in watched else 0})
     return {"cities": out}
 
 

@@ -85,6 +85,7 @@ class LiveSim:
         self._net = None
         self._snapshot: dict = {"status": "idle"}
         self._history: list[dict] = self._load_history()
+        self.owner: str | None = None          # a job (e.g. a comparison) that holds the twin
 
     # ------------------------------------------------------------------ helpers
     @staticmethod
@@ -109,11 +110,14 @@ class LiveSim:
             self._snapshot.update(kw)
 
     # ------------------------------------------------------------------ lifecycle
-    def start(self, params: dict | None = None) -> dict:
+    def start(self, params: dict | None = None, owner: str | None = None) -> dict:
         with self._lock:
             if self._thread and self._thread.is_alive():
                 return {"started": False, "reason": "a live simulation is already running",
                         "run_id": self._snapshot.get("run_id")}
+            if self.owner and owner != self.owner:
+                return {"started": False, "reason": f"the twin is held by {self.owner} (a comparison "
+                                                    f"in progress); wait for it to finish"}
         from pipeline.routing import integrated_chain as ic
         cfg = {**DEFAULTS, **{k: v for k, v in (params or {}).items() if v is not None}}
         if cfg["arm"] not in ARMS:
@@ -158,6 +162,7 @@ class LiveSim:
     def state(self, with_vehicles: bool = True) -> dict:
         with self._lock:
             s = dict(self._snapshot)
+            s["owner"] = self.owner
         if not with_vehicles:
             s.pop("vehicles", None)
         return s

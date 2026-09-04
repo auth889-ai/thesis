@@ -1,9 +1,9 @@
 {
  "model": "GWNet",
  "dataset": "METR-LA",
- "checkpoint": "results/forecasting/checkpoints/GraphWaveNet/METR-LA_50_12_12/d1ffd3d52d3caacf60ebf59214673f7c/GraphWaveNet_50.pt",
- "window_index_in_test": 1000,
- "t0_absolute": 28417,
+ "checkpoint": "results/forecasting/checkpoints/GraphWaveNet/METR-LA_50_12_12/d1ffd3d52d3caacf60ebf59214673f7c/GraphWaveNet_best_val_MAE.pt",
+ "window_index_in_test": 2571,
+ "t0_absolute": 29988,
  "input_len": 12,
  "horizon_len": 12,
  "scaler": {
@@ -11,7 +11,7 @@
   "sd": 19.494251251220703,
   "fitted_on": "train split only"
  },
- "window_mae_all_horizons_mph": 6.309,
+ "window_mae_all_horizons_mph": 2.501,
  "reported_test_metrics": {
   "15": {
    "mae": 2.719,
@@ -53,89 +53,204 @@
    "mape_diff_pct": 0.4
   }
  },
- "verification": {
-  "5": {
-   "reloaded_mae": 2.2013,
-   "reported_mae": null,
-   "diff_pct": null,
-   "windows": 134
-  },
-  "15": {
-   "reloaded_mae": 2.7158,
-   "reported_mae": 2.719,
-   "diff_pct": -0.12,
-   "windows": 136
-  },
-  "30": {
-   "reloaded_mae": 3.0764,
-   "reported_mae": 3.1112,
-   "diff_pct": -1.12,
-   "windows": 135
-  },
-  "60": {
-   "reloaded_mae": 3.4774,
-   "reported_mae": 3.5947,
-   "diff_pct": -3.26,
-   "windows": 137
-  }
- },
+ "verification": null,
  "note": "single unseen window; the training metrics average the whole test set, so these differ in magnitude \u2014 the check is that they are the same order, not identical",
  "rows": [
   {
    "horizon_min": 5,
    "sensor_index": 0,
-   "actual_mph": 19.0,
-   "predicted_mph": 18.74,
-   "abs_error_mph": 0.26
+   "actual_mph": 62.8,
+   "predicted_mph": 60.57,
+   "abs_error_mph": 2.23
+  },
+  {
+   "horizon_min": 5,
+   "sensor_index": 1,
+   "actual_mph": 62.2,
+   "predicted_mph": 60.39,
+   "abs_error_mph": 1.81
+  },
+  {
+   "horizon_min": 5,
+   "sensor_index": 2,
+   "actual_mph": 67.2,
+   "predicted_mph": 66.53,
+   "abs_error_mph": 0.67
+  },
+  {
+   "horizon_min": 5,
+   "sensor_index": 3,
+   "actual_mph": 55.4,
+   "predicted_mph": 56.82,
+   "abs_error_mph": 1.42
+  },
+  {
+   "horizon_min": 5,
+   "sensor_index": 4,
+   "actual_mph": 61.0,
+   "predicted_mph": 62.88,
+   "abs_error_mph": 1.88
+  },
+  {
+   "horizon_min": 5,
+   "sensor_index": 5,
+   "actual_mph": 54.2,
+   "predicted_mph": 53.06,
+   "abs_error_mph": 1.14
   },
   {
    "horizon_min": 5,
    "sensor_index": "ALL",
    "actual_mph": null,
    "predicted_mph": null,
-   "abs_error_mph": 3.365
+   "abs_error_mph": 3.559
   },
   {
    "horizon_min": 15,
    "sensor_index": 0,
-   "actual_mph": 13.75,
-   "predicted_mph": 19.52,
-   "abs_error_mph": 5.77
+   "actual_mph": 55.25,
+   "predicted_mph": 60.97,
+   "abs_error_mph": 5.72
+  },
+  {
+   "horizon_min": 15,
+   "sensor_index": 1,
+   "actual_mph": 55.12,
+   "predicted_mph": 60.27,
+   "abs_error_mph": 5.14
+  },
+  {
+   "horizon_min": 15,
+   "sensor_index": 2,
+   "actual_mph": 65.0,
+   "predicted_mph": 66.62,
+   "abs_error_mph": 1.62
+  },
+  {
+   "horizon_min": 15,
+   "sensor_index": 3,
+   "actual_mph": 54.38,
+   "predicted_mph": 57.01,
+   "abs_error_mph": 2.63
+  },
+  {
+   "horizon_min": 15,
+   "sensor_index": 4,
+   "actual_mph": 66.12,
+   "predicted_mph": 63.13,
+   "abs_error_mph": 3.0
+  },
+  {
+   "horizon_min": 15,
+   "sensor_index": 5,
+   "actual_mph": 49.62,
+   "predicted_mph": 53.46,
+   "abs_error_mph": 3.83
   },
   {
    "horizon_min": 15,
    "sensor_index": "ALL",
    "actual_mph": null,
    "predicted_mph": null,
-   "abs_error_mph": 3.89
+   "abs_error_mph": 2.86
   },
   {
    "horizon_min": 30,
    "sensor_index": 0,
-   "actual_mph": 15.12,
-   "predicted_mph": 19.44,
-   "abs_error_mph": 4.32
+   "actual_mph": 55.56,
+   "predicted_mph": 61.75,
+   "abs_error_mph": 6.2
+  },
+  {
+   "horizon_min": 30,
+   "sensor_index": 1,
+   "actual_mph": 58.89,
+   "predicted_mph": 60.41,
+   "abs_error_mph": 1.52
+  },
+  {
+   "horizon_min": 30,
+   "sensor_index": 2,
+   "actual_mph": 68.78,
+   "predicted_mph": 66.78,
+   "abs_error_mph": 2.0
+  },
+  {
+   "horizon_min": 30,
+   "sensor_index": 3,
+   "actual_mph": 58.11,
+   "predicted_mph": 57.42,
+   "abs_error_mph": 0.69
+  },
+  {
+   "horizon_min": 30,
+   "sensor_index": 4,
+   "actual_mph": 66.11,
+   "predicted_mph": 63.6,
+   "abs_error_mph": 2.51
+  },
+  {
+   "horizon_min": 30,
+   "sensor_index": 5,
+   "actual_mph": 49.11,
+   "predicted_mph": 54.2,
+   "abs_error_mph": 5.09
   },
   {
    "horizon_min": 30,
    "sensor_index": "ALL",
    "actual_mph": null,
    "predicted_mph": null,
-   "abs_error_mph": 6.582
+   "abs_error_mph": 2.321
   },
   {
    "horizon_min": 60,
    "sensor_index": 0,
-   "actual_mph": 14.12,
-   "predicted_mph": 20.62,
-   "abs_error_mph": 6.49
+   "actual_mph": 65.25,
+   "predicted_mph": 63.28,
+   "abs_error_mph": 1.97
+  },
+  {
+   "horizon_min": 60,
+   "sensor_index": 1,
+   "actual_mph": 62.25,
+   "predicted_mph": 61.02,
+   "abs_error_mph": 1.23
+  },
+  {
+   "horizon_min": 60,
+   "sensor_index": 2,
+   "actual_mph": 69.62,
+   "predicted_mph": 66.92,
+   "abs_error_mph": 2.71
+  },
+  {
+   "horizon_min": 60,
+   "sensor_index": 3,
+   "actual_mph": 63.0,
+   "predicted_mph": 58.31,
+   "abs_error_mph": 4.69
+  },
+  {
+   "horizon_min": 60,
+   "sensor_index": 4,
+   "actual_mph": 67.75,
+   "predicted_mph": 64.33,
+   "abs_error_mph": 3.42
+  },
+  {
+   "horizon_min": 60,
+   "sensor_index": 5,
+   "actual_mph": 53.0,
+   "predicted_mph": 56.13,
+   "abs_error_mph": 3.13
   },
   {
    "horizon_min": 60,
    "sensor_index": "ALL",
    "actual_mph": null,
    "predicted_mph": null,
-   "abs_error_mph": 7.795
+   "abs_error_mph": 2.176
   }
  ]
 }

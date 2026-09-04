@@ -86,6 +86,12 @@ export const api = {
   // the operations screen
   places:        () => get("/api/places"),
   operateCities: () => get("/api/operate/cities"),
+  observeCity:   (city, routes) => post(`/api/city/${encodeURIComponent(city)}/observe`, {routes: routes || []}),
+  observeStatus: (city) => get(`/api/city/${encodeURIComponent(city)}/observe`),
+  predictDatasets: () => get("/api/predict-lab/datasets"),
+  predictRun:    (body) => post("/api/predict-lab/run", body),
+  predictUpload: (form) => postForm("/api/predict-lab/upload", form),
+  predictStatus: (job) => get(`/api/predict-lab/${job}`),
   twinCompare:   (body) => post("/api/twin/compare", body),
   twinCompareStatus: (job) => get(`/api/twin/compare/${job}`),
   analyzeStart:  (body) => post("/api/analyze", body),

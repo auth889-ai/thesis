@@ -1,6 +1,6 @@
 # Integrated chain — forecast to control, measured
 
-Run `chain_20260904T201021Z_mission_f7bc62`, generated 2026-09-04T20:11:34.839687+00:00.
+Run `chain_20260904T205831Z_mission_24b0c8`, generated 2026-09-04T20:59:24.255772+00:00.
 
 ```
 CITY -> TRAFFIC DATA -> ML/DL FORECAST -> FUTURE ROUTE COST -> ROUTING -> SUMO

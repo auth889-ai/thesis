@@ -1,4 +1,6 @@
-# DhakaFlow
+# TrafficTwin
+
+*(formerly DhakaFlow — the system is city-agnostic; Dhaka is its calibrated, live-observed case)*
 
 **Does a better traffic forecast produce better traffic control?** A closed-loop test on a calibrated
 SUMO twin of Dhaka fed by real recorded congestion — forecast → future edge costs → route choice →

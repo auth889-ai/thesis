@@ -99,11 +99,12 @@ def test_start_refuses_an_unknown_network(client):
 @pytest.mark.slow
 def test_generated_city_runs_in_the_twin(client):
     import live_sim
-    gen = [n for n in live_sim.networks() if n["id"] != "dhaka_r1"]
+    gen = sorted([n for n in live_sim.networks() if n["id"] != "dhaka_r1" and n.get("edges", 0) >= 100],
+                 key=lambda n: -n["edges"])
     if not gen:
-        pytest.skip("no generated city in this checkout")
-    r = client.post("/api/sim/live/start", json={"network": gen[0]["id"], "duration_s": 120,
-                                                 "scale": 0.5, "arm": "reactive", "step_delay_ms": 20}).json()
+        pytest.skip("no generated city with a usable network in this checkout")
+    r = client.post("/api/sim/live/start", json={"network": gen[0]["id"], "duration_s": 300,
+                                                 "scale": 2.0, "arm": "reactive", "step_delay_ms": 5}).json()
     assert r["started"] and r["params"]["demand_reality"] == "SYNTHETIC_WHAT_IF"
     for _ in range(600):
         s = client.get("/api/sim/live/state").json()
