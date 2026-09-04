@@ -3,7 +3,7 @@
 **Traffic prediction first, route optimisation second.** Every number below is read from a file
 in this package, and every file names the one command that regenerates it. Nothing is typed by hand.
 
-Verified at commit `9b5eb4f`. Tests: **242 passed, 5 skipped**. CI: **green**.
+Verified at commit `e6cb55c`. Tests: **271 passed, 5 skipped**.
 
 ## What you asked me to fix — and what was done
 
@@ -301,19 +301,43 @@ authors' own preprocessing and config, reproduce their published benchmark, reco
 REPRODUCTION_PASS/FAIL, and only then attach a thin adapter. No algorithm is reimplemented from
 the paper text, and no new architecture is invented.
 
-| # | experiment | official source | status |
-|---|---|---|---|
-| 1 | STAEformer from the authors' own repo (not only the shared harness) | `XDZhelheim/STAEformer` | fetched, not run |
-| 2 | Congestion-aware metrics (congestion MAE, P/R/F1, warning lead time) | — | **DONE** |
-| 3 | CNFGNN reproduced | `mengcz13/KDD2021_CNFGNN` @ `5056608` | fetched, **not attempted** (needs their Zenodo data + py<3.8) |
-| 4 | FedGTP reproduced | `LarryHawkingYoung/KDD2024_FedGTP` @ `ff128f5` | launcher + impairment adapter built and unit-tested; **not run** |
-| 5 | Federated under V2X impairment (A ideal / B MOSAIC / C latency / D loss) | our adapter over FedAvg | **DONE** — 4/8/16 clients on AWS |
-| 6 | Cross-city with OpenCity | `HKUDS/OpenCity` @ `eca64c9` | **ZERO-SHOT DONE, 2 exact reproductions**; fine-tuned/few-shot arms **not run** |
-| 7 | End-to-end chain: link quality → advisory delivery → SUMO delay | composition | **DONE** — result is null |
-| 8 | Live Dhaka Mode (5-page real-time app on the Google Routes API) | — | **DONE** |
-| — | Dhaka → OpenCity schema adaptation | — | adapter built; reports `NOT_YET_VALID` |
-| — | Real user pilot | — | pending |
-| — | Thesis chapters | — | not written |
+| # | item | status |
+|---|---|---|
+| Generic city layer | CITY → ROAD GRAPH → STABLE NODES → CAPABILITY | **DONE** |
+| Model comparison | one protocol, 5 models, congestion + lead-time metrics | **DONE** |
+| Explicit model selection | requested / selected / reason / gate / fallback | **DONE** |
+| Generic SUMO | any instantiated city → runnable scenario | **DONE** |
+| OpenCity zero-shot | 4 held-out cities, 2 exact reproductions | **DONE** |
+| Federated V2X sweep | 4 / 8 / 16 clients on AWS | **DONE** |
+| Forecast visualisation | history + q10/q50/q90 bands on the page | not started |
+| OpenCity few-shot | 0 / 5 / 10 / 20 / 100 % adaptation | not started |
+| CNFGNN + FedGTP | official reproductions | **NOT ATTEMPTED** |
+| Degradation sweep | 7 delivery × 5 latency × 4 staleness × 4 participation | blocked on the above |
+| Network → forecast → control chain | oracle / validated / degraded into one controller | not started |
+
+### The result that most changes what can be claimed
+
+Chronos — the pretrained foundation model that serves Dhaka — was measured against the same
+protocol as everything else on METR-LA (60 windows × 80 nodes):
+
+| model | MAE@15 | MAE@60 | congestion MAE@15 | F1@15 | onset detection |
+|---|---|---|---|---|---|
+| **persistence** | **3.432** | **5.107** | **7.931** | 0.787 | **0.842** |
+| xgboost | 3.470 | 5.395 | 9.446 | 0.774 | 0.838 |
+| **chronos** | 3.728 | 7.021 | 9.183 | **0.789** | 0.816 |
+| random_forest | 3.765 | 5.733 | 9.274 | 0.762 | 0.829 |
+| historical_average | 5.082 | 5.012 | 20.646 | 0.387 | 0.299 |
+
+**Chronos does not beat persistence.** Worse MAE at every horizon, sharply so at 60 min, worse
+congestion error, level on F1. Zero-shot it is a persistence-grade forecaster here.
+
+For scale, **Graph WaveNet reaches 2.719** on METR-LA. Training on a city's own sensor graph beats
+all five of these by a wide margin — which is the entire argument for doing it, and the reason
+Dhaka's lack of a sensor network is the binding constraint on this project rather than a modelling
+choice.
+
+Consequently the Dhaka runtime label — *PRETRAINED ZERO-SHOT RUNTIME FORECAST, DHAKA ACCURACY NOT
+YET VALIDATED* — is a measured statement, not a disclaimer.
 
 ### Experiment 6 — OpenCity, the gate that is closed
 
