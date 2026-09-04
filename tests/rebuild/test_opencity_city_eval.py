@@ -61,3 +61,25 @@ def test_boot_shim_routes_only_df_names(monkeypatch):
     monkeypatch.setitem(sys.modules, "lib.data_process", fake)
     assert boot.install_generic_dataset().startswith("lib.data_process.load_st_dataset")
     assert fake.load_st_dataset("PEMS07M", None) == "theirs" and calls == ["PEMS07M"]
+
+
+# ------------------------------------------------------------------ predictions through their stack
+
+def test_prediction_scoring_masks_missing_and_reports_skill():
+    from pipeline.forecasting import opencity_predict as op
+    pred = np.full((288, 3), 2.0); actual = np.full((288, 3), 2.0); last = np.array([1.0, 1.0, 1.0])
+    actual[2, 1] = 0.0                                   # missing under the model's convention
+    s = op.score(pred, actual, last, [15])
+    assert s[15]["n"] == 2 and s[15]["opencity_mae"] == 0.0 and s[15]["skill_vs_persistence"] == 1.0
+
+
+def test_csv_contract_matches_the_authors_demo(tmp_path):
+    from pipeline.forecasting import opencity_predict as op
+    import pandas as pd
+    t = pd.date_range("2026-01-01", periods=20, freq="5min")
+    df = pd.DataFrame({"time": t, **{f"region_{i}": np.arange(20) + i for i in range(3)}})
+    df.to_csv(tmp_path / "c.csv", index=False); np.save(tmp_path / "a.npy", np.eye(3))
+    vals, nodes, A, meta = op.load_csv(tmp_path / "c.csv", tmp_path / "a.npy")
+    assert vals.shape == (20, 3) and nodes == ["region_0", "region_1", "region_2"] and A.shape == (3, 3)
+    with pytest.raises(SystemExit, match="9 nodes"):
+        op.forward("DF_T", np.zeros((300, 3)), np.eye(3), None)

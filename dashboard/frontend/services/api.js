@@ -44,6 +44,15 @@ async function post(path, body) {
   }
 }
 
+async function postForm(path, form) {
+  try {
+    const res = await fetch(`${BASE}${path}`, {method: "POST", body: form});
+    return await res.json();
+  } catch (err) {
+    return {ok: false, error: "unreachable", detail: String(err)};
+  }
+}
+
 export const api = {
   // city layer — no city is hard-coded in the frontend
   cities:        () => get("/api/cities"),
@@ -63,6 +72,8 @@ export const api = {
   forecastAccuracy: (id) => get(`/api/forecast/${encodeURIComponent(id)}/accuracy`),
   scoreboard:    (id) => get(`/api/forecast/${encodeURIComponent(id)}/scoreboard`),
   opencity:      (id) => get(`/api/opencity/${encodeURIComponent(id)}`),
+  opencityPredict: (id, body) => post(`/api/opencity/${encodeURIComponent(id)}/predict`, body || {}),
+  opencityUpload:  (form) => postForm("/api/opencity/upload", form),
   // the live twin
   mapConfig:     () => get("/api/config/map"),
   simStart:      (params) => post("/api/sim/live/start", params),

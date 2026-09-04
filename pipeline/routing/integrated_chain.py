@@ -385,7 +385,9 @@ def run_chain(progress=None, **opts) -> dict:
 
     def emit(**kw):
         state.update(kw)
-        (run_dir / "status.json").write_text(json.dumps(state, indent=1, default=str))
+        tmp = run_dir / "status.json.tmp"
+        tmp.write_text(json.dumps(state, indent=1, default=str))
+        tmp.replace(run_dir / "status.json")           # atomic: a poller never sees a torn file
         if progress:
             progress(dict(state))
 

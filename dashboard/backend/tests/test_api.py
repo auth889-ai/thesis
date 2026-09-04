@@ -106,9 +106,18 @@ def test_chain_run_executes_the_real_function_in_the_background(client, tmp_path
     assert client.get("/api/experiment/chain/runs").json()["runs"][0]["run_id"] == r["run_id"]
 
 
-def test_chain_run_rejects_unknown_options_and_paths(client):
+def test_chain_run_rejects_unknown_options_and_paths(client, tmp_path, monkeypatch):
     for bad in ("no_such_run", "chain_..x", "%2e%2e%2fetc"):
         r = client.get(f"/api/experiment/chain/run/{bad}")
         assert r.status_code == 404 or r.json().get("found") is False
-    r = client.post("/api/experiment/chain/run", json={"__class__": "x"})
-    assert r.status_code in (200, 422)
+    # unknown keys are dropped before the run starts — and no real chain is launched here
+    from pipeline.routing import integrated_chain as ic
+    monkeypatch.setattr(ic, "RUNS", tmp_path)
+    seen = {}
+    monkeypatch.setattr(ic, "run_chain", lambda **o: seen.update(o) or {"summary": {}})
+    r = client.post("/api/experiment/chain/run", json={"__class__": "x", "seeds": "11"}).json()
+    assert r["started"] and "__class__" not in r["config"]
+    for _ in range(50):
+        if seen: break
+        time.sleep(0.1)
+    assert seen.get("seeds") == "11" and "__class__" not in seen

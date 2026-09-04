@@ -40,7 +40,8 @@ TOOLS = [
          "seed": {"type": "integer"},
          "compliance": {"type": "number", "description": "0-1"},
          "arm": {"type": "string", "enum": list(ARMS)},
-         "step_delay_ms": {"type": "integer", "description": "playback delay per step, 0-1000"}},
+         "step_delay_ms": {"type": "integer", "description": "playback delay per step, 0-1000"},
+         "continuous": {"type": "boolean", "description": "run until stopped: the hour of demand is replayed hourly and corridor speeds follow the live road every 5 min"}},
                       "additionalProperties": False}},
     {"name": "stop_simulation", "description": "Stop the running simulation and score it.",
      "input_schema": {"type": "object", "properties": {}, "additionalProperties": False}},
@@ -61,6 +62,7 @@ def _clamp(p: dict) -> dict:
     if "compliance" in p: q["compliance"] = min(max(float(p["compliance"]), 0.0), 1.0)
     if "arm" in p and p["arm"] in ARMS: q["arm"] = p["arm"]
     if "step_delay_ms" in p: q["step_delay_ms"] = min(max(int(p["step_delay_ms"]), 0), 1000)
+    if "continuous" in p: q["continuous"] = bool(p["continuous"])
     return q
 
 
@@ -127,6 +129,8 @@ def parse(message: str) -> tuple[str, dict]:
     if x := re.search(rf"{_NUM}\s*%\s*(?:compliance|equipped|penetration)", m) or \
             re.search(rf"(?:compliance|equipped|penetration)\s*(?:of|=|to|at)?\s*{_NUM}\s*%?", m):
         v = float(x.group(1)); p["compliance"] = v / 100 if v > 1 else v
+    if re.search(r"continuous|forever|keep running|non-?stop|indefinite|until (i )?stop|live[- ]coupled", m):
+        p["continuous"] = True
     if "prediction" in m or "forecast" in m: p["arm"] = "prediction_aware"
     elif "reactive" in m: p["arm"] = "reactive"
     elif "baseline" in m or "no rerout" in m: p["arm"] = "baseline"
@@ -152,8 +156,10 @@ def _rules(message: str) -> dict:
     if tool == "start_simulation":
         if out.get("started"):
             p = out["params"]
-            reply = (f"Started a live run ({p['arm']}): demand ×{p['scale']:.2f}, {p['duration_s']} s, "
-                     f"seed {p['seed']}, compliance {p['compliance']:.0%}. Run {out['run_id']}.")
+            reply = (f"Started a live run ({p['arm']}): demand ×{p['scale']:.2f}, "
+                     + ("continuous — until stopped, demand replayed hourly, corridor speeds from the live road every 5 min, "
+                        if p.get("continuous") else f"{p['duration_s']} s, ")
+                     + f"seed {p['seed']}, compliance {p['compliance']:.0%}. Run {out['run_id']}.")
         else:
             reply = f"Could not start: {out.get('reason')}."
     elif tool == "get_status":

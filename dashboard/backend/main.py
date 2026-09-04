@@ -28,7 +28,8 @@ import json
 import threading
 from datetime import datetime, timezone
 
-from fastapi import FastAPI, Request
+from fastapi import FastAPI, File, Form, Request, UploadFile
+from pathlib import Path
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -362,6 +363,49 @@ def opencity_status(city_id: str):
     return oce.readiness(city_id)
 
 
+def _opencity_predict(args: list[str]) -> dict:
+    """Run the authors' stack in a subprocess (it chdirs and rewrites argv) and return its JSON."""
+    import subprocess
+    import sys as _sys
+    import tempfile
+    out = Path(tempfile.mkdtemp(prefix="opencity_")) / "prediction.json"
+    cmd = [_sys.executable, str(config.REPO / "pipeline/forecasting/opencity_predict.py"), *args,
+           "--out", str(out)]
+    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=900, cwd=config.REPO)
+    if proc.returncode != 0 or not out.exists():
+        tail = (proc.stderr or proc.stdout or "")[-1200:]
+        return {"ok": False, "error": tail.strip().splitlines()[-1] if tail.strip() else "no output",
+                "log_tail": tail}
+    return {"ok": True, **json.loads(out.read_text())}
+
+
+@app.post("/api/opencity/{city_id}/predict", tags=["predict"])
+def opencity_predict_city(city_id: str, payload: dict | None = None):
+    """OpenCity-plus forward pass on this city's own window (persisted observatory speeds by
+    default, or the recorded classes), through the authors' unmodified stack. Refuses, with the
+    model's own reason, when the window is too short or the graph too small."""
+    p = payload or {}
+    args = ["--source", str(p.get("source", "observatory")), "--city", city_id,
+            "--horizons", str(p.get("horizons", "15,30,60"))]
+    if p.get("as_of") is not None:
+        args += ["--as-of", str(int(p["as_of"]))]
+    return _opencity_predict(args)
+
+
+@app.post("/api/opencity/upload", tags=["predict"])
+async def opencity_predict_upload(csv: UploadFile = File(...), adj: UploadFile = File(...),
+                                  horizons: str = Form("15,30,60"), as_of: str = Form("")):
+    """Their demo's contract: a CSV (`time` + one column per region) and an `_rn_adj.npy`."""
+    import tempfile
+    d = Path(tempfile.mkdtemp(prefix="opencity_upload_"))
+    csv_path, adj_path = d / "city.csv", d / "city_rn_adj.npy"
+    csv_path.write_bytes(await csv.read()); adj_path.write_bytes(await adj.read())
+    args = ["--source", "csv", "--csv", str(csv_path), "--adj", str(adj_path), "--horizons", horizons]
+    if as_of.strip():
+        args += ["--as-of", as_of.strip()]
+    return _opencity_predict(args)
+
+
 @app.get("/api/forecast/{city_id}/accuracy", tags=["predict"])
 def city_forecast_accuracy(city_id: str):
     """How accurate the forecast is on THIS city's own recorded data — a rolling-origin backtest.
@@ -483,6 +527,14 @@ _CHAIN_LOCK = threading.Lock()
 _CHAIN_ACTIVE: dict[str, dict] = {}
 
 
+def _read_json(path) -> dict | None:
+    """A status file is rewritten after every arm; a reader may catch it half-written."""
+    try:
+        return json.loads(Path(path).read_text())
+    except (OSError, json.JSONDecodeError):
+        return None
+
+
 def _chain_module():
     import sys
     sys.path.insert(0, str(config.REPO))
@@ -540,9 +592,7 @@ def experiment_chain_runs(limit: int = 20):
     out = []
     if ic.RUNS.exists():
         for d in sorted((x for x in ic.RUNS.iterdir() if x.is_dir()), reverse=True)[:limit]:
-            st = d / "status.json"
-            rec = json.loads(st.read_text()) if st.exists() else {"run_id": d.name,
-                                                                  "status": "unknown"}
+            rec = _read_json(d / "status.json") or {"run_id": d.name, "status": "unknown"}
             out.append({"run_id": d.name, "status": rec.get("status"),
                         "stage": rec.get("stage"), "started_utc": rec.get("started_utc"),
                         "arms_done": rec.get("arms_done"), "arms_total": rec.get("arms_total"),
@@ -558,15 +608,16 @@ def experiment_chain_status(run_id: str):
     d = ic.RUNS / run_id
     if ".." in run_id or "/" in run_id or not d.is_dir():
         return {"found": False, "run_id": run_id}
-    st = json.loads((d / "status.json").read_text()) if (d / "status.json").exists() else {}
+    st = _read_json(d / "status.json") or {}
     done = d / "run.json"
+    result = _read_json(done) if done.exists() else None
     with _CHAIN_LOCK:
         live = _CHAIN_ACTIVE.get(run_id, {})
     return {"found": True, "run_id": run_id, "status": live.get("status", st.get("status")),
             "stage": st.get("stage"), "arms_done": st.get("arms_done"),
             "arms_total": st.get("arms_total"), "error": live.get("error") or st.get("error"),
             "config": st.get("config"), "command": st.get("command"),
-            "result": json.loads(done.read_text()) if done.exists() else None}
+            "result": result}
 
 
 # ---------------------------------------------------------------------------

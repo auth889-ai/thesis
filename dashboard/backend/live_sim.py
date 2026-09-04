@@ -31,7 +31,10 @@ HISTORY = config.REPO / "results/live/sim_history.json"
 MAX_VEHICLES_SHOWN = 2000
 ARMS = ("baseline", "reactive", "prediction_aware")
 DEFAULTS = {"scale": None, "duration_s": 900, "seed": 11, "compliance": 0.3, "arm": "reactive",
-            "levels": "observed", "step_delay_ms": 100, "v2x": "ideal", "horizon_min": 15}
+            "levels": "observed", "step_delay_ms": 100, "v2x": "ideal", "horizon_min": 15,
+            "continuous": False}
+LIVE_REFRESH_S = 300          # the provider's own cadence; the recorder samples at the same rate
+DEMAND_PERIOD_S = 3600        # the calibrated demand file covers one hour; it is replayed hourly
 
 
 class LiveSim:
@@ -79,6 +82,9 @@ class LiveSim:
             cfg["scale"] = json.loads(sc.read_text()).get("scale", 0.25) if sc.exists() else 0.25
         cfg["scale"] = float(cfg["scale"]); cfg["duration_s"] = int(cfg["duration_s"])
         cfg["seed"] = int(cfg["seed"]); cfg["compliance"] = float(cfg["compliance"])
+        cfg["continuous"] = bool(cfg["continuous"]) or int(cfg["duration_s"]) == 0
+        if cfg["continuous"]:
+            cfg["duration_s"] = 10 ** 8        # runs until stopped; demand is replayed every hour
         run_id = datetime.now(timezone.utc).strftime("live_%Y%m%dT%H%M%SZ_") + uuid.uuid4().hex[:6]
         self._stop.clear(); self._pause.clear()
         with self._lock:
@@ -125,6 +131,12 @@ class LiveSim:
         out = OUT_ROOT / run_id
         out.mkdir(parents=True, exist_ok=True)
         t_wall = time.time()
+        log = (out / "run.log").open("a")
+
+        def note(msg: str) -> None:
+            log.write(f"{time.strftime('%H:%M:%S')} +{time.time() - t_wall:6.1f}s {msg}\n"); log.flush()
+        note(f"thread {threading.current_thread().name} cfg={cfg}")
+
         try:
             net = self._net_obj()
             a = argparse.Namespace(net=str(pr.DEFAULT_NET), routes=str(pr.DEFAULT_ROUTES),
@@ -160,55 +172,136 @@ class LiveSim:
             port = pr.free_port()
             proc = subprocess.Popen(pr.base_cmd(ns, out) + ["--remote-port", str(port)],
                                     stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
-            last = None
+            last, conn = None, None
             for _ in range(50):                                  # SUMO needs a moment to listen
                 try:
-                    traci.init(port, label=f"live-{run_id}", numRetries=1)
+                    # a Connection OBJECT, not the module: the module-level traci keeps one
+                    # "current" connection per process, and a chain run in another thread
+                    # would otherwise be stepping our SUMO (or we theirs)
+                    conn = traci.connect(port=port, numRetries=1, label=f"live-{run_id}")
                     break
                 except Exception as exc:                          # noqa: BLE001
                     last = exc
                     if proc.poll() is not None:
                         raise RuntimeError(f"SUMO exited early: {(proc.stderr.read() or '')[-800:]}")
                     time.sleep(0.2)
-            else:
+            if conn is None:
                 raise RuntimeError(f"could not connect to SUMO on port {port}: {last}")
             applied = 0
             for eid, m in slow.items():
                 try:
-                    for i in range(traci.edge.getLaneNumber(eid)):
+                    for i in range(conn.edge.getLaneNumber(eid)):
                         lid = f"{eid}_{i}"
-                        traci.lane.setMaxSpeed(lid, max(traci.lane.getMaxSpeed(lid) / m, 0.5))
+                        conn.lane.setMaxSpeed(lid, max(conn.lane.getMaxSpeed(lid) / m, 0.5))
                     applied += 1
                 except traci.TraCIException:
                     pass
             self._set(status="running", message="", edges_slowed=applied)
+            note(f"SUMO pid {proc.pid} port {port}; loop starts")
 
             import hashlib
             sub = [tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_WAITING_TIME]
             arrived = teleports = reroutes = 0
             t = 0
-            while not self._stop.is_set() and t < cfg["duration_s"] and traci.simulation.getMinExpectedNumber() > 0:
+            # --- continuous mode: replay the calibrated hour of demand every hour, and follow the
+            # live road. SUMO loads (and scales) hour 0 itself; later hours are re-inserted through
+            # TraCI with the same deterministic per-vehicle selection at the same scale.
+            replay, route_ids, next_hour = [], {}, 1
+            base_speed: dict[str, float] = {}
+            live_applied_utc, live_mult = None, {}
+            if cfg["continuous"]:
+                for vid, dep, edges in lc.read_routes(routes):
+                    if (int(hashlib.md5(vid.encode()).hexdigest()[:8], 16) % 10_000) < cfg["scale"] * 10_000:
+                        replay.append((vid, float(dep), edges))
+                replay.sort(key=lambda r: r[1])
+                for eid in {e for edges in cmap.values() for e in (edges.get("edges") or [])}:
+                    try:
+                        for i in range(conn.edge.getLaneNumber(eid)):
+                            base_speed[f"{eid}_{i}"] = conn.lane.getMaxSpeed(f"{eid}_{i}")
+                    except traci.TraCIException:
+                        pass
+                # the slowdowns applied above were the as-of state; from here the live road rules
+                for lid, v0 in base_speed.items():
+                    conn.lane.setMaxSpeed(lid, v0)
+                last_live = 0.0
+                replay_i = 0
+
+            def apply_live() -> None:
+                """Corridor speeds from the live provider, on the corridor edges, right now."""
+                nonlocal live_applied_utc, live_mult
+                from live import service
+                snap = service.corridors()
+                mult = {}
+                for c in snap.get("corridors", []):
+                    d, st = c.get("duration_s"), c.get("static_duration_s")
+                    if c.get("is_live") and d and st and st > 0:
+                        mult[c["id"]] = max(1.0, float(d) / float(st))
+                if not mult:
+                    return
+                edge_m: dict[str, float] = {}
+                for cid, m in mult.items():
+                    for eid in (cmap.get(cid) or {}).get("edges") or []:
+                        edge_m[eid] = max(edge_m.get(eid, 1.0), m)
+                for lid, v0 in base_speed.items():
+                    m = edge_m.get(lid.rsplit("_", 1)[0], 1.0)
+                    try:
+                        conn.lane.setMaxSpeed(lid, max(v0 / m, 0.5))
+                    except traci.TraCIException:
+                        pass
+                live_mult = {k: round(v, 3) for k, v in mult.items()}
+                live_applied_utc = datetime.now(timezone.utc).isoformat()
+                note(f"live state applied: {live_mult}")
+            while not self._stop.is_set() and t < cfg["duration_s"] and conn.simulation.getMinExpectedNumber() > 0:
                 if self._pause.is_set():
                     time.sleep(0.1); continue
-                traci.simulationStep()
-                t = int(traci.simulation.getTime())
-                for vid in traci.simulation.getDepartedIDList():
-                    traci.vehicle.subscribe(vid, sub)
-                arrived += traci.simulation.getArrivedNumber()
-                teleports += traci.simulation.getStartingTeleportNumber()
+                conn.simulationStep()
+                t = int(conn.simulation.getTime())
+                if cfg["continuous"]:
+                    if time.time() - last_live >= LIVE_REFRESH_S:
+                        last_live = time.time()
+                        try:
+                            apply_live()
+                        except Exception as exc:              # noqa: BLE001 - the twin keeps running
+                            note(f"live refresh failed: {type(exc).__name__}: {exc}")
+                    # hourly demand replay: insert every selected vehicle whose (shifted) departure
+                    # has come, cycling the hour's list; routes are registered once each
+                    while True:
+                        vid, dep, edges = replay[replay_i]
+                        when = dep + next_hour * DEMAND_PERIOD_S
+                        if when > t:
+                            break
+                        rid = route_ids.get(edges)
+                        if rid is None:
+                            rid = f"r{len(route_ids)}"
+                            try:
+                                conn.route.add(rid, edges.split()); route_ids[edges] = rid
+                            except traci.TraCIException:
+                                route_ids[edges] = rid = None
+                        if rid:
+                            try:
+                                conn.vehicle.add(f"{vid}_h{next_hour}", rid)
+                            except traci.TraCIException:
+                                pass
+                        replay_i += 1
+                        if replay_i >= len(replay):
+                            replay_i, next_hour = 0, next_hour + 1
+                for vid in conn.simulation.getDepartedIDList():
+                    conn.vehicle.subscribe(vid, sub)
+                arrived += conn.simulation.getArrivedNumber()
+                teleports += conn.simulation.getStartingTeleportNumber()
                 if cfg["arm"] == "reactive":
-                    for vid in traci.vehicle.getIDList():
+                    for vid in conn.vehicle.getIDList():
                         if not pr.equipped(vid, cfg["compliance"]):
                             continue
                         if not ic.delivered(vid, deliver_p, cfg["v2x"], cfg["seed"]):
                             continue
                         if (int(hashlib.md5(vid.encode()).hexdigest()[8:12], 16) + t) % 60 == 0:
                             try:
-                                traci.vehicle.rerouteTraveltime(vid, currentTravelTimes=True)
+                                conn.vehicle.rerouteTraveltime(vid, currentTravelTimes=True)
                                 reroutes += 1
                             except traci.TraCIException:
                                 pass
-                res = traci.vehicle.getAllSubscriptionResults()
+                res = conn.vehicle.getAllSubscriptionResults()
                 vehicles, speeds, waits, halting = [], [], [], 0
                 for vid, d in res.items():
                     x, y = d[tc.VAR_POSITION]
@@ -227,15 +320,18 @@ class LiveSim:
                     "mean_waiting_s": round(sum(waits) / n, 2) if n else 0.0,
                     "halting": halting, "arrived": arrived, "teleports": teleports,
                     "reroutes": reroutes, "sim_time_s": t, "wall_s": round(time.time() - t_wall, 1),
-                    "progress": round(t / cfg["duration_s"], 3)})
+                    "progress": 0.0 if cfg["continuous"] else round(t / cfg["duration_s"], 3),
+                    "hour": t // DEMAND_PERIOD_S + 1 if cfg["continuous"] else None,
+                    "live_applied_utc": live_applied_utc, "live_multipliers": live_mult})
                 if cfg["step_delay_ms"]:
                     time.sleep(cfg["step_delay_ms"] / 1000)
-            traci.close()
+            note(f"loop ended t={t} stop={self._stop.is_set()} expected={conn.simulation.getMinExpectedNumber()}")
+            conn.close()
             try:
                 proc.wait(timeout=180)              # SUMO writes tripinfo/statistic on shutdown
             except subprocess.TimeoutExpired:
                 proc.kill(); proc.wait()
-            metrics = pr.parse_metrics(out, horizon=cfg["duration_s"])
+            metrics = pr.parse_metrics(out, horizon=t if cfg["continuous"] else cfg["duration_s"])
             rec = {"run_id": run_id, "params": cfg, "stopped_early": bool(self._stop.is_set()),
                    "sim_time_s": t, "reroutes": reroutes, "advised": advised, "routes_changed": changed,
                    "edges_slowed": applied, "delivery_fraction": deliver_p,
@@ -248,11 +344,13 @@ class LiveSim:
                 self._history = self._history[:50]
                 HISTORY.parent.mkdir(parents=True, exist_ok=True)
                 HISTORY.write_text(json.dumps(self._history, indent=1, default=str))
+            note(f"scored: arrived={metrics['arrived']} veh-h={metrics['total_vehicle_hours']:.2f}")
             self._set(status="stopped" if self._stop.is_set() else "done", result=rec, vehicles=[])
         except Exception as exc:                        # noqa: BLE001 - shown on the page, never lost
+            import traceback
+            note("EXCEPTION " + traceback.format_exc())
             try:
-                import traci
-                traci.close()
+                conn.close()                            # noqa: F821 - only bound after connect
             except Exception:                           # noqa: BLE001
                 pass
             try:

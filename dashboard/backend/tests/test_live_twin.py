@@ -14,6 +14,7 @@ def test_agent_rules_parse_the_reference_phrases():
     assert sa.parse("pause")[0] == "pause_simulation"
     assert sa.parse("continue")[0] == "resume_simulation"
     assert sa.parse("what is the status?")[0] == "get_status"
+    assert sa.parse("start a continuous run at 25 % demand")[1].get("continuous") is True
     tool, p = sa.parse("start a prediction-aware run, seed 7, compliance 40 %")
     assert p["arm"] == "prediction_aware" and p["seed"] == 7 and p["compliance"] == 0.4
 
@@ -45,9 +46,6 @@ def test_live_run_streams_positions_and_scores_like_the_chain(client):
             seen = True
         if s["status"] in ("done", "failed", "stopped"):
             break
-        if _ % 25 == 0:
-            print(f"[live-test] {time.strftime('%H:%M:%S')} status={s['status']} t={s.get('sim_time_s')} "
-                  f"msg={s.get('message')!r} kpis={bool(s.get('kpis'))}", flush=True)
         time.sleep(0.2)
     assert seen and s["status"] == "done", s.get("message")
     assert "total_vehicle_hours" in s["result"]["metrics"]
@@ -59,3 +57,28 @@ def test_agent_endpoint_answers_without_a_key(client, monkeypatch):
     monkeypatch.setattr(credentials, "anthropic_key", lambda: "")
     d = client.post("/api/sim/agent", json={"message": "status"}).json()
     assert d["backend"] == "rules" and d["actions"][0]["tool"] == "get_status"
+
+
+@pytest.mark.slow
+def test_continuous_mode_replays_demand_and_couples_to_the_live_road(client):
+    r = client.post("/api/sim/live/start", json={"continuous": True, "scale": 0.1, "arm": "baseline",
+                                                 "step_delay_ms": 0}).json()
+    assert r["started"] and r["params"]["continuous"] and r["params"]["duration_s"] > 3600
+    hour2 = False
+    for _ in range(600):
+        s = client.get("/api/sim/live/state?vehicles=false").json()
+        k = s.get("kpis") or {}
+        if (k.get("hour") or 0) >= 2 and k.get("vehicles_on_road", 0) > 0:
+            hour2 = True; break
+        if s["status"] == "failed":
+            pytest.fail(s.get("message"))
+        time.sleep(0.2)
+    st = client.post("/api/sim/live/stop").json()
+    assert hour2, "demand was not replayed into the second hour"
+    assert st["status"] in ("stopped", "done") and st["result"]["metrics"]["arrived"] > 0
+    assert "live_applied_utc" in k
+
+
+def test_opencity_predict_endpoint_refuses_honestly_when_the_window_is_short(client):
+    d = client.post("/api/opencity/dhaka/predict", json={"source": "recorded"}).json()
+    assert d["ok"] is False and "9 nodes" in d["error"]          # 6 recorded corridors

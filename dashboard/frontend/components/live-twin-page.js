@@ -5,7 +5,7 @@
  * from its position; colour is its speed. The KPIs are read from the same step. The controls
  * and the chat call the same backend functions, so an agent can do nothing a person cannot.
  */
-import {api} from "../services/api.js";
+import {api, ago} from "../services/api.js";
 import {basemapStyle} from "../services/basemap.js";
 
 const POLL_MS = 400;
@@ -37,6 +37,9 @@ export class LiveTwinPage extends HTMLElement {
             ${slider("step_delay_ms", "Playback delay (ms/step)", 0, 500, 10, 100)}
             <label>Routing arm <select id="arm">${Object.entries(ARMS).map(([k, v]) =>
               `<option value="${k}" ${k === "reactive" ? "selected" : ""}>${v}</option>`).join("")}</select></label>
+            <label class="check"><input type="checkbox" id="continuous" checked> <b>Continuous, live-coupled</b><br>
+              <span class="muted">runs until stopped; the calibrated hour of demand is replayed every hour and the
+              corridor speeds follow the live Google state every 5 min</span></label>
           </div>
         </section>
         <section class="card twin-side">
@@ -83,7 +86,8 @@ export class LiveTwinPage extends HTMLElement {
   params() {
     const v = (id) => Number(this.querySelector(`#${id}`).value);
     return {scale: v("scale"), duration_s: v("duration_s"), compliance: v("compliance"),
-            seed: v("seed"), step_delay_ms: v("step_delay_ms"), arm: this.querySelector("#arm").value};
+            seed: v("seed"), step_delay_ms: v("step_delay_ms"), arm: this.querySelector("#arm").value,
+            continuous: this.querySelector("#continuous").checked};
   }
   async start()   { const r = await api.simStart(this.params()); if (!r.started) this.note(r.reason); }
   async pause()   { await api.simPause(); }
@@ -117,10 +121,14 @@ export class LiveTwinPage extends HTMLElement {
     set(0, k.vehicles_on_road ?? "—", k.halting !== undefined ? `${k.halting} halting` : "");
     set(1, k.mean_speed_kmh !== undefined ? `${k.mean_speed_kmh} km/h` : "—", "");
     set(2, k.mean_waiting_s !== undefined ? `${k.mean_waiting_s} s` : "—", k.reroutes ? `${k.reroutes} reroutes` : "");
-    set(3, s.sim_time_s !== undefined ? `${s.sim_time_s} s` : "—", k.arrived !== undefined ? `${k.arrived} arrived · ${k.teleports} teleports` : "");
+    const st = s.sim_time_s; const hh = st !== undefined ? `${Math.floor(st / 3600)}h ${String(Math.floor(st % 3600 / 60)).padStart(2, "0")}m ${String(st % 60).padStart(2, "0")}s` : "—";
+    set(3, hh, k.arrived !== undefined ? `${k.arrived} arrived · ${k.teleports} teleports` : "");
     this.querySelector("#prog").style.width = `${Math.round((k.progress || 0) * 100)}%`;
     this.querySelector("#runid").textContent = s.run_id ? `${s.status} · ${s.run_id}` : "idle";
-    this.note(s.message || (s.status === "running" && s.params ? `${s.params.arm} · demand ×${s.params.scale} · seed ${s.params.seed}` : ""));
+    const live = k.live_applied_utc ? ` · live road state applied ${ago(k.live_applied_utc)}` +
+      (k.live_multipliers ? ` (${Object.values(k.live_multipliers).filter(m => m > 1.15).length} corridors slowed)` : "") : "";
+    this.note(s.message || (s.status === "running" && s.params
+      ? `${s.params.arm} · demand ×${s.params.scale} · seed ${s.params.seed}${s.params.continuous ? ` · hour ${k.hour || 1}, continuous` : ""}${live}` : ""));
     if (s.status === "done" && s.result && this._lastDone !== s.run_id) {
       this._lastDone = s.run_id;
       const m = s.result.metrics;

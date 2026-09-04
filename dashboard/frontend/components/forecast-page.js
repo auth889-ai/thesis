@@ -69,7 +69,56 @@ export class ForecastPage extends HTMLElement {
           : `<div class="stat-v">—</div><div class="muted">no run yet · <code>${o.command}</code></div>`}</div>
       </div>
       <p class="muted">${o.why.steps}; ${o.why.nodes}. The window is kept in
-        <code>results/live/observatory.sqlite</code>, so it keeps counting across restarts.</p>`;
+        <code>results/live/observatory.sqlite</code>, so it keeps counting across restarts.</p>
+      <div class="form">
+        <button id="oc-predict" class="btn primary">Predict this city now</button>
+        <span class="muted">runs the authors' stack on the persisted live window (needs 288 steps × 9 nodes)</span>
+      </div>
+      <details class="why"><summary>Or upload any city, as in the authors' demo — a CSV with <code>time</code> + one column per region, and its <code>_rn_adj.npy</code></summary>
+        <form id="oc-upload" class="form">
+          <label>traffic CSV <input type="file" name="csv" accept=".csv" required></label>
+          <label>adjacency .npy <input type="file" name="adj" accept=".npy" required></label>
+          <label>score at index <input name="as_of" placeholder="-288 (optional)" size="10"></label>
+          <button class="btn primary">Upload &amp; predict</button>
+        </form>
+      </details>
+      <div id="oc-result"></div>`;
+    this.querySelector("#oc-predict").addEventListener("click", () => this.ocPredict(null));
+    this.querySelector("#oc-upload").addEventListener("submit", (e) => { e.preventDefault(); this.ocPredict(new FormData(e.target)); });
+  }
+
+  async ocPredict(form) {
+    const box = this.querySelector("#oc-result");
+    box.innerHTML = `<p class="muted">Running OpenCity-plus (a 26M-parameter forward pass on CPU, ~20 s)…</p>`;
+    const r = form ? await api.opencityUpload(form) : await api.opencityPredict(this.city, {source: "observatory"});
+    if (!r.ok) {
+      box.innerHTML = `<div class="note warn"><b>OpenCity did not run:</b> ${r.error || "unknown error"}</div>`;
+      return;
+    }
+    const hs = Object.keys(r.predictions);
+    const sc = r.scored || {};
+    box.innerHTML = `
+      <div class="note ok"><b>OpenCity-plus forecast</b> from ${r.input_steps} steps × ${r.nodes.length} nodes
+        (${r.reality}) — ${r.claim}.</div>
+      <div class="hcards tight">${hs.map(h => { const s = sc[h]; return `<div class="hcard"><div class="hcard-h">+${h} min</div>
+        <div class="stat-v">${(r.predictions[h].reduce((a, b) => a + b, 0) / r.predictions[h].length).toFixed(2)}
+          <small class="muted">mean</small></div>
+        ${s ? `<div class="muted">MAE ${s.opencity_mae} vs persistence ${s.persistence_mae}</div>
+               <div class="tag ${s.skill_vs_persistence > 0 ? "NORMAL" : "SLOW"}">skill ${(s.skill_vs_persistence * 100).toFixed(0)} %</div>`
+            : `<div class="muted">unscored (no later observation yet)</div>`}</div>`; }).join("")}</div>
+      <div class="chart short"><canvas id="oc-curve"></canvas></div>
+      <div class="tablewrap"><table><thead><tr><th>region</th>${hs.map(h => `<th class="num">+${h} min</th>`).join("")}</tr></thead>
+        <tbody>${r.nodes.slice(0, 12).map((n, i) => `<tr><td>${n}</td>${hs.map(h => `<td class="num">${r.predictions[h][i]}</td>`).join("")}</tr>`).join("")}</tbody></table></div>
+      <p class="muted">${r.stack}</p>`;
+    if (typeof Chart !== "undefined") {
+      const base = window.chartDefaults();
+      this._oc?.destroy();
+      this._oc = new Chart(this.querySelector("#oc-curve"), {type: "line",
+        data: {labels: r.curve_mean.map((_, i) => `+${(i + 1) * 5}m`),
+               datasets: [{label: "OpenCity-plus, mean over regions, next 24 h", data: r.curve_mean,
+                           borderColor: "#a855f7", backgroundColor: "#a855f7", pointRadius: 0, borderWidth: 1.6}]},
+        options: {...base, scales: {...base.scales, x: {...base.scales.x, ticks: {color: window.axisColor(), maxTicksLimit: 12}}}}});
+    }
   }
 
   async run() {
