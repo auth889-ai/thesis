@@ -55,6 +55,9 @@ export const api = {
   models:        (id) => get(`/api/models?city_id=${encodeURIComponent(id)}`),
   observatory:   (id) => get(`/api/observatory?city_id=${encodeURIComponent(id)}`),
   observatoryStart: (id) => post("/api/observatory/start", {city_id: id}),
+  history:       (id, horizons = "5,15,30,60") => get(`/api/history/${encodeURIComponent(id)}?horizons=${horizons}`),
+  experiment:    (tag = "_ideal") => get(`/api/experiment/chain?tag=${encodeURIComponent(tag)}`),
+  netConditions: () => get("/api/networking/conditions"),
   cityForecast:  (id, horizons = "5,15,30,60") => get(`/api/forecast/${encodeURIComponent(id)}?horizons=${horizons}`),
   // live
   liveCorridors: (force = false) => get(`/api/live/corridors${force ? "?force=true" : ""}`),

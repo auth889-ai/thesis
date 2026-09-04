@@ -9,6 +9,7 @@
  * hand a selected corridor to the next, which is what makes the demo flow end to end.
  */
 import {stream} from "./services/stream.js";
+import "./components/mission-control.js";
 import "./components/city-overview-page.js";
 import "./components/forecast-page.js";
 import "./components/crosscity-page.js";
@@ -20,6 +21,8 @@ import "./components/counterfactual-page.js";
 import "./components/research-page.js";
 
 const PAGES = {
+  mission:        {tag: "mission-control",     title: "Mission Control",
+                   sub: "What is happening · what the model predicted · what was done · did it help"},
   city:           {tag: "city-overview-page",  title: "City Overview",
                    sub: "Any city on earth — geocoded from OpenStreetMap, with what its data lets it claim"},
   live:           {tag: "live-traffic-page",   title: "Live Traffic",
@@ -34,15 +37,15 @@ const PAGES = {
                    sub: "Live alternatives between any two coordinates"},
   counterfactual: {tag: "counterfactual-page", title: "SUMO Digital Twin",
                    sub: "Take the live state into simulation and test an intervention"},
-  research:       {tag: "research-page",       title: "Research Evidence",
-                   sub: "Benchmark reproductions that support the system"},
+  research:       {tag: "research-page",       title: "Evidence & Methodology",
+                   sub: "Provenance, commands, hashes and reproduction details — kept, but out of the operational view"},
 };
 
 const outlet = document.getElementById("outlet");
 let mounted = null;
 
 function parseHash() {
-  const raw = location.hash.slice(1) || "city";
+  const raw = location.hash.slice(1) || "mission";
   const [key] = raw.split(":");
   return PAGES[key] ? key : "live";
 }
@@ -54,7 +57,10 @@ function show(key, arg = "") {
   document.getElementById("subtitle").textContent = page.sub;
   document.querySelectorAll("nav button").forEach(b =>
     b.setAttribute("aria-current", String(b.dataset.page === key)));
-  location.hash = arg ? `${key}:${arg}` : key;
+  // replaceState, not location.hash: writing the hash on every mount pushes a history entry,
+  // and a stack of them lets the view drift when anything navigates back.
+  const target = arg ? `#${key}:${arg}` : `#${key}`;
+  if (location.hash !== target) history.replaceState(null, "", target);
   outlet.replaceChildren(document.createElement(page.tag));
   mounted = outlet.firstElementChild;
 }

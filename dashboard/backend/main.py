@@ -299,6 +299,82 @@ def city_forecast(city_id: str, horizons: str = "5,15,30,60"):
     return out
 
 
+# ---------------------------------------------------------------------------
+# MISSION CONTROL feeds. Each returns REAL recorded data; none synthesises values.
+# ---------------------------------------------------------------------------
+
+@app.get("/api/history/{city_id}", tags=["predict"])
+def history(city_id: str, horizons: str = "5,15,30,60"):
+    """Observed history AND the forecast, in one payload, so a chart can draw both.
+
+    The history is what the observatory actually recorded; the forecast is the same call the rest
+    of the system uses. Nothing here is generated to make a curve look continuous — a gap in the
+    record stays a gap.
+    """
+    import sys
+    sys.path.insert(0, str(config.REPO))
+    from pipeline.forecasting.adapters.registry import forecast as run_forecast
+    rows, nodes = observatory_mod.observatory.series(city_id)
+    hs = [int(h) for h in horizons.split(",") if h.strip().isdigit()]
+    cd = observatory_mod.observatory.city_data(city_id)
+    out = run_forecast(cd, hs) if cd.shape[0] else {"forecast": None, "decision": None}
+    return {
+        "city_id": city_id,
+        "nodes": nodes,
+        "history": [{"utc": r["utc"], "values": [None if v != v else round(v, 3) for v in r["v"]]}
+                    for r in rows],
+        "interval_s": observatory_mod.observatory.interval_s,
+        "unit": "m/s",
+        "forecast": out.get("forecast"),
+        "decision": out.get("decision"),
+        "readiness": observatory_mod.observatory.readiness(city_id),
+        "source": "observatory rolling buffer (derived speeds) + the common forecast interface",
+    }
+
+
+@app.get("/api/experiment/chain", tags=["experiment"])
+def experiment_chain(tag: str = "_ideal"):
+    """The integrated prediction -> routing -> SUMO experiment, exactly as it was run."""
+    f = config.REPO / f"results/routing/integrated_chain{tag}.json"
+    if not f.exists():
+        return {"available": False,
+                "missing": str(f.relative_to(config.REPO)),
+                "command": "python pipeline/routing/integrated_chain.py --seeds 11,12,13,14,15"}
+    return {"available": True, **json.loads(f.read_text())}
+
+
+@app.get("/api/networking/conditions", tags=["network"])
+def networking_conditions():
+    """Measured V2X delivery per (latency, loss), beside the federated forecast error.
+
+    Both halves are read from evidence files. The delivery table comes from the Eclipse MOSAIC
+    ITS-G5 sweep; the forecast errors come from the federated runs on AWS. They are SIMULATED
+    communication events, not radio-hardware measurements, and the payload says so.
+    """
+    import csv as _csv
+    lat = config.REPO / "results/networking/latency.csv"
+    fed = config.REPO / "results/forecasting/federated.json"
+    conditions = []
+    if lat.exists():
+        for r in _csv.DictReader(lat.open()):
+            conditions.append({
+                "added_latency_ms": int(r["added_latency_ms"]),
+                "loss_pct": int(float(r["loss_pct"])),
+                "delivery_single": float(r["frac_delivered_single_shot"]),
+                "delivery_repeat": float(r["frac_delivered_1hz_repeat"]),
+                "effective_latency_ms": float(r["effective_latency_mean_ms"]),
+                "n_vehicles": int(r["n_vehicles"]),
+            })
+    federated = json.loads(fed.read_text()) if fed.exists() else {}
+    return {
+        "conditions": conditions,
+        "federated": federated,
+        "nature": ("SIMULATED — Eclipse MOSAIC ITS-G5 model, not radio hardware"),
+        "source": {"delivery": "results/networking/latency.csv",
+                   "federated": "results/forecasting/federated.json"},
+    }
+
+
 @app.get("/api/health", tags=["meta"])
 def health():
     """Liveness plus data freshness — a dashboard must say when its data is stale."""

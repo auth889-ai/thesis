@@ -88,7 +88,19 @@ def free_flow(train: np.ndarray) -> np.ndarray:
 
 # ------------------------------------------------------------------ predictors
 def predict_persistence(ctx: np.ndarray, steps: int) -> np.ndarray:
-    return np.repeat(ctx[:, -1:, :], steps, axis=1)
+    """Last OBSERVED value per node, held flat.
+
+    Taking ctx[-1] blindly propagates an outage as a predicted speed of zero, which is not what
+    persistence means and would understate the baseline every model is measured against.
+    """
+    obs = np.where(ctx > 0, ctx, np.nan)
+    idx = np.where(np.isfinite(obs).any(axis=1, keepdims=True),
+                   (np.isfinite(obs) * np.arange(ctx.shape[1])[None, :, None]).max(axis=1, keepdims=True),
+                   0)
+    last = np.take_along_axis(np.nan_to_num(obs, nan=0.0), idx, axis=1)
+    fallback = np.nanmean(np.where(np.isfinite(obs), obs, np.nan))
+    last = np.where(last > 0, last, np.nan_to_num(fallback, nan=0.0))
+    return np.repeat(last, steps, axis=1)
 
 
 def build_hist_avg(train: np.ndarray, bins_per_day: int) -> np.ndarray:
@@ -165,10 +177,12 @@ def predict_chronos(ctx: np.ndarray, steps: int, model_id: str, batch: int = 512
     W, C, N = ctx.shape
     flat = ctx.transpose(0, 2, 1).reshape(W * N, C)
     out = np.zeros((W * N, steps), dtype="float32")
+    # Outages become NaN and STAY IN PLACE. Deleting them (as an earlier version did) compresses
+    # the time axis: with 8.1 % of METR-LA missing, a 96-step context spans 96 real intervals but
+    # only ~88 values, so "12 steps ahead" silently stops meaning 60 minutes. Chronos accepts NaN
+    # context natively, which is the correct way to carry a gap.
     for i in range(0, len(flat), batch):
-        chunk = [torch.tensor(np.where(r > 0, r, np.nan)[~np.isnan(np.where(r > 0, r, np.nan))]
-                              if (r > 0).any() else r) for r in flat[i:i + batch]]
-        chunk = [c if len(c) >= 4 else torch.tensor(flat[i + j]) for j, c in enumerate(chunk)]
+        chunk = [torch.tensor(np.where(r > 0, r, np.nan)) for r in flat[i:i + batch]]
         q, _ = pipe.predict_quantiles(chunk, prediction_length=steps, quantile_levels=[0.5])
         out[i:i + len(chunk)] = q[:, :, 0].detach().cpu().numpy()
         print(f"\r  chronos {min(i + batch, len(flat))}/{len(flat)} series", end="", flush=True)
@@ -239,11 +253,20 @@ def onset_lead(pred: np.ndarray, truth: np.ndarray, thr: np.ndarray) -> dict:
 
 
 def _windows(data: np.ndarray, n_windows: int, seed: int, steps: int):
+    """A CONTIGUOUS block of consecutive windows from the test region.
+
+    Randomly scattered windows make the error metrics fine but the onset lead time meaningless:
+    "an onset between window i-1 and window i" then compares two unrelated points in time, so the
+    events counted are artefacts of the sampling. Consecutive starts keep the time axis intact, so
+    a congestion onset is a real transition.
+    """
     T = data.shape[0]
     tr_end, va_end = splits(T)
     rng = np.random.default_rng(seed)
     lo, hi = va_end, T - CONTEXT - steps
-    starts = np.sort(rng.choice(np.arange(lo, hi), size=min(n_windows, hi - lo), replace=False))
+    span = min(n_windows, hi - lo)
+    first = int(rng.integers(lo, max(lo + 1, hi - span)))
+    starts = np.arange(first, first + span)
     ctx = np.stack([data[s:s + CONTEXT] for s in starts])
     truth = np.stack([data[s + CONTEXT:s + CONTEXT + steps] for s in starts])
     return starts, ctx, truth
@@ -274,7 +297,16 @@ def stage(kind: str, dataset: str, n_windows: int, seed: int, chronos_model: str
                                                        steps, CONTEXT, bpd)
     elif kind == "trees":
         trees = fit_trees(train, steps, lags=12, seed=seed)
-        flat = ctx[:, -12:, :].transpose(0, 2, 1).reshape(-1, 12)
+            # Lag features carry outages as zeros, which the trees would read as "stationary".
+        # Replace them with the node's last observed value in that window.
+        lag = ctx[:, -12:, :].copy()
+        obs = np.where(lag > 0, lag, np.nan)
+        for w in range(1, lag.shape[1]):
+            obs[:, w, :] = np.where(np.isfinite(obs[:, w, :]), obs[:, w, :], obs[:, w - 1, :])
+        for w in range(lag.shape[1] - 2, -1, -1):
+            obs[:, w, :] = np.where(np.isfinite(obs[:, w, :]), obs[:, w, :], obs[:, w + 1, :])
+        lag = np.nan_to_num(obs, nan=float(np.nanmean(obs)) if np.isfinite(np.nanmean(obs)) else 0.0)
+        flat = lag.transpose(0, 2, 1).reshape(-1, 12)
         N = data.shape[1]
         for name, i in (("random_forest", 0), ("xgboost", 1)):
             out = np.zeros_like(truth)
@@ -327,7 +359,8 @@ def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
         "protocol": {
             "windows": int(len(starts)), "context_steps": CONTEXT, "nodes_scored": int(N),
             "horizons_min": list(HORIZONS_MIN), "bin_min": BIN_MIN,
-            "split": "chronological 70 / 10 / 20; windows sampled from the TEST region",
+            "split": ("chronological 70 / 10 / 20; a CONTIGUOUS block of consecutive windows "
+                      "from the TEST region, so onset transitions are real"),
             "congestion_threshold": (f"{CONGESTION_RATIO} x per-node free-flow (85th percentile of "
                                      f"that node's TRAIN-split observed values)"),
             "missing": "values of 0.0 are sensor outages and are excluded from every metric",

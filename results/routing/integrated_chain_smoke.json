@@ -1,0 +1,199 @@
+{
+ "generated_utc": "2026-09-04T03:39:14.598580+00:00",
+ "chain": "CITY -> DATA -> FORECAST -> ROUTE COST -> ROUTING -> SUMO",
+ "forecast": {
+  "model": "Chronos-Bolt",
+  "checkpoint": "amazon/chronos-bolt-small",
+  "is_baseline": false,
+  "horizon_min": 15,
+  "unit": "m/s",
+  "inference_utc": "2026-09-04T03:39:03.789632+00:00",
+  "input_window_steps": 11,
+  "selection_reason": "no spatio-temporal model can serve this city, but there is enough univariate history for a pretrained foundation model",
+  "fallback": true
+ },
+ "coverage": {
+  "covered": 79,
+  "mapped": 79
+ },
+ "predicted_speeds": {
+  "farmgate_to_shahbagh": 7.61,
+  "shahbagh_to_farmgate": 6.434,
+  "karwanbazar_to_banglamotor": 6.769,
+  "banglamotor_to_karwanbazar": 5.585,
+  "farmgate_to_banglamotor": 6.159,
+  "karwanbazar_to_shahbagh": 6.474,
+  "mohakhali_to_gulshan1": 4.803,
+  "airport_to_uttara": 8.696,
+  "mirpur10_to_agargaon": 6.575,
+  "motijheel_to_gulistan": 3.72,
+  "banani_to_mohakhali": 8.311,
+  "gulistan_to_jatrabari": 4.725
+ },
+ "v2x": {
+  "condition": "ideal",
+  "added_latency_ms": 0,
+  "loss_pct": 0,
+  "source": "results/networking/latency.csv (Eclipse MOSAIC ITS-G5, SIMULATED)",
+  "n_vehicles": 4386
+ },
+ "delivery_fraction": 0.8568,
+ "network": "dhaka_r1.net.xml",
+ "demand": "DHAKA_SIMULATED_DEMAND",
+ "edges_congested": 52,
+ "compliance": 0.3,
+ "horizon_s": 900,
+ "seeds": [
+  11
+ ],
+ "levels": {
+  "karwanbazar_to_shahbagh": 3.0,
+  "farmgate_to_shahbagh": 2.0
+ },
+ "label": "SIMULATED COUNTERFACTUAL \u2014 not a live-road outcome",
+ "runs": [
+  {
+   "arm": "baseline",
+   "seed": 11,
+   "edges_slowed": 52,
+   "advisories_delivered": 0,
+   "routes_changed": 0,
+   "wall_s": 2.6,
+   "metrics": {
+    "arrived": 669,
+    "unfinished_at_horizon": 456,
+    "unfinished": 456,
+    "total_vehicle_hours": 85.61111111111111,
+    "mean_travel_time_all": 273.9555555555556,
+    "mean_travel_time_s": 319.9103139013453,
+    "p95_travel_time_s": 488.0,
+    "mean_waiting_s": 17.272047832585947,
+    "total_waiting_s": 11555.0,
+    "mean_time_loss_s": 77.46949177877428,
+    "mean_depart_delay_s": 0.03139013452914798,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 0,
+    "loaded": 5041,
+    "inserted": 1125,
+    "running_at_end": 456,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "reactive",
+   "seed": 11,
+   "edges_slowed": 52,
+   "advisories_delivered": 0,
+   "routes_changed": 1179,
+   "wall_s": 4.4,
+   "metrics": {
+    "arrived": 673,
+    "unfinished_at_horizon": 452,
+    "unfinished": 452,
+    "total_vehicle_hours": 83.87388888888889,
+    "mean_travel_time_all": 268.39644444444446,
+    "mean_travel_time_s": 310.81277860326895,
+    "p95_travel_time_s": 474.0,
+    "mean_waiting_s": 17.925705794947994,
+    "total_waiting_s": 12064.0,
+    "mean_time_loss_s": 76.70118870728083,
+    "mean_depart_delay_s": 0.03268945022288262,
+    "vehicles_rerouted_at_least_once": 143,
+    "teleports": 0,
+    "loaded": 5041,
+    "inserted": 1125,
+    "running_at_end": 452,
+    "waiting_to_insert_at_end": 0
+   }
+  },
+  {
+   "arm": "prediction_aware",
+   "seed": 11,
+   "edges_slowed": 52,
+   "advisories_delivered": 1128,
+   "routes_changed": 930,
+   "wall_s": 2.6,
+   "metrics": {
+    "arrived": 673,
+    "unfinished_at_horizon": 452,
+    "unfinished": 452,
+    "total_vehicle_hours": 83.40472222222222,
+    "mean_travel_time_all": 266.89511111111113,
+    "mean_travel_time_s": 309.61367013372956,
+    "p95_travel_time_s": 474.0,
+    "mean_waiting_s": 16.24517087667162,
+    "total_waiting_s": 10933.0,
+    "mean_time_loss_s": 75.36031203566121,
+    "mean_depart_delay_s": 0.022288261515601784,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 0,
+    "loaded": 5041,
+    "inserted": 1125,
+    "running_at_end": 452,
+    "waiting_to_insert_at_end": 0
+   }
+  }
+ ],
+ "summary": {
+  "arms": [
+   {
+    "arm": "baseline",
+    "seeds": [
+     11
+    ],
+    "total_vehicle_hours": 85.61,
+    "mean_travel_time_s": 319.9,
+    "p95_travel_time_s": 488.0,
+    "total_waiting_s": 11555.0,
+    "mean_time_loss_s": 77.5,
+    "arrived": 669.0,
+    "teleports": 0.0,
+    "reroutes": 0.0,
+    "advisories_delivered": 0.0,
+    "vehicle_hours_pct": 0.0,
+    "travel_time_pct": 0.0,
+    "waiting_pct": 0.0,
+    "p95_pct": 0.0
+   },
+   {
+    "arm": "reactive",
+    "seeds": [
+     11
+    ],
+    "total_vehicle_hours": 83.87,
+    "mean_travel_time_s": 310.8,
+    "p95_travel_time_s": 474.0,
+    "total_waiting_s": 12064.0,
+    "mean_time_loss_s": 76.7,
+    "arrived": 673.0,
+    "teleports": 0.0,
+    "reroutes": 1179.0,
+    "advisories_delivered": 0.0,
+    "vehicle_hours_pct": -2.03,
+    "travel_time_pct": -2.84,
+    "waiting_pct": 4.41,
+    "p95_pct": -2.87
+   },
+   {
+    "arm": "prediction_aware",
+    "seeds": [
+     11
+    ],
+    "total_vehicle_hours": 83.4,
+    "mean_travel_time_s": 309.6,
+    "p95_travel_time_s": 474.0,
+    "total_waiting_s": 10933.0,
+    "mean_time_loss_s": 75.4,
+    "arrived": 673.0,
+    "teleports": 0.0,
+    "reroutes": 930.0,
+    "advisories_delivered": 1128.0,
+    "vehicle_hours_pct": -2.58,
+    "travel_time_pct": -3.22,
+    "waiting_pct": -5.38,
+    "p95_pct": -2.87
+   }
+  ],
+  "verdict": {}
+ }
+}

@@ -214,3 +214,38 @@ input[type="text"], input:not([type]){background:var(--bg);color:var(--ink);bord
   border-radius:8px;padding:8px 10px;font:inherit;font-size:13px;min-width:230px}
 input::placeholder{color:var(--ink-muted)}
 code{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px;font-size:12px}
+
+/* ---------------------------------------------------------------------------
+   MISSION CONTROL — one operational screen. Panels are sized so the four
+   questions (what is happening / predicted / done / did it help) are all
+   visible together rather than stacked into a document.
+   --------------------------------------------------------------------------- */
+.mc-grid{display:grid;gap:14px;grid-template-columns:1.35fr 1fr;
+  grid-template-areas:"map forecast" "map net" "route net" "sumo sumo"}
+.mc-map{grid-area:map}.mc-forecast{grid-area:forecast}.mc-net{grid-area:net}
+.mc-route{grid-area:route}.mc-sumo{grid-area:sumo}
+.mc-grid .card{margin-bottom:0}
+.mc-map .map{height:420px}
+@media (max-width:1200px){.mc-grid{grid-template-columns:1fr;
+  grid-template-areas:"map" "forecast" "net" "route" "sumo"}}
+
+.hcards.tight{grid-template-columns:repeat(4,1fr);gap:8px;margin-top:10px}
+.hcards.tight .hcard{padding:9px}
+.hcards.tight .stat-v{font-size:17px}
+
+.topo{border:1px solid var(--line);border-radius:10px;padding:14px;margin-bottom:10px;background:var(--bg)}
+.topo-row{display:flex;align-items:center;justify-content:center;gap:6px;font-size:12px}
+.topo-node{border:1px solid var(--line);border-radius:6px;padding:5px 10px;font-weight:600;
+  background:var(--surface)}
+.topo-node.server{border-color:var(--accent);color:var(--accent)}
+.topo-link{color:var(--accent);letter-spacing:-2px}
+.topo-cap{text-align:center;font-size:11px;color:var(--ink-muted);margin-top:9px}
+.mc-sel{display:flex;flex-direction:column;gap:5px;font-size:11px;color:var(--ink-muted);
+  text-transform:uppercase;letter-spacing:.04em;margin-bottom:10px}
+
+/* Chart.js with maintainAspectRatio:false expands to fill its parent, which in a grid means it
+   grows without limit and pushes the lower panels off screen. Bound it explicitly. */
+.mc-forecast canvas{max-height:190px !important;height:190px !important}
+.mc-map .map{height:360px}
+.mc-grid{align-items:start}
+.mc-grid .card{align-self:start}
