@@ -20,16 +20,19 @@ import "./components/route-advisor-page.js";
 import "./components/counterfactual-page.js";
 import "./components/live-twin-page.js";
 import "./components/results-page.js";
+import "./components/archive-page.js";
 import "./components/prediction-page.js";
 import "./components/research-page.js";
 
 const PAGES = {
-  mission:        {tag: "mission-control",     title: "Mission Control",
-                   sub: "City, route and departure in — travel times, the best route and a simulation test out"},
+  mission:        {tag: "mission-control",     title: "Home",
+                   sub: "Traffic now, traffic later, the model in use and the recommended route — with links into each feature"},
   predict:        {tag: "prediction-page",     title: "Prediction",
-                   sub: "Pick a city, a road and a moment — see what traffic will do next, and how much to trust it"},
+                   sub: "The AI models behind the forecast — which one is trusted, how accurate it is, and how to train one on your city"},
   results:        {tag: "results-page",        title: "Results",
-                   sub: "What the experiments measured: forecast accuracy, routing arms, penetration, coverage"},
+                   sub: "The verified outcome under the frozen protocol"},
+  archive:        {tag: "archive-page",        title: "Archived Experiments",
+                   sub: "Earlier experiments under previous routing protocols — kept for the record, not comparable with the current results"},
   city:           {tag: "city-overview-page",  title: "City Overview",
                    sub: "Any city on earth — geocoded from OpenStreetMap, with what its data lets it claim"},
   live:           {tag: "live-traffic-page",   title: "Live Traffic",
@@ -41,12 +44,12 @@ const PAGES = {
   network:        {tag: "network-panel",       title: "Networking · V2X",
                    sub: "Eclipse MOSAIC ITS-G5: delivery, latency, loss, and their effect on learning"},
   advisor:        {tag: "route-advisor-page",  title: "Route Optimization",
-                   sub: "Live alternatives between any two points"},
-  twin:           {tag: "live-twin-page",      title: "Simulation · SUMO digital twin",
-                   sub: "The SUMO digital twin stepping on the map — drive it with the controls or the agent"},
+                   sub: "The candidate routes for your analysed trip, their future travel times and the reasons behind the chosen one"},
+  twin:           {tag: "live-twin-page",      title: "Digital Twin",
+                   sub: "Your analysed trip inside the real SUMO simulation — launch it, follow your vehicle, watch the network respond"},
   counterfactual: {tag: "counterfactual-page", title: "SUMO Digital Twin",
                    sub: "Take the live state into simulation and test an intervention"},
-  research:       {tag: "research-page",       title: "Evidence & Methodology",
+  research:       {tag: "research-page",       title: "Evidence",
                    sub: "Provenance, commands, hashes and reproduction details — kept, but out of the operational view"},
 };
 
@@ -70,7 +73,8 @@ function show(key, arg = "") {
   // and a stack of them lets the view drift when anything navigates back.
   const target = arg ? `#${key}:${arg}` : `#${key}`;
   if (location.hash !== target) history.replaceState(null, "", target);
-  outlet.replaceChildren(document.createElement(page.tag));
+  const el = document.createElement(page.tag); if (arg) el.dataset.arg = arg;
+  outlet.replaceChildren(el);
   mounted = outlet.firstElementChild;
   window.lucide?.createIcons({attrs: {"stroke-width": 1.8}});
 }
@@ -82,7 +86,7 @@ document.querySelectorAll("nav button").forEach(b =>
 window.addEventListener("hashchange", () => {
   const key = parseHash();
   const arg = (location.hash.split(":")[1] || "");
-  if (!mounted || mounted.tagName.toLowerCase() !== PAGES[key].tag) show(key, arg);
+  if (!mounted || mounted.tagName.toLowerCase() !== PAGES[key].tag || (arg && mounted.dataset.arg !== arg)) show(key, arg);
 });
 
 document.getElementById("theme").addEventListener("click", () => {

@@ -82,6 +82,8 @@ export const api = {
   simStop:       () => post("/api/sim/live/stop", {}),
   simState:      (vehicles = true) => get(`/api/sim/live/state?vehicles=${vehicles}`),
   simHistory:    () => get("/api/sim/live/history"),
+  simFollow:     (vehicle_id) => post("/api/sim/live/follow", {vehicle_id}),
+  simScreenshot: () => post("/api/sim/live/screenshot", {}),
   simAgent:      (message, history) => post("/api/sim/agent", {message, history}),
   // the operations screen
   places:        (city = "dhaka", q = "") => get(`/api/places?city=${encodeURIComponent(city)}&q=${encodeURIComponent(q)}`),
@@ -116,6 +118,9 @@ export const api = {
   twinNetJob:    (job) => get(`/api/twin/network/${job}`),
   sweep:         (grid = "compliance") => get(`/api/experiment/sweep?grid=${grid}`),
   ablation:      () => get("/api/experiment/ablation"),
+  oracleGate:    (seedSet = "final") => get(`/api/experiment/oracle_gate?seed_set=${seedSet}`),
+  predictTrained: () => get("/api/predict-lab/trained"),
+  runsRecent:    (limit = 30) => get(`/api/runs?limit=${limit}`),
   // live
   liveCorridors: (force = false) => get(`/api/live/corridors${force ? "?force=true" : ""}`),
   liveCorridor:  (id, force = false) => get(`/api/live/corridor/${encodeURIComponent(id)}${force ? "?force=true" : ""}`),

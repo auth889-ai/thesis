@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import math
 import re
 import sys
 import threading
@@ -137,11 +138,97 @@ def optimized_route_for_probe(rec: dict, net: str, origin_edge: str, destination
     return rt.get("selected_route"), {**route_opt.public(rt), "reused_existing_routing_run": reused}
 
 
-def _run(job: str, analysis_run_id: str, gui: bool) -> None:
+GEN_VEH_RE = re.compile(r'<vehicle id="([^"]+)"([^>]*)>\s*<route[^>]*edges="([^"]+)"', re.S)
+ROUTING_ROUND_S = 900
+
+
+def read_any_routes(path: Path) -> list[tuple[str, float, list[str]]]:
+    """(id, depart, edges) for every vehicle in a SUMO route file, whatever other attributes it has
+    (randomTrips/duarouter output carries type and departLane; the calibrated file does not)."""
+    import gzip
+    txt = gzip.open(path, "rt").read() if str(path).endswith(".gz") else Path(path).read_text()
+    out = []
+    for vid, attrs, edges in GEN_VEH_RE.findall(txt):
+        m = re.search(r'depart="([^"]+)"', attrs)
+        out.append((vid, float(m.group(1)) if m else 0.0, edges.split()))
+    return out
+
+
+def rewrite_routes(src: Path, dst: Path, new_routes: dict[str, list[str]]) -> Path:
+    """The same route file, with only the optimizer's changed vehicles carrying a new edge list;
+    vehicle types, departure attributes and order are untouched, so the demand is identical."""
+    txt = Path(src).read_text()
+    def sub(m):
+        vid = m.group(1)
+        if vid in new_routes:
+            return m.group(0).replace(m.group(3), " ".join(new_routes[vid]))
+        return m.group(0)
+    dst.parent.mkdir(parents=True, exist_ok=True)
+    dst.write_text(GEN_VEH_RE.sub(sub, txt))
+    return dst
+
+
+def oracle_debug_routes(sim_id: str, net: str, demand: Path, baseline_out: Path, out: Path, seed: int, duration_s: int,
+                        compliance: float, probe: dict) -> tuple[Path, list[str] | None, dict]:
+    """ORACLE / PERFECT-FUTURE DEBUG ARM for any scenario: the measured edge travel times of the
+    paired baseline run (same demand, same seed) pushed through the production optimizer in the
+    same rounds the oracle gate uses. Not a learned model, never labelled as one."""
+    from pipeline.routing import edge_costs as ec, route_optimizer as ro
+    from pipeline.routing import predictive_routing as pr
+    cfg = ec.load_config()
+    edgedata = baseline_out / "edgedata.xml"
+    if not edgedata.exists():
+        raise RuntimeError(f"the baseline run left no edgedata.xml in {baseline_out}; the oracle debug arm needs it")
+    veh = read_any_routes(demand)
+    new_routes, rounds, probe_route = {}, [], None
+    advised: list[str] = []
+    for k in range(int(math.ceil(duration_s / ROUTING_ROUND_S))):
+        b, e = k * ROUTING_ROUND_S, min((k + 1) * ROUTING_ROUND_S, duration_s)
+        trips = [{"id": v, "from": r[0], "to": r[-1], "depart": d, "current_route": r} for v, d, r in veh if pr.equipped(v, compliance) and b <= d < e]
+        if b <= float(probe["depart_s"]) < e:
+            trips.append({"id": probe["id"], "from": probe["from_edge"], "to": probe["to_edge"], "depart": float(probe["depart_s"])})
+        if not trips:
+            continue
+        table = ec.oracle_table(edgedata, Path(net), cfg, b, e)
+        rdir = out / f"oracle_round_{k}"
+        rec = ro.optimize(Path(net), trips, table, rdir, seed, float(ROUTING_ROUND_S), cfg, keep_candidates=False)
+        rid = f"rt_oracle_{sim_id[4:]}_r{k}"
+        for d in rec["decisions"]:
+            sel = rec["selected_routes"].get(d["vehicle"])
+            if d["vehicle"] == probe["id"]:
+                probe_route = sel; probe_decision = d["decision"]
+            elif d["decision"] == "REROUTE" and sel:
+                new_routes[d["vehicle"]] = sel; advised.append(d["vehicle"])
+        st = rec["stats"]
+        rounds.append({"routing_run_id": rid, "round": k, "window_s": [b, e], "future_cost_hash": table["future_cost_hash"], "priced_edges": table["priced_edges"],
+                       "vehicles": st["vehicles"], "admitted": st["vehicles_admitted"], "rejected_capacity": st["rejected_by_capacity_gate"],
+                       "rejected_share": st["rejected_by_share_gate"], "mean_candidates_real": st["mean_candidates_real"]})
+        (rdir / "routing_run.json").write_text(json.dumps({"routing_run_id": rid, "simulation_run_id": sim_id, "seed": seed, "round": k, "window_s": [b, e],
+                                                            "future_cost_hash": table["future_cost_hash"], "stats": st, "config_hash": cfg["_config_hash"],
+                                                            "label": "ORACLE / PERFECT-FUTURE DEBUG ARM — measured future of the paired baseline, not a learned model"}, indent=1))
+    merged = rewrite_routes(demand, out / f"demand_oracle_{sim_id}.rou.xml", new_routes)
+    info = {"label": "ORACLE / PERFECT-FUTURE DEBUG ARM", "not_ai": True, "routing_run_ids": [r["routing_run_id"] for r in rounds], "rounds": rounds,
+            "routes_changed": len(new_routes), "advised_ids": advised, "config_hash": cfg["_config_hash"], "routes_file": str(merged),
+            "probe_decision": locals().get("probe_decision"), "source": "measured edge travel times of the paired baseline run (same demand, same seed)"}
+    return merged, probe_route, info
+
+
+def _wait_twin(live_sim, poll_s: float = 0.5, max_s: float = 7200.0):
+    n = int(max_s / poll_s)
+    for _ in range(n):
+        s = live_sim.state(with_vehicles=False)
+        if s["status"] in ("done", "failed", "stopped"):
+            return s
+        time.sleep(poll_s)
+    return live_sim.state(with_vehicles=False)
+
+
+def _run(job: str, analysis_run_id: str, opts: dict) -> None:
     from live_sim import live_sim
     from pipeline.routing import integrated_chain as ic
     sim_id = job
-    run = pv.Run(sim_id, analysis_run_id=analysis_run_id, kind="twin_test", result_source="SYNTHETIC_WHAT_IF")
+    gui = bool(opts.get("gui"))
+    run = pv.Run(sim_id, analysis_run_id=analysis_run_id, kind="twin_test", result_source="SYNTHETIC_WHAT_IF", gui=gui)
     with _LOCK:
         _JOBS[job]["_prov"] = run
     try:
@@ -153,27 +240,35 @@ def _run(job: str, analysis_run_id: str, gui: bool) -> None:
         _set(job, stage="Preparing network")
         scen = scenario_for(rec, lambda **k: _set(job, **k))
         net_path = scen["net"]
+        from live_sim import scenario_label
         _set(job, stage="Loading demand", network_id=scen["id"], network_edges=scen.get("edges"), network_hash=pv.sha_file(net_path, 12),
-             demand_reality=scen.get("demand_reality"))
+             demand_reality=scen.get("demand_reality"), scenario=scenario_label(scen))
         _set(job, stage="Mapping your trip")
         od = map_od(net_path, rec["origin_resolved"], rec["destination_resolved"])
         seed = runtime_seed(analysis_run_id)
-        probe_id = f"probe_{analysis_run_id}"
+        probe_id = f"USER_PROBE_{analysis_run_id.split('_', 1)[-1]}"
         _set(job, origin_edge=od["origin"]["edge"], destination_edge=od["destination"]["edge"], od_mapping=od, seed=seed, probe_vehicle_id=probe_id)
         sc = config.REPO / "results/routing/SCALE_CHOICE.json"
-        scale = (json.loads(sc.read_text()).get("scale", 0.25) if sc.exists() else 0.25) if scen["id"] == "dhaka_r1" else 1.0
-        arms = ["baseline", "reactive"]
+        base_scale = (json.loads(sc.read_text()).get("scale", 0.25) if sc.exists() else 0.25) if scen["id"] == "dhaka_r1" else 1.0
+        scale = round(base_scale * float(opts.get("demand_scale") or 1.0), 4)
+        duration = int(opts.get("duration_s") or 1500)
+        arms = [a for a in (opts.get("arms") or ["baseline", "reactive", "prediction_aware"]) if a in ("baseline", "reactive", "prediction_aware")]
+        if not arms:
+            raise ValueError("arms must be a subset of baseline, reactive, prediction_aware")
         fc_info: dict = {}
         out = config.REPO / "results/live/twin_tests" / sim_id
         out.mkdir(parents=True, exist_ok=True)
-        pa_route = None
-        if scen.get("forecast_capable"):
+        pa_route, pa_routes_file, pa_advised = None, None, []
+        pa_label = None
+        if "prediction_aware" in arms and scen.get("forecast_capable"):
             _set(job, stage="Optimizing route")
             pa_route, fc_info = optimized_route_for_probe(rec, net_path, od["origin"]["edge"], od["destination"]["edge"], out, seed)
-            if pa_route:
-                arms.append("prediction_aware")
+            pa_label = f"PREDICTION-AWARE — {fc_info.get('resolved_model')} forecast through the production optimizer"
+            if not pa_route:
+                arms.remove("prediction_aware")
         run.set(routing_run_id=fc_info.get("routing_run_id") or fc_id(fc_info), routing_decision=fc_info.get("decision"), future_cost_hash=fc_info.get("future_cost_hash"))
-        _set(job, arms=arms, routing_run_id=fc_id(fc_info), forecast_hash=fc_info.get("future_cost_hash"), forecast=fc_info, model=fc_info.get("resolved_model") or rec.get("resolved_model"))
+        _set(job, arms=arms, routing_run_id=fc_id(fc_info), forecast_hash=fc_info.get("future_cost_hash"), forecast=fc_info,
+             model=fc_info.get("resolved_model") or rec.get("resolved_model"), demand_scale=scale, duration_s=duration)
         live_sim.owner = job
         for _ in range(120):
             if live_sim.state(with_vehicles=False).get("status") not in ("running", "paused", "starting"):
@@ -181,43 +276,69 @@ def _run(job: str, analysis_run_id: str, gui: bool) -> None:
             time.sleep(0.5)
         else:
             live_sim.stop()
-        results = []
-        for arm in arms:
-            _set(job, stage={"baseline": "Running baseline", "reactive": "Running reactive", "prediction_aware": "Running prediction-aware"}[arm], arm=arm)
+        results, launches = [], {}
+        baseline_out = None
+        needs_oracle = "prediction_aware" in arms and not scen.get("forecast_capable")
+        run_order = list(arms)
+        if needs_oracle and "baseline" not in run_order:
+            run_order.insert(0, "baseline")               # the oracle's future is the paired baseline: run it headless first
+        headless_only = [a for a in run_order if a not in arms]
+        for arm in run_order:
             probe = {"id": probe_id, "from_edge": od["origin"]["edge"], "to_edge": od["destination"]["edge"], "depart_s": 60}
+            params = {"network": scen["id"], "seed": seed, "arm": arm if arm != "prediction_aware" else "baseline", "duration_s": duration, "scale": scale,
+                      "compliance": 0.3, "step_delay_ms": int(opts.get("step_delay_ms") or 0) if gui and arm in arms else 0, "continuous": False,
+                      "levels": "observed" if scen["id"] == "dhaka_r1" else "", "gui": gui and arm in arms, "probe": probe,
+                      "simulation_run_id": sim_id, "analysis_run_id": analysis_run_id, "routing_run_id": None}
+            policy = {"baseline": "no rerouting", "reactive": "rerouteTraveltime on current travel times (30 % equipped + the probe)"}.get(arm)
             if arm == "prediction_aware":
-                probe["route_edges"] = pa_route
-            r = live_sim.start({"network": scen["id"], "seed": seed, "arm": arm if arm != "prediction_aware" else "baseline",
-                                "duration_s": 1500, "scale": scale, "compliance": 0.3, "step_delay_ms": 0, "continuous": False,
-                                "levels": "observed" if scen["id"] == "dhaka_r1" else "", "gui": gui, "probe": probe}, owner=job)
+                if needs_oracle:
+                    _set(job, stage="Optimizing routes (oracle debug)")
+                    pa_routes_file, pa_route, oracle_info = oracle_debug_routes(sim_id, net_path, Path(scen["routes"]), baseline_out, out, seed, duration, 0.3, probe)
+                    pa_advised = oracle_info["advised_ids"]; pa_label = oracle_info["label"]
+                    fc_info = {**fc_info, "oracle_debug": {k: v for k, v in oracle_info.items() if k != "advised_ids"}}
+                    params.update(arm="prediction_aware", routes_file=str(pa_routes_file), advised_ids=pa_advised, forecast_label=pa_label,
+                                  routing_run_id=",".join(oracle_info["routing_run_ids"]))
+                    policy = f"{pa_label}: measured future of the paired baseline → production optimizer ({oracle_info['routes_changed']} vehicles + the probe rerouted); NOT a learned model"
+                    probe["route_source"] = "production optimizer on the paired baseline's measured edge times (oracle debug)"
+                else:
+                    params.update(routing_run_id=fc_id(fc_info))
+                    policy = f"probe on the route selected by routing run {fc_id(fc_info)} ({fc_info.get('decision')}: forecast future cost + load + overlap, threshold {fc_info.get('threshold_s')} s)"
+                    probe["route_source"] = f"production optimizer, routing run {fc_id(fc_info)}"
+                if pa_route:
+                    probe["route_edges"] = pa_route
+            _set(job, stage={"baseline": "Running baseline", "reactive": "Running reactive", "prediction_aware": "Running prediction-aware"}[arm] + (" (headless, for the oracle's future)" if arm in headless_only else ""), arm=arm)
+            r = live_sim.start(params, owner=job)
             if not r.get("started"):
                 raise RuntimeError(r.get("reason", "could not start the twin"))
-            for _ in range(3600):
-                s = live_sim.state(with_vehicles=False)
-                if s["status"] in ("done", "failed", "stopped"):
-                    break
-                time.sleep(0.5)
+            s = _wait_twin(live_sim)
             if s["status"] != "done":
                 raise RuntimeError(s.get("message") or f"run ended as {s['status']}")
             res = s["result"]
-            results.append({"arm": arm, "seed": seed, "run_id": res["run_id"], "metrics": res["metrics"], "probe": s.get("probe"),
-                            "routing_policy": {"baseline": "no rerouting", "reactive": "rerouteTraveltime on current travel times (30 % equipped + the probe)",
-                                               "prediction_aware": f"probe on the route selected by routing run {fc_id(fc_info)} ({fc_info.get('decision')}: forecast future cost + load + overlap, threshold {fc_info.get('threshold_s')} s)"}[arm],
-                            "routing_run_id": fc_id(fc_info) if arm == "prediction_aware" else None,
-                            "routes_changed": res.get("reroutes", 0), "advisories_delivered": 0})
+            if arm == "baseline":
+                baseline_out = config.REPO / res["out_dir"]
+            launches[arm] = res.get("launch")
+            if arm in headless_only:
+                continue
+            results.append({"arm": arm, "seed": seed, "run_id": res["run_id"], "metrics": res["metrics"], "probe": res.get("probe") or s.get("probe"),
+                            "routing_policy": policy, "routing_run_id": params.get("routing_run_id"), "label": pa_label if arm == "prediction_aware" else None,
+                            "routes_changed": res.get("routes_changed") or res.get("reroutes", 0), "advisories_delivered": res.get("advised", 0),
+                            "teleport_events": res.get("teleport_events") or [], "launch": res.get("launch"), "scenario": res.get("scenario")})
         _set(job, stage="Computing result")
-        summary = ic.summarise([{k: v for k, v in x.items() if k != "probe"} for x in results]) if len(results) >= 2 else {}
+        summary = ic.summarise([{k: v for k, v in x.items() if k not in ("probe", "teleport_events", "launch", "scenario")} for x in results]) if len(results) >= 2 else {}
         probe_tt = {x["arm"]: (x.get("probe") or {}).get("travel_time_s") for x in results}
         base = probe_tt.get("baseline")
         probe_cmp = {a: (None if base is None or tt is None or base == 0 else round(100 * (tt - base) / base, 1)) for a, tt in probe_tt.items()}
         result = {"simulation_run_id": sim_id, "analysis_run_id": analysis_run_id, "network": scen["id"], "network_edges": scen.get("edges"),
-                  "demand_reality": scen.get("demand_reality"), "seed": seed, "seed_source": "generated at run time from the analysis run id",
+                  "demand_reality": scen.get("demand_reality"), "scenario": scenario_label(scen), "seed": seed, "seed_source": "generated at run time from the analysis run id",
+                  "demand_scale": scale, "duration_s": duration, "gui": gui,
                   "od_mapping": od, "probe_vehicle_id": probe_id, "arms": results, "summary": summary,
                   "probe_travel_time_s": probe_tt, "probe_vs_baseline_pct": probe_cmp, "forecast": fc_info, "routing_run_id": fc_id(fc_info),
+                  "prediction_aware_label": pa_label,
                   "label": "SIMULATED COUNTERFACTUAL — microscopic simulated vehicles in SUMO on this network; not a real-road measured outcome; single runtime seed (paired seeds under Research)",
                   "finished_utc": datetime.now(timezone.utc).isoformat()}
-        run.set(status="done", probe={a: x.get("probe") for a, x in zip([x["arm"] for x in results], results)}, probe_travel_time_s=probe_tt, sumo_runs=[x["run_id"] for x in results],
-                sumo_metrics={x["arm"]: x["metrics"] for x in results})
+        run.set(status="done", probe={x["arm"]: x.get("probe") for x in results}, probe_travel_time_s=probe_tt, sumo_runs=[x["run_id"] for x in results],
+                sumo_metrics={x["arm"]: x["metrics"] for x in results}, launches=launches, arms=arms, prediction_aware_label=pa_label,
+                teleports={x["arm"]: len(x.get("teleport_events") or []) for x in results}, probe_vehicle_id=probe_id, seed=seed, demand_scale=scale)
         run.finish("done")
         _link_analysis(analysis_run_id, sim_id)
         _set(job, status="done", stage="done", result=result)
@@ -259,7 +380,9 @@ def start(payload: dict) -> dict:
         job = "sim_" + uuid.uuid4().hex[:8]
         _JOBS[job] = {"simulation_run_id": job, "analysis_run_id": analysis_run_id, "status": "running", "stage": "Preparing network",
                       "started_utc": datetime.now(timezone.utc).isoformat()}
-    threading.Thread(target=_run, args=(job, analysis_run_id, bool((payload or {}).get("gui"))), name=job, daemon=True).start()
+    opts = {"gui": bool((payload or {}).get("gui")), "arms": (payload or {}).get("arms"), "demand_scale": (payload or {}).get("demand_scale"),
+            "step_delay_ms": (payload or {}).get("step_delay_ms"), "duration_s": (payload or {}).get("duration_s")}
+    threading.Thread(target=_run, args=(job, analysis_run_id, opts), name=job, daemon=True).start()
     return {"started": True, "simulation_run_id": job, "analysis_run_id": analysis_run_id, "poll": f"/api/twin/test/{job}"}
 
 

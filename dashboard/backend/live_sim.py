@@ -34,7 +34,46 @@ DEFAULTS = {"scale": None, "duration_s": 900, "seed": 11, "compliance": 0.3, "ar
             "levels": "observed", "step_delay_ms": 100, "v2x": "ideal", "horizon_min": 15,
             "continuous": False, "network": "dhaka_r1", "gui": False}
 # vehicle colours in sumo-gui (RGBA): what a viewer sees moving on the OSM network
-COLOUR = {"normal": (255, 200, 0, 255), "reactive": (40, 120, 255, 255), "advised": (40, 190, 60, 255), "stopped": (220, 40, 40, 255)}
+COLOUR = {"normal": (255, 200, 0, 255),        # background vehicle (SUMO passenger)
+          "reactive": (40, 120, 255, 255),     # rerouted by rerouteTraveltime on current travel times
+          "advised": (40, 190, 60, 255),       # pre-departure route from the production optimizer (prediction-aware / oracle debug)
+          "stopped": (220, 40, 40, 255),       # standing > 20 s (queue)
+          "probe": (255, 0, 255, 255),         # the USER PROBE: the analysed trip
+          "heavy": (150, 150, 150, 255)}       # bus / truck, where the demand has them
+VISUAL_LEGEND = {"NORMAL BACKGROUND VEHICLE": "amber", "REACTIVE-REROUTED VEHICLE": "blue", "PREDICTION-AWARE-REROUTED VEHICLE": "green",
+                 "USER PROBE VEHICLE": "magenta, 8 m long", "STOPPED / QUEUED VEHICLE (> 20 s)": "red", "BUS / TRUCK": "grey"}
+TELEPORT_REASON = "SUMO teleports a vehicle that waited longer than --time-to-teleport (300 s) at a blocked position (jam / junction blocker); TraCI exposes the event, not the reason text"
+_FILE_HASH: dict[str, str] = {}
+
+
+def file_hash(path, n: int = 12) -> str | None:
+    """sha256 prefix of a file, cached by path+mtime (network and demand hashes for provenance)."""
+    import hashlib
+    try:
+        p = Path(path); key = f"{p}:{p.stat().st_mtime_ns}"
+        if key not in _FILE_HASH:
+            _FILE_HASH[key] = hashlib.sha256(p.read_bytes()).hexdigest()[:n]
+        return _FILE_HASH[key]
+    except OSError:
+        return None
+
+
+def sumo_version() -> str:
+    import subprocess
+    try:
+        return subprocess.run(["sumo", "--version"], capture_output=True, text=True, timeout=20).stdout.splitlines()[0].strip()
+    except Exception as exc:                            # noqa: BLE001
+        return f"unknown ({exc})"
+
+
+def scenario_label(netinfo: dict) -> dict:
+    """Where the running scenario's road network and demand come from — always visible."""
+    if netinfo.get("live_coupled"):
+        return {"demand": "REAL / CALIBRATED DATA", "network": "REAL OSM ROAD NETWORK (Dhaka R1, frozen, calibrated demand)",
+                "note": "calibrated hourly demand; live corridor state from the provider when continuous"}
+    d = str(netinfo.get("demand") or "SYNTHETIC_WHAT_IF")
+    return {"demand": "UPLOADED FLOW DATA" if d.startswith("UPLOADED") else "SYNTHETIC WHAT-IF DEMAND",
+            "network": "REAL OSM ROAD NETWORK", "note": "randomTrips demand (osmWebWizard parameters) is NOT real traffic; it demonstrates mechanism only"}
 DHAKA_CENTER = (90.395, 23.755)
 
 
@@ -138,12 +177,18 @@ class LiveSim:
         cfg["continuous"] = bool(cfg["continuous"]) or int(cfg["duration_s"]) == 0
         if cfg["continuous"]:
             cfg["duration_s"] = 10 ** 8        # runs until stopped; demand is replayed every hour
+        if cfg["arm"] == "prediction_aware" and not netinfo["live_coupled"] and not cfg.get("routes_file"):
+            return {"started": False, "reason": "prediction_aware on a generated city needs the optimizer's route file (the twin test's oracle debug arm provides it)"}
         run_id = datetime.now(timezone.utc).strftime("live_%Y%m%dT%H%M%SZ_") + uuid.uuid4().hex[:6]
-        self._stop.clear(); self._pause.clear()
+        self._stop.clear(); self._pause.clear(); self._tracking = None
         with self._lock:
             self._snapshot = {"status": "starting", "run_id": run_id, "params": cfg,
                               "started_utc": datetime.now(timezone.utc).isoformat(),
-                              "kpis": {}, "vehicles": [], "sim_time_s": 0, "message": "preparing"}
+                              "kpis": {}, "vehicles": [], "sim_time_s": 0, "message": "preparing",
+                              "scenario": scenario_label(netinfo), "legend": VISUAL_LEGEND, "teleport_events": [], "probe": {},
+                              "launch": {"simulation_run_id": cfg.get("simulation_run_id"), "analysis_run_id": cfg.get("analysis_run_id"),
+                                         "routing_run_id": cfg.get("routing_run_id"), "arm": cfg["arm"], "seed": cfg["seed"], "gui": bool(cfg.get("gui")),
+                                         "network": netinfo["id"], "launch_utc": datetime.now(timezone.utc).isoformat()}}
         self._thread = threading.Thread(target=self._run, args=(run_id, cfg), daemon=True,
                                         name=f"live-sim-{run_id}")
         self._thread.start()
@@ -192,7 +237,7 @@ class LiveSim:
             vid = vehicle_id or (max(ids, key=lambda v: conn.vehicle.getWaitingTime(v)) if ids else None)
             if not vid:
                 return {"ok": False, "reason": "no vehicle on the road yet"}
-            conn.gui.trackVehicle("View #0", vid); conn.gui.setZoom("View #0", 14000); self._tracking = True
+            conn.gui.trackVehicle("View #0", vid); conn.gui.setZoom("View #0", 10000); self._tracking = vid
         except Exception as exc:                            # noqa: BLE001
             return {"ok": False, "reason": f"{type(exc).__name__}: {exc}"}
         return {"ok": True, "vehicle": vid}
@@ -249,10 +294,14 @@ class LiveSim:
             deliver_p, v2x = ic.delivery_fraction(cfg["v2x"])
             # 2. the forecast, only for the arm that routes on it
             routes, changed, advised, forecast = Path(a.routes), 0, 0, None
-            if cfg["arm"] == "prediction_aware" and not netinfo["live_coupled"]:
+            advised_ids = set(cfg.get("advised_ids") or [])
+            if cfg.get("routes_file"):                    # routes the production optimizer already decided (twin test)
+                routes = Path(cfg["routes_file"]); changed = advised = len(advised_ids)
+                forecast = cfg.get("forecast_label")
+            elif cfg["arm"] == "prediction_aware" and not netinfo["live_coupled"]:
                 raise RuntimeError("prediction_aware needs the observed corridors; a generated city "
                                    "has none yet — use baseline or reactive there")
-            if cfg["arm"] == "prediction_aware":
+            elif cfg["arm"] == "prediction_aware":
                 self._set(message="running the forecast and pricing the edges")
                 res = fetch_forecast("dhaka", cfg["horizon_min"], None, source="recorded", as_of="peak")
                 table = build_table(res, cfg["horizon_min"], Path(a.net))
@@ -277,7 +326,13 @@ class LiveSim:
                                     stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
             self._proc, self._conn = proc, None
             n_edges = netinfo.get("edges") or next((n.get("edges") for n in networks() if n["id"] == netinfo["id"]), None)
-            self._set(pid=proc.pid, port=port, gui=gui, sumo_binary=ns.sumo_binary, network_edges=n_edges)
+            launch = {**self.state(with_vehicles=False).get("launch", {}), "sumo_pid": proc.pid, "sumo_version": sumo_version(), "sumo_binary": ns.sumo_binary,
+                      "network_file": str(netinfo["net"]), "network_hash": file_hash(netinfo["net"]), "demand_file": str(routes), "demand_hash": file_hash(routes),
+                      "scale": cfg["scale"], "duration_s": cfg["duration_s"], "compliance": cfg["compliance"], "port": port,
+                      "probe_vehicle_id": (cfg.get("probe") or {}).get("id"), "origin_edge": (cfg.get("probe") or {}).get("from_edge"),
+                      "destination_edge": (cfg.get("probe") or {}).get("to_edge")}
+            self._set(pid=proc.pid, port=port, gui=gui, sumo_binary=ns.sumo_binary, network_edges=n_edges, launch=launch)
+            (out / "launch.json").write_text(json.dumps(launch, indent=1, default=str))
             last, conn = None, None
             for _ in range(50):                                  # SUMO needs a moment to listen
                 try:
@@ -309,8 +364,13 @@ class LiveSim:
                 conn.route.add(f"route_{pid}", edges)
                 conn.vehicle.add(pid, f"route_{pid}", depart=str(float(probe.get("depart_s") or 0)), departLane="best", departSpeed="max")
                 probe_state = {"vehicle_id": pid, "origin_edge": probe["from_edge"], "destination_edge": probe["to_edge"],
-                               "initial_route": edges, "initial_route_source": "duarouter on forecast weights" if probe.get("route_edges") else "traci.simulation.findRoute",
-                               "active_route": edges, "departed_s": None, "arrived_s": None, "rerouted_times": 0}
+                               "initial_route": edges, "initial_route_source": probe.get("route_source") or ("production optimizer route" if probe.get("route_edges") else "traci.simulation.findRoute"),
+                               "active_route": edges, "departed_s": None, "arrived_s": None, "rerouted_times": 0, "teleported": False,
+                               "status": "WAITING TO DEPART", "current_edge": None, "speed_kmh": None, "elapsed_s": None, "route_progress": None}
+                try:                                    # visibly distinct in sumo-gui: magenta and 8 m long
+                    conn.vehicle.setColor(pid, COLOUR["probe"]); conn.vehicle.setLength(pid, 8.0); conn.vehicle.setWidth(pid, 2.6)
+                except traci.TraCIException:
+                    pass
                 self._set(probe=probe_state)
             applied = 0
             for eid, m in slow.items():
@@ -327,6 +387,10 @@ class LiveSim:
             import hashlib
             sub = [tc.VAR_POSITION, tc.VAR_SPEED, tc.VAR_WAITING_TIME]
             arrived = teleports = reroutes = 0
+            depart_t: dict[str, int] = {}                  # vehicle -> departure step, for the mean travel time so far
+            tt_sum, tt_n = 0.0, 0
+            heavy: set[str] = set()
+            teleport_events: list[dict] = []
             t = 0
             # --- continuous mode: replay the calibrated hour of demand every hour, and follow the
             # live road. SUMO loads (and scales) hour 0 itself; later hours are re-inserted through
@@ -411,21 +475,61 @@ class LiveSim:
                         if replay_i >= len(replay):
                             replay_i, next_hour = 0, next_hour + 1
                 for vid in conn.simulation.getDepartedIDList():
-                    conn.vehicle.subscribe(vid, sub)
+                    conn.vehicle.subscribe(vid, sub); depart_t[vid] = t
+                    if gui:
+                        try:
+                            if conn.vehicle.getVehicleClass(vid) in ("bus", "truck", "trailer", "coach", "delivery"):
+                                heavy.add(vid); conn.vehicle.setColor(vid, COLOUR["heavy"])
+                        except traci.TraCIException:
+                            pass
+                for vid in conn.simulation.getArrivedIDList():
+                    d0 = depart_t.pop(vid, None)
+                    if d0 is not None:
+                        tt_sum += t - d0; tt_n += 1
                 arrived += conn.simulation.getArrivedNumber()
-                teleports += conn.simulation.getStartingTeleportNumber()
+                tele_now = conn.simulation.getStartingTeleportIDList()
+                teleports += len(tele_now)
+                for vid in tele_now:                    # every teleport is recorded, never hidden
+                    try:
+                        edge = conn.vehicle.getRoadID(vid)
+                    except traci.TraCIException:
+                        edge = None
+                    ev = {"vehicle_id": vid, "sim_time_s": t, "edge": edge, "arm": cfg["arm"], "reason": TELEPORT_REASON, "is_probe": bool(probe and vid == probe["id"])}
+                    teleport_events.append(ev)
+                    if probe and vid == probe["id"]:
+                        probe_state.update(teleported=True, teleported_at_s=t, teleported_edge=edge, status="PROBE TELEPORTED")
+                    note(f"TELEPORT {ev}")
                 if probe and probe_state.get("departed_s") is None and probe["id"] in conn.vehicle.getIDList():
-                    probe_state["departed_s"] = t
+                    probe_state["departed_s"] = t; probe_state["status"] = "DRIVING"
+                    if gui and not getattr(self, "_tracking", None):      # the window follows the user's car from its first metre
+                        try:
+                            conn.gui.trackVehicle("View #0", probe["id"]); conn.gui.setZoom("View #0", 10000); self._tracking = probe["id"]
+                        except traci.TraCIException:
+                            pass
                 if probe and probe_state.get("departed_s") is not None and probe_state.get("arrived_s") is None:
                     if probe["id"] in conn.simulation.getArrivedIDList():
-                        probe_state["arrived_s"] = t
-                    elif t % 5 == 0 and probe["id"] in conn.vehicle.getIDList():
-                        try:
-                            cur = list(conn.vehicle.getRoute(probe["id"]))
-                            if cur != probe_state["active_route"]:
-                                probe_state["rerouted_times"] += 1; probe_state["active_route"] = cur
-                            if gui:
-                                conn.vehicle.setColor(probe["id"], (255, 0, 255, 255)); conn.gui.trackVehicle("View #0", probe["id"])
+                        probe_state["arrived_s"] = t; probe_state["status"] = "ARRIVED"; probe_state["elapsed_s"] = t - probe_state["departed_s"]
+                        probe_state.update(current_edge=probe["to_edge"], speed_kmh=0.0, route_progress=1.0)
+                        if gui and getattr(self, "_tracking", None) == probe["id"]:     # the trip is over: stop tracking, show the network
+                            try:
+                                conn.gui.trackVehicle("View #0", ""); conn.gui.setZoom("View #0", 1500); self._tracking = None
+                            except traci.TraCIException:
+                                pass
+                    elif probe["id"] in conn.vehicle.getIDList() and not probe_state.get("teleported"):
+                        try:                                   # live probe telemetry, straight from SUMO every step
+                            pid = probe["id"]
+                            v = conn.vehicle.getSpeed(pid); w = conn.vehicle.getWaitingTime(pid)
+                            cur_edge = conn.vehicle.getRoadID(pid)
+                            probe_state.update(current_edge=cur_edge, speed_kmh=round(v * 3.6, 1), elapsed_s=t - probe_state["departed_s"],
+                                               waiting_now_s=round(w, 1), status="QUEUED" if v < 0.1 and w > 5 else "DRIVING",
+                                               route_progress=round(conn.vehicle.getRouteIndex(pid) / max(len(probe_state["active_route"]), 1), 3))
+                            if t % 5 == 0:
+                                cur = list(conn.vehicle.getRoute(pid))
+                                if cur != probe_state["active_route"]:
+                                    probe_state["rerouted_times"] += 1; probe_state["active_route"] = cur
+                                    probe_state.setdefault("reroute_events", []).append({"sim_time_s": t, "edge": cur_edge, "route_edges": len(cur)})
+                                if gui:
+                                    conn.vehicle.setColor(pid, COLOUR["probe"])
                         except traci.TraCIException:
                             pass
                 if cfg["arm"] == "reactive":
@@ -451,12 +555,15 @@ class LiveSim:
                     if v < 0 or x < -1e6:                         # arrived this step: INVALID values
                         continue
                     speeds.append(v); waits.append(w); halting += v < 0.1
-                    if gui and t % 5 == 0:                      # colour what the viewer sees: stopped red, otherwise its role
+                    if gui and t % 5 == 0 and not (probe and vid == probe["id"]):   # colour what the viewer sees: stopped red, otherwise its role
                         try:
                             if v < 0.1 and w > 20:
                                 conn.vehicle.setColor(vid, COLOUR["stopped"])
+                            elif vid in heavy:
+                                conn.vehicle.setColor(vid, COLOUR["heavy"])
                             else:
-                                conn.vehicle.setColor(vid, COLOUR[rerouted.get(vid, "advised" if (cfg["arm"] == "prediction_aware" and pr.equipped(vid, cfg["compliance"])) else "normal")])
+                                role = rerouted.get(vid) or ("advised" if (vid in advised_ids or (cfg["arm"] == "prediction_aware" and not advised_ids and pr.equipped(vid, cfg["compliance"]))) else "normal")
+                                conn.vehicle.setColor(vid, COLOUR[role])
                         except traci.TraCIException:
                             pass
                     if len(vehicles) < MAX_VEHICLES_SHOWN:
@@ -464,8 +571,11 @@ class LiveSim:
                         vehicles.append([round(lon, 5), round(lat, 5), round(v * 3.6, 1),
                                          int(pr.equipped(vid, cfg["compliance"]))])
                 n = len(res)
-                self._set(sim_time_s=t, vehicles=vehicles, kpis={
-                    "vehicles_on_road": n, "shown": len(vehicles),
+                if probe:
+                    self._set(probe=dict(probe_state))
+                self._set(sim_time_s=t, vehicles=vehicles, teleport_events=teleport_events[-200:], kpis={
+                    "vehicles_on_road": n, "shown": len(vehicles), "mean_travel_time_so_far_s": round(tt_sum / tt_n, 1) if tt_n else None,
+                    "trips_completed": tt_n, "teleport_events": len(teleport_events), "probe_status": probe_state.get("status") if probe else None,
                     "mean_speed_kmh": round(sum(speeds) / n * 3.6, 2) if n else 0.0,
                     "mean_waiting_s": round(sum(waits) / n, 2) if n else 0.0,
                     "halting": halting, "arrived": arrived, "teleports": teleports,
@@ -493,7 +603,9 @@ class LiveSim:
                 except Exception as exc:                          # noqa: BLE001
                     probe_state["tripinfo_error"] = str(exc)[:120]
                 self._set(probe=probe_state)
-            rec = {"run_id": run_id, "params": cfg, "stopped_early": bool(self._stop.is_set()),
+            rec = {"run_id": run_id, "params": {k: v for k, v in cfg.items() if k != "advised_ids"}, "stopped_early": bool(self._stop.is_set()),
+                   "launch": self.state(with_vehicles=False).get("launch"), "teleport_events": teleport_events, "probe": probe_state or None,
+                   "scenario": scenario_label(netinfo),
                    "sim_time_s": t, "reroutes": reroutes, "advised": advised, "routes_changed": changed,
                    "edges_slowed": applied, "delivery_fraction": deliver_p,
                    "forecast": forecast, "metrics": metrics, "out_dir": str(out.relative_to(config.REPO)),

@@ -1,74 +1,88 @@
 /**
- * RESULTS — what the experiments measured. Every panel reads a JSON produced by a `make` target
- * and names it; a panel whose file is missing shows the command, never a blank.
+ * RESULTS — the verified outcome under the frozen protocol, and nothing older.
+ *
+ * Headline: the oracle outcome gate (FINAL_PROTOCOL_v1, held-out seeds). The learned-model final
+ * outcome is shown as NOT RUN YET until it exists. Experiments from earlier routing protocols live
+ * under Research → Archived Experiments and are never mixed in here.
  */
 import {api} from "../services/api.js";
 
-const C = {olive: "#4a5d23", sage: "#8a9a5b", maroon: "#7b2d3b", grey: "#b9b3a6", warn: "#b07a12", bad: "#a63d40", blue: "#3d6b8a"};
+const METRIC_WORDS = {total_vehicle_hours_incl_never_inserted: "Total vehicle-hours", mean_travel_time_all: "Mean travel time", p95_travel_time_s: "Slowest 5 % of trips (p95)",
+                      total_waiting_s: "Total waiting", mean_queue_veh: "Mean queue", arrived: "Trips completed", teleports: "Teleports"};
 
 export class ResultsPage extends HTMLElement {
   connectedCallback() {
-    this.innerHTML = `
-      <div class="note warn" style="margin-bottom:10px"><b>Research benchmark.</b> Every number on this page is read from a precomputed experiment file (result_source RESEARCH_BENCHMARK) with the command that regenerates it — nothing here is a new live result. Live results are on Mission Control and Prediction, each with a run id and provenance.</div><div class="grid grid-wide">
-      <section class="card"><h3>Penetration curve <small>E4 · vehicle-hours vs baseline, paired seeds, band ±1 sd</small></h3><div class="chart tall"><canvas id="sweep"></canvas></div><div id="sweepnote" class="muted"></div></section>
-      <section class="card"><h3>Which forecast the routing used <small>E3 / E5</small></h3><div id="abl"></div></section>
-    </div>
-    <div class="grid grid-wide">
-      <section class="card"><h3>Forecast accuracy on Dhaka's recorded data <small>E1 · rolling origin</small></h3><div id="acc"></div></section>
-      <section class="card"><h3>Chain runs <small>every execution, newest first</small></h3><div id="runs"></div></section>
-    </div>`;
+    this.innerHTML = `<div id="gate" class="panel-loading">Loading the verified result…</div>`;
     this.load();
   }
 
   async load() {
-    const [sw, ab, acc, runs] = await Promise.all([api.sweep("compliance"), api.ablation(), api.forecastAccuracy("dhaka"), api.chainRuns()]);
-    this.sweep(sw); this.ablation(ab); this.accuracy(acc); this.runs(runs);
-  }
-
-  sweep(sw) {
-    if (!sw.available) { this.querySelector("#sweepnote").innerHTML = `not run yet — <code>${sw.command}</code>`; return; }
-    const pts = [...sw.points].sort((a, b) => a.compliance - b.compliance);
-    const x = pts.map(p => Math.round(p.compliance * 100));
-    const series = (arm, colour, name) => { const m = pts.map(p => p.arms[arm]?.vs_baseline_pct_mean ?? null); const s = pts.map(p => p.arms[arm]?.vs_baseline_pct_sd ?? 0);
-      return [{label: name, data: m, borderColor: colour, backgroundColor: colour, tension: 0.25, pointRadius: 3},
-              {label: `${name} +sd`, data: m.map((v, i) => v === null ? null : v + s[i]), borderColor: "transparent", pointRadius: 0, fill: "+1", backgroundColor: colour + "22"},
-              {label: `${name} −sd`, data: m.map((v, i) => v === null ? null : v - s[i]), borderColor: "transparent", pointRadius: 0}]; };
-    const base = window.chartDefaults();
-    new Chart(this.querySelector("#sweep"), {type: "line", data: {labels: x, datasets: [
-      {label: "baseline", data: x.map(() => 0), borderColor: C.grey, borderDash: [4, 4], pointRadius: 0},
-      ...series("reactive", C.warn, "reactive"), ...series("prediction_aware", C.maroon, "prediction-aware")]},
-      options: {...base, plugins: {...base.plugins, legend: {labels: {color: window.axisColor(), boxWidth: 10, usePointStyle: true, filter: (i) => !/sd$/.test(i.text)}}},
-        scales: {...base.scales, x: {...base.scales.x, title: {display: true, text: "equipped vehicles (%)", color: window.axisColor()}},
-                 y: {...base.scales.y, title: {display: true, text: "vehicle-hours vs baseline (%)", color: window.axisColor()}}}}});
-    this.querySelector("#sweepnote").textContent = `${sw.seeds.split(",").length} paired seeds · ${sw.horizon_s} s horizon · ${sw.command}`;
-  }
-
-  ablation(ab) {
-    const box = this.querySelector("#abl");
-    if (!ab.available) { box.innerHTML = `not run yet — <code>${ab.command}</code>`; return; }
-    box.innerHTML = `<div class="hcards tight">${ab.rows.map(r => `<div class="hcard"><div class="hcard-h">${r.forecast}</div>
-        <div class="stat-v ${r.vs_baseline.mean_pct < 0 ? "ok" : "bad"}">${r.vs_baseline.mean_pct > 0 ? "+" : ""}${r.vs_baseline.mean_pct.toFixed(2)} %</div>
-        <div class="tag ${r.vs_baseline.claim === "IMPROVES" ? "NORMAL" : "SLOW"}">${r.vs_baseline.seeds_improved} seeds</div></div>`).join("")}</div>
-      <p>${ab.reading}.</p>${ab.coverage_reading ? `<p>${ab.coverage_reading}.</p>` : ""}
-      <p class="muted">Chronos vs random: <b>${ab.route_sensitivity.vehicles_routed_differently["Chronos-Bolt vs random"]}</b> vehicles routed differently at corridor-only coverage.</p>`;
-  }
-
-  accuracy(a) {
-    const box = this.querySelector("#acc");
-    if (!a.available) { box.innerHTML = `not measured yet — <code>${a.command}</code>`; return; }
-    box.innerHTML = `<div class="tablewrap"><table><thead><tr><th>model</th><th class="num">horizon</th><th class="num">MAE</th><th class="num">class acc.</th><th class="num">skill vs persistence</th></tr></thead>
-      <tbody>${a.rows.map(r => `<tr><td>${r.is_baseline ? `<span class="muted">${r.model} (floor)</span>` : `<b>${r.model}</b>`}</td><td class="num">+${r.horizon_min}</td>
-        <td class="num">${r.mae.toFixed(3)}</td><td class="num">${(r.class_accuracy * 100).toFixed(1)} %</td>
-        <td class="num">${r.skill_vs_persistence === null ? "—" : (r.skill_vs_persistence * 100).toFixed(0) + " %"}</td></tr>`).join("")}</tbody></table></div>
-      <p class="muted">${a.nodes} corridors × ${a.bins} bins, ${a.origins_evaluated} origins · ${a.command}</p>`;
-  }
-
-  runs(r) {
-    const box = this.querySelector("#runs");
-    const rows = (r.runs || []).slice(0, 12);
-    box.innerHTML = rows.length ? `<div class="tablewrap"><table><thead><tr><th>run</th><th>status</th><th class="num">arms</th><th>started</th></tr></thead>
-      <tbody>${rows.map(x => `<tr><td><code>${x.run_id}</code></td><td>${x.status}</td><td class="num">${x.arms_done ?? "—"}/${x.arms_total ?? "—"}</td><td>${(x.started_utc || "").slice(0, 16).replace("T", " ")}</td></tr>`).join("")}</tbody></table></div>`
-      : `<p class="muted">no chain runs yet — press TEST THIS DECISION IN SUMO on Mission Control, or <code>make chain</code></p>`;
+    const g = await api.oracleGate("final");
+    const box = this.querySelector("#gate");
+    if (!g.available) { box.innerHTML = `<div class="note warn"><b>The oracle gate has not been run yet.</b></div>`; return; }
+    const p = g.primary || {}; const P = g.protocol || {};
+    const tone = p.label === "HELPED" ? "good" : p.label === "HURT" ? "bad" : "warn";
+    const pct = (v) => v == null ? "—" : `${v > 0 ? "+" : ""}${Number(v).toFixed(2)} %`;
+    const pair = (key, metric) => ((g.paired || {})[key] || {})[metric] || {};
+    const ob = (m) => pair("oracle_vs_baseline", m), orx = (m) => pair("oracle_vs_reactive", m), rb = (m) => pair("reactive_vs_baseline", m);
+    const rowsMetrics = ["total_vehicle_hours_incl_never_inserted", "mean_travel_time_all", "p95_travel_time_s", "total_waiting_s", "mean_queue_veh", "arrived", "teleports"];
+    const lab = (s) => `<span class="pill ${s.label === "HELPED" ? "ok" : s.label === "HURT" ? "bad" : "warn"}">${s.label || "—"}</span>`;
+    box.innerHTML = `
+      <section class="hero-result ${tone}">
+        <div class="hero-k">Verified outcome · perfect-information gate · ${g.seeds ? g.seeds.length : 0} held-out paired seeds</div>
+        <div class="hero-row">
+          <div class="hero-main">
+            <div class="hero-v">${pct(p.mean_pct)}</div>
+            <div class="hero-l">total vehicle-hours, routing with perfect future information vs no rerouting</div>
+          </div>
+          <div class="hero-side">
+            <div class="hero-verdict">${p.label}</div>
+            <div class="hero-sub">95 % confidence interval ${pct((p.ci95 || [])[0])} to ${pct((p.ci95 || [])[1])}</div>
+            <div class="hero-sub">${p.wins} of ${p.seeds} paired seeds improved · median ${pct(p.median_pct)}</div>
+          </div>
+        </div>
+        <p class="hero-p">The routing system was given the exact future travel times of a paired baseline run and pushed them through the same production
+          optimizer used in the app. It reduced total vehicle-hours on ${p.wins} of ${p.seeds} independent seeds, with a confidence interval that excludes zero.
+          The reactive policy alone did not help (${pct(rb("total_vehicle_hours_incl_never_inserted").mean_pct)}, ${lab(rb("total_vehicle_hours_incl_never_inserted"))}).</p>
+      </section>
+      <div class="grid grid-wide">
+        <section class="card">
+          <h3>What changed for drivers <small>oracle-informed routing vs no rerouting, paired per seed</small></h3>
+          <div class="statgrid">
+            ${[["mean_travel_time_all", "Mean travel time"], ["p95_travel_time_s", "Slowest trips (p95)"], ["total_waiting_s", "Total waiting"], ["arrived", "Trips completed"]].map(([m, l]) => {
+              const s = ob(m); const good = s.lower_is_better === false ? (s.mean_pct > 0) : (s.mean_pct < 0);
+              return `<div class="stat"><div class="stat-l">${l}</div><div class="stat-v ${s.label === "INCONCLUSIVE" ? "" : good ? "ok" : "bad"}">${pct(s.mean_pct)}</div><div class="stat-s">${s.label === "INCONCLUSIVE" ? "not conclusive" : s.label.toLowerCase()} · ${s.wins}/${s.seeds} seeds</div></div>`; }).join("")}
+          </div>
+          <details class="why"><summary>All metrics and pairings</summary>
+            <div class="tablewrap"><table><thead><tr><th>metric</th><th>oracle vs baseline</th><th>oracle vs reactive</th><th>reactive vs baseline</th></tr></thead>
+              <tbody>${rowsMetrics.map(m => `<tr><td>${METRIC_WORDS[m] || m}</td>${[ob(m), orx(m), rb(m)].map(s => `<td>${pct(s.mean_pct)} ${lab(s)}<br><small class="muted">CI ${pct((s.ci95 || [])[0])} … ${pct((s.ci95 || [])[1])} · ${s.wins}/${s.losses}/${s.ties}</small></td>`).join("")}</tr>`).join("")}</tbody></table></div>
+            <p class="muted">Teleports rose under the oracle arm (${pct(ob("teleports").mean_pct)}); they are recorded and visible in the Digital Twin, not tuned away.</p>
+          </details>
+        </section>
+        <div>
+          <section class="card notrun">
+            <h3>Learned-model final outcome</h3>
+            <div class="notrun-v">NOT RUN YET</div>
+            <p class="muted">The same protocol with the trained forecast models (Graph WaveNet, STID, Chronos) in place of perfect information has not been executed.
+              Until it is, no learned-model outcome is claimed.</p>
+          </section>
+          <section class="card">
+            <h3>Protocol <small>frozen</small></h3>
+            <div class="kv">
+              ${[["Network", "Dhaka R1 (calibrated OpenStreetMap network)"], ["Demand", `calibrated hourly demand, ${Math.round((P.demand_sample_fraction || 0) * 100)} % sample per seed, identical in every arm`],
+                 ["Simulation", `${P.simulation_duration_s} s · routing every ${P.routing_round_s} s`], ["Drivers following advice", `${Math.round((P.compliance || 0) * 100)} %`],
+                 ["Minimum benefit to reroute", `${P.min_saving_s} s and ${P.min_saving_pct} %`], ["Seeds", `${(P.dev_seeds || []).length} for development, ${(P.final_seeds || []).length} held out for the verdict`]]
+                 .map(([k, v]) => `<div class="kvrow"><div class="k">${k}</div><div class="v" style="font-size:13px;font-weight:500">${v}</div></div>`).join("")}
+            </div>
+            <details class="why"><summary>Technical details</summary>
+              <div class="kv">${[["protocol", P.protocol_id], ["SUMO", P.sumo_version], ["network hash", P.network_hash], ["routing config hash", P.routing_config_hash],
+                ["primary metric", P.primary_metric], ["oracle information", P.coverage_mode], ["report", g.report], ["generated", g.generated_utc], ["identical population every seed", String(g.same_population_all_seeds)]]
+                .map(([k, v]) => `<div class="kvrow"><div class="k">${k}</div><div class="v" style="font-size:12px;font-weight:400">${v ?? "—"}</div></div>`).join("")}</div>
+            </details>
+          </section>
+        </div>
+      </div>
+      <p class="muted">Earlier experiments under previous routing protocols are kept under <a href="#archive">Research → Archived Experiments</a>. They are not comparable with this result.</p>`;
   }
 }
 customElements.define("results-page", ResultsPage);

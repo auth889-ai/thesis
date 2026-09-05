@@ -514,6 +514,23 @@ def experiment_ablation():
     return {"available": True, "result_source": "RESEARCH_BENCHMARK", **json.loads(f.read_text())}
 
 
+@app.get("/api/experiment/oracle_gate", tags=["experiment"])
+def experiment_oracle_gate(seed_set: str = "final"):
+    """The frozen oracle outcome gate (Blocker #3): the newest report of the named seed set, read as-is."""
+    root = config.REPO / "results/routing/oracle_gate"
+    cands = sorted(root.glob(f"FINAL_PROTOCOL_v1_{seed_set}_cfg*/report.json"), key=lambda f: f.stat().st_mtime) if root.exists() else []
+    if not cands:
+        return {"available": False, "command": f"python pipeline/routing/oracle_gate.py --seeds {seed_set}"}
+    rep = json.loads(cands[-1].read_text())
+    P = rep.get("protocol", {})
+    return {"available": True, "result_source": "RESEARCH_BENCHMARK", "report": str(cands[-1].relative_to(config.REPO)), "seed_set": rep.get("seed_set"),
+            "seeds": rep.get("seeds"), "verdict": rep.get("verdict"), "primary": rep.get("primary"), "paired": rep.get("paired"),
+            "same_population_all_seeds": rep.get("same_population_all_seeds"), "generated_utc": rep.get("generated_utc"),
+            "protocol": {k: P.get(k) for k in ("protocol_id", "network", "network_hash", "demand_source", "demand_sample_fraction", "simulation_duration_s", "routing_round_s",
+                                               "compliance", "routing_config_hash", "min_saving_s", "min_saving_pct", "sumo_version", "dev_seeds", "final_seeds", "primary_metric", "coverage_mode")},
+            "learned_model_final_outcome": {"status": "NOT_RUN_YET", "note": "the learned-model final outcome comparison has not been run under this protocol"}}
+
+
 @app.get("/api/experiment/chain", tags=["experiment"])
 def experiment_chain(tag: str = "_ideal", run_id: str | None = None):
     """A chain experiment that HAS run — the newest of `tag`, or the run you name.
