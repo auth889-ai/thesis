@@ -17,6 +17,7 @@ Files land under results/live/user_datasets/<id>/ in the exact layout the OpenCi
 """
 from __future__ import annotations
 
+import hashlib
 import io
 import json
 import re
@@ -123,6 +124,13 @@ def save(name: str, csv_bytes: bytes, quantity: str = "speed_kmh", adj_bytes: by
     did = _slug(name)
     d = ROOT / did
     d.mkdir(parents=True, exist_ok=True)
+    # a new upload under the same name replaces the old one everywhere: the prepared copy under the
+    # pinned harness is removed so no stale window can answer, and models trained on the old data
+    # are flagged by the registry (their dataset_hash no longer matches)
+    import shutil
+    bts_dir = Path.home() / ".dhakaflow/upstream/BasicTS_legacy/datasets" / ("DF_user_" + did)
+    if bts_dir.exists():
+        shutil.rmtree(bts_dir)
     np.savez(d / f"{did}.npz", data=vals)
     np.save(d / f"{did}_rn_adj.npy", A)
     import pandas as pd
@@ -130,7 +138,8 @@ def save(name: str, csv_bytes: bytes, quantity: str = "speed_kmh", adj_bytes: by
     meta = {"id": did, "name": name, "nodes": nodes, "steps": int(vals.shape[0]), "interval_s": interval,
             "quantity": QUANTITIES.get(quantity, quantity), "quantity_key": quantity, "graph_from": graph_from,
             "first_utc": times[0], "last_utc": times[-1], "uploaded_utc": datetime.now(timezone.utc).isoformat(),
-            "missing_fraction": round(float(np.isnan(vals).mean()), 4), "coords": coords}
+            "missing_fraction": round(float(np.isnan(vals).mean()), 4), "coords": coords,
+            "csv_sha256": hashlib.sha256(csv_bytes).hexdigest()[:16]}
     if coords:
         lats = [c[0] for c in coords]; lngs = [c[1] for c in coords]
         meta["bbox"] = [min(lats), min(lngs), max(lats), max(lngs)]

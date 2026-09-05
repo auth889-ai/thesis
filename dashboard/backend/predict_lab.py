@@ -224,6 +224,19 @@ def _run(job: str, p: dict) -> None:
                                   "stack": "the common forecast interface (pipeline/forecasting/adapters)",
                                   "claim": "univariate zero-shot" if model == "Chronos-Bolt" else "the floor"}
         emit(stage="Scoring", step=4)
+        import provenance as pv
+        card_ck = (base.get("model_card") or {}).get("checkpoint")
+        rec = pv.Run(job, city=dataset, origin=None, destination=None, requested_model=model, resolved_model=model,
+                     region=region, dataset_hash=pv.sha_array(vals[:end, :1]) if dataset.startswith(("user:", "live:")) else dataset,
+                     graph_hash=pv.sha_array(A) if A is not None else None, checkpoint_path=card_ck,
+                     checkpoint_sha256=pv.sha_file(next((c["checkpoint"] for c in __import__("pipeline.forecasting.basicts_train", fromlist=["cards"]).cards()
+                                                          if c["dataset"] == dataset and c["arch"] == model.replace(TRAINED_SUFFIX, "")), None)) if model.endswith(TRAINED_SUFFIX) else None,
+                     input_window_hash=pv.sha_array(hist[-72:, 0]), raw_prediction_hash=pv.sha_array([x if x is not None else float("nan") for x in pred12]),
+                     raw_prediction_first10=[None if x is None else round(float(x), 3) for x in pred12[:10]],
+                     cache_hit_training=model.endswith(TRAINED_SUFFIX), inference_recomputed=True, result_source="LIVE_COMPUTATION")
+        prov = rec.finish("done")
+        base.update(run_id=job, result_source="LIVE_COMPUTATION", cache_hit_training=prov["cache_hit_training"], inference_recomputed=True,
+                    provenance=rec.summary())
         actual = base.get("actual")
         metrics = {}
         for h in hz:

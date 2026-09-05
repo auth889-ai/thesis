@@ -131,14 +131,35 @@ def levels_from_speeds(cd, forecast: dict | None, live: dict) -> tuple[dict, dic
 _CITY_BOX: dict[str, dict] = {}
 
 
+_GEO_CACHE: dict[str, list] = {}
+_GEO_LOCK = threading.Lock()
+_GEO_LAST = [0.0]
+
+
 def _nominatim(params: dict) -> list[dict]:
+    """One query to OpenStreetMap's geocoder, at most one per second (their usage policy), with the
+    answer cached for the process: the same place typed twice is not two network calls, and a
+    burst of suggestion requests cannot starve the resolve that follows."""
+    import time
     import urllib.parse
     import urllib.request
     q = urllib.parse.urlencode({"format": "json", **params})
-    req = urllib.request.Request(f"https://nominatim.openstreetmap.org/search?{q}",
-                                 headers={"User-Agent": "traffictwin/1.0 (research)"})
-    with urllib.request.urlopen(req, timeout=20) as r:
-        return json.loads(r.read().decode())
+    with _GEO_LOCK:
+        if q in _GEO_CACHE:
+            return _GEO_CACHE[q]
+        wait = 1.05 - (time.monotonic() - _GEO_LAST[0])
+        if wait > 0:
+            time.sleep(wait)                              # the geocoder's rate limit, not a cosmetic delay
+        req = urllib.request.Request(f"https://nominatim.openstreetmap.org/search?{q}",
+                                     headers={"User-Agent": "traffictwin/1.0 (research)"})
+        try:
+            with urllib.request.urlopen(req, timeout=20) as r:
+                hits = json.loads(r.read().decode())
+        finally:
+            _GEO_LAST[0] = time.monotonic()
+        if hits:
+            _GEO_CACHE[q] = hits
+        return hits
 
 
 def city_box(city: str) -> dict | None:
@@ -268,9 +289,12 @@ def _run(job: str, p: dict) -> None:
         import dataset_ops
         scope = dataset_ops.scope_for(city)
         if scope:                                       # an uploaded city dataset: the chosen checkpoint runs
-            res = dataset_ops.analyze_dataset(p, scope, emit)
+            res = dataset_ops.analyze_dataset(p, scope, emit, run_id=job)
             emit(status="done", stage="done", result=res)
             return
+        import provenance as pv
+        run = pv.Run(job, city=city, origin=p.get("origin"), destination=p.get("destination"), requested_model=p.get("model") or "auto",
+                     horizon_min=int(p.get("horizon_min") or 30), request=p)
         horizon = int(p.get("horizon_min") or 30)
         dep = p.get("departure")
         lead = horizon
@@ -284,19 +308,29 @@ def _run(job: str, p: dict) -> None:
                 pass
         h = min([x for x in HORIZONS if x >= lead] or [60])
 
-        model_req = (p.get("model") or "").strip() or None      # a specific model, or the registry's choice
-        if model_req and model_req.lower() in ("auto", "best"):
-            model_req = None
-        emit(stage="Fetching traffic", step=1)
+        model_req = (p.get("model") or "").strip() or None      # a specific model, or the registry's forecast decision
+        import model_registry
+        product = model_registry.state(city_id_for(city) or city)
+        if not model_req or model_req.lower() in ("auto", "best"):
+            model_req = product["forecast"]["model"] if product["forecast"]["model"] not in ("persistence",) else None
+        run.stage("Resolving city", emit)
         o = resolve_place(p.get("origin") or "farmgate", city)
         d = resolve_place(p.get("destination") or "shahbagh", city)
+        run.set(origin_resolved=o, destination_resolved=d)
+        run.stage("Validating traffic data", emit)
         from live import service
         routes = service.routes((o["lat"], o["lng"]), (d["lat"], d["lng"]))
         corr = service.corridors()
         if not routes.get("is_live") or not routes.get("routes"):
+            run.finish("failed", f"live routing unavailable: {routes.get('request_status')}")
             raise RuntimeError(f"live routing unavailable: {routes.get('request_status')}")
-
-        emit(stage="Running forecast", step=2)
+        run.set(routes_retrieved_at=routes.get("retrieved_at"), routes_n=len(routes.get("routes") or []))
+        run.set(routing_provider=routes.get("source"), routing_preference=routes.get("routing_preference"), routing_request_status=routes.get("request_status"),
+                routing_backend_function="dashboard/backend/live.py: LiveService.routes -> Google Routes API computeRoutes", routing_latency_ms=routes.get("request_latency_ms"),
+                route_geometry_hash=pv.sha_json([[pt for s in (r.get("segments") or []) for pt in (s.get("coordinates") or [])] for r in routes["routes"]]),
+                routes_summary=[{"key": "ABC"[i], "distance_m": r.get("distance_m"), "duration_s": r.get("duration_s"), "static_duration_s": r.get("static_duration_s"),
+                                 "points": sum(len(s.get("coordinates") or []) for s in (r.get("segments") or []))} for i, r in enumerate(routes["routes"][:3])])
+        run.stage("Loading checkpoint", emit)
         dhaka = is_dhaka(city)
         cid = city_id_for(city)
         import observatory as obs_mod
@@ -323,6 +357,11 @@ def _run(job: str, p: dict) -> None:
             fc = {"forecast": None, "observed": {}, "input": {}}
             f = {}; pred = {hh: {} for hh in HORIZONS}; observed = {}
         forecastable = bool(f)
+        run.set(resolved_model=f.get("model") if f else "none", checkpoint_path=f.get("checkpoint") if f else None,
+                dataset_hash=pv.sha_json(fc.get("input") or {}), graph_hash=None,
+                input_window_hash=pv.sha_json((fc.get("input") or {}).get("last_utc") or fc.get("input") or {}),
+                cache_hit_training=False, result_source="LIVE_COMPUTATION")
+        run.stage("Running inference", emit)
         # corridors the recorder never sampled (6 of the 12) are forecast from the persisted
         # observatory window instead — shorter history, same model, same units after conversion
         try:
@@ -360,7 +399,9 @@ def _run(job: str, p: dict) -> None:
             emit(observatory_note=f"observatory forecast unavailable: {type(exc).__name__}: {exc}")
         acc = _accuracy(f.get("model", ""))
 
-        emit(stage="Evaluating alternatives", step=3)
+        run.set(raw_prediction_hash=pv.sha_json({str(k): {kk: (None if vv is None or vv != vv else round(float(vv), 4)) for kk, vv in v.items()} for k, v in pred.items()}),
+                raw_prediction_first10=[None if v is None or v != v else round(float(v), 3) for v in list(pred.get(HORIZONS[0], {}).values())[:10]])
+        run.stage("Evaluating routes", emit)
         if dhaka:
             axes = _corridor_polylines(corr)
         elif forecastable:
@@ -422,7 +463,7 @@ def _run(job: str, p: dict) -> None:
         cur_speed = (best_now["distance_m"] / best_now["eta_now_s"] * 3.6) if best_now.get("distance_m") else None
         layers = {"now": [{"id": c["id"], "level": None, "category": c.get("category"),
                            "segments": c.get("segments") or []} for c in corr.get("corridors", []) if c.get("is_live")]
-                  if (dhaka or forecastable) else {"now": []}}
+                  if (dhaka or forecastable) else []}
         for hh in HORIZONS:
             layers[str(hh)] = [{"id": cid, "level": (None if pred[hh].get(cid) is None else round(float(pred[hh][cid]), 2)),
                                 "segments": (live_by_id.get(cid) or {}).get("segments") or []}
@@ -452,8 +493,18 @@ def _run(job: str, p: dict) -> None:
             "routes": cards, "layers": layers, "retrieved_at": routes.get("retrieved_at"),
             "source": {"traffic": "Google Routes API, TRAFFIC_AWARE_OPTIMAL", "forecast": fc.get("input", {})},
         }
+        run.stage("Preparing result", emit)
+        run.set(postprocessed_prediction_hash=pv.sha_json([c["forecast"] for c in cards]), recommended=best_pred["key"])
+        rec = run.finish("done")
+        result.update(run_id=job, result_source="LIVE_COMPUTATION", cache_hit_training=False, inference_recomputed=True,
+                      provenance=run.summary(), stages=rec["stages"],
+                      forecast_decision={**product["forecast"], "model_used": f.get("model") if f else None}, routing_policy=product["routing"])
         emit(stage="done", step=4, status="done", result=result)
     except Exception as exc:                        # noqa: BLE001 - the page shows the real reason
+        try:
+            run.finish("failed", f"{type(exc).__name__}: {exc}")
+        except Exception:                               # noqa: BLE001 - provenance never masks the real error
+            pass
         emit(stage="failed", status="failed", error=f"{type(exc).__name__}: {exc}")
 
 

@@ -36,12 +36,16 @@ export class MissionControl extends HTMLElement {
           <label>From (origin) <input id="origin" list="places" value="Farmgate" placeholder="place or lat, lng" required></label>
           <label>To (destination) <input id="dest" list="places" value="Shahbagh" placeholder="place or lat, lng" required></label>
           <label>Departure time <input id="depart" type="datetime-local"></label>
-          <label>Model <select id="model"><option value="auto">Automatic</option></select></label>
+          <label>Prediction model <select id="modelmode"><option value="auto">Automatic — Recommended</option><option value="manual">Advanced / Research…</option></select>
+            <span id="using" class="muted small-line"></span></label>
+          <select id="model" hidden><option value="auto">auto</option></select>
           <label>Forecast horizon <span class="chips" id="hchips">${[15, 30, 60].map(h => `<button type="button" class="chip ${h === 30 ? "on" : ""}" data-h="${h}">${h} min</button>`).join("")}</span><select id="horizon" hidden><option value="15">15</option><option value="30" selected>30</option><option value="60">60</option></select></label>
           <button class="btn primary big" id="go">Predict traffic →</button>
           <datalist id="places"></datalist>
         </form>
-        <div class="scenario-row"><span>Try</span><button type="button" data-origin="Farmgate" data-dest="Shahbagh">Farmgate → Shahbagh</button><button type="button" data-origin="Karwanbazar" data-dest="Shahbagh">Karwan Bazar → Shahbagh</button><button type="button" data-origin="Farmgate" data-dest="Motijheel">Farmgate → Motijheel</button><button type="button" data-origin="Uttara" data-dest="Motijheel">Uttara → Motijheel</button></div>
+        <details class="why" id="advanced"><summary>Advanced / Research — choose a model manually</summary>
+          <div id="modelgroups" class="modelgroups"></div></details>
+        <details class="why" id="examples"><summary>Examples (they only fill the inputs)</summary><div class="scenario-row"><span>Try</span><button type="button" data-origin="Farmgate" data-dest="Shahbagh">Farmgate → Shahbagh</button><button type="button" data-origin="Karwanbazar" data-dest="Shahbagh">Karwan Bazar → Shahbagh</button><button type="button" data-origin="Farmgate" data-dest="Motijheel">Farmgate → Motijheel</button><button type="button" data-origin="Uttara" data-dest="Motijheel">Uttara → Motijheel</button></div></details>
       </section>
       <div id="progress" class="progress-row" hidden></div>
       <div class="ops">
@@ -116,6 +120,10 @@ export class MissionControl extends HTMLElement {
         }, 350);
       });
     }
+    this.querySelector("#modelmode").addEventListener("change", (e) => {
+      const adv = this.querySelector("#advanced"); adv.open = e.target.value === "manual";
+      if (e.target.value === "auto") { const sel = this.querySelector("#model"); sel.innerHTML = `<option value="auto">auto</option>`; sel.value = "auto"; this.querySelectorAll("input[name=mmodel]").forEach(i => i.checked = false); }
+    });
     this.querySelector("#city").addEventListener("change", () => { this.loadModels(); api.places(this.querySelector("#city").value).then(r => {
       this.querySelector("#places").innerHTML = (r.places || []).map(x => `<option value="${x.label}">`).join(""); }); });
   }
@@ -132,14 +140,16 @@ export class MissionControl extends HTMLElement {
     const seq = (this._modelSeq = (this._modelSeq || 0) + 1);
     const r = await api.modelRegistry(scope);
     if (seq !== this._modelSeq) return;                 // a newer city was chosen while this one loaded
-    const sel = this.querySelector("#model"); const keep = sel.value;
-    const gate = (e) => e.eligible ? "" : e.trained === false ? ` — ${e.reason || "not trained"}` : e.gates && !e.gates.trust && e.trust ? ` — ${e.trust === "NOT_BETTER_THAN_BASELINE" ? "not better than baseline" : e.trust.toLowerCase()}` : e.reason ? ` — ${e.reason}` : "";
-    sel.innerHTML = (r.groups || []).map(g => `<optgroup label="${g.title}">` + g.items.map(e => {
-      const label = e.model === "auto" ? `${e.label}${e.resolves_to ? " → " + e.resolves_to.label : ""}` : `${e.label}${e.checkpoint && e.trained ? " · " + e.checkpoint : ""}${gate(e)}`;
-      const disabled = e.model !== "auto" && !e.eligible && !(e.family === "research" && (e.model === "persistence" || e.model === "historical_average")) && !(e.family === "pretrained" && e.model === "Chronos-Bolt" && !src?.dataset);
-      return `<option value="${e.model}" ${disabled ? "disabled" : ""}>${label}</option>`; }).join("") + `</optgroup>`).join("");
-    sel.value = [...sel.options].some(o => o.value === keep && !o.disabled) ? keep : "auto";
     this._registry = r;
+    const f = r.forecast || {}, rt = r.routing || {};
+    const statusWord = {VALIDATED: "Validated on this city", FORECAST_ONLY: "Live forecast · not yet validated locally", BASELINE: "Baseline — no learned predictor available yet"}[f.status] || f.status || "";
+    this.querySelector("#using").innerHTML = f.model ? `Using: <b>${f.label}</b> · ${statusWord}${rt.policy === "PREDICTION_AWARE" ? " · routing eligible" : " · routing stays reactive"}` : "";
+    const sel = this.querySelector("#model"); const keep = sel.value;
+    const box = this.querySelector("#modelgroups");
+    box.innerHTML = (r.groups || []).filter(g => g.key !== "recommended").map(g => `<div class="mg"><div class="mg-h">${g.title.toUpperCase()}</div>` +
+      (g.items.length ? g.items.map(e => `<label class="mg-item ${e.can_forecast ? "" : "off"}"><input type="radio" name="mmodel" value="${e.model}" ${e.can_forecast ? "" : "disabled"} ${keep === e.model ? "checked" : ""}> ${e.label}${e.checkpoint && e.trained ? ` <small>${e.checkpoint}</small>` : ""}${e.trust ? ` <span class="tag ${e.trust === "ROUTING_ELIGIBLE" ? "NORMAL" : "SLOW"}">${e.trust === "ROUTING_ELIGIBLE" ? "routing eligible" : "forecast only"}</span>` : ""}${e.reason ? ` <small class="muted">${e.reason}</small>` : ""}</label>`).join("") : `<div class="muted small-line">none</div>`) + `</div>`).join("");
+    box.querySelectorAll("input[name=mmodel]").forEach(inp => inp.addEventListener("change", () => { sel.innerHTML = `<option value="${inp.value}">${inp.value}</option>`; sel.value = inp.value; this.querySelector("#modelmode").value = "manual"; }));
+    if (this.querySelector("#modelmode").value === "auto") { sel.innerHTML = `<option value="auto">auto</option>`; sel.value = "auto"; }
   }
 
   async initMap() {
@@ -173,7 +183,7 @@ export class MissionControl extends HTMLElement {
                  departure: this.querySelector("#depart").value ? new Date(this.querySelector("#depart").value).toISOString() : null,
                  departure_local: this.querySelector("#depart").value || null,      // the wall clock as typed, for datasets with their own clock
                  horizon_min: Number(this.querySelector("#horizon").value), model: this.querySelector("#model").value};
-    const steps = ["Fetching traffic", "Running forecast", "Evaluating alternatives"];
+    const steps = ["Resolving city", "Loading graph", "Validating traffic data", "Loading checkpoint", "Running inference", "Evaluating routes", "Preparing result"];
     const prog = this.querySelector("#progress");
     this.stage(prog, steps, 0);
     this.querySelector("#go").disabled = true;
@@ -183,10 +193,18 @@ export class MissionControl extends HTMLElement {
       await new Promise(r => setTimeout(r, 700));
       const s = await api.analyzeStatus(j.job);
       const idx = Math.max(0, steps.indexOf(s.stage));
+      if (s.stages && s.stages.length) this.stageTimes(prog, s.stages, s.status === "failed" ? s.error : null);
       if (s.status === "done") { prog.hidden = true; this.querySelector("#go").disabled = false; this.querySelector("#form-state").textContent = "Decision ready"; this._result = s.result; this.render(); this.draw(); return; }
       if (s.status === "failed") { this.stage(prog, steps, idx, s.error); this.querySelector("#go").disabled = false; this.querySelector("#form-state").textContent = "Analysis needs attention"; this.renderFailure(s.error); return; }
       this.stage(prog, steps, idx);
     }
+  }
+
+  /* the backend's measured stages: name + seconds, exactly as timed around the real work */
+  stageTimes(el, stages, error) {
+    el.hidden = false;
+    el.innerHTML = stages.map((st, i) => `<span class="${st.seconds != null ? "done" : "now"}">${st.seconds != null ? "✓" : "●"} ${st.name}${st.seconds != null ? ` <small>${st.seconds.toFixed(2)} s</small>` : ""}</span>`).join("")
+      + (error ? `<span class="fail">✕ ${error}</span>` : "");
   }
 
   renderFailure(err) {
@@ -211,6 +229,14 @@ export class MissionControl extends HTMLElement {
       const p = now.forecast[hh] || {}; const [w, tone] = word(p.risk, p.covered);
       cards.push(`<div class="card hz ${hh === h ? "sel" : ""}"><div class="hz-l">In ${hh} minutes</div><div class="hz-v">${p.covered ? mins(p.eta_s) : mins(now.eta_now_s)}</div><div class="hz-s">expected speed ${speed(now.distance_m, p.covered ? p.eta_s : now.eta_now_s)}</div><span class="tag ${tone}">${w}</span></div>`);
     }
+    const fd = r.forecast_decision || {}, rp = r.routing_policy || {};
+    const usedLabel = fd.model_used && fd.model_used !== fd.model ? fd.model_used : (fd.label || f.model || "—");
+    const fStatus = !r.forecastable ? ["No history yet", "UNKNOWN"] : fd.status === "VALIDATED" && fd.model_used === fd.model ? ["Validated on this city", "NORMAL"]
+                  : fd.model_used && fd.model_used !== fd.model ? [`Manual choice · ${fd.model_used_trust === "ROUTING_ELIGIBLE" ? "validated" : "forecast only"}`, "SLOW"]
+                  : fd.status === "FORECAST_ONLY" ? ["Live prediction · not yet validated locally", "SLOW"] : fd.status === "BASELINE" ? ["Baseline — no learned model yet", "UNKNOWN"] : ["Live prediction", "NORMAL"];
+    const trusted = rp.policy === "PREDICTION_AWARE";
+    cards.push(`<div class="card hz wide"><div class="hz-l">AI forecast</div><div class="hz-v" style="font-size:20px">${r.forecastable ? usedLabel : "—"}</div><div class="hz-s">${r.forecastable ? (fd.local_validation === "PASSED" ? "local validation: passed" : fd.local_validation === "FAILED" ? "local validation: did not beat the simple guess" : fd.local_validation === "SAMPLED" ? "local validation: sampled windows only" : "local validation: not available yet") : "collect history to start predicting"}</div><span class="tag ${fStatus[1]}">${fStatus[0]}</span></div>`);
+    cards.push(`<div class="card hz wide"><div class="hz-l">Routing trust</div><div class="hz-v" style="font-size:20px">${trusted ? "Trusted" : "Forecast-only"}</div><div class="hz-s">${trusted ? `${rp.label} passed the held-out gate — prediction-aware routing may be used` : "reactive fallback for safety — routing follows live traffic"}</div><span class="tag ${trusted ? "NORMAL" : "SLOW"}">${trusted ? "prediction-aware routing" : "reactive fallback"}</span></div>`);
     this.querySelector("#hz").innerHTML = cards.join("");
     const rec = r.routes.find(c => c.recommended) || now; const pr = rec.forecast[h] || {};
     const [rw, rtone] = word(pr.risk, pr.covered);
@@ -223,7 +249,7 @@ export class MissionControl extends HTMLElement {
         <div><div class="k">Estimated time</div><div class="v">${mins(pr.covered ? pr.eta_s : rec.eta_now_s)}</div></div>
         <div><div class="k">Time saving</div><div class="v">${d.saving_s > 60 ? "~ " + Math.round(d.saving_s / 60) + " min" : "—"}</div></div>
         <div><div class="k">Congestion risk</div><div class="v"><span class="tag ${rtone}">${pr.covered ? (pr.risk === "HIGH" ? "Higher" : pr.risk === "MEDIUM" ? "Medium" : "Lower") : "unknown"}</span></div></div>
-        <div><div class="k">Confidence</div><div class="v">${conf}</div><div class="muted" style="font-size:11px">${confM ? (r.dataset ? "better than 'no change' on this data's held-out test" : "class accuracy on this city's own history") : ""}</div></div>
+        <div><div class="k">Routing trust</div><div class="v">${trusted ? "Trusted" : "Forecast-only"}</div><div class="muted" style="font-size:11px">${trusted ? "held-out gate passed" : "reactive fallback"}</div></div>
       </div>
       <details class="why"><summary>Why this recommendation?</summary><div class="muted">${d.reason}${d.basis ? ` · ${d.basis}` : ""}</div></details>
       ${!r.forecastable ? `<div class="compact-state" style="margin-top:8px"><b>No traffic history for ${r.city} yet</b> — travel times and routes are live, the prediction needs history.
@@ -251,12 +277,20 @@ export class MissionControl extends HTMLElement {
     this.querySelectorAll(".routecard").forEach(el => el.addEventListener("click", () => this.highlight(Number(el.dataset.i))));
     this.querySelector("#observe")?.addEventListener("click", () => this.observe());
     const about = this.querySelector("#about"); about.hidden = false;
-    this.querySelector("#aboutline").textContent = r.dataset
+    this.querySelector("#aboutline").innerHTML = `<span class="tag ${r.result_source === "LIVE_COMPUTATION" ? "NORMAL" : "SLOW"}">${(r.result_source || "").replace(/_/g, " ").toLowerCase() || "source unknown"}</span> `;
+    this.querySelector("#aboutline").append(r.dataset
       ? `Predictions use ${f.model}${f.checkpoint ? ` (checkpoint ${f.checkpoint})` : ""} on your uploaded ${r.city} data at ${(f.as_of_dataset_time || "").slice(0, 16).replace("T", " ")}; routes are live.`
       : r.forecastable
       ? `Predictions use ${f.model || "the forecast model"} on ${r.city}'s recorded corridors; accuracy varies with how much history the city has.`
-      : `No prediction model has history for ${r.city} yet; travel times and routes are live measurements.`;
-    this.querySelector("#tech").innerHTML = [["model", f.model || "—"], ["checkpoint", f.checkpoint ? `${f.checkpoint}${f.checkpoint_sha256 ? " · sha256 " + f.checkpoint_sha256 : ""}` : "—"],
+      : `No prediction model has history for ${r.city} yet; travel times and routes are live measurements.`);
+    const pv = r.provenance || {};
+    const stageStr = (r.stages || []).map(st => `${st.name} ${st.seconds != null ? st.seconds.toFixed(2) + " s" : "…"}`).join(" · ");
+    this.querySelector("#tech").innerHTML = [["run id", r.run_id ? `${r.run_id} · <a href="/api/runs/${r.run_id}" target="_blank">full provenance</a>` : "—"],
+      ["result source", `${r.result_source || "—"}${r.cache_hit_training ? " · training checkpoint reused" : ""}${r.inference_recomputed ? " · inference recomputed for this request" : ""}`],
+      ["measured stages", stageStr || "—"], ["requested → resolved model", `${pv.requested_model || f.requested || "—"} → ${pv.resolved_model || f.model || "—"}`],
+      ["checkpoint", pv.checkpoint_path ? `${pv.checkpoint_path}${pv.checkpoint_sha256 ? " · sha256 " + pv.checkpoint_sha256 : ""}` : (f.checkpoint || "—")],
+      ["hashes", `dataset ${pv.dataset_hash || "—"} · graph ${pv.graph_hash || "—"} · input window ${pv.input_window_hash || "—"} · raw prediction ${pv.raw_prediction_hash || "—"} · post-processed ${pv.postprocessed_prediction_hash || "—"}`],
+      ["model", f.model || "—"],
       ["requested", f.requested ? `${f.requested}${f.automatic && f.requested === "auto" ? " → " + f.automatic.label + " (" + f.automatic.why + ")" : ""}` : "—"],
       ["dataset moment", f.as_of_dataset_time ? `${f.as_of_dataset_time.slice(0, 16).replace("T", " ")} (index ${f.as_of_index})` : "—"],
       ["trust gate", f.trust || "—"], ["history used", f.input_steps ? `${f.input_steps} recorded steps` : "—"], ["confidence", f.confidence || "—"],
@@ -293,14 +327,14 @@ export class MissionControl extends HTMLElement {
     this.clear();
     const b = new maplibregl.LngLatBounds();
     // 1. traffic state: now = live category; +h = predicted level, congested corridors in maroon
-    (r.layers[h] || []).forEach((c, i) => c.segments.forEach((seg, j) => {
+    (Array.isArray(r.layers?.[h]) ? r.layers[h] : []).forEach((c, i) => (c.segments || []).forEach((seg, j) => {
       const coords = (seg.coordinates || []).map(([lat, lng]) => [lng, lat]);
       if (coords.length < 2) return;
       const colour = h === "now" ? (CAT[seg.speed] || CAT[c.category] || C.grey) : LEVEL(c.level);
       this.line(`tr-${h}-${i}-${j}`, coords, {"line-color": colour, "line-width": 5, "line-opacity": 0.55,
         ...(h !== "now" && c.level >= 1 ? {"line-dasharray": [2, 1.2]} : {})});
     }));
-    if (h === "now" && !(r.layers.now || []).length) {
+    if (h === "now" && !(Array.isArray(r.layers?.now) ? r.layers.now : []).length) {
       r.routes.forEach(c => c.segments.forEach((seg, j) => {
         const coords = (seg.coordinates || []).map(([lat, lng]) => [lng, lat]);
         if (coords.length >= 2) this.line(`seg-${c.key}-${j}`, coords, {"line-color": CAT[seg.speed] || C.grey, "line-width": 9, "line-opacity": 0.45});

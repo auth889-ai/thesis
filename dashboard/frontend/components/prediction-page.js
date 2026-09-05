@@ -219,7 +219,9 @@ export class PredictionPage extends HTMLElement {
     this.querySelector("#techrows").innerHTML = Object.entries(c).filter(([k, v]) => v !== null && typeof v !== "object").map(([k, v]) =>
       `<div class="kvrow"><div class="k">${k.replace(/_/g, " ")}</div><div class="v" style="font-size:12px">${v}</div></div>`).join("") +
       (c.reported_test_metrics ? `<div class="kvrow"><div class="k">test MAE</div><div class="v" style="font-size:12px">${Object.entries(c.reported_test_metrics).map(([k, v]) => `+${k}: ${typeof v === "number" ? v.toFixed(3) : v}`).join(" · ")}</div></div>` : "") +
-      `<div class="kvrow"><div class="k">dataset id</div><div class="v" style="font-size:12px">${r.dataset} · road index ${r.region} · ${r.nodes_in_subgraph} roads in the graph · data source ${r.reality}</div></div>`;
+      `<div class="kvrow"><div class="k">dataset id</div><div class="v" style="font-size:12px">${r.dataset} · road index ${r.region} · ${r.nodes_in_subgraph} roads in the graph · data source ${r.reality}</div></div>` +
+      (r.provenance ? `<div class="kvrow"><div class="k">run</div><div class="v" style="font-size:12px">${r.run_id} · ${r.result_source}${r.cache_hit_training ? " · training checkpoint reused" : ""} · inference recomputed · <a href="/api/runs/${r.run_id}" target="_blank">provenance</a></div></div>
+      <div class="kvrow"><div class="k">hashes</div><div class="v" style="font-size:12px">input window ${r.provenance.input_window_hash} · raw prediction ${r.provenance.raw_prediction_hash}${r.provenance.checkpoint_sha256 ? " · checkpoint sha256 " + r.provenance.checkpoint_sha256 : ""}</div></div>` : "");
   }
 
   /* What a person needs to know about the model — no file names, no repositories. */

@@ -12,7 +12,7 @@ def _card(arch, dataset, val_mae, per_val, skill, verified=True, quality=True, f
     return {"dataset": dataset, "bts_name": "DF_x", "arch": arch, "checkpoint": f"/tmp/{arch}_best.pt", "trained_utc": "2026-09-05T00:00:00+00:00",
             "quality": {"passed": quality}, "verification": {"passed": verified},
             "evaluation": {"validation": {arch: {"overall": {"MAE": val_mae}}, "persistence": {"overall": {"MAE": per_val}},
-                                          "Chronos-Bolt": {"overall": {"MAE": 4.1}}, "historical_average": {"overall": {"MAE": 8.0}}},
+                                          "Chronos-Bolt": {"overall": {"MAE": 4.1}, "full_split": True}, "historical_average": {"overall": {"MAE": 8.0}}},
                            "test": {arch: {"overall": {"MAE": val_mae, "skill_vs_persistence": skill}}, "persistence": {"overall": {"MAE": 7.0}},
                                     "Chronos-Bolt": {"overall": {"MAE": 6.5, "skill_vs_persistence": 0.13}}},
                            "validation_MAE": {arch: val_mae, "persistence": per_val, "Chronos-Bolt": 4.1}},
@@ -35,8 +35,8 @@ def test_groups_and_automatic_pick_by_validation_among_fully_gated(cards):
               _card("STID", "user:x", 3.9, 6.4, 0.26),
               _card("DCRNN", "user:x", 3.2, 6.4, 0.30, verified=False)]   # best val MAE but its checkpoint did not reproduce
     r = mr.registry("user:x")
-    assert [g["key"] for g in r["groups"]] == ["recommended", "trained", "pretrained", "research"]
-    assert r["automatic"]["model"] == "GWNet" and "validation" in r["automatic"]["why"]
+    assert [g["key"] for g in r["groups"]] == ["recommended", "available", "validated", "pretrained", "baselines", "unavailable"]
+    assert r["automatic"]["model"] == "GWNet" and r["forecast"]["status"] == "VALIDATED" and r["routing"]["policy"] == "PREDICTION_AWARE"
     by = {e["model"]: e for g in r["groups"] for e in g["items"]}
     assert by["DCRNN"]["eligible"] is False and by["DCRNN"]["gates"]["verified"] is False
     assert by["STAEformer"]["trained"] is False
@@ -47,15 +47,20 @@ def test_groups_and_automatic_pick_by_validation_among_fully_gated(cards):
 def test_automatic_falls_back_when_nothing_passes(cards):
     import model_registry as mr
     c = _card("STID", "user:y", 8.0, 6.4, -0.4)               # trained, but worse than persistence
-    r = mr.registry("user:y") if not cards.append(c) else None
+    cards.append(c)
+    r = mr.registry("user:y")
     by = {e["model"]: e for g in r["groups"] for e in g["items"]}
     assert by["STID"]["trust"] == "NOT_BETTER_THAN_BASELINE" and by["STID"]["eligible"] is False
-    assert r["automatic"]["model"] == "Chronos-Bolt"          # the pretrained model still passed its gates
-    for split in ("validation", "test"):                      # without a passing pretrained score: the floor, and it says so
+    assert r["forecast"]["model"] == "Chronos-Bolt" and r["forecast"]["status"] == "VALIDATED"   # the pretrained model passed its gates here
+    for split in ("validation", "test"):                      # without a validated pretrained score:
         c["evaluation"][split].pop("Chronos-Bolt", None)
     r = mr.registry("user:y")
-    assert r["automatic"]["model"] == "persistence" and "fallback" in r["automatic"]["why"]
-
+    # priority: an available pretrained forecast-only model outranks a trained model that failed its gate;
+    # routing falls back; persistence is never presented as the AI forecast
+    assert r["forecast"]["model"] == "Chronos-Bolt" and r["forecast"]["status"] == "FORECAST_ONLY"
+    assert r["routing"]["policy"] == "REACTIVE_FALLBACK" and r["automatic"]["model"] == "Chronos-Bolt"
+    by = {e["model"]: e for g in r["groups"] for e in g["items"]}
+    assert by["STID"]["status"] == "AVAILABLE" and by["STID"]["can_forecast"] is True     # still selectable manually, forecast-only
 
 def test_resolve_maps_auto_and_names(cards):
     import model_registry as mr
@@ -75,8 +80,33 @@ def test_live_city_scope_offers_no_trained_models(cards):
 
 def test_registry_endpoint(client):
     r = client.get("/api/registry?scope=user:does_not_exist").json()
-    assert r["scope"] == "user:does_not_exist" and r["automatic"]["model"] == "persistence"
-    assert [g["title"] for g in r["groups"]] == ["Recommended", "Trained on your city", "Pretrained", "Compare models / Research"]
+    assert r["scope"] == "user:does_not_exist" and r["forecast"]["model"] in ("Chronos-Bolt", "persistence")
+    assert [g["title"] for g in r["groups"]] == ["Recommended", "Available", "Validated on this city", "Pretrained", "Baselines", "Unavailable"]
+    assert r["routing"]["policy"] == "REACTIVE_FALLBACK"
+
+
+def test_live_city_forecast_is_chronos_not_persistence(cards, monkeypatch):
+    """A city with corridor history but no permitted local validation set: the AI forecast is the
+    pretrained model (forecast-only), persistence is never presented as the AI forecast, and
+    routing stays reactive."""
+    import model_registry as mr
+    monkeypatch.setattr(mr, "_live_availability", lambda scope: {"Chronos-Bolt": (True, []), "OpenCity-plus": (False, ["graph has 6 nodes; needs 9"])})
+    r = mr.registry("dhaka")
+    assert r["forecast"]["model"] == "Chronos-Bolt" and r["forecast"]["status"] == "FORECAST_ONLY" and r["forecast"]["local_validation"] == "UNAVAILABLE"
+    assert r["routing"]["policy"] == "REACTIVE_FALLBACK" and r["routing"]["trusted_model"] is None
+    by = {e["model"]: e for g in r["groups"] for e in g["items"]}
+    assert by["OpenCity-plus"]["status"] == "UNAVAILABLE" and by["Chronos-Bolt"]["status"] == "AVAILABLE"
+    assert mr.resolve("dhaka", "auto")["model"] == "Chronos-Bolt"
+
+
+def test_validated_upload_flips_automatic_without_restart(cards):
+    """Registry reads the cards on every call: once a validated card exists, Automatic changes."""
+    import model_registry as mr
+    r0 = mr.registry("user:flip")
+    assert r0["routing"]["policy"] == "REACTIVE_FALLBACK"
+    cards.append(_card("GWNet", "user:flip", 3.5, 6.4, 0.27))
+    r1 = mr.registry("user:flip")
+    assert r1["forecast"]["model"] == "GWNet" and r1["forecast"]["status"] == "VALIDATED" and r1["routing"]["policy"] == "PREDICTION_AWARE"
 
 
 def test_dataset_moment_matches_weekday_and_time():

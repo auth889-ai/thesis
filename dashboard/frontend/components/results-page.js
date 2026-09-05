@@ -8,7 +8,8 @@ const C = {olive: "#4a5d23", sage: "#8a9a5b", maroon: "#7b2d3b", grey: "#b9b3a6"
 
 export class ResultsPage extends HTMLElement {
   connectedCallback() {
-    this.innerHTML = `<div class="grid grid-wide">
+    this.innerHTML = `
+      <div class="note warn" style="margin-bottom:10px"><b>Research benchmark.</b> Every number on this page is read from a precomputed experiment file (result_source RESEARCH_BENCHMARK) with the command that regenerates it — nothing here is a new live result. Live results are on Mission Control and Prediction, each with a run id and provenance.</div><div class="grid grid-wide">
       <section class="card"><h3>Penetration curve <small>E4 · vehicle-hours vs baseline, paired seeds, band ±1 sd</small></h3><div class="chart tall"><canvas id="sweep"></canvas></div><div id="sweepnote" class="muted"></div></section>
       <section class="card"><h3>Which forecast the routing used <small>E3 / E5</small></h3><div id="abl"></div></section>
     </div>

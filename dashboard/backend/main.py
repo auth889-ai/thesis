@@ -432,7 +432,7 @@ def city_forecast_accuracy(city_id: str):
         return {"available": False, "city_id": city_id,
                 "missing": "results/forecasting/live_backtest.json",
                 "command": "python pipeline/forecasting/live_backtest.py"}
-    return {"available": True, **json.loads(f.read_text())}
+    return {"available": True, "result_source": "RESEARCH_BENCHMARK", **json.loads(f.read_text())}
 
 
 # ---------------------------------------------------------------------------
@@ -502,7 +502,7 @@ def experiment_sweep(grid: str = "compliance"):
     if not f.exists():
         return {"available": False, "missing": str(f.relative_to(config.REPO)),
                 "command": f"make sweep" if grid == "compliance" else "make sweep-v2x"}
-    return {"available": True, **json.loads(f.read_text())}
+    return {"available": True, "result_source": "RESEARCH_BENCHMARK", **json.loads(f.read_text())}
 
 
 @app.get("/api/experiment/ablation", tags=["experiment"])
@@ -511,7 +511,7 @@ def experiment_ablation():
     f = config.REPO / "results/routing/ablation_forecast_quality.json"
     if not f.exists():
         return {"available": False, "missing": str(f.relative_to(config.REPO)), "command": "make ablation"}
-    return {"available": True, **json.loads(f.read_text())}
+    return {"available": True, "result_source": "RESEARCH_BENCHMARK", **json.loads(f.read_text())}
 
 
 @app.get("/api/experiment/chain", tags=["experiment"])
@@ -528,7 +528,10 @@ def experiment_chain(tag: str = "_ideal", run_id: str | None = None):
                 "missing": str(f.relative_to(config.REPO)),
                 "run_it": "POST /api/experiment/chain/run",
                 "command": "python pipeline/routing/integrated_chain.py --seeds 11,12,13,14,15"}
-    return {"available": True, **json.loads(f.read_text())}
+    rec = json.loads(f.read_text())
+    kind = str(((rec.get("options") or rec.get("request") or {}).get("forecast_kind")) or rec.get("forecast_kind") or "").lower()
+    src = "SYNTHETIC_WHAT_IF" if kind in ("random", "oracle") else "RESEARCH_BENCHMARK"
+    return {"available": True, "result_source": src, **rec}
 
 
 # ---------------------------------------------------------------------------
@@ -642,6 +645,18 @@ def experiment_chain_status(run_id: str):
 def sim_live_start(payload: dict | None = None):
     """Start a live SUMO run: scale, duration_s, seed, compliance, arm, step_delay_ms."""
     return live_sim_mod.live_sim.start(payload or {})
+
+
+@app.post("/api/sim/live/screenshot", tags=["twin"])
+def sim_live_screenshot(payload: dict | None = None):
+    """sumo-gui writes its own view to a PNG (TraCI gui.screenshot)."""
+    return live_sim_mod.live_sim.screenshot((payload or {}).get("path"))
+
+
+@app.post("/api/sim/live/follow", tags=["twin"])
+def sim_live_follow(payload: dict | None = None):
+    """Follow one simulated vehicle in the sumo-gui window."""
+    return live_sim_mod.live_sim.follow((payload or {}).get("vehicle_id"))
 
 
 @app.post("/api/sim/live/pause", tags=["twin"])
@@ -851,6 +866,29 @@ def models_registry(scope: str = "dhaka"):
     appears without a restart."""
     import model_registry
     return model_registry.registry(scope)
+
+
+@app.get("/api/runs", tags=["operate"])
+def runs_recent(limit: int = 20):
+    """The most recent prediction runs with their provenance (what computed each result)."""
+    import provenance
+    return {"runs": provenance.recent(limit)}
+
+
+@app.get("/api/runs/{run_id}", tags=["operate"])
+def run_provenance(run_id: str):
+    """Technical details of one run: requested vs resolved model, checkpoint path + sha256, dataset /
+    graph / input-window / raw-prediction / post-processed hashes, measured stage timings, result_source."""
+    import provenance
+    rec = provenance.load(run_id)
+    return rec or {"run_id": run_id, "error": "UNAVAILABLE: no provenance record for this run id"}
+
+
+@app.get("/api/analyze/{job}/provenance", tags=["operate"])
+def analyze_provenance(job: str):
+    import provenance
+    rec = provenance.load(job)
+    return rec or {"run_id": job, "error": "UNAVAILABLE: no provenance record (job still running, failed before inference, or unknown)"}
 
 
 @app.post("/api/analyze", tags=["operate"])

@@ -34,7 +34,7 @@ export class CrossCityPage extends HTMLElement {
         <td><span class="tag ${held ? "NORMAL" : "SLOW"}">${held ? "HELD OUT" : "IN PRE-TRAINING"}</span></td>
         <td>${(e.city_specific_models || []).join(", ") || "—"}
             ${(e.model_results || []).length ? `<br><small class="muted">best MAE@15 ${
-              Math.min(...e.model_results.map(r => r["mae@15min"] ?? 99)).toFixed(3)}</small>` : ""}</td>
+              Math.min(...e.model_results.map(r => r["mae@15min"]).filter(x => x != null)).toFixed(3)}</small>` : ""}</td>
         <td>${oc.mae != null ? `${oc.mae} <small class="muted">vs ${oc.published ?? "—"} published</small>` : "—"}</td>
         <td>${verdict ? `<span class="tag ${verdict === "REPRODUCTION_PASS" ? "NORMAL" : "UNKNOWN"}">${verdict}</span>` : "—"}</td>
       </tr>`;

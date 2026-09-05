@@ -32,7 +32,9 @@ MAX_VEHICLES_SHOWN = 2000
 ARMS = ("baseline", "reactive", "prediction_aware")
 DEFAULTS = {"scale": None, "duration_s": 900, "seed": 11, "compliance": 0.3, "arm": "reactive",
             "levels": "observed", "step_delay_ms": 100, "v2x": "ideal", "horizon_min": 15,
-            "continuous": False, "network": "dhaka_r1"}
+            "continuous": False, "network": "dhaka_r1", "gui": False}
+# vehicle colours in sumo-gui (RGBA): what a viewer sees moving on the OSM network
+COLOUR = {"normal": (255, 200, 0, 255), "reactive": (40, 120, 255, 255), "advised": (40, 190, 60, 255), "stopped": (220, 40, 40, 255)}
 DHAKA_CENTER = (90.395, 23.755)
 
 
@@ -159,6 +161,42 @@ class LiveSim:
             self._thread.join(timeout=30)
         return self.state(with_vehicles=False)
 
+    def screenshot(self, path: str | None = None) -> dict:
+        """Ask sumo-gui to write its current view to a PNG (TraCI gui.screenshot) — the real window,
+        not a browser drawing."""
+        conn = getattr(self, "_conn", None)
+        st = self.state(with_vehicles=False)
+        if not conn or not st.get("gui") or st.get("status") not in ("running", "paused"):
+            return {"ok": False, "reason": "no sumo-gui run is active"}
+        out = Path(path) if path else (config.REPO / "results/live/sim/screenshots" / f"{st.get('run_id', 'run')}_{int(st.get('sim_time_s', 0))}s.png")
+        out.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            if path is None and st.get("kpis", {}).get("vehicles_on_road"):   # frame the busiest spot before shooting
+                ids = conn.vehicle.getIDList()
+                if ids and not getattr(self, "_tracking", False):
+                    v = max(ids, key=lambda i: conn.vehicle.getWaitingTime(i))
+                    x, y = conn.vehicle.getPosition(v); conn.gui.setOffset("View #0", x, y); conn.gui.setZoom("View #0", 9000)
+            conn.gui.screenshot("View #0", str(out))
+        except Exception as exc:                            # noqa: BLE001
+            return {"ok": False, "reason": f"{type(exc).__name__}: {exc}"}
+        return {"ok": True, "path": str(out), "sim_time_s": st.get("sim_time_s"), "run_id": st.get("run_id"), "pid": st.get("pid")}
+
+    def follow(self, vehicle_id: str | None = None) -> dict:
+        """Track one vehicle in the sumo-gui view (TraCI gui.trackVehicle); the busiest one when none is named."""
+        conn = getattr(self, "_conn", None)
+        st = self.state(with_vehicles=False)
+        if not conn or not st.get("gui") or st.get("status") not in ("running", "paused"):
+            return {"ok": False, "reason": "no sumo-gui run is active"}
+        try:
+            ids = conn.vehicle.getIDList()
+            vid = vehicle_id or (max(ids, key=lambda v: conn.vehicle.getWaitingTime(v)) if ids else None)
+            if not vid:
+                return {"ok": False, "reason": "no vehicle on the road yet"}
+            conn.gui.trackVehicle("View #0", vid); conn.gui.setZoom("View #0", 14000); self._tracking = True
+        except Exception as exc:                            # noqa: BLE001
+            return {"ok": False, "reason": f"{type(exc).__name__}: {exc}"}
+        return {"ok": True, "vehicle": vid}
+
     def state(self, with_vehicles: bool = True) -> dict:
         with self._lock:
             s = dict(self._snapshot)
@@ -221,15 +259,25 @@ class LiveSim:
                 weights = write_weights(table, out / "forecast_weights.xml", 0.0, float(cfg["duration_s"]))
                 forecast = table["forecast"]
                 routes, changed, advised = ic.predeparture_routes(a, cfg["seed"], weights, out, deliver_p)
+            gui = bool(cfg.get("gui"))
             ns = argparse.Namespace(net=a.net, routes=str(routes), seed=cfg["seed"], scale=cfg["scale"],
                                     horizon=cfg["duration_s"], edgedata_period=300,
-                                    time_to_teleport=300, sumo_binary="sumo")
+                                    time_to_teleport=300, sumo_binary="sumo-gui" if gui else "sumo")
             self._set(message="starting SUMO", edges_congested=len(slow), delivery_fraction=deliver_p,
                       forecast=forecast, advised=advised, routes_changed=changed)
             import subprocess
             port = pr.free_port()
-            proc = subprocess.Popen(pr.base_cmd(ns, out) + ["--remote-port", str(port)],
+            gui_args = []
+            if gui:                                        # the real SUMO window: starts by itself, closes when the run ends
+                gui_args = ["--start", "--quit-on-end", "--window-size", "1400,900", "--delay", str(max(20, int(cfg.get("step_delay_ms") or 50)))]
+                view = Path(netinfo["net"]).parent / "osm.view.xml"
+                if view.exists():
+                    gui_args += ["--gui-settings-file", str(view)]
+            proc = subprocess.Popen(pr.base_cmd(ns, out) + ["--remote-port", str(port)] + gui_args,
                                     stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+            self._proc, self._conn = proc, None
+            n_edges = netinfo.get("edges") or next((n.get("edges") for n in networks() if n["id"] == netinfo["id"]), None)
+            self._set(pid=proc.pid, port=port, gui=gui, sumo_binary=ns.sumo_binary, network_edges=n_edges)
             last, conn = None, None
             for _ in range(50):                                  # SUMO needs a moment to listen
                 try:
@@ -245,6 +293,8 @@ class LiveSim:
                     time.sleep(0.2)
             if conn is None:
                 raise RuntimeError(f"could not connect to SUMO on port {port}: {last}")
+            self._conn = conn
+            rerouted: dict[str, str] = {}                   # vid -> "reactive" | "advised", for the colours
             applied = 0
             for eid, m in slow.items():
                 try:
@@ -355,8 +405,11 @@ class LiveSim:
                             continue
                         if (int(hashlib.md5(vid.encode()).hexdigest()[8:12], 16) + t) % 60 == 0:
                             try:
+                                before = conn.vehicle.getRoute(vid)
                                 conn.vehicle.rerouteTraveltime(vid, currentTravelTimes=True)
                                 reroutes += 1
+                                if gui and conn.vehicle.getRoute(vid) != before:
+                                    rerouted[vid] = "reactive"; conn.vehicle.setColor(vid, COLOUR["reactive"])
                             except traci.TraCIException:
                                 pass
                 res = conn.vehicle.getAllSubscriptionResults()
@@ -367,6 +420,14 @@ class LiveSim:
                     if v < 0 or x < -1e6:                         # arrived this step: INVALID values
                         continue
                     speeds.append(v); waits.append(w); halting += v < 0.1
+                    if gui and t % 5 == 0:                      # colour what the viewer sees: stopped red, otherwise its role
+                        try:
+                            if v < 0.1 and w > 20:
+                                conn.vehicle.setColor(vid, COLOUR["stopped"])
+                            else:
+                                conn.vehicle.setColor(vid, COLOUR[rerouted.get(vid, "advised" if (cfg["arm"] == "prediction_aware" and pr.equipped(vid, cfg["compliance"])) else "normal")])
+                        except traci.TraCIException:
+                            pass
                     if len(vehicles) < MAX_VEHICLES_SHOWN:
                         lon, lat = net.convertXY2LonLat(x, y)
                         vehicles.append([round(lon, 5), round(lat, 5), round(v * 3.6, 1),

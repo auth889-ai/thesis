@@ -47,7 +47,7 @@ class ForecastPanel extends BasePanel {
                   {h: "Reloaded MAE", num: true}, {h: "Reported", num: true}, {h: "Drift", num: true}],
         d.inference.flatMap(r => r.verification.map(v => [r.model, r.dataset, `${v.minutes} min`,
           num(v.reloaded_mae, 3), num(v.reported_mae, 3),
-          `<span class="pill ${Math.abs(v.diff_pct ?? 0) <= 15 ? "ok" : "bad"}">${pct(v.diff_pct)}</span>`]))),
+          v.diff_pct == null ? `<span class="pill">—</span>` : `<span class="pill ${Math.abs(v.diff_pct) <= 15 ? "ok" : "bad"}">${pct(v.diff_pct)}</span>`]))),
       "a metrics table proves training finished; this proves the artefact still works") : ""}
     ${this.provenance(d)}`;
   }

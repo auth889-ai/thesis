@@ -10,7 +10,7 @@ class NetworkPanel extends BasePanel {
     const full = d.penetration.at(-1) ?? {};
     return `
     <div class="kpis">
-      ${this.kpi("Delivery ratio", `${num((full.delivery_ratio ?? 0) * 100, 1)} %`, "at full penetration", "good")}
+      ${this.kpi("Delivery ratio", full.delivery_ratio == null ? "—" : `${num(full.delivery_ratio * 100, 1)} %`, "at full penetration", "good")}
       ${this.kpi("Mean latency", `${num(full.latency_ms, 1)} ms`, "ITS-G5 ad-hoc, measured")}
       ${this.kpi("Route switches", int(full.route_switches), "vehicles that changed route")}
       ${this.kpi("Sweep points", d.penetration.length, d.stack ?? "")}

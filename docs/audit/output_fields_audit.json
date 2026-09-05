@@ -1,0 +1,297 @@
+{
+ "generated_utc": "2026-09-05T02:34:48.832906+00:00",
+ "rule": "presets fill INPUT fields only; every displayed OUTPUT comes from a request made for this input, or is labelled RESEARCH_BENCHMARK",
+ "hardcoded_fields": 0,
+ "fields": [
+  {
+   "field": "Current travel time (min)",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "POST /api/analyze \u2192 GET /api/analyze/{job}",
+   "backend_function": "live.service.routes (Google Routes API, TRAFFIC_AWARE_OPTIMAL) \u2192 analyze._run / dataset_ops.analyze_dataset",
+   "source_type": "LIVE_API",
+   "hardcoded": false,
+   "note": "",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "Average speed now (km/h)",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/analyze/{job}",
+   "backend_function": "analyze._run: distance_m / duration_s of the fastest live route",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "Congestion word now",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/analyze/{job}",
+   "backend_function": "live.service.routes: category from traffic-aware vs static duration",
+   "source_type": "LIVE_API",
+   "hardcoded": false,
+   "note": "",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "Travel time in 15/30/60 min",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/analyze/{job}",
+   "backend_function": "analyze._run: live ETA \u00d7 multiplier(predicted level)/multiplier(now) on the observed corridors; dataset_ops: live ETA \u00d7 mean(now speed)/mean(predicted speed) over sensors on the route",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "Expected speed at horizon",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/analyze/{job}",
+   "backend_function": "distance / predicted ETA",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "Congestion word at horizon",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/analyze/{job}",
+   "backend_function": "analyze: predicted congestion level \u22652 HIGH / \u22651 MEDIUM; dataset_ops: predicted speed < 60 % / 80 % of free-flow",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "Recommended route",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/analyze/{job}",
+   "backend_function": "argmin of predicted ETA at the chosen horizon over the live routes",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "Time saving",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/analyze/{job}",
+   "backend_function": "fastest-now predicted ETA \u2212 recommended predicted ETA",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "Congestion risk (recommendation)",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/analyze/{job}",
+   "backend_function": "risk of the recommended route at the horizon",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "Confidence",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/analyze/{job}",
+   "backend_function": "Dhaka: class accuracy from results/forecasting/live_backtest.json (rolling-origin backtest on the city's recorded data, RESEARCH_BENCHMARK, shown as such); datasets: held-out test skill of the resolved model's card",
+   "source_type": "RESEARCH_BENCHMARK",
+   "hardcoded": false,
+   "note": "an accuracy statement about the model, not a live number",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "Route cards: current / in N min / distance",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/analyze/{job}",
+   "backend_function": "live routes + the forecast pricing above",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "Forecast model / checkpoint / sha256 / hashes / stage seconds",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/analyze/{job}, GET /api/runs/{run_id}",
+   "backend_function": "provenance.Run written by the analysis",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "Sensor dots (now / predicted per road)",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/analyze/{job}",
+   "backend_function": "dataset_ops.forecast_all: the resolved model's forward pass at the dataset moment",
+   "source_type": "CHECKPOINT",
+   "hardcoded": false,
+   "note": "",
+   "run_id": "an_ce250118"
+  },
+  {
+   "field": "SUMO test: BASELINE / REACTIVE / PREDICTION-AWARE metrics, verdict, CI",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "POST /api/experiment/chain/run \u2192 GET /api/experiment/chain/run/{id}",
+   "backend_function": "pipeline.routing.integrated_chain.run_chain: SUMO runs started for this request; parse_metrics",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": null
+  },
+  {
+   "field": "Simulate this area: baseline vs reactive metrics",
+   "frontend_component": "dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "POST /api/twin/network \u2192 POST /api/twin/compare",
+   "backend_function": "city.sumo_scenario.build + twin_compare (SUMO runs for this request)",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": null
+  },
+  {
+   "field": "Now / +h tiles (value, word)",
+   "frontend_component": "dashboard/frontend/components/prediction-page.js",
+   "api_endpoint": "POST /api/predict-lab/run \u2192 GET /api/predict-lab/{job}",
+   "backend_function": "predict_lab._run: the chosen model's forward pass at the chosen moment (OpenCity harness / checkpoint / adapters)",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": null
+  },
+  {
+   "field": "'actually' values under the tiles",
+   "frontend_component": "dashboard/frontend/components/prediction-page.js",
+   "api_endpoint": "GET /api/predict-lab/{job}",
+   "backend_function": "the dataset's own readings after the moment (predict_lab: vals[end:end+12])",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": null
+  },
+  {
+   "field": "How much to trust it: off by X vs no-change",
+   "frontend_component": "dashboard/frontend/components/prediction-page.js",
+   "api_endpoint": "GET /api/predict-lab/{job}",
+   "backend_function": "predict_lab: |pred \u2212 actual| and |last \u2212 actual| at the horizon",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": null
+  },
+  {
+   "field": "Accuracy on unseen data",
+   "frontend_component": "dashboard/frontend/components/prediction-page.js",
+   "api_endpoint": "GET /api/predict-lab/{job}",
+   "backend_function": "the model card's test metrics (their runner / evaluate.py on the held-out split)",
+   "source_type": "CHECKPOINT",
+   "hardcoded": false,
+   "note": "",
+   "run_id": null
+  },
+  {
+   "field": "Training progress (round, validation error)",
+   "frontend_component": "dashboard/frontend/components/prediction-page.js",
+   "api_endpoint": "GET /api/train/{job}",
+   "backend_function": "train_jobs: parsed from the harness's live log lines",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": null
+  },
+  {
+   "field": "Training result table (MAE/RMSE/MAPE/F1/skill)",
+   "frontend_component": "dashboard/frontend/components/prediction-page.js",
+   "api_endpoint": "GET /api/train/{job}",
+   "backend_function": "train_eval on the harness's test split; their evaluate.py for verification",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": null
+  },
+  {
+   "field": "Model registry gates / Automatic choice",
+   "frontend_component": "dashboard/frontend/components/prediction-page.js, dashboard/frontend/components/mission-control.js",
+   "api_endpoint": "GET /api/registry?scope=",
+   "backend_function": "model_registry.registry: read from the cards on disk on every call",
+   "source_type": "CHECKPOINT",
+   "hardcoded": false,
+   "note": "",
+   "run_id": null
+  },
+  {
+   "field": "Vehicles, mean speed, mean travel time, p95, queue, teleports",
+   "frontend_component": "dashboard/frontend/components/live-twin-page.js",
+   "api_endpoint": "GET /api/sim/live/state, /history",
+   "backend_function": "live_sim.LiveSim: TraCI subscriptions of the running SUMO",
+   "source_type": "LIVE_COMPUTATION",
+   "hardcoded": false,
+   "note": "",
+   "run_id": null
+  },
+  {
+   "field": "Penetration curve, ablation table, accuracy figures",
+   "frontend_component": "dashboard/frontend/components/results-page.js",
+   "api_endpoint": "GET /api/experiment/sweep|ablation, /api/forecast/{city}/accuracy",
+   "backend_function": "precomputed experiment JSON files with their regenerating command",
+   "source_type": "RESEARCH_BENCHMARK",
+   "hardcoded": false,
+   "note": "labelled on the page; never presented as a new live result",
+   "run_id": null
+  }
+ ],
+ "example_run": {
+  "run_id": "an_ce250118",
+  "city": "user:los_angeles",
+  "requested_model": "GWNet",
+  "resolved_model": "GWNet",
+  "checkpoint_path": "/Users/jannatulferdouseva/thesis/results/forecasting/checkpoints_cloud/city-user-los-angeles/GraphWaveNet/DF_user_los_angeles_100_12_12/6001e88b99ec158546a6edd0677f0dae/GraphWaveNet_best_val_MAE.pt",
+  "checkpoint_sha256": "9e91b6c8a292",
+  "dataset_hash": "0fc9c01d475c0124",
+  "input_window_hash": "6ffebdfd37345d18",
+  "raw_prediction_hash": "97777a4df595dcad",
+  "postprocessed_prediction_hash": "87cef54a94e1c7ef",
+  "result_source": "LIVE_COMPUTATION",
+  "stages": [
+   {
+    "name": "Resolving city",
+    "seconds": 0.001,
+    "at": 0.0
+   },
+   {
+    "name": "Loading graph",
+    "seconds": 0.015,
+    "at": 0.001
+   },
+   {
+    "name": "Validating traffic data",
+    "seconds": 0.249,
+    "at": 0.016
+   },
+   {
+    "name": "Loading checkpoint",
+    "seconds": 0.011,
+    "at": 0.265
+   },
+   {
+    "name": "Running inference",
+    "seconds": 0.306,
+    "at": 0.276
+   },
+   {
+    "name": "Evaluating routes",
+    "seconds": 0.001,
+    "at": 0.582
+   },
+   {
+    "name": "Preparing result",
+    "seconds": 0.0,
+    "at": 0.583
+   }
+  ]
+ }
+}

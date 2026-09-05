@@ -43,6 +43,7 @@ export class LiveTwinPage extends HTMLElement {
             ${slider("step_delay_ms", "Playback delay (ms/step)", 0, 500, 10, 100)}
             <label>Routing arm <select id="arm">${Object.entries(ARMS).map(([k, v]) =>
               `<option value="${k}" ${k === "reactive" ? "selected" : ""}>${v}</option>`).join("")}</select></label>
+            <label class="check"><input type="checkbox" id="gui"> <b>Open the real SUMO-GUI window</b><br><span class="muted">microscopic simulated vehicles running dynamically in SUMO on the OpenStreetMap network</span></label>
             <label class="check"><input type="checkbox" id="continuous" checked> <b>Continuous, live-coupled</b><br>
               <span class="muted">runs until stopped; the calibrated hour of demand is replayed every hour and the
               corridor speeds follow the live Google state every 5 min</span></label>
@@ -95,7 +96,8 @@ export class LiveTwinPage extends HTMLElement {
     const v = (id) => Number(this.querySelector(`#${id}`).value);
     return {scale: v("scale"), duration_s: v("duration_s"), compliance: v("compliance"),
             seed: v("seed"), step_delay_ms: v("step_delay_ms"), arm: this.querySelector("#arm").value,
-            continuous: this.querySelector("#continuous").checked, network: this.querySelector("#network").value};
+            continuous: this.querySelector("#continuous").checked, network: this.querySelector("#network").value,
+            gui: this.querySelector("#gui").checked};
   }
 
   async loadNetworks(select) {
@@ -140,7 +142,7 @@ export class LiveTwinPage extends HTMLElement {
         <th class="num">arrived</th><th class="num">teleports</th><th class="num">reroutes</th></tr></thead>
       <tbody>${h.runs.slice(0, 8).map(r => `<tr><td><code>${r.run_id.slice(5, 20)}</code></td><td>${r.params.arm}</td>
         <td class="num">${r.params.scale}</td><td class="num">${r.metrics.total_vehicle_hours.toFixed(1)}</td>
-        <td class="num">${Math.round(r.metrics.mean_travel_time_s || 0)} s</td><td class="num">${r.metrics.arrived}</td>
+        <td class="num">${r.metrics.mean_travel_time_s == null ? "—" : Math.round(r.metrics.mean_travel_time_s) + " s"}</td><td class="num">${r.metrics.arrived}</td>
         <td class="num">${r.metrics.teleports}</td><td class="num">${r.reroutes}</td></tr>`).join("")}</tbody></table></div>`
       : `<p class="muted">no finished runs yet</p>`;
   }
@@ -180,8 +182,8 @@ export class LiveTwinPage extends HTMLElement {
       this._lastDone = s.run_id;
       const m = s.result.metrics;
       this.querySelector("#result").innerHTML = `<div class="note ok"><b>Run finished.</b> ${m.arrived} arrived,
-        ${m.total_vehicle_hours.toFixed(1)} vehicle-hours, mean travel time ${Math.round(m.mean_travel_time_s || 0)} s,
-        p95 ${Math.round(m.p95_travel_time_s || 0)} s, mean queue ${m.mean_queue_veh} vehicles, ${m.teleports} teleports.
+        ${m.total_vehicle_hours.toFixed(1)} vehicle-hours, mean travel time ${m.mean_travel_time_s == null ? "—" : Math.round(m.mean_travel_time_s) + " s"},
+        p95 ${m.p95_travel_time_s == null ? "—" : Math.round(m.p95_travel_time_s) + " s"}, mean queue ${m.mean_queue_veh} vehicles, ${m.teleports} teleports.
         Scored with the same <code>parse_metrics</code> as the batch experiments.</div>`;
     }
     if (this._ready && this._map.getSource("veh")) {

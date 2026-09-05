@@ -1,0 +1,647 @@
+{
+ "generated_utc": "2026-09-05T03:38:17.793808+00:00",
+ "runs": [
+  {
+   "seed": 11,
+   "coverage_hops": 0,
+   "config": {
+    "seeds": "11",
+    "horizon": 1800,
+    "horizon_min": 15,
+    "compliance": 0.3,
+    "v2x": "ideal",
+    "city": "dhaka",
+    "model": null,
+    "api": "http://127.0.0.1:8000",
+    "source": "recorded",
+    "as_of": "peak",
+    "levels": "observed",
+    "tag": "",
+    "scale": 0.25,
+    "net": "/Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+    "routes": "/Users/jannatulferdouseva/thesis/artifacts/gates/routes_repeat_1h.rou.xml.gz",
+    "forecast_kind": "model",
+    "coverage_hops": 0
+   },
+   "rows": {
+    "oracle": {
+     "forecast": "oracle",
+     "status": "ok",
+     "source": "results/routing/runs/chain_20260905T023229Z_mission_1cf7ec/baseline_s11/edgedata.xml",
+     "raw_forecast_hash": "(baseline edge travel times)",
+     "mapped_edges": null,
+     "priced_edges": null,
+     "advised_vehicles": 2263,
+     "vehicles_changed_vs_static": 2000,
+     "selected_routes_hash": "14c78e5e82c0cdea",
+     "candidate_sets_hash": "d24b3007d5d51a31",
+     "candidate_costs_hash": "dc13094d365bb059",
+     "mean_candidates_per_vehicle": 1.0,
+     "top20_edge_concentration": 0.1367,
+     "pct_edge_costs_differ_vs_persistence": null,
+     "pct_vehicles_route_differs_vs_persistence": 43.08,
+     "mean_jaccard_vs_persistence": 0.816
+    },
+    "GWNet": {
+     "forecast": "GWNet",
+     "status": "REFUSED: GWNet/METR-LA: GWNet was trained on METR-LA and its weights encode that sensor graph; it cannot forecast dhaka. A city-specific model does not transfer \u2014 that is what a foundation model is for"
+    },
+    "STID": {
+     "forecast": "STID",
+     "status": "REFUSED: STID/METR-LA: STID was trained on METR-LA and its weights encode that sensor graph; it cannot forecast dhaka. A city-specific model does not transfer \u2014 that is what a foundation model is for"
+    },
+    "Chronos-Bolt": {
+     "forecast": "Chronos-Bolt",
+     "status": "ok",
+     "model_served": "Chronos-Bolt",
+     "checkpoint": "amazon/chronos-bolt-small",
+     "raw_forecast_hash": "124feb1c4ec51d6e",
+     "raw_forecast": {
+      "banglamotor_to_karwanbazar": 2.57,
+      "farmgate_to_banglamotor": 1.906,
+      "farmgate_to_shahbagh": 2.395,
+      "karwanbazar_to_banglamotor": 1.967,
+      "karwanbazar_to_shahbagh": 2.335,
+      "shahbagh_to_farmgate": 2.814
+     },
+     "mapped_classes": {
+      "farmgate_to_shahbagh": 2.395,
+      "shahbagh_to_farmgate": 2.814,
+      "karwanbazar_to_banglamotor": 1.967,
+      "banglamotor_to_karwanbazar": 2.57,
+      "farmgate_to_banglamotor": 1.906,
+      "karwanbazar_to_shahbagh": 2.335
+     },
+     "mapped_multipliers": {
+      "farmgate_to_shahbagh": 2.046,
+      "shahbagh_to_farmgate": 2.361,
+      "karwanbazar_to_banglamotor": 1.736,
+      "banglamotor_to_karwanbazar": 2.177,
+      "farmgate_to_banglamotor": 1.711,
+      "karwanbazar_to_shahbagh": 2.001
+     },
+     "mapped_edges": 79,
+     "priced_edges": 79,
+     "edge_cost_hash": "0df0f03d5516513f",
+     "advised_vehicles": 2263,
+     "vehicles_changed_vs_static": 1831,
+     "selected_routes_hash": "2439d0a336c819ba",
+     "candidate_sets_hash": "7bcc798d065c7562",
+     "candidate_costs_hash": "29454ac049f04a7c",
+     "mean_candidates_per_vehicle": 1.0,
+     "top20_edge_concentration": 0.1409,
+     "pct_edge_costs_differ_vs_persistence": 100.0,
+     "pct_vehicles_route_differs_vs_persistence": 18.82,
+     "mean_jaccard_vs_persistence": 0.8835,
+     "pct_edge_costs_differ_vs_oracle": null,
+     "pct_vehicles_route_differs_vs_oracle": 39.59,
+     "mean_jaccard_vs_oracle": 0.8048
+    },
+    "persistence": {
+     "forecast": "persistence",
+     "status": "ok",
+     "model_served": "persistence",
+     "checkpoint": null,
+     "raw_forecast_hash": "20f58b79f737d01d",
+     "raw_forecast": {
+      "banglamotor_to_karwanbazar": 3.0,
+      "farmgate_to_banglamotor": 2.0,
+      "farmgate_to_shahbagh": 3.0,
+      "karwanbazar_to_banglamotor": 2.0,
+      "karwanbazar_to_shahbagh": 3.0,
+      "shahbagh_to_farmgate": 3.0
+     },
+     "mapped_classes": {
+      "farmgate_to_shahbagh": 3.0,
+      "shahbagh_to_farmgate": 3.0,
+      "karwanbazar_to_banglamotor": 2.0,
+      "banglamotor_to_karwanbazar": 3.0,
+      "farmgate_to_banglamotor": 2.0,
+      "karwanbazar_to_shahbagh": 3.0
+     },
+     "mapped_multipliers": {
+      "farmgate_to_shahbagh": 2.5,
+      "shahbagh_to_farmgate": 2.5,
+      "karwanbazar_to_banglamotor": 1.75,
+      "banglamotor_to_karwanbazar": 2.5,
+      "farmgate_to_banglamotor": 1.75,
+      "karwanbazar_to_shahbagh": 2.5
+     },
+     "mapped_edges": 79,
+     "priced_edges": 79,
+     "edge_cost_hash": "b5a9785cd8cc8a57",
+     "advised_vehicles": 2263,
+     "vehicles_changed_vs_static": 1876,
+     "selected_routes_hash": "657496045744bc8c",
+     "candidate_sets_hash": "e673b46b29924661",
+     "candidate_costs_hash": "011a0437fcd3b706",
+     "mean_candidates_per_vehicle": 1.0,
+     "top20_edge_concentration": 0.1462,
+     "pct_edge_costs_differ_vs_oracle": null,
+     "pct_vehicles_route_differs_vs_oracle": 43.08,
+     "mean_jaccard_vs_oracle": 0.816
+    },
+    "historical_average": {
+     "forecast": "historical_average",
+     "status": "ok",
+     "model_served": "historical_average",
+     "checkpoint": null,
+     "raw_forecast_hash": "7c87b1b1f9c30501",
+     "raw_forecast": {
+      "banglamotor_to_karwanbazar": 0.499,
+      "farmgate_to_banglamotor": 0.506,
+      "farmgate_to_shahbagh": 0.581,
+      "karwanbazar_to_banglamotor": 0.663,
+      "karwanbazar_to_shahbagh": 0.653,
+      "shahbagh_to_farmgate": 0.63
+     },
+     "mapped_classes": {
+      "farmgate_to_shahbagh": 0.581,
+      "shahbagh_to_farmgate": 0.63,
+      "karwanbazar_to_banglamotor": 0.663,
+      "banglamotor_to_karwanbazar": 0.499,
+      "farmgate_to_banglamotor": 0.506,
+      "karwanbazar_to_shahbagh": 0.653
+     },
+     "mapped_multipliers": {
+      "farmgate_to_shahbagh": 1.225,
+      "shahbagh_to_farmgate": 1.238,
+      "karwanbazar_to_banglamotor": 1.246,
+      "banglamotor_to_karwanbazar": 1.205,
+      "farmgate_to_banglamotor": 1.207,
+      "karwanbazar_to_shahbagh": 1.243
+     },
+     "mapped_edges": 79,
+     "priced_edges": 79,
+     "edge_cost_hash": "f833b8a1136f978b",
+     "advised_vehicles": 2263,
+     "vehicles_changed_vs_static": 1831,
+     "selected_routes_hash": "5ac8f462bf050c8d",
+     "candidate_sets_hash": "837ad8285a2e2826",
+     "candidate_costs_hash": "cb80c1d0386a97e0",
+     "mean_candidates_per_vehicle": 1.0,
+     "top20_edge_concentration": 0.1407,
+     "pct_edge_costs_differ_vs_persistence": 100.0,
+     "pct_vehicles_route_differs_vs_persistence": 18.87,
+     "mean_jaccard_vs_persistence": 0.8833,
+     "pct_edge_costs_differ_vs_oracle": null,
+     "pct_vehicles_route_differs_vs_oracle": 39.55,
+     "mean_jaccard_vs_oracle": 0.8051
+    },
+    "random": {
+     "forecast": "random",
+     "status": "ok",
+     "model_served": "random",
+     "checkpoint": null,
+     "raw_forecast_hash": "787226417a9ae312",
+     "raw_forecast": {
+      "banglamotor_to_karwanbazar": 0.386,
+      "farmgate_to_banglamotor": 1.498,
+      "farmgate_to_shahbagh": 1.804,
+      "karwanbazar_to_banglamotor": 0.086,
+      "karwanbazar_to_shahbagh": 0.444,
+      "shahbagh_to_farmgate": 2.785
+     },
+     "mapped_classes": {
+      "farmgate_to_shahbagh": 1.804,
+      "shahbagh_to_farmgate": 2.785,
+      "karwanbazar_to_banglamotor": 0.086,
+      "banglamotor_to_karwanbazar": 0.386,
+      "farmgate_to_banglamotor": 1.498,
+      "karwanbazar_to_shahbagh": 0.444
+     },
+     "mapped_multipliers": {
+      "farmgate_to_shahbagh": 1.668,
+      "shahbagh_to_farmgate": 2.339,
+      "karwanbazar_to_banglamotor": 1.102,
+      "banglamotor_to_karwanbazar": 1.177,
+      "farmgate_to_banglamotor": 1.539,
+      "karwanbazar_to_shahbagh": 1.191
+     },
+     "mapped_edges": 79,
+     "priced_edges": 79,
+     "edge_cost_hash": "8ac2fdc0ee825bac",
+     "advised_vehicles": 2263,
+     "vehicles_changed_vs_static": 1831,
+     "selected_routes_hash": "2439d0a336c819ba",
+     "candidate_sets_hash": "7bcc798d065c7562",
+     "candidate_costs_hash": "c5f37f26baa0831a",
+     "mean_candidates_per_vehicle": 1.0,
+     "top20_edge_concentration": 0.1409,
+     "pct_edge_costs_differ_vs_persistence": 100.0,
+     "pct_vehicles_route_differs_vs_persistence": 18.82,
+     "mean_jaccard_vs_persistence": 0.8835,
+     "pct_edge_costs_differ_vs_oracle": null,
+     "pct_vehicles_route_differs_vs_oracle": 39.59,
+     "mean_jaccard_vs_oracle": 0.8048
+    }
+   },
+   "collapse": {
+    "raw_forecast": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "mapped_classes": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "mapped_multipliers": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "edge_costs": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "candidate_sets": {
+     "distinct": 3,
+     "identical_groups": [
+      [
+       "Chronos-Bolt",
+       "random"
+      ]
+     ]
+    },
+    "candidate_costs": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "selected_routes": {
+     "distinct": 3,
+     "identical_groups": [
+      [
+       "Chronos-Bolt",
+       "random"
+      ]
+     ]
+    }
+   },
+   "first_collapse_stage": "candidate_sets",
+   "reading": "the first stage where two different forecasts become identical is where the forecast stops mattering; with corridor-only pricing (hops 0) a class change on one of 6 corridors moves the cost of a few edges that few advised vehicles use, so different forecasts often reach the same route decisions",
+   "sweep": {
+    "seed": 11,
+    "coverage_hops": 0,
+    "rows": [
+     {
+      "level": 0.0,
+      "multiplier": 1.08,
+      "selected_hash": "35c87bcb5d71d0eb",
+      "pct_routes_differ_vs_level0": 0.0
+     },
+     {
+      "level": 0.5,
+      "multiplier": 1.205,
+      "selected_hash": "5ac8f462bf050c8d",
+      "pct_routes_differ_vs_level0": 0.53
+     },
+     {
+      "level": 1.0,
+      "multiplier": 1.33,
+      "selected_hash": "82faaf61f8948df9",
+      "pct_routes_differ_vs_level0": 0.49
+     },
+     {
+      "level": 1.5,
+      "multiplier": 1.54,
+      "selected_hash": "82faaf61f8948df9",
+      "pct_routes_differ_vs_level0": 0.49
+     },
+     {
+      "level": 2.0,
+      "multiplier": 1.75,
+      "selected_hash": "2439d0a336c819ba",
+      "pct_routes_differ_vs_level0": 0.57
+     },
+     {
+      "level": 2.5,
+      "multiplier": 2.125,
+      "selected_hash": "2439d0a336c819ba",
+      "pct_routes_differ_vs_level0": 0.57
+     },
+     {
+      "level": 3.0,
+      "multiplier": 2.5,
+      "selected_hash": "657496045744bc8c",
+      "pct_routes_differ_vs_level0": 19.4
+     }
+    ]
+   }
+  },
+  {
+   "seed": 11,
+   "coverage_hops": 8,
+   "config": {
+    "seeds": "11",
+    "horizon": 1800,
+    "horizon_min": 15,
+    "compliance": 0.3,
+    "v2x": "ideal",
+    "city": "dhaka",
+    "model": null,
+    "api": "http://127.0.0.1:8000",
+    "source": "recorded",
+    "as_of": "peak",
+    "levels": "observed",
+    "tag": "",
+    "scale": 0.25,
+    "net": "/Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+    "routes": "/Users/jannatulferdouseva/thesis/artifacts/gates/routes_repeat_1h.rou.xml.gz",
+    "forecast_kind": "model",
+    "coverage_hops": 0
+   },
+   "rows": {
+    "oracle": {
+     "forecast": "oracle",
+     "status": "ok",
+     "source": "results/routing/runs/chain_20260905T023229Z_mission_1cf7ec/baseline_s11/edgedata.xml",
+     "raw_forecast_hash": "(baseline edge travel times)",
+     "mapped_edges": null,
+     "priced_edges": null,
+     "advised_vehicles": 2263,
+     "vehicles_changed_vs_static": 2000,
+     "selected_routes_hash": "14c78e5e82c0cdea",
+     "candidate_sets_hash": "d24b3007d5d51a31",
+     "candidate_costs_hash": "dc13094d365bb059",
+     "mean_candidates_per_vehicle": 1.0,
+     "top20_edge_concentration": 0.1367,
+     "pct_edge_costs_differ_vs_persistence": null,
+     "pct_vehicles_route_differs_vs_persistence": 71.37,
+     "mean_jaccard_vs_persistence": 0.5989
+    },
+    "GWNet": {
+     "forecast": "GWNet",
+     "status": "REFUSED: GWNet/METR-LA: GWNet was trained on METR-LA and its weights encode that sensor graph; it cannot forecast dhaka. A city-specific model does not transfer \u2014 that is what a foundation model is for"
+    },
+    "STID": {
+     "forecast": "STID",
+     "status": "REFUSED: STID/METR-LA: STID was trained on METR-LA and its weights encode that sensor graph; it cannot forecast dhaka. A city-specific model does not transfer \u2014 that is what a foundation model is for"
+    },
+    "Chronos-Bolt": {
+     "forecast": "Chronos-Bolt",
+     "status": "ok",
+     "model_served": "Chronos-Bolt",
+     "checkpoint": "amazon/chronos-bolt-small",
+     "raw_forecast_hash": "124feb1c4ec51d6e",
+     "raw_forecast": {
+      "banglamotor_to_karwanbazar": 2.57,
+      "farmgate_to_banglamotor": 1.906,
+      "farmgate_to_shahbagh": 2.395,
+      "karwanbazar_to_banglamotor": 1.967,
+      "karwanbazar_to_shahbagh": 2.335,
+      "shahbagh_to_farmgate": 2.814
+     },
+     "mapped_classes": {
+      "farmgate_to_shahbagh": 2.395,
+      "shahbagh_to_farmgate": 2.814,
+      "karwanbazar_to_banglamotor": 1.967,
+      "banglamotor_to_karwanbazar": 2.57,
+      "farmgate_to_banglamotor": 1.906,
+      "karwanbazar_to_shahbagh": 2.335
+     },
+     "mapped_multipliers": {
+      "farmgate_to_shahbagh": 2.046,
+      "shahbagh_to_farmgate": 2.361,
+      "karwanbazar_to_banglamotor": 1.736,
+      "banglamotor_to_karwanbazar": 2.177,
+      "farmgate_to_banglamotor": 1.711,
+      "karwanbazar_to_shahbagh": 2.001
+     },
+     "mapped_edges": 79,
+     "priced_edges": 1324,
+     "edge_cost_hash": "49d6b30b26a71ca0",
+     "advised_vehicles": 2263,
+     "vehicles_changed_vs_static": 1973,
+     "selected_routes_hash": "a1f63a698385d930",
+     "candidate_sets_hash": "48de41bf6b986899",
+     "candidate_costs_hash": "a15dbeaff2500e92",
+     "mean_candidates_per_vehicle": 1.0,
+     "top20_edge_concentration": 0.1436,
+     "pct_edge_costs_differ_vs_persistence": 100.0,
+     "pct_vehicles_route_differs_vs_persistence": 17.63,
+     "mean_jaccard_vs_persistence": 0.8675,
+     "pct_edge_costs_differ_vs_oracle": null,
+     "pct_vehicles_route_differs_vs_oracle": 58.64,
+     "mean_jaccard_vs_oracle": 0.715
+    },
+    "persistence": {
+     "forecast": "persistence",
+     "status": "ok",
+     "model_served": "persistence",
+     "checkpoint": null,
+     "raw_forecast_hash": "20f58b79f737d01d",
+     "raw_forecast": {
+      "banglamotor_to_karwanbazar": 3.0,
+      "farmgate_to_banglamotor": 2.0,
+      "farmgate_to_shahbagh": 3.0,
+      "karwanbazar_to_banglamotor": 2.0,
+      "karwanbazar_to_shahbagh": 3.0,
+      "shahbagh_to_farmgate": 3.0
+     },
+     "mapped_classes": {
+      "farmgate_to_shahbagh": 3.0,
+      "shahbagh_to_farmgate": 3.0,
+      "karwanbazar_to_banglamotor": 2.0,
+      "banglamotor_to_karwanbazar": 3.0,
+      "farmgate_to_banglamotor": 2.0,
+      "karwanbazar_to_shahbagh": 3.0
+     },
+     "mapped_multipliers": {
+      "farmgate_to_shahbagh": 2.5,
+      "shahbagh_to_farmgate": 2.5,
+      "karwanbazar_to_banglamotor": 1.75,
+      "banglamotor_to_karwanbazar": 2.5,
+      "farmgate_to_banglamotor": 1.75,
+      "karwanbazar_to_shahbagh": 2.5
+     },
+     "mapped_edges": 79,
+     "priced_edges": 1324,
+     "edge_cost_hash": "478cd3faf69f4b84",
+     "advised_vehicles": 2263,
+     "vehicles_changed_vs_static": 1972,
+     "selected_routes_hash": "2ad583cca9c99b6f",
+     "candidate_sets_hash": "ebb235c32be1040f",
+     "candidate_costs_hash": "e9d2ac22cb9a7f43",
+     "mean_candidates_per_vehicle": 1.0,
+     "top20_edge_concentration": 0.1169,
+     "pct_edge_costs_differ_vs_oracle": null,
+     "pct_vehicles_route_differs_vs_oracle": 71.37,
+     "mean_jaccard_vs_oracle": 0.5989
+    },
+    "historical_average": {
+     "forecast": "historical_average",
+     "status": "ok",
+     "model_served": "historical_average",
+     "checkpoint": null,
+     "raw_forecast_hash": "7c87b1b1f9c30501",
+     "raw_forecast": {
+      "banglamotor_to_karwanbazar": 0.499,
+      "farmgate_to_banglamotor": 0.506,
+      "farmgate_to_shahbagh": 0.581,
+      "karwanbazar_to_banglamotor": 0.663,
+      "karwanbazar_to_shahbagh": 0.653,
+      "shahbagh_to_farmgate": 0.63
+     },
+     "mapped_classes": {
+      "farmgate_to_shahbagh": 0.581,
+      "shahbagh_to_farmgate": 0.63,
+      "karwanbazar_to_banglamotor": 0.663,
+      "banglamotor_to_karwanbazar": 0.499,
+      "farmgate_to_banglamotor": 0.506,
+      "karwanbazar_to_shahbagh": 0.653
+     },
+     "mapped_multipliers": {
+      "farmgate_to_shahbagh": 1.225,
+      "shahbagh_to_farmgate": 1.238,
+      "karwanbazar_to_banglamotor": 1.246,
+      "banglamotor_to_karwanbazar": 1.205,
+      "farmgate_to_banglamotor": 1.207,
+      "karwanbazar_to_shahbagh": 1.243
+     },
+     "mapped_edges": 79,
+     "priced_edges": 1324,
+     "edge_cost_hash": "55021e1cd6359351",
+     "advised_vehicles": 2263,
+     "vehicles_changed_vs_static": 1807,
+     "selected_routes_hash": "6924beca88af3364",
+     "candidate_sets_hash": "3135c779d1fed0e7",
+     "candidate_costs_hash": "06c3f2b99c4f85ad",
+     "mean_candidates_per_vehicle": 1.0,
+     "top20_edge_concentration": 0.1201,
+     "pct_edge_costs_differ_vs_persistence": 100.0,
+     "pct_vehicles_route_differs_vs_persistence": 36.15,
+     "mean_jaccard_vs_persistence": 0.8236,
+     "pct_edge_costs_differ_vs_oracle": null,
+     "pct_vehicles_route_differs_vs_oracle": 53.65,
+     "mean_jaccard_vs_oracle": 0.7151
+    },
+    "random": {
+     "forecast": "random",
+     "status": "ok",
+     "model_served": "random",
+     "checkpoint": null,
+     "raw_forecast_hash": "787226417a9ae312",
+     "raw_forecast": {
+      "banglamotor_to_karwanbazar": 0.386,
+      "farmgate_to_banglamotor": 1.498,
+      "farmgate_to_shahbagh": 1.804,
+      "karwanbazar_to_banglamotor": 0.086,
+      "karwanbazar_to_shahbagh": 0.444,
+      "shahbagh_to_farmgate": 2.785
+     },
+     "mapped_classes": {
+      "farmgate_to_shahbagh": 1.804,
+      "shahbagh_to_farmgate": 2.785,
+      "karwanbazar_to_banglamotor": 0.086,
+      "banglamotor_to_karwanbazar": 0.386,
+      "farmgate_to_banglamotor": 1.498,
+      "karwanbazar_to_shahbagh": 0.444
+     },
+     "mapped_multipliers": {
+      "farmgate_to_shahbagh": 1.668,
+      "shahbagh_to_farmgate": 2.339,
+      "karwanbazar_to_banglamotor": 1.102,
+      "banglamotor_to_karwanbazar": 1.177,
+      "farmgate_to_banglamotor": 1.539,
+      "karwanbazar_to_shahbagh": 1.191
+     },
+     "mapped_edges": 79,
+     "priced_edges": 1324,
+     "edge_cost_hash": "52aab1fe8ded2a74",
+     "advised_vehicles": 2263,
+     "vehicles_changed_vs_static": 1942,
+     "selected_routes_hash": "33fdb42ee74a2c4a",
+     "candidate_sets_hash": "d064e791d4294a5e",
+     "candidate_costs_hash": "99606152f99a5446",
+     "mean_candidates_per_vehicle": 1.0,
+     "top20_edge_concentration": 0.1382,
+     "pct_edge_costs_differ_vs_persistence": 100.0,
+     "pct_vehicles_route_differs_vs_persistence": 30.49,
+     "mean_jaccard_vs_persistence": 0.8124,
+     "pct_edge_costs_differ_vs_oracle": null,
+     "pct_vehicles_route_differs_vs_oracle": 51.44,
+     "mean_jaccard_vs_oracle": 0.7487
+    }
+   },
+   "collapse": {
+    "raw_forecast": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "mapped_classes": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "mapped_multipliers": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "edge_costs": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "candidate_sets": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "candidate_costs": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "selected_routes": {
+     "distinct": 4,
+     "identical_groups": []
+    }
+   },
+   "first_collapse_stage": null,
+   "reading": "the first stage where two different forecasts become identical is where the forecast stops mattering; with corridor-only pricing (hops 0) a class change on one of 6 corridors moves the cost of a few edges that few advised vehicles use, so different forecasts often reach the same route decisions",
+   "sweep": {
+    "seed": 11,
+    "coverage_hops": 8,
+    "rows": [
+     {
+      "level": 0.0,
+      "multiplier": 1.08,
+      "selected_hash": "cc86d6fdf37fe3b0",
+      "pct_routes_differ_vs_level0": 0.0
+     },
+     {
+      "level": 0.5,
+      "multiplier": 1.205,
+      "selected_hash": "9db6b72e049dc0b3",
+      "pct_routes_differ_vs_level0": 0.18
+     },
+     {
+      "level": 1.0,
+      "multiplier": 1.33,
+      "selected_hash": "a37e5aab2c60d03e",
+      "pct_routes_differ_vs_level0": 12.46
+     },
+     {
+      "level": 1.5,
+      "multiplier": 1.54,
+      "selected_hash": "3ededfad0c8c4671",
+      "pct_routes_differ_vs_level0": 24.13
+     },
+     {
+      "level": 2.0,
+      "multiplier": 1.75,
+      "selected_hash": "9cdf5046f4eee274",
+      "pct_routes_differ_vs_level0": 24.04
+     },
+     {
+      "level": 2.5,
+      "multiplier": 2.125,
+      "selected_hash": "2721e15b1b955bd6",
+      "pct_routes_differ_vs_level0": 31.33
+     },
+     {
+      "level": 3.0,
+      "multiplier": 2.5,
+      "selected_hash": "2ad583cca9c99b6f",
+      "pct_routes_differ_vs_level0": 41.94
+     }
+    ]
+   }
+  }
+ ]
+}

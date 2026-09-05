@@ -40,6 +40,16 @@ def scenario_dir(city_id: str) -> Path:
     return CITY_DIR / city_id / "sumo"
 
 
+def sumo_tools_dir() -> Path:
+    """SUMO's own tools directory: the pinned checkout when present, else the pip package's copy
+    of the same release (eclipse-sumo==1.27.1 == tag v1_27_1)."""
+    pinned = Path.home() / ".dhakaflow/upstream/sumo/tools"
+    if (pinned / "randomTrips.py").exists() and (pinned.parent / "data/typemap/osmNetconvert.typ.xml").exists():
+        return pinned
+    import sumo as _sumo
+    return Path(_sumo.__file__).parent / "tools"
+
+
 def _tool(name: str) -> str | None:
     p = shutil.which(name)
     if p:
@@ -67,52 +77,53 @@ def build(city_id: str, seed: int = 11, period: float = 2.0, end: int = 1800) ->
     # 1. OSM extract via the Overpass API (the same source the road graph came from)
     if not osm.exists():
         import urllib.request
-        q = (f"[out:xml][timeout:180];(way[highway~'^(motorway|trunk|primary|secondary|"
-             f"tertiary)(_link)?$']({s},{w},{n},{e}););(._;>;);out body;")
+        # every drivable road class, as osmGet.py / the wizard fetch the whole extract; the passenger
+        # network is then selected by netconvert exactly as osmBuild does
+        q = (f"[out:xml][timeout:180];(way[highway~'^(motorway|trunk|primary|secondary|tertiary|unclassified|"
+             f"residential|living_street)(_link)?$']({s},{w},{n},{e}););(._;>;);out body;")
         req = urllib.request.Request("https://overpass-api.de/api/interpreter",
                                      data=q.encode(), headers={"User-Agent": "dhakaflow/1.0"})
         with urllib.request.urlopen(req, timeout=300) as r:
             osm.write_bytes(r.read())
 
-    # 2. netconvert — SUMO's own converter, not a reimplementation
+    # 2. netconvert — SUMO's own converter, with the options and OSM typemap that SUMO's own
+    #    osmWebWizard / osmBuild use (tools/osmBuild.py DEFAULT_NETCONVERT_OPTS + the wizard's
+    #    --tls.default-type actuated), restricted to the passenger network as the wizard does
+    tools = sumo_tools_dir()
+    typemap = tools.parent / "data" / "typemap" / "osmNetconvert.typ.xml"
+    netconvert_opts = ["--geometry.remove", "--ramps.guess", "--junctions.join", "--tls.guess-signals", "--tls.discard-simple",
+                       "--tls.join", "--output.original-names", "--output.street-names",      # osmBuild.DEFAULT_NETCONVERT_OPTS
+                       "--tls.default-type", "actuated",                                        # osmWebWizard.build
+                       # cities whose OSM carries no highway=traffic_signals nodes would get no signals at all;
+                       # netconvert's own guess (documented option) adds them at busy junctions — recorded below
+                       "--tls.guess", "--tls.guess.threshold", "30",
+                       "--keep-edges.by-vclass", "passenger", "--remove-edges.isolated", "--no-warnings"]
     if not net.exists():
-        subprocess.run(["netconvert", "--osm-files", str(osm), "--output-file", str(net),
-                        "--geometry.remove", "--roundabouts.guess", "--ramps.guess",
-                        "--junctions.join", "--tls.guess-signals", "--tls.discard-simple",
-                        "--tls.join", "--no-turnarounds", "--remove-edges.isolated",
-                        "--keep-edges.by-vclass", "passenger", "--no-warnings"],
+        subprocess.run(["netconvert", "--osm-files", str(osm), "--output-file", str(net)]
+                       + (["-t", str(typemap)] if typemap.exists() else []) + netconvert_opts,
                        check=True, capture_output=True, text=True)
 
-    # 3. demand — SYNTHETIC unless this city has measured OD data (none do on this path)
+    # 3. demand — SYNTHETIC unless this city has measured OD data (none do on this path):
+    #    SUMO's own randomTrips.py, called the way osmWebWizard calls it for passenger cars
     trips, routes = out / f"{city_id}.trips.xml", out / f"{city_id}.rou.xml"
     demand_reality = "SYNTHETIC_WHAT_IF"
+    random_trips = tools / "randomTrips.py"
+    rt_opts = ["-n", str(net), "-o", str(trips), "-r", str(routes), "-b", "0", "-e", str(end), "-p", str(period), "--seed", str(seed),
+               "--fringe-factor", "5", "--fringe-start-attributes", 'departSpeed="max"',           # osmWebWizard CP / passenger
+               "--vehicle-class", "passenger", "--vclass", "passenger", "--prefix", "veh",
+               "--min-distance", "300", "--min-distance.fringe", "10", "--allow-fringe.min-length", "1000", "--lanes",
+               "--trip-attributes", 'departLane="best"', "--validate"]
     if not routes.exists():
-        # SUMO's randomTrips.py is not shipped with every distribution (it is absent from this
-        # one), so trips are generated directly from the network with sumolib and routed by
-        # duarouter. Same result, one fewer external dependency.
-        import random
+        r = subprocess.run([sys.executable, str(random_trips)] + rt_opts, check=False, capture_output=True, text=True, cwd=out)
+        if r.returncode != 0 or not routes.exists():
+            raise SystemExit(f"{city_id}: randomTrips.py failed: {(r.stderr or r.stdout)[-600:]}")
 
-        import sumolib
-        N0 = sumolib.net.readNet(str(net))
-        usable = [e for e in N0.getEdges()
-                  if e.getLength() > 50 and e.allows("passenger") and e.getOutgoing()]
-        if len(usable) < 2:
-            raise SystemExit(f"{city_id}: network has too few usable edges to generate demand")
-        rng = random.Random(seed)
-        lines, t, i = [], 0.0, 0
-        while t < end:
-            o, d = rng.choice(usable), rng.choice(usable)
-            if o.getID() != d.getID():
-                lines.append(f'    <trip id="v{i}" depart="{t:.1f}" from="{o.getID()}" '
-                             f'to="{d.getID()}"/>')
-                i += 1
-            t += period
-        trips.write_text('<routes>\n' + "\n".join(lines) + '\n</routes>\n')
-        subprocess.run(["duarouter", "--net-file", str(net), "--route-files", str(trips),
-                        "--output-file", str(routes), "--ignore-errors", "--no-warnings",
-                        "--no-step-log", "--seed", str(seed), "--routing-threads", "4"],
-                       check=True, capture_output=True, text=True)
-
+    # 4. the wizard's view settings, so sumo-gui opens with the 'real world' scheme
+    view = out / "osm.view.xml"
+    # the wizard's scheme, plus SUMO's own vehicle exaggeration so cars are visible at city scale
+    view.write_text('<viewsettings>\n    <scheme name="real world"/>\n    <delay value="20"/>\n'
+                    '    <vehicles vehicleMode="0" vehicleQuality="2" vehicle_minSize="4.00" vehicle_exaggeration="3.00" vehicle_constantSize="0" showBlinker="1"/>\n'
+                    '    <junctions drawShape="true" tlsPhaseIndex="true"/>\n</viewsettings>\n')
     cfg = out / f"{city_id}.sumocfg"
     cfg.write_text(f"""<configuration>
     <input>
@@ -120,9 +131,16 @@ def build(city_id: str, seed: int = 11, period: float = 2.0, end: int = 1800) ->
         <route-files value="{routes.name}"/>
     </input>
     <time><begin value="0"/><end value="{end}"/></time>
-    <report><no-step-log value="true"/><duration-log.statistics value="true"/></report>
+    <processing><ignore-route-errors value="true"/></processing>
+    <routing><device.rerouting.adaptation-steps value="18"/><device.rerouting.adaptation-interval value="10"/></routing>
+    <report><verbose value="true"/><duration-log.statistics value="true"/><no-step-log value="true"/></report>
+    <gui_only><gui-settings-file value="{view.name}"/></gui_only>
 </configuration>
 """)
+    process = {"upstream": "eclipse-sumo/sumo", "tag": "v1_27_1", "sha": "7717f2379d9e314a0c81c5cec748444de06a2a91", "license": "EPL-2.0",
+               "followed": ["tools/osmWebWizard.py (build: netconvert options, randomTrips passenger call, sumocfg + osm.view.xml)",
+                            "tools/osmBuild.py (DEFAULT_NETCONVERT_OPTS, typemap osmNetconvert.typ.xml)", "tools/randomTrips.py (demand)"],
+               "netconvert_options": netconvert_opts, "deviation_from_wizard": "--tls.guess (documented netconvert option) so cities without tagged signals still get them; vehicleExaggeration=3 in the view settings", "randomtrips_options": rt_opts, "osm_source": "Overpass API extract of the bbox (highway=motorway…tertiary)"}
 
     import sumolib
     N = sumolib.net.readNet(str(net))
@@ -130,6 +148,7 @@ def build(city_id: str, seed: int = 11, period: float = 2.0, end: int = 1800) ->
         "city_id": city_id, "display_name": spec.display_name,
         "generated_utc": datetime.now(timezone.utc).isoformat(),
         "network_reality": "REAL — OpenStreetMap geometry converted by SUMO netconvert",
+        "process": process, "gui_settings": str(view.relative_to(REPO)),
         "demand_reality": demand_reality,
         "label": "SYNTHETIC_WHAT_IF",
         "warning": ("The network is real; the DEMAND is generated. This scenario demonstrates "

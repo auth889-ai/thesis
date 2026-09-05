@@ -135,35 +135,63 @@ def forecast_all(scope: str, entry: dict, as_of: int) -> tuple[np.ndarray, np.nd
     return now, pred, info
 
 
-def analyze_dataset(p: dict, scope: str, emit) -> dict:
+def analyze_dataset(p: dict, scope: str, emit, run_id: str = "") -> dict:
     import model_registry
+    import provenance as pv
     from live import service
     from analyze import resolve_place
     from pipeline.forecasting import basicts_train as bt
     from pipeline.forecasting import train_eval as te
     did = scope[5:]
+    run = pv.Run(run_id or f"an_{did}", city=scope, origin=p.get("origin"), destination=p.get("destination"),
+                 requested_model=p.get("model") or "auto", horizon_min=int(p.get("horizon_min") or 30), request=p)
+    run.stage("Resolving city", emit)
     meta = user_datasets.load_meta(did)
     if not meta or not meta.get("coords"):
+        run.finish("failed", "no road coordinates")
         raise RuntimeError("this dataset has no road coordinates; upload it again with a road, lat, lon file")
     h = int(p.get("horizon_min") or 30)
     step_min = int(meta["interval_s"]) // 60
-    emit(stage="Fetching traffic", step=1)
     o = resolve_place(p.get("origin") or meta["name"], meta["name"])
     d = resolve_place(p.get("destination") or meta["name"], meta["name"])
+    run.set(origin_resolved=o, destination_resolved=d)
+    run.stage("Loading graph", emit)
+    name = bt.bts_name(scope)
+    if not (bt.BTS / "datasets" / name / "desc.json").exists():
+        bt.prepare(scope)
+    raw, _ = bt._prepared(name)
+    vals = np.asarray(raw[:, :, 0], dtype="float64")
+    run.set(dataset_hash=te.sha256_file(bt.BTS / "datasets" / name / "data.dat"), graph_hash=te.sha256_file(bt.BTS / "datasets" / name / "adj_mx.pkl", 8),
+            roads=len(meta["nodes"]), steps=int(vals.shape[0]))
+    run.stage("Validating traffic data", emit)
     routes = service.routes((o["lat"], o["lng"]), (d["lat"], d["lng"]))
     if not routes.get("is_live") or not routes.get("routes"):
+        run.finish("failed", f"live routing unavailable: {routes.get('request_status')}")
         raise RuntimeError(f"live routing unavailable: {routes.get('request_status')}")
-    emit(stage="Running forecast", step=2)
+    quality = te.data_quality(np.where(vals == 0, np.nan, vals), int(meta["interval_s"]))
+    run.set(routes_retrieved_at=routes.get("retrieved_at"), routes_n=len(routes.get("routes") or []), data_quality=te.to_jsonable(quality))
+    run.set(routing_provider=routes.get("source"), routing_preference=routes.get("routing_preference"), routing_request_status=routes.get("request_status"),
+            routing_backend_function="dashboard/backend/live.py: LiveService.routes -> Google Routes API computeRoutes", routing_latency_ms=routes.get("request_latency_ms"),
+            route_geometry_hash=pv.sha_json([[pt for s in (r.get("segments") or []) for pt in (s.get("coordinates") or [])] for r in routes["routes"]]),
+            routes_summary=[{"key": "ABC"[i], "distance_m": r.get("distance_m"), "duration_s": r.get("duration_s"), "static_duration_s": r.get("static_duration_s"),
+                             "points": sum(len(s.get("coordinates") or []) for s in (r.get("segments") or []))} for i, r in enumerate(routes["routes"][:3])])
+
+    run.stage("Loading checkpoint", emit)
     entry = model_registry.resolve(scope, p.get("model"))
-    if not entry.get("eligible") and entry["model"] not in ("persistence", "historical_average", "Chronos-Bolt") and not entry.get("checkpoint_path"):
-        raise RuntimeError(f"{entry.get('label', entry['model'])} is not available on this data: {entry.get('reason') or 'failed a gate'}")
+    if not entry.get("can_forecast") and not entry.get("checkpoint_path") and entry["model"] not in ("persistence", "historical_average", "Chronos-Bolt"):
+        run.finish("failed", f"{entry['model']} unavailable")
+        raise RuntimeError(f"UNAVAILABLE: {entry.get('label', entry['model'])} cannot serve this data — {entry.get('reason') or 'failed a gate'}")
     as_of, as_of_time = moment_for(meta, p.get("departure_local") or p.get("departure"))
+    run.set(resolved_model=entry["model"], checkpoint_path=entry.get("checkpoint_path") or entry.get("checkpoint"),
+            checkpoint_sha256=pv.sha_file(entry.get("checkpoint_path")), cache_hit_training=bool(entry.get("checkpoint_path")),
+            as_of_index=as_of, as_of_dataset_time=as_of_time, input_window_hash=pv.sha_array(raw[as_of - 12:as_of]))
+    run.stage("Running inference", emit)
     now, pred, info = forecast_all(scope, entry, as_of)
-    raw, _ = bt._prepared(bt.bts_name(scope))
-    vals = np.asarray(raw[:, :, 0], dtype="float64")
+    run.set(raw_prediction_hash=pv.sha_array(pred), raw_prediction_first10=[round(float(x), 3) for x in np.asarray(pred).ravel()[:10]],
+            inference_recomputed=True)
     speed_like = any(k in (meta.get("quantity") or "").lower() for k in ("speed", "km/h", "mph"))
     ff = te.freeflow_from_train(vals, te.splits(vals.shape[0])["train"][1]) if speed_like else None
-    emit(stage="Evaluating alternatives", step=3)
+    run.stage("Evaluating routes", emit)
     coords = meta["coords"]; names = meta["nodes"]
     cards = []
     for i, r in enumerate(routes["routes"][:3]):
@@ -207,10 +235,18 @@ def analyze_dataset(p: dict, scope: str, emit) -> dict:
            "congestion": best_now.get("category_now") or "UNKNOWN"}
     lats = [pt[0] for c in cards for s in c["segments"] for pt in (s.get("coordinates") or [])]
     lngs = [pt[1] for c in cards for s in c["segments"] for pt in (s.get("coordinates") or [])]
+    run.stage("Preparing result", emit)
+    run.set(postprocessed_prediction_hash=pv.sha_json([c["forecast"] for c in cards]), recommended=best_pred["key"])
     sensors = [{"id": names[j], "lat": coords[j][0], "lng": coords[j][1], "now": round(float(now[j]), 1),
                 "pred": {str(hh): round(float(pred[max(0, min(11, hh // step_min - 1)), j]), 1) for hh in HORIZONS},
                 "freeflow": round(float(ff[j]), 1) if ff is not None else None} for j in range(len(names))]
-    return {"city": meta["name"], "scope": scope, "is_dhaka": False, "forecastable": True, "dataset": True,
+    rec = run.finish("done")
+    return {"run_id": rec["run_id"], "result_source": "LIVE_COMPUTATION", "cache_hit_training": rec["cache_hit_training"], "inference_recomputed": True,
+            "provenance": run.summary(), "stages": rec["stages"],
+            "forecast_decision": {**(entry.get("forecast_decision") or {}), "model_used": entry["model"], "model_used_status": entry.get("status"),
+                                  "model_used_trust": entry.get("trust")},
+            "routing_policy": entry.get("routing"),
+            "city": meta["name"], "scope": scope, "is_dhaka": False, "forecastable": True, "dataset": True,
             "origin": {**o}, "destination": {**d}, "horizon_min": h, "retrieved_at": routes.get("retrieved_at"),
             "current": cur,
             "forecast": {"eta_s": best_now["forecast"][h]["eta_s"], "risk": best_now["forecast"][h]["risk"], "covered": best_now["forecast"][h]["covered"],

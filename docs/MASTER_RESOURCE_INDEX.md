@@ -32,6 +32,8 @@ Docs: `paper_labs/00_utd19/{DATA_SPEC,METHOD_SPEC,REPRODUCTION_*}.md`
 | Bieker et al. 2014, Bologna scenario | scenario paper | DOI `10.1007/978-3-319-15024-6_4`; PDF archived | USED |
 | Varaiya 2013, Max-pressure control | theory paper | DOI `10.1016/j.trc.2013.08.014` | USED |
 | **Eclipse SUMO** | official software | `github.com/eclipse-sumo/sumo` tag `v1_27_1` = `7717f2379d9e314a0c81c5cec748444de06a2a91`, pip `eclipse-sumo==1.27.1`, EPL-2.0; `OFFICIAL_IMPLEMENTATION_USED`, never patched | USED |
+| **Eclipse SUMO source (tools + docs)** | official software | `github.com/eclipse-sumo/sumo` tag `v1_27_1` = `7717f2379d9e314a0c81c5cec748444de06a2a91`, sparse checkout at `~/.dhakaflow/upstream/sumo` (tools/, docs/web/docs/); EPL-2.0. Reused process: `tools/osmWebWizard.py`, `tools/osmBuild.py`, `tools/randomTrips.py`, `tools/assign/duaIterate.py`, docs Demand/Automatic_Routing, Demand/Dynamic_User_Assignment, Simulation/Routing, Simulation/Rerouter, TraCI. Manifest: `pipeline/city/RESOURCE_MANIFEST.md` | USED |
+| **DigitalTwin_GenevaMotorway** (Kušić et al. 2023, AEI 55:101858) | digital-twin reference | `github.com/SiLab-group/DigitalTwin_GenevaMotorway` @ `5d2f6c2`, local `~/.dhakaflow/upstream/GenevaMotorway`; GPL-3.0. Reused process: SCENARIO-II minute-resolution flow inputs → SUMO calibrators → runtime demand (`DT_GM_workday_dynamic_flow.py`, `functions_DT_GE_live24h.py`); their network/data not redistributed | USED (process) |
 | **Bologna/Acosta official scenario** | benchmark | `github.com/DLR-TS/sumo-scenarios` @ `00f6eb479a9dc0fbaeb731495c11d48d7a9661d3`, run **unmodified** (`OFFICIAL_SCENARIO_EXECUTION`, exit 0) | USED |
 | Locks | provenance | `upstream/UPSTREAM_LOCK.yaml`, `EV/verification_record.json` | USED |
 
