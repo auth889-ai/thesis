@@ -27,8 +27,8 @@ import "./components/research-page.js";
 const PAGES = {
   mission:        {tag: "mission-control",     title: "Home",
                    sub: "Traffic now, traffic later, the model in use and the recommended route — with links into each feature"},
-  predict:        {tag: "prediction-page",     title: "Prediction",
-                   sub: "The AI models behind the forecast — which one is trusted, how accurate it is, and how to train one on your city"},
+  predict:        {tag: "prediction-page",     title: "Traffic Forecast",
+                   sub: "See where congestion will form before it happens."},
   results:        {tag: "results-page",        title: "Results",
                    sub: "The verified outcome under the frozen protocol"},
   archive:        {tag: "archive-page",        title: "Archived Experiments",

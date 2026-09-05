@@ -459,7 +459,8 @@ def report(P: dict, recs: list[dict], label: str) -> dict:
                "spearman_skill_vs_realized_saving_over_baseline": spearman([sk[i] for i in ok], [rs[i] for i in ok]),
                "spearman_skill_vs_realized_saving_over_persistence_arm": spearman([sk[i] for i in ok], [rsp[i] for i in ok]), "n": len(ok),
                "reading": "with n seeds this is a correlation across moments of one dataset, not a causal estimate"}
-    return {"protocol": P, "seed_set": label, "seeds": [r["seed"] for r in recs], "same_population_all_seeds": all(r["same_population"] for r in recs), "per_seed": recs, "paired": pairs,
+    slim = [{**r, "arms": {a: {k: v for k, v in x.items() if k != "decisions"} for a, x in r["arms"].items()}} for r in recs]   # per-vehicle decisions stay in each seed_record.json
+    return {"protocol": P, "seed_set": label, "seeds": [r["seed"] for r in recs], "same_population_all_seeds": all(r["same_population"] for r in recs), "per_seed": slim, "paired": pairs,
             "primary": primary, "learned_vs_persistence": vs_pers, "persistence_vs_baseline": pers_base, "verdict": primary["label"], "outcome": outcome, "teleports": tele, "forecast_quality": quality,
             "generated_utc": datetime.now(timezone.utc).isoformat()}
 
