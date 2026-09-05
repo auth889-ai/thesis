@@ -163,7 +163,8 @@ def _run(job_id: str) -> None:
         card.update(evaluation=ev, verification=ver, trust=tr)
         bt.save_card(card)
         _set(job_id, stage="COMPLETE", status="done", verification=ver, trust=tr, trust_selected=tr_sel, checkpoint=Path(card["checkpoint"]).name,
-             trained_on=card.get("trained_on"), model_name=f"{arch} · trained here", curve=card.get("curve", [])[-2 * epochs:])
+             trained_on=card.get("trained_on"), model_name=f"{arch} · trained here", curve=card.get("curve", [])[-2 * epochs:],
+             identity=_identity(job_id, card, ev, arch, tr))
     except _Cancelled:
         _fail(job_id, "cancelled by the user")
     except BaseException as exc:                        # noqa: BLE001 — SystemExit from the pipeline is a reason
@@ -279,6 +280,23 @@ def start(payload: dict) -> dict:
     return {"job_id": job_id, "where": pl["where"], "plan": pl, "poll": f"/api/train/{job_id}"}
 
 
+def identity_for(job_id: str) -> dict | None:
+    """The identity record of a finished job, reconstructed from its record and the saved model card
+    when the job finished before identities were recorded (older jobs) — nothing is invented: the
+    checkpoint is hashed from disk, the hashes come from the cache key the trainer wrote."""
+    j = get(job_id)
+    if j.get("status") != "done":
+        return None
+    if j.get("identity"):
+        return j["identity"]
+    from pipeline.forecasting import basicts_train as bt
+    card = next((c for c in bt.cards() if c.get("cache_key") == j.get("cache_key")), None) or {"cache_key": j.get("cache_key"), "dataset": j.get("dataset"), "epochs": j.get("epochs")}
+    ev = {"test": j.get("test") or {}}
+    ident = _identity(job_id, card, ev, j.get("arch"), j.get("trust") or {})
+    _set(job_id, identity=ident)
+    return ident
+
+
 def get(job_id: str) -> dict:
     with _LOCK:
         j = _JOBS.get(job_id)
@@ -311,6 +329,26 @@ def list_jobs(limit: int = 20) -> list[dict]:
             continue
         out.append({k: j.get(k) for k in ("job_id", "dataset", "arch", "epochs", "where", "stage", "status", "cache_hit", "created_utc", "trust")})
     return out
+
+
+
+def _identity(job_id: str, card: dict, ev: dict, arch: str, tr: dict) -> dict:
+    """The record a training job leaves behind for the causal chain: what was trained, on what,
+    with which upstream code, where, and how it scored against persistence on the held-out test."""
+    from pipeline.forecasting import train_eval as te
+    j = get(job_id)
+    detail = str(j.get("instance_detail") or "")
+    t = (ev.get("test") or {}).get(arch) or {}
+    h3 = t.get("horizon_3") or {}
+    parts = str(card.get("cache_key") or j.get("cache_key") or "").split("-")
+    ck = Path(card["checkpoint"]) if card.get("checkpoint") else None
+    return {"training_job_id": job_id, "dataset": card.get("dataset") or j.get("dataset"), "dataset_hash": card.get("dataset_hash") or j.get("dataset_hash"),
+            "graph_hash": card.get("graph_hash") or j.get("graph_hash"), "model": arch, "upstream_sha": card.get("upstream_sha") or (parts[-1] if len(parts) >= 5 else None),
+            "config_hash": parts[-2] if len(parts) >= 5 else None, "instance_type": (detail.split() or [None])[0] if detail else ("local CPU" if j.get("where") != "aws" else None),
+            "instance_id": j.get("instance"), "checkpoint": ck.name if ck else None, "checkpoint_path": str(ck) if ck else None,
+            "checkpoint_sha256": te.sha256_file(ck, 12) if ck and ck.exists() else None, "epochs": card.get("epochs") or j.get("epochs"),
+            "split": "chronological 70/10/20, never shuffled", "held_out_MAE": h3.get("MAE"), "persistence_MAE": h3.get("persistence_MAE"),
+            "skill_vs_persistence": h3.get("skill_vs_persistence"), "held_out_horizon": "+15 min (horizon_3)", "routing_eligible": bool(tr.get("eligible")), "trust": tr.get("label")}
 
 
 def reattach_on_startup() -> None:
@@ -364,6 +402,7 @@ def _resume_aws(job_id: str) -> None:
         tr = te.trust(arch, ev["test"].get(arch) or {}, prep["quality"], ver)
         card.update(evaluation=ev, verification=ver, trust=tr); bt.save_card(card)
         _set(job_id, stage="COMPLETE", status="done", verification=ver, trust=tr, selected_by_validation=sel, test_selected=ev["test"].get(arch),
-             validation=ev["validation"], test=ev["test"], validation_MAE=ev["validation_MAE"], checkpoint=Path(card["checkpoint"]).name)
+             validation=ev["validation"], test=ev["test"], validation_MAE=ev["validation_MAE"], checkpoint=Path(card["checkpoint"]).name,
+             identity=_identity(job_id, card, ev, arch, tr))
     except BaseException as exc:                        # noqa: BLE001
         _fail(job_id, f"{type(exc).__name__}: {exc}")

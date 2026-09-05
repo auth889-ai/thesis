@@ -232,3 +232,26 @@ def test_observe_endpoint_refuses_an_unknown_city_honestly(client, monkeypatch):
     monkeypatch.setattr(registry, "create_from_name", lambda name, **kw: (_ for _ in ()).throw(RuntimeError("geocoder unavailable")))
     d2 = client.post("/api/city/nowhere_town_xyz/observe", json={}).json()
     assert d2["ok"] is False and "cannot find city" in d2["error"]
+
+
+def test_learned_gate_endpoint_reads_the_newest_report_or_says_it_is_missing(client, tmp_path, monkeypatch):
+    """Blocker #6: the learned-model outcome is read as-is from the frozen protocol's report; the oracle arm stays research-only."""
+    import json
+    import config
+    from pipeline.routing import learned_gate as lg
+    monkeypatch.setattr(config, "REPO", tmp_path)
+    r = client.get("/api/experiment/learned_gate").json()
+    assert r["available"] is False and "learned_gate.py" in r["command"]
+    def arm(v):
+        return {"metrics": {k: v for k in ("total_vehicle_hours_incl_never_inserted", "total_vehicle_hours", "mean_travel_time_all", "mean_travel_time_s", "p95_travel_time_s", "total_waiting_s", "mean_queue_veh", "max_queue_veh")}
+                | {"arrived": 100, "teleports": 0, "top_route_share": 0.1, "top_edge_flow_concentration": 0.1, "teleport_events": [], "teleport_rate_per_1000_inserted": 0.0, "teleport_edges": {}, "probe": {}},
+                "routing": {"mean_predicted_saving_s": 10.0, "routes_changed": 1}, "decisions": {}}
+    recs = [{"seed": s, "same_population": True, "arms": {"baseline": arm(100), "reactive": arm(101), "persistence_predictive": arm(99), "learned_predictive": arm(97 + 0.01 * s), "oracle": arm(90)},
+             "quality_vs_outcome": {"skill_vs_persistence": 0.2, "realized_saving_pct_learned_vs_baseline": 3.0, "realized_saving_pct_persistence_vs_baseline": 1.0}} for s in range(10)]
+    P = {"primary_metric_key": "total_vehicle_hours_incl_never_inserted", "with_oracle": True, "protocol_id": "FINAL_LEARNED_PROTOCOL_v1", "model_label": "Graph WaveNet", "checkpoint_sha256": "abc", "checkpoint": "GraphWaveNet_best_val_MAE.pt"}
+    d = tmp_path / "results/routing/learned_gate/FINAL_LEARNED_PROTOCOL_v1_final_cfgx_cky"; d.mkdir(parents=True)
+    (d / "report.json").write_text(json.dumps(lg.report(P, recs, "final"), default=str))
+    r = client.get("/api/experiment/learned_gate").json()
+    assert r["available"] and r["verdict"] == "HELPED" and r["learned_vs_persistence"]["pair"] == "learned_predictive vs persistence_predictive"
+    assert r["oracle_research_only"]["label"] == "HELPED" and r["provenance"]["checkpoint_sha256"] == "abc" and len(r["per_seed"]) == 10
+    assert r["outcome"].startswith("A")

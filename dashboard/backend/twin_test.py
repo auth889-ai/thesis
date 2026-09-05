@@ -82,6 +82,15 @@ def scenario_for(rec: dict, emit) -> dict:
     if is_dhaka_run(rec):
         n = next(x for x in networks() if x["id"] == "dhaka_r1")
         return {**n, **resolve_network("dhaka_r1"), "demand_reality": n.get("demand"), "forecast_capable": True}
+    scope = rec.get("dataset_scope") or (rec.get("city") if str(rec.get("city", "")).startswith("user:") else None)
+    if scope:                                          # an uploaded dataset with a genuine detector -> edge mapping on a built scenario
+        from pipeline.city import sensor_map
+        mapping = sensor_map.find_for_dataset(scope)
+        if mapping:
+            n = next((x for x in networks() if x["id"] == mapping["city_id"]), None)
+            if n:
+                return {**n, **resolve_network(mapping["city_id"]), "demand_reality": n.get("demand"), "forecast_capable": True,
+                        "sensor_mapping": {"file": mapping.get("file"), "counts": mapping.get("counts")}}
     o, d = rec["origin_resolved"], rec["destination_resolved"]
     s, n_ = min(o["lat"], d["lat"]) - MARGIN_DEG, max(o["lat"], d["lat"]) + MARGIN_DEG
     w, e = min(o["lng"], d["lng"]) - MARGIN_DEG, max(o["lng"], d["lng"]) + MARGIN_DEG
@@ -263,10 +272,15 @@ def _run(job: str, analysis_run_id: str, opts: dict) -> None:
         if "prediction_aware" in arms and scen.get("forecast_capable"):
             _set(job, stage="Optimizing route")
             pa_route, fc_info = optimized_route_for_probe(rec, net_path, od["origin"]["edge"], od["destination"]["edge"], out, seed)
-            pa_label = f"PREDICTION-AWARE — {fc_info.get('resolved_model')} forecast through the production optimizer"
+            validated = _validated(rec)
+            fc_info = {**fc_info, "validated": validated}
+            pa_label = f"PREDICTION-AWARE · Model: {fc_info.get('resolved_model')} · Validated: {'YES' if validated else 'NO'}"
             if not pa_route:
                 arms.remove("prediction_aware")
-        run.set(routing_run_id=fc_info.get("routing_run_id") or fc_id(fc_info), routing_decision=fc_info.get("decision"), future_cost_hash=fc_info.get("future_cost_hash"))
+        run.set(routing_run_id=fc_info.get("routing_run_id") or fc_id(fc_info), routing_decision=fc_info.get("decision"), future_cost_hash=fc_info.get("future_cost_hash"),
+                # the simulation names the exact model and checkpoint it drives, copied from the analysis it was launched from
+                model=rec.get("resolved_model"), checkpoint_sha256=rec.get("checkpoint_sha256"), raw_prediction_hash=rec.get("raw_prediction_hash"),
+                selected_route_hash=fc_info.get("selected_route_hash"), validated=fc_info.get("validated"))
         _set(job, arms=arms, routing_run_id=fc_id(fc_info), forecast_hash=fc_info.get("future_cost_hash"), forecast=fc_info,
              model=fc_info.get("resolved_model") or rec.get("resolved_model"), demand_scale=scale, duration_s=duration)
         live_sim.owner = job
@@ -301,8 +315,10 @@ def _run(job: str, analysis_run_id: str, opts: dict) -> None:
                     policy = f"{pa_label}: measured future of the paired baseline → production optimizer ({oracle_info['routes_changed']} vehicles + the probe rerouted); NOT a learned model"
                     probe["route_source"] = "production optimizer on the paired baseline's measured edge times (oracle debug)"
                 else:
-                    params.update(routing_run_id=fc_id(fc_info))
-                    policy = f"probe on the route selected by routing run {fc_id(fc_info)} ({fc_info.get('decision')}: forecast future cost + load + overlap, threshold {fc_info.get('threshold_s')} s)"
+                    # the trained model's routing run drives the probe; the demand file is the scenario's own,
+                    # so the arm is recorded as prediction_aware with the model and its validation state
+                    params.update(arm="prediction_aware", routes_file=str(scen["routes"]), advised_ids=[], forecast_label=pa_label, routing_run_id=fc_id(fc_info))
+                    policy = f"{pa_label}: probe on the route selected by routing run {fc_id(fc_info)} ({fc_info.get('decision')}: forecast future cost + load + overlap, threshold {fc_info.get('threshold_s')} s)"
                     probe["route_source"] = f"production optimizer, routing run {fc_id(fc_info)}"
                 if pa_route:
                     probe["route_edges"] = pa_route
@@ -352,6 +368,17 @@ def _run(job: str, analysis_run_id: str, opts: dict) -> None:
         live_sim.owner = None
         with _LOCK:
             _JOBS[job].pop("_prov", None)
+
+
+def _validated(rec: dict) -> bool:
+    """Whether the analysis's resolved model passed the registry's held-out trust gate on this scope."""
+    try:
+        import model_registry
+        scope = rec.get("dataset_scope") or rec.get("city") or "dhaka"
+        e = model_registry.resolve(scope, rec.get("resolved_model"))
+        return bool(e.get("trust") == "ROUTING_ELIGIBLE" or e.get("status") == "VALIDATED")
+    except Exception:                                   # noqa: BLE001
+        return False
 
 
 def fc_id(fc_info: dict) -> str | None:

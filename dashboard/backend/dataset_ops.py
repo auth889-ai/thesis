@@ -114,6 +114,8 @@ def forecast_all(scope: str, entry: dict, as_of: int) -> tuple[np.ndarray, np.nd
     vals = np.asarray(raw[:, :, 0], dtype="float64")
     now = vals[as_of - 1].copy()
     info = {"model": model, "checkpoint": entry.get("checkpoint"), "as_of_index": as_of}
+    import time as _time
+    _t0 = _time.perf_counter()
     if card and card.get("family") == "research":
         pred = research_predict(card, as_of)              # separate process: xgboost/sklearn OpenMP vs torch's
     elif card:
@@ -131,6 +133,7 @@ def forecast_all(scope: str, entry: dict, as_of: int) -> tuple[np.ndarray, np.nd
         pred = p[0]
     else:
         raise RuntimeError(f"{model} cannot run on this dataset here")
+    info["inference_seconds"] = round(_time.perf_counter() - _t0, 3)      # the forward pass, measured here
     pred = np.where(np.isfinite(pred), pred, now[None, :])
     return now, pred, info
 
@@ -188,7 +191,12 @@ def analyze_dataset(p: dict, scope: str, emit, run_id: str = "") -> dict:
     run.stage("Running inference", emit)
     now, pred, info = forecast_all(scope, entry, as_of)
     run.set(raw_prediction_hash=pv.sha_array(pred), raw_prediction_first10=[round(float(x), 3) for x in np.asarray(pred).ravel()[:10]],
-            inference_recomputed=True)
+            inference_recomputed=True,
+            # the full raw prediction per horizon and road, kept with the run so the route optimizer prices
+            # SUMO edges from exactly this forward pass (never a recomputation on another window)
+            raw_prediction={str(hh): {meta["nodes"][j]: (None if not np.isfinite(pred[max(0, min(11, hh // step_min - 1)), j]) else round(float(pred[max(0, min(11, hh // step_min - 1)), j]), 4))
+                                       for j in range(len(meta["nodes"]))} for hh in HORIZONS},
+            forecast_unit=meta.get("quantity"), dataset_scope=scope, inference_seconds=info.get("inference_seconds"))
     speed_like = any(k in (meta.get("quantity") or "").lower() for k in ("speed", "km/h", "mph"))
     ff = te.freeflow_from_train(vals, te.splits(vals.shape[0])["train"][1]) if speed_like else None
     run.stage("Evaluating routes", emit)

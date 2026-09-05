@@ -119,6 +119,9 @@ export const api = {
   sweep:         (grid = "compliance") => get(`/api/experiment/sweep?grid=${grid}`),
   ablation:      () => get("/api/experiment/ablation"),
   oracleGate:    (seedSet = "final") => get(`/api/experiment/oracle_gate?seed_set=${seedSet}`),
+  learnedGate:   (seedSet = "final") => get(`/api/experiment/learned_gate?seed_set=${seedSet}`),
+  forecastMap:   (ds, asOf = "latest", model = "") => get(`/api/forecast-map/${encodeURIComponent(ds)}?as_of=${asOf}${model ? `&model=${encodeURIComponent(model)}` : ""}`),
+  forecastRoad:  (ds, node, asOf = "latest", models = "GWNet,persistence") => get(`/api/forecast-map/${encodeURIComponent(ds)}/road?node=${encodeURIComponent(node)}&as_of=${asOf}&models=${encodeURIComponent(models)}`),
   predictTrained: () => get("/api/predict-lab/trained"),
   runsRecent:    (limit = 30) => get(`/api/runs?limit=${limit}`),
   // live

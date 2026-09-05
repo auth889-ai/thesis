@@ -28,7 +28,7 @@ import json
 import threading
 from datetime import datetime, timezone
 
-from fastapi import FastAPI, File, Form, Request, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from pathlib import Path
 from fastapi.responses import FileResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
@@ -528,7 +528,61 @@ def experiment_oracle_gate(seed_set: str = "final"):
             "same_population_all_seeds": rep.get("same_population_all_seeds"), "generated_utc": rep.get("generated_utc"),
             "protocol": {k: P.get(k) for k in ("protocol_id", "network", "network_hash", "demand_source", "demand_sample_fraction", "simulation_duration_s", "routing_round_s",
                                                "compliance", "routing_config_hash", "min_saving_s", "min_saving_pct", "sumo_version", "dev_seeds", "final_seeds", "primary_metric", "coverage_mode")},
-            "learned_model_final_outcome": {"status": "NOT_RUN_YET", "note": "the learned-model final outcome comparison has not been run under this protocol"}}
+            "learned_model_final_outcome": {"status": "SEE_LEARNED_GATE", "endpoint": "/api/experiment/learned_gate", "note": "the learned-model outcome runs under its own frozen protocol (FINAL_LEARNED_PROTOCOL_v1) and is reported separately"}}
+
+
+@app.get("/api/forecast-map/{dataset}", tags=["predict"])
+def forecast_map_network(dataset: str, as_of: str | None = None, model: str | None = None):
+    """The future state of the road network at one dataset moment: every sensor's prediction, the
+    DIRECT/DERIVED edges the router prices, the unforecast backdrop, and the coverage counts."""
+    import forecast_map
+    try:
+        return forecast_map.network(dataset, as_of, model)
+    except KeyError as ex:
+        raise HTTPException(404, str(ex))
+
+
+@app.get("/api/forecast-map/{dataset}/road", tags=["predict"])
+def forecast_map_road(dataset: str, node: str, as_of: str | None = None, models: str = "GWNet,persistence"):
+    """One sensor: history, each model's prediction, the measured future when inside the data."""
+    import forecast_map
+    try:
+        return forecast_map.road(dataset, node, as_of, tuple(m for m in models.split(",") if m))
+    except (KeyError, ValueError) as ex:
+        raise HTTPException(404, str(ex))
+
+
+@app.get("/api/experiment/learned_gate", tags=["experiment"])
+def experiment_learned_gate(seed_set: str = "final"):
+    """The frozen learned-model outcome gate (Blocker #6): the newest report of the named seed set, read as-is.
+    Headline pairs: Graph WaveNet vs baseline, vs reactive, vs persistence-predictive; persistence vs baseline.
+    The oracle arm, when present, is research-only and never the headline."""
+    root = config.REPO / "results/routing/learned_gate"
+    cands = sorted(root.glob(f"FINAL_LEARNED_PROTOCOL_v1_{seed_set}_cfg*/report.json"), key=lambda f: f.stat().st_mtime) if root.exists() else []
+    if not cands:
+        return {"available": False, "command": f"python pipeline/routing/learned_gate.py --seeds {seed_set}"}
+    rep = json.loads(cands[-1].read_text())
+    P = rep.get("protocol", {})
+    key = P.get("primary_metric_key", "total_vehicle_hours_incl_never_inserted")
+    pairs = rep.get("paired", {})
+    def head(pk):
+        st = (pairs.get(pk) or {}).get(key) or {}
+        return {k: st.get(k) for k in ("pair", "seeds", "mean_pct", "median_pct", "ci95", "wins", "losses", "ties", "label", "p_value", "mean_abs")}
+    prov = {"protocol_id": P.get("protocol_id"), "model": P.get("model_label"), "checkpoint": P.get("checkpoint"), "checkpoint_sha256": P.get("checkpoint_sha256"), "dataset": P.get("dataset"),
+            "dataset_hash": P.get("dataset_hash"), "graph_hash": P.get("graph_hash"), "mapping_hash": P.get("mapping_hash"), "network_hash": P.get("network_hash"), "routing_config_hash": P.get("routing_config_hash"),
+            "sumo_version": P.get("sumo_version"), "seeds": rep.get("seeds"), "report": str(cands[-1].relative_to(config.REPO)), "generated_utc": rep.get("generated_utc"), "result_source": "RESEARCH_BENCHMARK"}
+    per_seed = [{"seed": r["seed"], "analysis_run_id": r.get("analysis_run_id"), "raw_prediction_hash": r.get("raw_prediction_hash"), "as_of_time": (r.get("forecast_quality") or {}).get("as_of_time"),
+                 "arms": {a: {"simulation_run_id": x.get("simulation_run_id"), "routing_run_ids": x.get("routing_run_ids"), "edge_cost_hashes": x.get("edge_cost_hashes"),
+                              "vehicle_hours": (x.get("metrics") or {}).get(key), "teleports": len((x.get("metrics") or {}).get("teleport_events") or [])} for a, x in (r.get("arms") or {}).items()},
+                 **{k: v for k, v in (r.get("quality_vs_outcome") or {}).items()}} for r in rep.get("per_seed", [])]
+    return {"available": True, "result_source": "RESEARCH_BENCHMARK", "report": prov["report"], "seed_set": rep.get("seed_set"), "seeds": rep.get("seeds"), "verdict": rep.get("verdict"), "outcome": rep.get("outcome"),
+            "primary_metric": P.get("primary_metric"), "learned_vs_baseline": head("learned_predictive_vs_baseline"), "learned_vs_reactive": head("learned_predictive_vs_reactive"),
+            "learned_vs_persistence": head("learned_predictive_vs_persistence_predictive"), "persistence_vs_baseline": head("persistence_predictive_vs_baseline"), "reactive_vs_baseline": head("reactive_vs_baseline"),
+            "oracle_research_only": head("oracle_vs_baseline") if "oracle_vs_baseline" in pairs else None, "paired": pairs, "teleports": rep.get("teleports"),
+            "forecast_quality": {k: v for k, v in (rep.get("forecast_quality") or {}).items() if k != "per_seed"}, "per_seed": per_seed, "same_population_all_seeds": rep.get("same_population_all_seeds"),
+            "provenance": prov, "protocol": {k: P.get(k) for k in ("protocol_id", "city_id", "dataset", "model", "model_label", "checkpoint", "checkpoint_sha256", "held_out_skill", "mapping_counts", "coverage_hops", "min_saving_s", "min_saving_pct",
+                                                                  "demand_method", "calibration_method", "simulation_duration_s", "routing_round_s", "round_horizons_min", "compliance", "forecast_moments", "sumo_version", "dev_seeds", "final_seeds", "primary_metric", "model_selection_rule")},
+            "generated_utc": rep.get("generated_utc")}
 
 
 @app.get("/api/experiment/chain", tags=["experiment"])
@@ -814,7 +868,10 @@ def train_status(job_id: str):
     """Stage (QUEUED … COMPLETE | FAILED), epoch and validation metrics while training, then the
     validation / test tables, checkpoint verification and the trust gate."""
     import train_jobs
-    return train_jobs.get(job_id)
+    j = train_jobs.get(job_id)
+    if j.get("status") == "done" and not j.get("identity"):
+        j["identity"] = train_jobs.identity_for(job_id)          # the causal-chain record of a finished job
+    return j
 
 
 @app.post("/api/train/{job_id}/cancel", tags=["train"])

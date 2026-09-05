@@ -1,0 +1,283 @@
+{
+ "dataset": "user:los_angeles",
+ "bts_name": "DF_user_los_angeles",
+ "arch": "GWNet",
+ "arch_class": "GraphWaveNet",
+ "epochs": 120,
+ "cache_key": "0fc9c01d475c0124-7f3cbc8c-GWNet-3ef27573-4c3e2d3",
+ "dataset_hash": "0fc9c01d475c0124",
+ "graph_hash": "7f3cbc8c",
+ "upstream_sha": "4c3e2d373c647667c2123e1591f2d79c229dfcc6",
+ "quality": {
+  "passed": true,
+  "reasons": [],
+  "steps": 4032,
+  "roads": 20,
+  "missing_fraction": 0.0486,
+  "dead_roads": 0,
+  "constant_roads": 0,
+  "interval_s": 300,
+  "days": 14.0
+ },
+ "best_val_MAE": {
+  "persistence": 6.4708251211119014,
+  "historical_average": 8.528815319279367,
+  "Chronos-Bolt": 4.1449583542272235,
+  "GWNet": 3.7877
+ },
+ "checkpoint": "/Users/jannatulferdouseva/thesis/results/forecasting/checkpoints_cloud/city-user-los-angeles-gwnet/GraphWaveNet/DF_user_los_angeles_120_12_12/f265b4fa3b58e33fa63c0dc4f5c8fd8b/GraphWaveNet_best_val_MAE.pt",
+ "config": "/Users/jannatulferdouseva/.dhakaflow/upstream/BasicTS_legacy/baselines/GWNet/DF_user_los_angeles.py",
+ "run_dir": "/Users/jannatulferdouseva/thesis/results/forecasting/checkpoints_cloud/city-user-los-angeles-gwnet/GraphWaveNet/DF_user_los_angeles_120_12_12/f265b4fa3b58e33fa63c0dc4f5c8fd8b",
+ "trained_utc": "2026-09-05T12:16:04.603425+00:00",
+ "trained_on": "AWS g5.xlarge GPU (on-demand)",
+ "nodes": 20,
+ "node_names": [
+  "Sensor 0",
+  "Sensor 1",
+  "Sensor 2",
+  "Sensor 3",
+  "Sensor 4",
+  "Sensor 5",
+  "Sensor 6",
+  "Sensor 7",
+  "Sensor 8",
+  "Sensor 9",
+  "Sensor 10",
+  "Sensor 11",
+  "Sensor 12",
+  "Sensor 13",
+  "Sensor 14",
+  "Sensor 15",
+  "Sensor 16",
+  "Sensor 17",
+  "Sensor 18",
+  "Sensor 19"
+ ],
+ "interval_s": 300,
+ "quantity": "speed km/h",
+ "steps": 4032,
+ "first_utc": "2012-03-01T00:00:00+00:00",
+ "test_metrics": {
+  "persistence": {
+   "horizon_3": {
+    "MAE": 6.087300755668655,
+    "RMSE": 12.133305352637844,
+    "MAPE": 9.653591718227084,
+    "n": 15510,
+    "F1": 0.7977777777777778,
+    "congested_share": 0.14268214055448097,
+    "persistence_MAE": 6.087300755668655,
+    "skill_vs_persistence": 0.0
+   },
+   "horizon_6": {
+    "MAE": 7.48543753700822,
+    "RMSE": 15.023508656098457,
+    "MAPE": 12.469029716739332,
+    "n": 15510,
+    "F1": 0.729125138427464,
+    "congested_share": 0.14261766602192133,
+    "persistence_MAE": 7.48543753700822,
+    "skill_vs_persistence": 0.0
+   },
+   "horizon_12": {
+    "MAE": 9.464532565271217,
+    "RMSE": 18.63378358271176,
+    "MAPE": 16.472314624731798,
+    "n": 15510,
+    "F1": 0.6487923775758919,
+    "congested_share": 0.14165054803352675,
+    "persistence_MAE": 9.464532565271217,
+    "skill_vs_persistence": 0.0
+   },
+   "overall": {
+    "MAE": 7.456943224776875,
+    "RMSE": 15.086322571210866,
+    "MAPE": 12.447796260952883,
+    "n": 186120,
+    "F1": null,
+    "persistence_MAE": 7.456943224776875,
+    "skill_vs_persistence": 0.0
+   }
+  },
+  "historical_average": {
+   "horizon_3": {
+    "MAE": 7.304400290487518,
+    "RMSE": 13.119834709527622,
+    "MAPE": 16.782421782318213,
+    "n": 15510,
+    "F1": 0.699517399034798,
+    "congested_share": 0.14268214055448097,
+    "persistence_MAE": 6.087300755668655,
+    "skill_vs_persistence": -0.1999
+   },
+   "horizon_6": {
+    "MAE": 7.313859482640851,
+    "RMSE": 13.127498754096276,
+    "MAPE": 16.79212148126547,
+    "n": 15510,
+    "F1": 0.6996951219512195,
+    "congested_share": 0.14261766602192133,
+    "persistence_MAE": 7.48543753700822,
+    "skill_vs_persistence": 0.0229
+   },
+   "horizon_12": {
+    "MAE": 7.298235984977823,
+    "RMSE": 13.102995878689619,
+    "MAPE": 16.729783320639086,
+    "n": 15510,
+    "F1": 0.6994116142235866,
+    "congested_share": 0.14165054803352675,
+    "persistence_MAE": 9.464532565271217,
+    "skill_vs_persistence": 0.2289
+   },
+   "overall": {
+    "MAE": 7.308415089707991,
+    "RMSE": 13.120643543903688,
+    "MAPE": 16.77671522315343,
+    "n": 186120,
+    "F1": null,
+    "persistence_MAE": 7.456943224776875,
+    "skill_vs_persistence": 0.0199
+   }
+  },
+  "Chronos-Bolt": {
+   "horizon_3": {
+    "MAE": 5.619279865480818,
+    "RMSE": 10.542296498658077,
+    "MAPE": 8.94476889628128,
+    "n": 477,
+    "F1": 0.75,
+    "congested_share": 0.11740041928721175,
+    "persistence_MAE": 6.087300755668655,
+    "skill_vs_persistence": 0.0769
+   },
+   "horizon_6": {
+    "MAE": 5.876785982219223,
+    "RMSE": 11.846937161437449,
+    "MAPE": 11.00997097970791,
+    "n": 459,
+    "F1": 0.6862745098039216,
+    "congested_share": 0.11546840958605664,
+    "persistence_MAE": 7.48543753700822,
+    "skill_vs_persistence": 0.2149
+   },
+   "horizon_12": {
+    "MAE": 8.457671981588069,
+    "RMSE": 17.078012909656632,
+    "MAPE": 20.162046822209547,
+    "n": 478,
+    "F1": 0.6776859504132231,
+    "congested_share": 0.14853556485355648,
+    "persistence_MAE": 9.464532565271217,
+    "skill_vs_persistence": 0.1064
+   },
+   "overall": {
+    "MAE": 6.461636301409336,
+    "RMSE": 13.204307865103052,
+    "MAPE": 13.666200386198266,
+    "n": 5670,
+    "F1": null,
+    "persistence_MAE": 7.456943224776875,
+    "skill_vs_persistence": 0.1335
+   },
+   "sampled_windows": 24,
+   "finite_fraction": 1.0
+  },
+  "GWNet": {
+   "horizon_3": {
+    "MAE": 4.755485096814016,
+    "RMSE": 9.150562128964072,
+    "MAPE": 8.720483958278722,
+    "n": 15510,
+    "F1": 0.8396412163640341,
+    "congested_share": 0.14268214055448097,
+    "reported_MAE": 4.756350040435791,
+    "persistence_MAE": 6.087300755668655,
+    "skill_vs_persistence": 0.2188
+   },
+   "horizon_6": {
+    "MAE": 5.545577180654599,
+    "RMSE": 11.027124768523189,
+    "MAPE": 10.14447373431354,
+    "n": 15510,
+    "F1": 0.8088487972508591,
+    "congested_share": 0.14261766602192133,
+    "reported_MAE": 5.548275947570801,
+    "persistence_MAE": 7.48543753700822,
+    "skill_vs_persistence": 0.2592
+   },
+   "horizon_12": {
+    "MAE": 6.566936646700674,
+    "RMSE": 13.21783141236982,
+    "MAPE": 12.330502336307566,
+    "n": 15510,
+    "F1": 0.7497243660418964,
+    "congested_share": 0.14165054803352675,
+    "reported_MAE": 6.562982082366943,
+    "persistence_MAE": 9.464532565271217,
+    "skill_vs_persistence": 0.3062
+   },
+   "overall": {
+    "MAE": 5.482940553496685,
+    "RMSE": 10.938280640523466,
+    "MAPE": 10.145145463306552,
+    "n": 186120,
+    "F1": null,
+    "reported_MAE": 5.482749938964844,
+    "persistence_MAE": 7.456943224776875,
+    "skill_vs_persistence": 0.2647
+   }
+  }
+ },
+ "stack": "BasicTS-legacy (pinned): their data preparation, config, runner and masked metrics; AWS g5.xlarge GPU (on-demand)",
+ "claim": "trained on this city's own data \u2014 a city-specific model",
+ "verification": {
+  "passed": true,
+  "tolerance": 0.03,
+  "recomputed_MAE": {
+   "horizon_3": 4.7554850578308105,
+   "horizon_6": 5.545577049255371,
+   "horizon_12": 6.566936492919922
+  },
+  "reported_MAE": {
+   "horizon_3": 4.7563,
+   "horizon_6": 5.5483,
+   "horizon_12": 6.563
+  },
+  "logged_MAE": {
+   "horizon_3": 4.756350040435791,
+   "horizon_6": 5.548275947570801,
+   "horizon_12": 6.562982082366943
+  },
+  "relative_difference": {
+   "horizon_3": 0.0002,
+   "horizon_6": 0.0005,
+   "horizon_12": 0.0006
+  },
+  "device_gap_logged_vs_cpu": {
+   "horizon_3": 0.0,
+   "horizon_6": 0.0,
+   "horizon_12": 0.0
+  },
+  "reference": "their experiments/evaluate.py on CPU",
+  "windows": 784,
+  "checkpoint": "GraphWaveNet_best_val_MAE.pt"
+ },
+ "trust": {
+  "label": "ROUTING_ELIGIBLE",
+  "eligible": true,
+  "message": "GWNet beats persistence by 26.5% on the untouched test set",
+  "checks": {
+   "data_quality": true,
+   "checkpoint_reload": true,
+   "held_out_test": true,
+   "beats_persistence": true
+  },
+  "margin": 0.03,
+  "skill": 0.2647
+ },
+ "config_hash": "3ef27573",
+ "training_job_id": "train_7bf79d6c81",
+ "checkpoint_sha256": "566b97d97943",
+ "note": "frozen copy for FINAL_LEARNED_PROTOCOL_v1; the product card file was later overwritten by another training job"
+}

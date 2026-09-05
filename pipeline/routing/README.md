@@ -42,3 +42,16 @@ Official SUMO (eclipse-sumo `v1_27_1`, `7717f237`, local `~/.dhakaflow/upstream/
 
 What is ours (thin): the forecast-to-cost conversion, the cost evaluation of routes SUMO returned,
 the threshold and the admission gates. No shortest-path code of our own.
+
+## Learned-model outcome gate (Blocker #6, 2026-09-06)
+
+`learned_gate.py` — FINAL_LEARNED_PROTOCOL_v1. Does the trained, validated Graph WaveNet checkpoint
+(`566b97d97943`, held-out skill 0.26 vs persistence on `user:los_angeles`) improve actual SUMO outcomes
+on the Los Angeles scenario? Four arms on identical paired scenarios per seed — baseline (no rerouting),
+reactive (`rerouteTraveltime` on current times), persistence-predictive and learned-predictive (both through
+the production `edge_costs` → `route_optimizer` chain, only the forecast differs). Every learned run is a
+fresh forward pass at one held-out dataset moment per seed; the detectors' measured speeds after that moment
+are replayed as lane speed caps on their mapped edges in every arm, so the forecast has something real to
+anticipate. Provenance `an_lg_*`, `rt_lg_*`, `sim_lg_*` records; report under `results/routing/learned_gate/`;
+read-only `GET /api/experiment/learned_gate`. The oracle arm (`--with-oracle`) is research-only and never the
+headline. Dev seeds 101–103 only for smoke; final seeds 301–320 never used for tuning.
