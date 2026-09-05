@@ -151,11 +151,8 @@ export class LiveTwinPage extends HTMLElement {
   async poll() {
     if (this._dead) return;
     const s = await api.simState(true);
-    if (!this._autostarted && !s.owner && s.status === "idle") {
-      // the twin is only meaningful running: open the page and SUMO is already stepping Dhaka live
-      this._autostarted = true;
-      api.simStart({network: "dhaka_r1", continuous: true, arm: "reactive", step_delay_ms: 100});
-    }
+    // no autostart: the twin only runs what the user launches (an analysed trip from Mission
+    // Control, or an explicit scenario chosen here)
     this.render(s);
     this._t = setTimeout(() => this.poll(), s.status === "running" ? POLL_MS : 1500);
   }

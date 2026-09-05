@@ -903,6 +903,26 @@ def analyze_status(job: str):
     return analyze.status(job)
 
 
+@app.post("/api/twin/test", tags=["twin"])
+def twin_test_start(payload: dict | None = None):
+    """TEST IN DIGITAL TWIN for one AnalysisRun: the run's own city, resolved O/D, model and
+    forecast become the SUMO scenario (probe vehicle for that exact trip in every arm).
+    404 ANALYSIS_RUN_NOT_FOUND when the run id is unknown; SUMO_OD_MAPPING_FAILED when the
+    trip cannot be snapped to drivable edges — never a stored or fixed scenario."""
+    import twin_test
+    r = twin_test.start(payload or {})
+    if not r.get("started") and r.get("http") == 404:
+        from fastapi.responses import JSONResponse
+        return JSONResponse(status_code=404, content=r)
+    return r
+
+
+@app.get("/api/twin/test/{simulation_run_id}", tags=["twin"])
+def twin_test_status(simulation_run_id: str):
+    import twin_test
+    return twin_test.status(simulation_run_id)
+
+
 @app.post("/api/twin/compare", tags=["twin"])
 def twin_compare_start(payload: dict):
     """Baseline vs reactive on any generated network, paired seeds, CI verdict. Background job."""

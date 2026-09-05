@@ -132,3 +132,20 @@ results/forecasting/checkpoints_cloud/
 results/forecasting/aws_city_jobs/
 results/forecasting/train_jobs/
 results/runs/
+
+# --- generated outputs are never tracked (2026-09-05 hygiene): SUMO outputs, logs, checkpoints, caches, growing recordings
+*.log
+**/tripinfo*.xml
+**/edgedata*.xml
+**/summary.xml
+**/statistic.xml
+*.joblib
+*.pt
+dashboard/backend/cache/
+results/routing/logs/
+results/live/sim/
+results/runs/
+artifacts/live_dhaka/normalized/google_routes_runtime_reference.jsonl
+artifacts/live_dhaka/RECORDER_MANIFEST.json
+*.db
+results/live/sim_history.json

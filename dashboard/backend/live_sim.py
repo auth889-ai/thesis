@@ -295,6 +295,23 @@ class LiveSim:
                 raise RuntimeError(f"could not connect to SUMO on port {port}: {last}")
             self._conn = conn
             rerouted: dict[str, str] = {}                   # vid -> "reactive" | "advised", for the colours
+            probe = cfg.get("probe") or None                # the analysed trip: {id, from_edge, to_edge, depart_s, route_edges?}
+            probe_state: dict = {}
+            if probe:
+                pid = probe["id"]
+                if probe.get("route_edges"):                # the prediction-aware arm: duarouter on the forecast weights
+                    edges = list(probe["route_edges"])
+                else:                                       # baseline / reactive: SUMO's own findRoute on the current network
+                    rr = conn.simulation.findRoute(probe["from_edge"], probe["to_edge"])
+                    edges = list(rr.edges)
+                    if not edges:
+                        raise RuntimeError(f"SUMO_OD_MAPPING_FAILED: no route from {probe['from_edge']} to {probe['to_edge']}")
+                conn.route.add(f"route_{pid}", edges)
+                conn.vehicle.add(pid, f"route_{pid}", depart=str(float(probe.get("depart_s") or 0)), departLane="best", departSpeed="max")
+                probe_state = {"vehicle_id": pid, "origin_edge": probe["from_edge"], "destination_edge": probe["to_edge"],
+                               "initial_route": edges, "initial_route_source": "duarouter on forecast weights" if probe.get("route_edges") else "traci.simulation.findRoute",
+                               "active_route": edges, "departed_s": None, "arrived_s": None, "rerouted_times": 0}
+                self._set(probe=probe_state)
             applied = 0
             for eid, m in slow.items():
                 try:
@@ -397,11 +414,25 @@ class LiveSim:
                     conn.vehicle.subscribe(vid, sub)
                 arrived += conn.simulation.getArrivedNumber()
                 teleports += conn.simulation.getStartingTeleportNumber()
+                if probe and probe_state.get("departed_s") is None and probe["id"] in conn.vehicle.getIDList():
+                    probe_state["departed_s"] = t
+                if probe and probe_state.get("departed_s") is not None and probe_state.get("arrived_s") is None:
+                    if probe["id"] in conn.simulation.getArrivedIDList():
+                        probe_state["arrived_s"] = t
+                    elif t % 5 == 0 and probe["id"] in conn.vehicle.getIDList():
+                        try:
+                            cur = list(conn.vehicle.getRoute(probe["id"]))
+                            if cur != probe_state["active_route"]:
+                                probe_state["rerouted_times"] += 1; probe_state["active_route"] = cur
+                            if gui:
+                                conn.vehicle.setColor(probe["id"], (255, 0, 255, 255)); conn.gui.trackVehicle("View #0", probe["id"])
+                        except traci.TraCIException:
+                            pass
                 if cfg["arm"] == "reactive":
                     for vid in conn.vehicle.getIDList():
-                        if not pr.equipped(vid, cfg["compliance"]):
+                        if not (pr.equipped(vid, cfg["compliance"]) or (probe and vid == probe["id"])):
                             continue
-                        if not ic.delivered(vid, deliver_p, cfg["v2x"], cfg["seed"]):
+                        if not ic.delivered(vid, deliver_p, cfg["v2x"], cfg["seed"]) and not (probe and vid == probe["id"]):
                             continue
                         if (int(hashlib.md5(vid.encode()).hexdigest()[8:12], 16) + t) % 60 == 0:
                             try:
@@ -451,6 +482,17 @@ class LiveSim:
             except subprocess.TimeoutExpired:
                 proc.kill(); proc.wait()
             metrics = pr.parse_metrics(out, horizon=t if cfg["continuous"] else cfg["duration_s"])
+            if probe:                                        # the probe's own trip from SUMO's tripinfo (the measured outcome)
+                import xml.etree.ElementTree as ET
+                try:
+                    for el in ET.parse(out / "tripinfo.xml").getroot().iter("tripinfo"):
+                        if el.get("id") == probe["id"]:
+                            probe_state.update(travel_time_s=float(el.get("duration")), route_length_m=float(el.get("routeLength")),
+                                               waiting_time_s=float(el.get("waitingTime")), time_loss_s=float(el.get("timeLoss")),
+                                               finished=el.get("arrival") not in (None, "-1.00", "-1"))
+                except Exception as exc:                          # noqa: BLE001
+                    probe_state["tripinfo_error"] = str(exc)[:120]
+                self._set(probe=probe_state)
             rec = {"run_id": run_id, "params": cfg, "stopped_early": bool(self._stop.is_set()),
                    "sim_time_s": t, "reroutes": reroutes, "advised": advised, "routes_changed": changed,
                    "edges_slowed": applied, "delivery_fraction": deliver_p,

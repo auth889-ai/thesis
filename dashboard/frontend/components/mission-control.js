@@ -74,6 +74,7 @@ export class MissionControl extends HTMLElement {
         <div id="routes" class="routecards"><div class="empty-routes">Route options will be ranked by travel time now and at the chosen horizon.</div></div>
         <div class="testrow">
           <button class="btn maroon big" id="test" disabled>▶ Test in Digital Twin (SUMO)</button>
+          <label class="check" style="margin-left:8px"><input type="checkbox" id="twingui"> show the real SUMO-GUI window</label>
           <span class="muted" id="testnote">Runs the decision in a traffic simulation and reports whether it helped.</span>
         </div>
         <div id="sumoprog" class="progress-row" hidden></div>
@@ -259,10 +260,8 @@ export class MissionControl extends HTMLElement {
     this.querySelector("#routesub").textContent = "";
     const test = this.querySelector("#test");
     test.disabled = false;
-    test.textContent = r.is_dhaka ? "▶ Test in Digital Twin (SUMO)" : "▶ Simulate this area (SUMO)";
-    this.querySelector("#testnote").textContent = r.is_dhaka
-      ? "Runs baseline, reactive and prediction-aware traffic on the same demand and seeds, and reports whether the decision helped."
-      : "Builds a simulation of this area from OpenStreetMap and compares baseline with rerouting on the same seeds.";
+    test.textContent = "▶ Test in Digital Twin (SUMO)";
+    this.querySelector("#testnote").textContent = "Simulates THIS analysed trip as a probe vehicle in SUMO (baseline, reactive" + (r.is_dhaka ? ", prediction-aware" : "") + ") on " + (r.is_dhaka ? "the calibrated Dhaka twin" : "an OpenStreetMap network built around your origin and destination") + ".";
     this.querySelector("#routes").innerHTML = r.routes.map(c => {
       const p = c.forecast[h] || {}; const [w, tone] = word(p.risk, p.covered);
       const pill = c.recommended ? ["Recommended", "NORMAL"] : c.key === cur.route ? ["Fastest now", "UNKNOWN"] : ["Alternative", "UNKNOWN"];
@@ -391,51 +390,45 @@ export class MissionControl extends HTMLElement {
 
   /* ------------------------------------------------------------ SUMO test */
   async testInSumo() {
-    if (this._result && !this._result.is_dhaka) return this.simulateArea();
+    const r = this._result;
     const btn = this.querySelector("#test"); btn.disabled = true;
-    const steps = ["Running forecast", "Evaluating alternatives", "Starting SUMO", "Simulating three arms", "Computing result"];
-    const prog = this.querySelector("#sumoprog"); const box = this.querySelector("#sumo");
-    box.innerHTML = "";
+    const prog = this.querySelector("#sumoprog"); const box = this.querySelector("#sumo"); box.innerHTML = "";
+    if (!r || !r.run_id) { this.stage(prog, ["Analysis"], 0, "run an analysis first — the twin test simulates THAT analysed trip"); btn.disabled = false; return; }
+    const steps = ["Preparing network", "Loading demand", "Mapping your trip", "Running baseline", "Running reactive", "Running prediction-aware", "Computing result"];
     this.stage(prog, steps, 0);
-    const r = await api.chainRun({seeds: "11,12,13", horizon: 1800, compliance: 0.3, tag: "mission"});
-    if (!r.started) { this.stage(prog, steps, 0, r.reason || "could not start"); btn.disabled = false; return; }
-    for (let i = 0; i < 2000 && !this._dead; i++) {
+    // the AnalysisRun is the only input: city, resolved O/D, model, forecast hashes all come from the backend record
+    const g = await api.twinTest({analysis_run_id: r.run_id, gui: !!this.querySelector("#twingui")?.checked});
+    if (!g.started) { this.stage(prog, steps, 0, g.error || "could not start"); btn.disabled = false; return; }
+    for (let i = 0; i < 6000 && !this._dead; i++) {
       await new Promise(res => setTimeout(res, 1500));
-      const st = await api.chainStatus(r.run_id);
-      const idx = st.stage === "forecast" ? 0 : st.stage === "v2x" ? 1 : st.stage === "sumo" ? (st.arms_done ? 3 : 2) : st.stage === "done" ? 4 : 0;
+      const st = await api.twinTestStatus(g.simulation_run_id);
+      const idx = st.status === "done" ? steps.length : Math.max(0, steps.indexOf(st.stage));
       this.stage(prog, steps, idx);
-      if (st.stage === "sumo") prog.insertAdjacentHTML("beforeend", `<span class="step live">arm ${st.arms_done}/${st.arms_total} · run ${r.run_id}</span>`);
-      if (st.status === "done") { prog.hidden = true; btn.disabled = false; this.renderSumo(st.result); return; }
+      if (st.origin_edge) prog.insertAdjacentHTML("beforeend", `<span class="step live">simulation ${g.simulation_run_id} · analysis ${r.run_id} · probe ${st.probe_vehicle_id} · ${st.origin_edge} → ${st.destination_edge} · seed ${st.seed}</span>`);
+      if (st.status === "done") { btn.disabled = false; this.renderTwinTest(st.result); return; }
       if (st.status === "failed") { this.stage(prog, steps, idx, st.error); btn.disabled = false; return; }
     }
   }
 
-  async simulateArea() {
-    const r = this._result; const btn = this.querySelector("#test"); btn.disabled = true;
-    const steps = ["Building the network from OpenStreetMap", "Generating demand", "Starting SUMO", "Simulating baseline vs reactive", "Computing result"];
-    const prog = this.querySelector("#sumoprog"); const box = this.querySelector("#sumo"); box.innerHTML = "";
-    this.stage(prog, steps, 0);
-    const name = `${r.city} ${r.origin.label}-${r.destination.label}`.slice(0, 60);
-    const g = await api.twinGenerate({name, bbox: r.bbox, end: 1200});
-    if (!g.started) { this.stage(prog, steps, 0, g.error || "could not start"); btn.disabled = false; return; }
-    let cityId = null;
-    for (let i = 0; i < 300; i++) {
-      await new Promise(res => setTimeout(res, 1000));
-      const j = await api.twinNetJob(g.job);
-      this.stage(prog, steps, j.stage && /demand/.test(j.stage) ? 1 : 0);
-      if (j.status === "done") { cityId = j.city_id; this._net = j.manifest; break; }
-      if (j.status === "failed") { this.stage(prog, steps, 0, j.error); btn.disabled = false; return; }
-    }
-    this.stage(prog, steps, 2);
-    const c = await api.twinCompare({network: cityId, seeds: "11,12,13", duration_s: 900, scale: 4.0, compliance: 0.3});
-    for (let i = 0; i < 3000; i++) {
-      await new Promise(res => setTimeout(res, 1500));
-      const st = await api.twinCompareStatus(c.job);
-      this.stage(prog, steps, st.stage === "Computing result" ? 4 : 3);
-      if (st.stage && /Simulating/.test(st.stage)) prog.insertAdjacentHTML("beforeend", `<span class="step live">${st.stage} · ${st.done}/${st.total} runs</span>`);
-      if (st.status === "done") { prog.hidden = true; btn.disabled = false; this.renderCompare(st.result); return; }
-      if (st.status === "failed") { this.stage(prog, steps, 3, st.error); btn.disabled = false; return; }
-    }
+  renderTwinTest(rec) {
+    const label = {baseline: "BASELINE", reactive: "REACTIVE", prediction_aware: "PREDICTION-AWARE"};
+    const ci = (rec.summary && rec.summary.verdict_ci) || {};
+    const rows = rec.arms.map(a => { const p = a.probe || {}; const m = a.metrics || {};
+      return `<tr class="${a.arm === "prediction_aware" ? "hl" : ""}"><td><b>${label[a.arm]}</b><br><small class="muted">${a.routing_policy}</small></td>
+        <td class="num">${p.travel_time_s != null ? Math.round(p.travel_time_s) + " s" : "—"}${rec.probe_vs_baseline_pct && rec.probe_vs_baseline_pct[a.arm] != null && a.arm !== "baseline" ? `<br><small>${rec.probe_vs_baseline_pct[a.arm] > 0 ? "+" : ""}${rec.probe_vs_baseline_pct[a.arm]} %</small>` : ""}</td>
+        <td class="num">${(p.initial_route || []).length} → ${(p.active_route || []).length} edges${p.rerouted_times ? ` · rerouted ${p.rerouted_times}×` : ""}</td>
+        <td class="num">${m.total_vehicle_hours != null ? m.total_vehicle_hours.toFixed(2) : "—"}</td><td class="num">${m.mean_travel_time_s != null ? Math.round(m.mean_travel_time_s) : "—"} s</td><td class="num">${m.p95_travel_time_s != null ? Math.round(m.p95_travel_time_s) : "—"} s</td>
+        <td class="num">${m.mean_queue_veh != null ? m.mean_queue_veh.toFixed(1) : "—"}</td><td class="num">${a.routes_changed ?? 0}</td><td class="num">${m.teleports ?? "—"}</td></tr>`; }).join("");
+    const od = rec.od_mapping || {};
+    const verdict = (arm) => { const v = ci[arm]; if (!v) return ""; const tone = v.label === "HELPED" ? "good" : v.label === "HURT" ? "bad" : "warn";
+      return `<div class="verdict ${tone}"><div class="vl">${label[arm]}: <b>${v.label}</b></div><div>paired ${v.mean_pct > 0 ? "+" : ""}${v.mean_pct} % vehicle-hours vs baseline · ${v.seeds} seed(s)</div></div>`; };
+    this.querySelector("#sumo").innerHTML = `
+      <div class="note ok"><b>Your trip in the twin.</b> simulation <code>${rec.simulation_run_id}</code> from analysis <code>${rec.analysis_run_id}</code> ·
+        network <code>${rec.network}</code> (${rec.network_edges ?? "?"} edges) · origin edge <code>${od.origin?.edge}</code> (${od.origin?.distance_m} m from the resolved point) →
+        destination edge <code>${od.destination?.edge}</code> (${od.destination?.distance_m} m) · probe <code>${rec.probe_vehicle_id}</code> · seed ${rec.seed} (${rec.seed_source})</div>
+      <div class="tablewrap"><table><thead><tr><th>arm</th><th class="num">your trip</th><th class="num">probe route</th><th class="num">vehicle-hours</th><th class="num">mean TT</th><th class="num">p95 TT</th><th class="num">queue</th><th class="num">reroutes</th><th class="num">teleports</th></tr></thead><tbody>${rows}</tbody></table></div>
+      ${verdict("prediction_aware")}${verdict("reactive")}
+      <p class="muted">${rec.label}${rec.forecast && rec.forecast.forecast_hash ? ` · forecast ${rec.forecast.model} (${rec.forecast.checkpoint || "—"}), edge-cost hash ${rec.forecast.forecast_hash}` : " · no validated corridor forecast prices this network, so the arms are baseline and reactive"}. <a href="/api/runs/${rec.simulation_run_id}" target="_blank">simulation provenance</a></p>`;
   }
 
   renderCompare(rec) {

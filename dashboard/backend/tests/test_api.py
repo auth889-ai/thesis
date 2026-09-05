@@ -213,7 +213,17 @@ def test_city_id_resolution_and_level_conversion():
 
 
 def test_observe_endpoint_refuses_an_unknown_city_honestly(client, monkeypatch):
+    """Two honest refusals, both environment-independent: a city whose road graph cannot be
+    derived (registered here, corridors fail), and a name that cannot be created at all."""
     import city_corridors
+    from types import SimpleNamespace
+    from pipeline.city.registry import registry
     monkeypatch.setattr(city_corridors, "ensure", lambda cid, k=12: (_ for _ in ()).throw(RuntimeError("no graph")))
+    # the city is registered on this machine or not (CI has no data/cities): make it registered either way
+    real_get = registry.get
+    monkeypatch.setattr(registry, "get", lambda cid: SimpleNamespace(city_id=cid, display_name="Nairobi, Kenya") if cid == "nairobi_kenya" else real_get(cid))
     d = client.post("/api/city/nairobi_kenya/observe", json={}).json()
     assert d["ok"] is False and "corridors" in d["error"]
+    monkeypatch.setattr(registry, "create_from_name", lambda name, **kw: (_ for _ in ()).throw(RuntimeError("geocoder unavailable")))
+    d2 = client.post("/api/city/nowhere_town_xyz/observe", json={}).json()
+    assert d2["ok"] is False and "cannot find city" in d2["error"]
