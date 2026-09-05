@@ -4,6 +4,9 @@ from __future__ import annotations
 import time
 
 import pytest
+from pathlib import Path
+
+needs_recorded = pytest.mark.skipif(not (Path(__file__).resolve().parents[3] / "artifacts/live_dhaka/normalized/google_routes_runtime_reference.jsonl").exists(), reason="recorded live series is git-ignored; absent on CI")
 
 
 def test_agent_rules_parse_the_reference_phrases():
@@ -79,6 +82,7 @@ def test_continuous_mode_replays_demand_and_couples_to_the_live_road(client):
     assert "live_applied_utc" in k
 
 
+@needs_recorded
 def test_opencity_predict_endpoint_refuses_honestly_when_the_window_is_short(client):
     d = client.post("/api/opencity/dhaka/predict", json={"source": "recorded"}).json()
     assert d["ok"] is False and "9 nodes" in d["error"]          # 6 recorded corridors

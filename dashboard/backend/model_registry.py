@@ -243,7 +243,7 @@ def _live_availability(scope: str) -> dict[str, tuple[bool, list[str]]]:
         for m in analyze.models_for_city(scope):
             if m["model"] in PRETRAINED:
                 out[m["model"]] = (bool(m.get("available")), list(m.get("reasons") or []))
-    except Exception as exc:                            # noqa: BLE001
+    except (Exception, SystemExit) as exc:              # noqa: BLE001 - a missing recorded series is a reason, not a crash
         out["Chronos-Bolt"] = (False, [f"registry unavailable: {exc}"])
     return out
 

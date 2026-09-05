@@ -16,6 +16,8 @@ from pipeline.routing import incident_scenario as inc  # noqa: E402
 SMOKE_EDGEDATA = REPO / "results/routing/static_s11_h900/edgedata.xml"
 PY = sys.executable
 
+needs_nlp_model = pytest.mark.skipif(not (REPO / "results/nlp/tfidf_lr.joblib").exists(), reason="trained classifier is git-ignored; absent on CI")
+
 
 def _tripinfo(tmp: Path, rows):
     tmp.mkdir(parents=True, exist_ok=True)
@@ -74,6 +76,7 @@ def test_incident_helpers():
     assert ev["edges"] and ev["factor"] >= 3 and ev["label"] in ("incident", "congestion")
 
 
+@needs_nlp_model
 def test_event_feed_maps_karwan_bazar_to_r1_edges(tmp_path):
     out = tmp_path / "ev.jsonl"
     r = subprocess.run([PY, str(REPO / "pipeline/nlp/event_feed.py"), "--text", "Heavy jam at Karwan Bazar after a bus breakdown", "--out", str(out)],

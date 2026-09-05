@@ -504,7 +504,7 @@ def _run(job: str, p: dict) -> None:
                       provenance=run.summary(), stages=rec["stages"],
                       forecast_decision={**product["forecast"], "model_used": f.get("model") if f else None}, routing_policy=product["routing"])
         emit(stage="done", step=4, status="done", result=result)
-    except Exception as exc:                        # noqa: BLE001 - the page shows the real reason
+    except (Exception, SystemExit) as exc:          # noqa: BLE001 - the page shows the real reason; a pipeline SystemExit must not leave the job "running" forever
         try:
             run.finish("failed", f"{type(exc).__name__}: {exc}")
         except Exception:                               # noqa: BLE001 - provenance never masks the real error
@@ -547,6 +547,6 @@ def models_for_city(city: str) -> list[dict]:
             if m["model"].split("/")[0] in ("STAEformer", "GWNet", "STID"):
                 continue                                # benchmark-trained; not for a city's corridors
             out.append({"model": m["model"], "label": m["model"], "available": m["available"], "reasons": m.get("reasons", [])[:2]})
-    except Exception as exc:                            # noqa: BLE001
-        out.append({"model": "Chronos-Bolt", "label": "Chronos-Bolt", "available": True, "reasons": [f"menu fallback: {exc}"]})
+    except (Exception, SystemExit) as exc:              # noqa: BLE001 - the pipeline raises SystemExit for a missing recorded series
+        out.append({"model": "Chronos-Bolt", "label": "Chronos-Bolt", "available": False, "reasons": [f"no corridor history available: {exc}"[:200]]})
     return out

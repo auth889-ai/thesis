@@ -12,6 +12,8 @@ sys.path.insert(0, str(REPO))
 from pipeline.forecasting import opencity_city_eval as oce      # noqa: E402
 from pipeline.forecasting import _opencity_boot as boot          # noqa: E402
 
+needs_recorded = pytest.mark.skipif(not (REPO / "artifacts/live_dhaka/normalized/google_routes_runtime_reference.jsonl").exists(), reason="recorded live series is git-ignored; absent on CI")
+
 
 def test_gates_are_the_models_own():
     assert oce.MIN_NODES == 9                       # 8 Laplacian eigenvectors + 1
@@ -35,6 +37,7 @@ def test_persistence_reference_masks_missing_and_uses_test_windows_only():
     assert ref["windows"] == 11 and ref["mae"] == 0.0
 
 
+@needs_recorded
 def test_recorded_classes_are_recoded_so_zero_means_missing():
     vals, nodes, meta = oce.from_recorded()
     finite = vals[np.isfinite(vals)]

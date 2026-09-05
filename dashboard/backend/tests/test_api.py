@@ -10,6 +10,7 @@ import json
 import time
 
 import pytest
+from pathlib import Path
 
 REPO_FILES = {
     "/api/forecast/dhaka/accuracy": "results/forecasting/live_backtest.json",
@@ -17,6 +18,8 @@ REPO_FILES = {
     "/api/experiment/sweep": "results/routing/sweep_compliance.json",
     "/api/experiment/ablation": "results/routing/ablation_forecast_quality.json",
 }
+
+needs_recorded = pytest.mark.skipif(not (Path(__file__).resolve().parents[3] / "artifacts/live_dhaka/normalized/google_routes_runtime_reference.jsonl").exists(), reason="recorded live series is git-ignored; absent on CI")
 
 
 def test_health(client):
@@ -51,6 +54,7 @@ def test_accuracy_for_an_unknown_city_is_not_invented(client):
     assert d["available"] is False and d["command"]
 
 
+@needs_recorded
 def test_forecast_uses_recorded_window_when_buffer_is_empty_and_logs_it(client):
     d = client.get("/api/forecast/dhaka?horizons=15").json()
     assert d["source"] == "recorded"
@@ -67,6 +71,7 @@ def test_a_requested_model_that_does_not_exist_is_refused_not_swapped(client):
     assert "not a registered model" in d["decision"]["reason"]
 
 
+@needs_recorded
 def test_history_falls_back_to_the_recorded_day_with_accuracy_attached(client):
     d = client.get("/api/history/dhaka?horizons=15,30").json()
     assert d["unit"] == "congestion_level_0_3"
