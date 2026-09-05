@@ -156,31 +156,49 @@ def _row(e, ratio, source, dist, weight, cid, v, run_id, model, horizon, v_min, 
             "source": source, "graph_distance": dist, "decay_weight": weight}
 
 
-def oracle_table(edgedata_xml: Path, net_path: Path, cfg: dict | None = None) -> dict:
-    """The ceiling: measured per-edge travel times from a baseline SUMO run of the same seed, in
-    the same table shape. Every edge is MEASURED; no forecast, no propagation."""
+def oracle_table(edgedata_xml: Path, net_path: Path, cfg: dict | None = None, begin: float | None = None,
+                 end: float | None = None) -> dict:
+    """The ceiling: MEASURED per-edge travel times from a SUMO run of the same seed and demand, in
+    the same table shape the forecast produces. Intervals overlapping [begin, end) are aggregated
+    per edge weighted by sampledSeconds (vehicle presence), so an edge's value is the mean travel
+    time vehicles actually experienced there in that window. Every row is MEASURED_ORACLE; no
+    forecast, no propagation; edges no vehicle used stay unpriced (free flow)."""
     import xml.etree.ElementTree as ET
     import sumolib
     cfg = cfg or load_config()
     net = sumolib.net.readNet(str(net_path))
-    rows = {}
-    for el in ET.parse(edgedata_xml).getroot().iter("edge"):
-        tt = el.get("traveltime")
-        if tt is None:
+    num, den, used = {}, {}, 0
+    for iv in ET.parse(edgedata_xml).getroot().iter("interval"):
+        b, e = float(iv.get("begin")), float(iv.get("end"))
+        if (begin is not None and e <= begin) or (end is not None and b >= end):
             continue
+        used += 1
+        for el in iv.iter("edge"):
+            tt, w = el.get("traveltime"), el.get("sampledSeconds")
+            if tt is None:
+                continue
+            w = float(w) if w else 1.0
+            num[el.get("id")] = num.get(el.get("id"), 0.0) + float(tt) * w
+            den[el.get("id")] = den.get(el.get("id"), 0.0) + w
+    rows = {}
+    for eid, n in num.items():
         try:
-            e = net.getEdge(el.get("id"))
+            e = net.getEdge(eid)
         except KeyError:
             continue
-        rows[e.getID()] = {"edge": e.getID(), "length_m": round(e.getLength(), 2), "speed_limit_mps": round(e.getSpeed(), 3),
-                           "future_tt_s": round(max(float(tt), e.getLength() / e.getSpeed()), 3), "free_flow_tt_s": round(e.getLength() / e.getSpeed(), 3),
-                           "source": "MEASURED_ORACLE", "graph_distance": 0, "decay_weight": 1.0, "corridor": None, "forecast_value": None,
-                           "model": "oracle", "ratio": None}
+        free = e.getLength() / max(e.getSpeed(), 0.1)
+        tt = max(n / den[eid], free) if den[eid] > 0 else free
+        rows[eid] = {"edge": eid, "length_m": round(e.getLength(), 2), "speed_limit_mps": round(e.getSpeed(), 3),
+                     "future_tt_s": round(tt, 3), "free_flow_tt_s": round(free, 3), "measured_speed_mps": round(e.getLength() / tt, 3),
+                     "sampled_seconds": round(den[eid], 1), "source": "MEASURED_ORACLE", "graph_distance": 0, "decay_weight": 1.0,
+                     "corridor": None, "forecast_value": None, "model": "oracle", "ratio": round(tt / free, 4)}
     edge_tt = {k: r["future_tt_s"] for k, r in rows.items()}
     return {"model": "oracle", "unit": "measured_traveltime_s", "coverage_hops": None, "config": cfg,
+            "window": [begin, end], "intervals_aggregated": used,
+            "aggregation": "sampledSeconds-weighted mean of edgeData traveltime over the window, floored at free flow",
             "priced_edges": len(rows), "direct_edges": len(rows), "derived_edges": 0, "network_edges": len(net.getEdges()),
             "edge_travel_times": edge_tt, "edges": rows, "future_cost_hash": sha({k: round(v, 3) for k, v in edge_tt.items()}),
-            "raw_forecast_hash": "(measured baseline edge travel times)", "source": str(edgedata_xml)}
+            "raw_forecast_hash": "(measured edge travel times: " + str(edgedata_xml) + ")", "source": str(edgedata_xml)}
 
 
 def write_weights(table: dict, out: Path, begin: float = 0.0, end: float = 3600.0) -> Path:
