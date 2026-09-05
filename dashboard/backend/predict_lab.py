@@ -55,6 +55,21 @@ def _live_datasets() -> list[dict]:
     return out
 
 
+TRAINED_SUFFIX = " · trained here"
+
+
+def _with_trained(ds: list[dict]) -> list[dict]:
+    """Models the pinned BasicTS harness has trained on THIS dataset (basicts_train.py cards)."""
+    from pipeline.forecasting import basicts_train as bt
+    by = {}
+    for c in bt.cards():
+        by.setdefault(c["dataset"], []).append(c["arch"])
+    for d in ds:
+        d["trainable"] = d["id"].startswith(("user:", "live:")) and d["steps"] >= bt.MIN_STEPS
+        d["models"] = [f"{a}{TRAINED_SUFFIX}" for a in by.get(d["id"], [])] + d["models"]
+    return ds
+
+
 def datasets() -> list[dict]:
     from pipeline.forecasting import opencity_predict as op
     out = op.local_datasets()
@@ -65,7 +80,7 @@ def datasets() -> list[dict]:
         d["name"] = {"METR_LA": "Los Angeles — METR-LA (207 loop detectors)", "PEMS_BAY": "Bay Area — PEMS-BAY (325 detectors)",
                      "PEMS07M": "California D7 — PEMS07M (228 detectors)", "TrafficSH": "Shanghai — TrafficSH (896 regions)"}.get(d["id"], d["id"])
     import user_datasets
-    return user_datasets.datasets() + live + out
+    return _with_trained(user_datasets.datasets() + live + out)
 
 
 def _series(dataset: str, region: int, n_nodes: int):
@@ -121,7 +136,7 @@ def _run(job: str, p: dict) -> None:
         emit(stage="Loading model", step=2)
         pred12 = None
         if model == "OpenCity-plus":
-            emit(stage="Running forward pass (OpenCity-plus, 26M parameters, CPU)", step=3)
+            emit(stage="Running the model (OpenCity, 26M parameters)", step=3)
             out = Path(tempfile.mkdtemp(prefix="oc_")) / "p.json"
             if dataset.startswith("user:"):               # their CSV contract, the whole uploaded graph
                 import user_datasets
@@ -144,11 +159,27 @@ def _run(job: str, p: dict) -> None:
                     pred12[int(h) // 5 - 1] = vs[region]
             base["model_card"] = {"upstream": "HKUDS/OpenCity @ eca64c9 (pinned)", "weights": r["weights"],
                                   "stack": r["stack"], "claim": r["claim"], "input_steps": 288, "output_steps": 288}
+        elif model.endswith(TRAINED_SUFFIX):             # trained on this very dataset by their harness
+            from pipeline.forecasting import basicts_train as bt
+            arch = model[: -len(TRAINED_SUFFIX)]
+            card = bt.card_for(dataset, arch)
+            if not card:
+                raise RuntimeError(f"{arch} has not been trained on {dataset} yet — press Train")
+            emit(stage=f"Running the model ({arch}, trained on this data)", step=3)
+            pred = bt.predict(card, end)                  # (12, N) in the dataset's own node order
+            pred12 = [round(float(x), 3) for x in pred[:, region]]
+            tm, pf = card["test_metrics"], card["persistence_test"]
+            hmin = {3: step_s * 3 // 60, 6: step_s * 6 // 60, 12: step_s * 12 // 60}
+            base["model_card"] = {"checkpoint": Path(card["checkpoint"]).name, "trained_on": f"{dataset} ({card['steps']} steps, {card['nodes']} roads), {card.get('trained_on', 'this CPU')}",
+                                  "epochs": card["epochs"], "trained_utc": card["trained_utc"], "stack": card["stack"], "claim": card["claim"],
+                                  "reported_test_metrics": {str(hmin[k]): round(tm[f"horizon_{k}"]["MAE"], 3) for k in (3, 6, 12) if f"horizon_{k}" in tm},
+                                  "persistence_test_metrics": {str(hmin[k]): round(pf[f"horizon_{k}"]["MAE"], 3) for k in (3, 6, 12) if pf.get(f"horizon_{k}", {}).get("MAE") is not None},
+                                  "test_split": "the last 20 % of this dataset, never seen in training (their 70/10/20 split)"}
         elif model in CHECKPOINT_MODELS:
             cli, ds_map = CHECKPOINT_MODELS[model]
             if dataset not in ds_map:
                 raise RuntimeError(f"{model} has a trained checkpoint only for {list(ds_map)}")
-            emit(stage=f"Running forward pass ({model} checkpoint)", step=3)
+            emit(stage=f"Running the model ({model})", step=3)
             n_train = int(T * 0.7); test_lo = n_train + int(T * 0.1)
             window = max(0, end - 12 - test_lo)          # the script's window starts its 12 input steps at test_lo + window
             cmd = [sys.executable, str(config.REPO / "pipeline/forecasting/infer_from_checkpoint.py"),
@@ -174,7 +205,7 @@ def _run(job: str, p: dict) -> None:
                                     "stack": "official BasicTS config, weights trained on GPU, reloaded here",
                                     "claim": "a city-specific model: it does not transfer to another graph"})
         else:                                             # Chronos-Bolt / persistence via the registry
-            emit(stage=f"Running forward pass ({model})", step=3)
+            emit(stage=f"Running the model ({model})", step=3)
             from pipeline.forecasting.adapters.base import CityData
             from pipeline.forecasting.adapters.registry import forecast as run_forecast
             cd = CityData(city_id=dataset, node_ids=nodes, values=hist.astype("float32"), interval_s=step_s,
@@ -217,3 +248,133 @@ def start(payload: dict) -> str:
 def status(job: str) -> dict:
     with _LOCK:
         return dict(_JOBS.get(job) or {"job": job, "status": "unknown"})
+
+
+# ---------------------------------------------------------------------------- training jobs
+_TRAIN: dict[str, dict] = {}
+
+
+def _train_run(job: str, p: dict) -> None:
+    from pipeline.forecasting import basicts_train as bt
+
+    def emit(**kw):
+        with _LOCK:
+            _TRAIN[job].update(kw)
+    try:
+        card = bt.train(p.get("dataset", ""), p.get("arch", "STID"), int(p.get("epochs", 30)),
+                        progress=lambda **k: emit(stage=f"Training — round {k['epoch']} / {k['epochs']}", **k))
+        emit(status="done", stage="done", result={k: card[k] for k in ("dataset", "arch", "epochs", "test_metrics", "persistence_test",
+                                                                       "curve", "trained_utc", "steps", "nodes", "quantity", "interval_s", "claim", "stack", "trained_on")})
+    except BaseException as exc:                        # noqa: BLE001 - SystemExit from the pipeline is a reason, not a crash
+        emit(status="failed", stage="failed", error=f"{type(exc).__name__}: {exc}")
+
+
+def train_start(payload: dict) -> str:
+    job = "tr_" + uuid.uuid4().hex[:8]
+    where = payload.get("where", "cpu")
+    with _LOCK:
+        _TRAIN[job] = {"job": job, "status": "running", "stage": "Preparing the data", "epoch": 0,
+                       "epochs": int(payload.get("epochs", 30)), "request": payload, "where": where}
+    threading.Thread(target=_train_cloud_run if where == "aws" else _train_run, args=(job, payload), name=job, daemon=True).start()
+    return job
+
+
+def train_status(job: str) -> dict:
+    with _LOCK:
+        return dict(_TRAIN.get(job) or {"job": job, "status": "unknown"})
+
+
+def trained() -> list[dict]:
+    from pipeline.forecasting import basicts_train as bt
+    return [{k: c[k] for k in ("dataset", "arch", "epochs", "test_metrics", "persistence_test", "trained_utc", "steps", "nodes")} for c in bt.cards()]
+
+
+# ---------------------------------------------------------------------------- the GPU path (AWS)
+AWS_VARS = ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION", "AWS_DEFAULT_REGION")
+
+
+def _aws_env() -> dict | None:
+    """The AWS credentials from pipeline/core/.env, for the aws CLI the launcher shells out to.
+    Server-side only: no endpoint ever returns a value from here."""
+    import os
+    from credentials import _from_env_file
+    env = dict(os.environ)
+    for v in AWS_VARS:
+        val = env.get(v) or _from_env_file(v)
+        if val:
+            env[v] = val
+    if not (env.get("AWS_ACCESS_KEY_ID") and env.get("AWS_SECRET_ACCESS_KEY")):
+        return None
+    env.setdefault("AWS_DEFAULT_REGION", env.get("AWS_REGION", "us-east-1"))
+    return env
+
+
+def cloud() -> dict:
+    import shutil
+    env = _aws_env()
+    ok = bool(env) and shutil.which("aws") is not None
+    return {"available": ok, "provider": "aws" if ok else None,
+            "instance": "g5.xlarge (1× A10G, 24 GB) — spot first, on-demand if no spot capacity",
+            "estimate": "about $0.10–0.50 per run: boot + install ≈ 4 min, then seconds per epoch; the instance terminates itself",
+            "why_not": None if ok else ("aws CLI not installed" if env else "no AWS keys in pipeline/core/.env")}
+
+
+def _train_cloud_run(job: str, p: dict) -> None:
+    import re
+    import time
+    from pipeline.forecasting import aws_train as at
+    from pipeline.forecasting import basicts_train as bt
+
+    def emit(**kw):
+        with _LOCK:
+            _TRAIN[job].update(kw)
+    try:
+        env = _aws_env()
+        if not env:
+            raise RuntimeError("no AWS credentials on the server")
+        dataset, arch, epochs = p.get("dataset", ""), p.get("arch", "STID"), int(p.get("epochs", 100))
+        name = at.city_job_name(dataset)
+        emit(stage="Preparing the data and sending it to the cloud", cloud_job=name)
+        cmd = [sys.executable, str(config.REPO / "pipeline/forecasting/aws_train.py"), "--launch", "--city-dataset", dataset,
+               "--models", arch, "--epochs", str(epochs), "--allow-on-demand", "--max-hours", "1", "--job", name]
+        r = subprocess.run(cmd, capture_output=True, text=True, cwd=config.REPO, env=env, timeout=900)
+        if r.returncode != 0:
+            raise RuntimeError((r.stdout + r.stderr)[-900:].strip())
+        m = re.search(r"\[launch\] (i-[0-9a-f]+) \(([^)]+)\)", r.stdout)
+        inst = m.group(1) if m else "?"
+        emit(stage="Cloud GPU starting up (a few minutes)", instance=inst)
+        import os
+        os.environ.update({k: env[k] for k in AWS_VARS if k in env})
+        quiet, t0 = 0, time.time()
+        while True:
+            time.sleep(20)
+            st = at.city_poll(name)
+            log = st["log"] or ""
+            curve = bt.parse_curve(log)
+            ep = max([c["epoch"] for c in curve], default=0)
+            if st["done"]:
+                break
+            if "=== TRAIN" in log:
+                emit(stage=f"Training on the cloud GPU — round {ep} / {epochs}", epoch=ep, epochs=epochs, curve=curve[-2 * epochs:],
+                     line=(log.strip().splitlines() or [""])[-1][-160:])
+            elif log:
+                emit(stage=f"Cloud GPU up, installing ({int(time.time() - t0)} s)", line=(log.strip().splitlines() or [""])[-1][-160:])
+            if not st["instances"]:
+                quiet += 1
+                if quiet >= 4 and not st["done"]:
+                    raise RuntimeError("the instance is gone without a DONE marker (spot reclaimed or boot failure). Log tail:\n" + log[-800:])
+            else:
+                quiet = 0
+            if time.time() - t0 > 3900:
+                raise RuntimeError("gave up after 65 min; the watchdog terminates the instance")
+        if st["done"].strip() != "DONE":
+            raise RuntimeError(f"the job ended with marker {st['done'].strip()!r}. Log tail:\n" + (st["log"] or "")[-800:])
+        emit(stage="Bringing the trained model back")
+        cards = at.city_collect(name)
+        card = next((c for c in cards if c["arch"] == arch), None)
+        if not card:
+            raise RuntimeError("the job finished but no checkpoint came back")
+        emit(status="done", stage="done", result={k: card[k] for k in ("dataset", "arch", "epochs", "test_metrics", "persistence_test",
+                                                                       "curve", "trained_utc", "steps", "nodes", "quantity", "interval_s", "claim", "stack", "trained_on")})
+    except BaseException as exc:                        # noqa: BLE001
+        emit(status="failed", stage="failed", error=f"{type(exc).__name__}: {exc}")

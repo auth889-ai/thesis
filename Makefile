@@ -44,6 +44,13 @@ sweep-v2x:       ## E4b V2X condition x compliance heatmap (~45 min)
 opencity-smoke:  ## OpenCity-plus forward pass through the authors' harness on this CPU (12-node slice, ~2 min)
 	$(PY) pipeline/forecasting/opencity_city_eval.py --source metrla-smoke
 
+train-city:      ## E7 train the official STID baseline on an uploaded / observed city through the pinned BasicTS harness (CPU)
+	$(PY) pipeline/forecasting/basicts_train.py --dataset $(or $(DATASET),user:los_angeles_two_weeks) --arch $(or $(ARCH),STID) --epochs $(or $(EPOCHS),30)
+
+train-city-gpu:  ## E7 on an AWS spot GPU (g5.xlarge): same harness, 100 epochs; the app's "run on: AWS GPU" does this
+	$(PY) pipeline/forecasting/aws_train.py --launch --city-dataset $(or $(DATASET),user:los_angeles_two_weeks) --models $(or $(ARCH),STID) --epochs $(or $(EPOCHS),100) --allow-on-demand --max-hours 1
+	@echo "watch: $(PY) pipeline/forecasting/aws_train.py --status --job city-...; collect: --collect-city city-..."
+
 opencity:        ## E6 OpenCity-plus zero-shot on the persisted live window (needs ~4 days of observation)
 	$(PY) pipeline/forecasting/opencity_city_eval.py --source observatory --city dhaka
 

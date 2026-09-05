@@ -83,6 +83,39 @@ shutdown -h now
           # overridden by --job so each dataset keeps its own S3 space
 RESULTS = REPO / "results/forecasting"
 
+# A CITY JOB: the dataset the app prepared locally with the harness's own script (datasets/DF_<name>/)
+# and the derived configs go up; the harness is cloned at the pinned SHA on the GPU and runs them.
+# The log is synced every 20 s so the app can show the epoch counter while it trains.
+CITY_SCRIPT = r"""#!/bin/bash
+exec > >(tee -a /var/log/dhakaflow.log) 2>&1
+set -x
+NAME=@NAME@; BUCKET=@BUCKET@; SHA=@SHA@; MODELS="@MODELS@"; DSNAME=@DSNAME@
+( sleep $((@MAXH@ * 3600)); shutdown -h now ) &          # hard watchdog
+( while true; do sleep 20; aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/live.log >/dev/null 2>&1; done ) &
+aws s3 cp s3://$BUCKET/jobs/$NAME/in/ /home/ec2-user/in/ --recursive || true
+cd /home/ec2-user
+git clone -q https://github.com/GestaltCogTeam/BasicTS.git bts && cd bts && git checkout -q $SHA
+PY=""
+for C in /opt/pytorch/bin/python /opt/conda/envs/pytorch/bin/python /opt/conda/bin/python \
+         /usr/local/bin/python3 /usr/bin/python3 $(ls -d /opt/*/bin/python /opt/*/*/bin/python 2>/dev/null); do
+  if [ -x "$C" ] && "$C" -c "import torch" >/dev/null 2>&1; then PY="$C"; break; fi
+done
+[ -z "$PY" ] && { echo NO_TORCH; aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/; echo FAILED > /tmp/DONE; aws s3 cp /tmp/DONE s3://$BUCKET/jobs/$NAME/DONE; shutdown -h now; }
+$PY -c "import torch;print('torch',torch.__version__,'cuda',torch.cuda.is_available(),torch.cuda.get_device_name(0))"
+$PY -m pip install -q easy-torch==1.3.3 easydict packaging setproctitle scikit-learn tables sympy tqdm tensorboard
+mkdir -p datasets/$DSNAME && cp /home/ec2-user/in/datasets/* datasets/$DSNAME/
+for M in $MODELS; do
+  cp /home/ec2-user/in/configs/$M.py baselines/$M/$DSNAME.py
+  echo "=== TRAIN $M $DSNAME ==="
+  timeout 7200 $PY experiments/train.py -c baselines/$M/$DSNAME.py -g 0 2>&1 | tee /tmp/${M}_${DSNAME}.log
+  aws s3 cp /tmp/${M}_${DSNAME}.log s3://$BUCKET/jobs/$NAME/logs/ || true
+  aws s3 sync checkpoints/ s3://$BUCKET/jobs/$NAME/checkpoints/ --exclude "*" --include "*.pt" --include "*test_metrics.json" --include "*.log" --include "*.py" || true
+done
+aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/ || true
+echo DONE > /tmp/DONE && aws s3 cp /tmp/DONE s3://$BUCKET/jobs/$NAME/DONE
+shutdown -h now
+"""
+
 OPENCITY_SHA = "eca64c9d9c65ff803d0f9d02c65e2544a0d2e96f"
 
 # Cross-city evaluation with the official OpenCity foundation model, on GPU because the released
@@ -292,6 +325,30 @@ def launch(a) -> int:
                  ("@OCBATCH@", str(a.oc_batch))):
         script = script.replace(k, v)
     assert "@" not in script.split("aws s3")[0], "unsubstituted placeholder remains"
+    iid, chosen, attempts = _run_instance(a, script)
+    if not iid:
+        return 4
+    a.instance_type = chosen[0]
+    print(f"[launch] {iid} ({chosen[0]} {chosen[2]} in {chosen[1]}) after {len(attempts)} unavailable option(s). "
+          f"It installs, trains, uploads and terminates itself.")
+    print(f"[launch] watch:  python pipeline/forecasting/aws_train.py --status")
+    # Append to a history so each dataset's run keeps ITS OWN hardware provenance; overwriting a
+    # single file stamped the METR-LA results with the PEMS-BAY instance id.
+    (RESULTS / "aws_job.json").parent.mkdir(parents=True, exist_ok=True)
+    hist_path = RESULTS / "aws_jobs.jsonl"
+    entry = {"job": JOB, "instance": iid, "type": a.instance_type, "region": REGION, "ami": AMI,
+         "models": a.models, "datasets": a.datasets, "epochs": a.epochs,
+         "launched_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+         "s3": f"s3://{BUCKET}/jobs/{JOB}/"}
+    with open(hist_path, "a") as fh:
+        fh.write(json.dumps(entry) + "\n")
+    (RESULTS / "aws_job.json").write_text(json.dumps(entry, indent=1))
+    return 0
+
+
+def _run_instance(a, script: str):
+    """Start one instance with this user-data script: spot first across a ladder of types and
+    zones, on-demand only when allowed. Returns (instance id, (type, zone, market), attempts)."""
     ud = base64.b64encode(script.encode()).decode()
     spec = json.dumps({"MarketType": "spot",
                        "SpotOptions": {"SpotInstanceType": "one-time",
@@ -341,23 +398,115 @@ def launch(a) -> int:
             print("   ", x)
         print("\nOptions: widen --instance-type (e.g. g4dn.xlarge,g5.xlarge,g6.xlarge), try another "
               "--region, or use the Colab notebooks instead.")
+        return None, None, attempts
+    return iid, chosen, attempts
+
+
+def city_job_name(dataset_id: str) -> str:
+    import re
+    return "city-" + re.sub(r"[^a-z0-9]+", "-", dataset_id.lower()).strip("-")
+
+
+def city_launch(a) -> int:
+    """Train the official baselines on an app dataset (user:/live:) on a GPU — same harness, same
+    derived config, same metrics as the CPU path in basicts_train.py, just faster and for more epochs."""
+    global JOB
+    sys.path.insert(0, str(REPO))
+    from pipeline.forecasting import basicts_train as bt
+    JOB = a.job or city_job_name(a.city_dataset)
+    if running_instances():
+        print(f"refusing: a {JOB} instance is already running — use --status, or --terminate first")
+        return 2
+    prep = bt.prepare(a.city_dataset)                    # their prep script, locally
+    name = prep["name"]
+    models = [m for m in a.models.split(",") if m]
+    cfgs = {m: bt.write_config(m, name, prep["nodes"], a.epochs, prep["steps_per_day"], gpu=True) for m in models}
+    for m in models:                                      # the CPU-flavoured config the app loads the checkpoint with
+        bt.write_config(m, name, prep["nodes"], a.epochs, prep["steps_per_day"], gpu=False)
+    ds_dir = bt.BTS / "datasets" / name
+    base = f"s3://{BUCKET}/jobs/{JOB}"
+    subprocess.run(["aws", "s3", "rm", f"{base}/", "--recursive", "--region", REGION], capture_output=True)
+    subprocess.run(["aws", "s3", "sync", str(ds_dir), f"{base}/in/datasets/", "--region", REGION], check=True, capture_output=True)
+    for m, c in cfgs.items():
+        subprocess.run(["aws", "s3", "cp", str(c), f"{base}/in/configs/{m}.py", "--region", REGION], check=True, capture_output=True)
+    manifest = {"job": JOB, "dataset": a.city_dataset, "dataset_sha256": prep.get("dataset_hash"), "graph_sha256": prep.get("graph_hash"),
+                "models": models, "epochs": a.epochs, "upstream": "GestaltCogTeam/BasicTS", "upstream_sha": BASICTS_SHA,
+                "split": "chronological 70/10/20 (their TRAIN_VAL_TEST_RATIO)", "created_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())}
+    mf = RESULTS / "aws_city_jobs" / f"{JOB}.manifest.json"
+    mf.parent.mkdir(parents=True, exist_ok=True); mf.write_text(json.dumps(manifest, indent=1))
+    subprocess.run(["aws", "s3", "cp", str(mf), f"{base}/in/manifest.json", "--region", REGION], check=True, capture_output=True)
+    print(f"[upload] {name}: {prep['desc']['num_time_steps']} steps x {prep['nodes']} nodes + {len(cfgs)} config(s) -> {base}/in/")
+    script = CITY_SCRIPT
+    for k, v in (("@NAME@", JOB), ("@BUCKET@", BUCKET), ("@SHA@", BASICTS_SHA), ("@MODELS@", " ".join(models)),
+                 ("@DSNAME@", name), ("@MAXH@", str(a.max_hours))):
+        script = script.replace(k, v)
+    assert "@" not in script.split("aws s3")[0], "unsubstituted placeholder remains"
+    iid, chosen, attempts = _run_instance(a, script)
+    if not iid:
         return 4
-    a.instance_type = chosen[0]
-    print(f"[launch] {iid} ({chosen[0]} {chosen[2]} in {chosen[1]}) after {len(attempts)} unavailable option(s). "
-          f"It installs, trains, uploads and terminates itself.")
-    print(f"[launch] watch:  python pipeline/forecasting/aws_train.py --status")
-    # Append to a history so each dataset's run keeps ITS OWN hardware provenance; overwriting a
-    # single file stamped the METR-LA results with the PEMS-BAY instance id.
-    (RESULTS / "aws_job.json").parent.mkdir(parents=True, exist_ok=True)
-    hist_path = RESULTS / "aws_jobs.jsonl"
-    entry = {"job": JOB, "instance": iid, "type": a.instance_type, "region": REGION, "ami": AMI,
-         "models": a.models, "datasets": a.datasets, "epochs": a.epochs,
-         "launched_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
-         "s3": f"s3://{BUCKET}/jobs/{JOB}/"}
-    with open(hist_path, "a") as fh:
+    print(f"[launch] {iid} ({chosen[0]} {chosen[2]} in {chosen[1]}) — trains {models} for {a.epochs} epochs, uploads, terminates.")
+    entry = {"job": JOB, "instance": iid, "type": chosen[0], "market": chosen[2], "region": REGION, "ami": AMI,
+             "models": a.models, "datasets": a.city_dataset, "epochs": a.epochs,
+             "launched_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "s3": f"{base}/"}
+    RESULTS.mkdir(parents=True, exist_ok=True)
+    with open(RESULTS / "aws_jobs.jsonl", "a") as fh:
         fh.write(json.dumps(entry) + "\n")
-    (RESULTS / "aws_job.json").write_text(json.dumps(entry, indent=1))
+    (RESULTS / "aws_city_jobs").mkdir(exist_ok=True)
+    (RESULTS / "aws_city_jobs" / f"{JOB}.json").write_text(json.dumps({**entry, "prep": prep, "configs": {m: str(c) for m, c in cfgs.items()}}, indent=1))
     return 0
+
+
+def city_terminate(job: str) -> list[str]:
+    """Stop every instance of this job now (a cancelled or failed job must not keep billing)."""
+    global JOB
+    JOB = job
+    ids = [i["id"] for i in running_instances()]
+    if ids:
+        aws("ec2", "terminate-instances", "--instance-ids", *ids)
+    return ids
+
+
+def city_poll(job: str) -> dict:
+    """What the app shows while a city job runs: instance state, DONE marker, the live log tail."""
+    global JOB
+    JOB = job
+    inst = running_instances()
+    done = subprocess.run(["aws", "s3", "cp", f"s3://{BUCKET}/jobs/{job}/DONE", "-", "--region", REGION],
+                          capture_output=True, text=True).stdout.strip()
+    log = subprocess.run(["aws", "s3", "cp", f"s3://{BUCKET}/jobs/{job}/logs/live.log", "-", "--region", REGION],
+                         capture_output=True, text=True).stdout
+    return {"instances": inst, "done": done, "log": log}
+
+
+def city_collect(job: str) -> list[dict]:
+    """Bring their checkpoints + metrics down and write the app's cards, one per architecture."""
+    global JOB
+    JOB = job
+    sys.path.insert(0, str(REPO))
+    from pipeline.forecasting import basicts_train as bt
+    meta = json.loads((RESULTS / "aws_city_jobs" / f"{job}.json").read_text())
+    prep = meta["prep"]; name = prep["name"]
+    dst = RESULTS / "checkpoints_cloud" / job
+    dst.mkdir(parents=True, exist_ok=True)
+    subprocess.run(["aws", "s3", "sync", f"s3://{BUCKET}/jobs/{job}/checkpoints/", str(dst), "--region", REGION], check=True, capture_output=True)
+    logs = RESULTS / "aws_logs" / job
+    logs.mkdir(parents=True, exist_ok=True)
+    subprocess.run(["aws", "s3", "sync", f"s3://{BUCKET}/jobs/{job}/logs/", str(logs), "--region", REGION], check=False, capture_output=True)
+    cards = []
+    for arch in meta["models"].split(","):
+        root = dst / bt.ARCH_CLASS[arch] / f"{name}_{meta['epochs']}_{bt.IN_LEN}_{bt.OUT_LEN}"
+        runs = sorted(root.glob("*/"), key=lambda p: p.stat().st_mtime) if root.exists() else []
+        if not runs:
+            print(f"[collect] no checkpoint for {arch} under {root}")
+            continue
+        log_f = logs / f"{arch}_{name}.log"
+        log_text = log_f.read_text(errors="ignore") if log_f.exists() else ""
+        cfg = bt.BTS / f"baselines/{bt.ARCHS[arch]}/{name}.py"
+        card = bt.make_card(meta["datasets"], arch, int(meta["epochs"]), prep, cfg, runs[-1], log_text,
+                            where=f"AWS {meta['type']} GPU ({meta['market']})")
+        cards.append(card)
+        print(f"[collect] {arch}: test {json.dumps(card['test_metrics'].get('overall'))} vs persistence {json.dumps(card['persistence_test'])}")
+    return cards
 
 
 def status(_a) -> int:
@@ -454,7 +603,8 @@ def main() -> int:
     p.add_argument("--models", default="STID,GWNet")
     p.add_argument("--datasets", default="METR-LA")
     p.add_argument("--epochs", type=int, default=50)
-    p.add_argument("--instance-type", default="g5.xlarge")
+    p.add_argument("--instance-type", default="g5.xlarge,g5.2xlarge",
+                   help="ladder of single-GPU types; g5 (A10G) is the verified CUDA path, add g6.xlarge only after verifying L4")
     p.add_argument("--max-hours", type=int, default=4)
     p.add_argument("--opencity", action="store_true",
                    help="cross-city evaluation with the official OpenCity foundation model")
@@ -473,11 +623,17 @@ def main() -> int:
                    help="skip spot entirely; use for runs that must complete without interruption")
     p.add_argument("--allow-on-demand", action="store_true",
                    help="fall back to on-demand (~2x spot) when no spot capacity exists anywhere")
-    p.add_argument("--instance-profile", default="", help="IAM instance profile granting S3 access")
+    p.add_argument("--instance-profile", default="dhakaflow-train-profile", help="IAM instance profile granting S3 access")
+    p.add_argument("--city-dataset", default="", help="train on an app dataset (user:<id> / live:<city>) instead of a benchmark")
+    p.add_argument("--collect-city", default="", help="collect a finished city job by name and write the app's cards")
     a = p.parse_args()
     global JOB
     if a.job:
         JOB = a.job
+    if a.collect_city:
+        return 0 if city_collect(a.collect_city) else 1
+    if a.city_dataset and a.launch:
+        return city_launch(a)
     for flag, fn in (("plan", plan), ("launch", launch), ("status", status),
                      ("collect", collect), ("collect_checkpoints", collect_checkpoints),
                      ("terminate", terminate)):

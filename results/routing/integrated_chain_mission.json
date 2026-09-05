@@ -1,6 +1,6 @@
 {
- "run_id": "chain_20260904T205831Z_mission_24b0c8",
- "generated_utc": "2026-09-04T20:59:24.255772+00:00",
+ "run_id": "chain_20260905T002137Z_mission_58e52f",
+ "generated_utc": "2026-09-05T00:22:29.667121+00:00",
  "chain": "CITY -> DATA -> FORECAST -> ROUTE COST -> ROUTING -> SUMO",
  "command": "python pipeline/routing/integrated_chain.py --seeds 11,12,13 --horizon 1800 --v2x ideal --source recorded --as-of peak --levels observed",
  "config": {
@@ -21,7 +21,7 @@
   "routes": "/Users/jannatulferdouseva/thesis/artifacts/gates/routes_repeat_1h.rou.xml.gz",
   "forecast_kind": "model",
   "coverage_hops": 0,
-  "run_id": "chain_20260904T205831Z_mission_24b0c8"
+  "run_id": "chain_20260905T002137Z_mission_58e52f"
  },
  "forecast": {
   "model": "Chronos-Bolt",
@@ -29,7 +29,7 @@
   "is_baseline": false,
   "horizon_min": 15,
   "unit": "congestion_level_0_3",
-  "inference_utc": "2026-09-04T20:58:32.605961+00:00",
+  "inference_utc": "2026-09-05T00:21:38.369485+00:00",
   "input_window_steps": 525,
   "selection_reason": "no spatio-temporal model can serve this city, but there is enough univariate history for a pretrained foundation model",
   "fallback": true
@@ -74,7 +74,7 @@
   "source": "artifacts/live_dhaka/normalized/google_routes_runtime_reference.jsonl",
   "reality": "REAL_LIVE (recorded derived congestion classes)",
   "bins_seen_by_model": 525,
-  "bins_available": 923
+  "bins_available": 964
  },
  "coverage": {
   "covered": 79,
@@ -153,7 +153,7 @@
   "karwanbazar_to_shahbagh": 2.335,
   "shahbagh_to_farmgate": 2.814
  },
- "weights_file": "results/routing/runs/chain_20260904T205831Z_mission_24b0c8/forecast_weights.xml",
+ "weights_file": "results/routing/runs/chain_20260905T002137Z_mission_58e52f/forecast_weights.xml",
  "v2x": {
   "condition": "ideal",
   "added_latency_ms": 0,
@@ -184,8 +184,8 @@
  },
  "levels_source": "REAL_LIVE congestion classes observed at the forecast's as-of bin",
  "sumo": "Eclipse SUMO sumo 1.27.1",
- "git": "db7b351",
- "wall_s": 53.2,
+ "git": "e81556f",
+ "wall_s": 52.6,
  "label": "SIMULATED COUNTERFACTUAL \u2014 not a live-road outcome",
  "runs": [
   {
@@ -196,8 +196,8 @@
    "weights_used": null,
    "advisories_delivered": 0,
    "routes_changed": 0,
-   "wall_s": 4.1,
-   "out_dir": "results/routing/runs/chain_20260904T205831Z_mission_24b0c8/baseline_s11",
+   "wall_s": 3.9,
+   "out_dir": "results/routing/runs/chain_20260905T002137Z_mission_58e52f/baseline_s11",
    "metrics": {
     "arrived": 1730,
     "unfinished_at_horizon": 520,
@@ -230,8 +230,8 @@
    "weights_used": null,
    "advisories_delivered": 0,
    "routes_changed": 2749,
-   "wall_s": 6.8,
-   "out_dir": "results/routing/runs/chain_20260904T205831Z_mission_24b0c8/reactive_s11",
+   "wall_s": 6.6,
+   "out_dir": "results/routing/runs/chain_20260905T002137Z_mission_58e52f/reactive_s11",
    "metrics": {
     "arrived": 1738,
     "unfinished_at_horizon": 512,
@@ -261,11 +261,11 @@
    "seed": 11,
    "edges_slowed": 79,
    "forecast_kind": "model",
-   "weights_used": "/Users/jannatulferdouseva/thesis/results/routing/runs/chain_20260904T205831Z_mission_24b0c8/forecast_weights.xml",
+   "weights_used": "/Users/jannatulferdouseva/thesis/results/routing/runs/chain_20260905T002137Z_mission_58e52f/forecast_weights.xml",
    "advisories_delivered": 2263,
    "routes_changed": 1831,
    "wall_s": 4.1,
-   "out_dir": "results/routing/runs/chain_20260904T205831Z_mission_24b0c8/prediction_aware_s11",
+   "out_dir": "results/routing/runs/chain_20260905T002137Z_mission_58e52f/prediction_aware_s11",
    "metrics": {
     "arrived": 1659,
     "unfinished_at_horizon": 591,
@@ -298,8 +298,8 @@
    "weights_used": null,
    "advisories_delivered": 0,
    "routes_changed": 0,
-   "wall_s": 4.5,
-   "out_dir": "results/routing/runs/chain_20260904T205831Z_mission_24b0c8/baseline_s12",
+   "wall_s": 4.7,
+   "out_dir": "results/routing/runs/chain_20260905T002137Z_mission_58e52f/baseline_s12",
    "metrics": {
     "arrived": 1651,
     "unfinished_at_horizon": 599,
@@ -332,8 +332,8 @@
    "weights_used": null,
    "advisories_delivered": 0,
    "routes_changed": 2980,
-   "wall_s": 7.6,
-   "out_dir": "results/routing/runs/chain_20260904T205831Z_mission_24b0c8/reactive_s12",
+   "wall_s": 7.5,
+   "out_dir": "results/routing/runs/chain_20260905T002137Z_mission_58e52f/reactive_s12",
    "metrics": {
     "arrived": 1706,
     "unfinished_at_horizon": 544,
@@ -363,11 +363,11 @@
    "seed": 12,
    "edges_slowed": 79,
    "forecast_kind": "model",
-   "weights_used": "/Users/jannatulferdouseva/thesis/results/routing/runs/chain_20260904T205831Z_mission_24b0c8/forecast_weights.xml",
+   "weights_used": "/Users/jannatulferdouseva/thesis/results/routing/runs/chain_20260905T002137Z_mission_58e52f/forecast_weights.xml",
    "advisories_delivered": 2252,
    "routes_changed": 1827,
    "wall_s": 4.5,
-   "out_dir": "results/routing/runs/chain_20260904T205831Z_mission_24b0c8/prediction_aware_s12",
+   "out_dir": "results/routing/runs/chain_20260905T002137Z_mission_58e52f/prediction_aware_s12",
    "metrics": {
     "arrived": 1608,
     "unfinished_at_horizon": 606,
@@ -400,8 +400,8 @@
    "weights_used": null,
    "advisories_delivered": 0,
    "routes_changed": 0,
-   "wall_s": 4.5,
-   "out_dir": "results/routing/runs/chain_20260904T205831Z_mission_24b0c8/baseline_s13",
+   "wall_s": 4.4,
+   "out_dir": "results/routing/runs/chain_20260905T002137Z_mission_58e52f/baseline_s13",
    "metrics": {
     "arrived": 1672,
     "unfinished_at_horizon": 578,
@@ -434,8 +434,8 @@
    "weights_used": null,
    "advisories_delivered": 0,
    "routes_changed": 2933,
-   "wall_s": 8.7,
-   "out_dir": "results/routing/runs/chain_20260904T205831Z_mission_24b0c8/reactive_s13",
+   "wall_s": 8.4,
+   "out_dir": "results/routing/runs/chain_20260905T002137Z_mission_58e52f/reactive_s13",
    "metrics": {
     "arrived": 1726,
     "unfinished_at_horizon": 524,
@@ -465,11 +465,11 @@
    "seed": 13,
    "edges_slowed": 79,
    "forecast_kind": "model",
-   "weights_used": "/Users/jannatulferdouseva/thesis/results/routing/runs/chain_20260904T205831Z_mission_24b0c8/forecast_weights.xml",
+   "weights_used": "/Users/jannatulferdouseva/thesis/results/routing/runs/chain_20260905T002137Z_mission_58e52f/forecast_weights.xml",
    "advisories_delivered": 2279,
    "routes_changed": 1857,
-   "wall_s": 4.3,
-   "out_dir": "results/routing/runs/chain_20260904T205831Z_mission_24b0c8/prediction_aware_s13",
+   "wall_s": 4.6,
+   "out_dir": "results/routing/runs/chain_20260905T002137Z_mission_58e52f/prediction_aware_s13",
    "metrics": {
     "arrived": 1635,
     "unfinished_at_horizon": 603,

@@ -88,6 +88,7 @@ def _adjacency(vals: np.ndarray, nodes: list[str], adj_bytes: bytes | None, coor
         if missing:
             raise ValueError(f"no coordinates for {missing[:5]}")
         pts = np.array([by[x] for x in nodes])
+        _adjacency.last_coords = [[float(a), float(b)] for a, b in pts]        # kept in the meta by save()
         dy = (pts[:, None, 0] - pts[None, :, 0]) * 111_000
         dx = (pts[:, None, 1] - pts[None, :, 1]) * 111_000 * np.cos(np.radians(pts[:, 0].mean()))
         dist = np.sqrt(dx ** 2 + dy ** 2)
@@ -116,7 +117,9 @@ def _adjacency(vals: np.ndarray, nodes: list[str], adj_bytes: bytes | None, coor
 def save(name: str, csv_bytes: bytes, quantity: str = "speed_kmh", adj_bytes: bytes | None = None,
          coords_bytes: bytes | None = None) -> dict:
     vals, nodes, times, interval = _parse(csv_bytes)
+    _adjacency.last_coords = None
     A, graph_from = _adjacency(vals, nodes, adj_bytes, coords_bytes)
+    coords = _adjacency.last_coords
     did = _slug(name)
     d = ROOT / did
     d.mkdir(parents=True, exist_ok=True)
@@ -127,7 +130,10 @@ def save(name: str, csv_bytes: bytes, quantity: str = "speed_kmh", adj_bytes: by
     meta = {"id": did, "name": name, "nodes": nodes, "steps": int(vals.shape[0]), "interval_s": interval,
             "quantity": QUANTITIES.get(quantity, quantity), "quantity_key": quantity, "graph_from": graph_from,
             "first_utc": times[0], "last_utc": times[-1], "uploaded_utc": datetime.now(timezone.utc).isoformat(),
-            "missing_fraction": round(float(np.isnan(vals).mean()), 4)}
+            "missing_fraction": round(float(np.isnan(vals).mean()), 4), "coords": coords}
+    if coords:
+        lats = [c[0] for c in coords]; lngs = [c[1] for c in coords]
+        meta["bbox"] = [min(lats), min(lngs), max(lats), max(lngs)]
     (d / "meta.json").write_text(json.dumps(meta, indent=1))
     return meta
 
@@ -157,7 +163,8 @@ def datasets() -> list[dict]:
         out.append({"id": f"user:{m['id']}", "name": f"{m['name']} — your upload ({len(m['nodes'])} roads, every {m['interval_s'] // 60} min)",
                     "node_names": m["nodes"], "nodes": len(m["nodes"]), "steps": m["steps"], "start_utc": m["first_utc"],
                     "interval_min": m["interval_s"] // 60, "exposure": "HELD_OUT_ZERO_SHOT", "user": True,
-                    "graph_from": m["graph_from"], "quantity": m["quantity"], "models": models_for(m)})
+                    "graph_from": m["graph_from"], "quantity": m["quantity"], "models": models_for(m),
+                    "has_coords": bool(m.get("coords")), "bbox": m.get("bbox")})
     return out
 
 

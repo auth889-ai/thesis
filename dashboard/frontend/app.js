@@ -24,10 +24,10 @@ import "./components/prediction-page.js";
 import "./components/research-page.js";
 
 const PAGES = {
-  mission:        {tag: "mission-control",     title: "Decision Studio",
-                   sub: "Current traffic, future risk, route decision, and a SUMO test in one workflow"},
+  mission:        {tag: "mission-control",     title: "Mission Control",
+                   sub: "City, route and departure in — travel times, the best route and a simulation test out"},
   predict:        {tag: "prediction-page",     title: "Prediction",
-                   sub: "Deep-learning traffic forecasting on real city data — pick a dataset, a region, a moment and a model"},
+                   sub: "Pick a city, a road and a moment — see what traffic will do next, and how much to trust it"},
   results:        {tag: "results-page",        title: "Results",
                    sub: "What the experiments measured: forecast accuracy, routing arms, penetration, coverage"},
   city:           {tag: "city-overview-page",  title: "City Overview",

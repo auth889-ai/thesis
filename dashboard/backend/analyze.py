@@ -128,9 +128,48 @@ def levels_from_speeds(cd, forecast: dict | None, live: dict) -> tuple[dict, dic
     return obs, pred
 
 
+_CITY_BOX: dict[str, dict] = {}
+
+
+def _nominatim(params: dict) -> list[dict]:
+    import urllib.parse
+    import urllib.request
+    q = urllib.parse.urlencode({"format": "json", **params})
+    req = urllib.request.Request(f"https://nominatim.openstreetmap.org/search?{q}",
+                                 headers={"User-Agent": "traffictwin/1.0 (research)"})
+    with urllib.request.urlopen(req, timeout=20) as r:
+        return json.loads(r.read().decode())
+
+
+def city_box(city: str) -> dict | None:
+    """The city itself, geocoded once: centre + bounding box, so places are searched INSIDE it."""
+    key = re.sub(r"[^a-z0-9]", "", (city or "").lower())
+    if key in _CITY_BOX:
+        return _CITY_BOX[key]
+    if is_dhaka(city):
+        box = {"label": "Dhaka", "lat": 23.78, "lng": 90.40, "bbox": [90.30, 23.66, 90.52, 23.92]}
+    else:
+        hits = _nominatim({"q": city, "limit": 6, "accept-language": "en"})
+        if not hits:
+            return None
+        # Nominatim's first hit is not always the city of that name (an alias can outrank it):
+        # prefer a hit whose own name matches what was typed, then a settlement, then the first.
+        def name_ok(h):
+            return re.sub(r"[^a-z0-9]", "", h.get("display_name", "").split(",")[0].lower()) == key
+        def settlement(h):
+            return h.get("type") in ("city", "town", "administrative", "municipality", "village")
+        h = next((x for x in hits if name_ok(x) and settlement(x)), None) or next((x for x in hits if name_ok(x)), None) \
+            or next((x for x in hits if settlement(x)), None) or hits[0]
+        bb = [float(x) for x in h["boundingbox"]]                        # south, north, west, east
+        box = {"label": h.get("display_name", city).split(",")[0], "lat": float(h["lat"]), "lng": float(h["lon"]),
+               "bbox": [bb[2], bb[0], bb[3], bb[1]]}                  # west, south, east, north
+    _CITY_BOX[key] = box
+    return box
+
+
 def resolve_place(text: str, city: str = "dhaka") -> dict:
-    """'lat, lng' | a known Dhaka place | free text via OpenStreetMap's geocoder, inside the
-    named city. Never silent: an unknown place is an error the page shows."""
+    """'lat, lng' | a known Dhaka place | the city itself | free text via OpenStreetMap's geocoder
+    bounded to the city. Never silent: an unknown place is an error the page shows, with a hint."""
     t = (text or "").strip()
     m = re.match(r"^\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)\s*$", t)
     if m:
@@ -140,17 +179,57 @@ def resolve_place(text: str, city: str = "dhaka") -> dict:
         for name, (lat, lng) in cz.PLACES.items():
             if key == re.sub(r"[^a-z0-9]", "", name.lower()):
                 return {"lat": lat, "lng": lng, "label": name, "source": "known place"}
-    import urllib.parse
-    import urllib.request
-    q = urllib.parse.urlencode({"q": f"{t}, {city}", "format": "json", "limit": 1})
-    req = urllib.request.Request(f"https://nominatim.openstreetmap.org/search?{q}",
-                                 headers={"User-Agent": "dhakaflow/1.0 (research)"})
-    with urllib.request.urlopen(req, timeout=20) as r:
-        hits = json.loads(r.read().decode())
+    box = city_box(city)
+    if box is None:
+        raise ValueError(f"could not find the city '{city}'")
+    if key == re.sub(r"[^a-z0-9]", "", box["label"].lower()) or key == re.sub(r"[^a-z0-9]", "", (city or "").lower()):
+        return {"lat": box["lat"], "lng": box["lng"], "label": f"{box['label']} (centre)", "source": "city centre"}
+    hits = _search_in(box, t, 1)
     if not hits:
-        raise ValueError(f"could not find '{t}'")
+        raise ValueError(f"'{t}' was not found inside {box['label']}. Type a place in {box['label']} "
+                         f"(pick one of the suggestions as you type), or 'lat, lng'.")
     return {"lat": float(hits[0]["lat"]), "lng": float(hits[0]["lon"]),
             "label": hits[0].get("display_name", t).split(",")[0], "source": "OpenStreetMap geocoder"}
+
+
+def _search_in(box: dict, q: str, limit: int) -> list[dict]:
+    """Places matching `q` inside the city: first strictly bounded to its box, then the looser
+    '<q>, <city>' query (Nominatim needs the city word for short names) filtered to the box."""
+    w, s_, e, n = box["bbox"]
+    common = {"limit": limit, "accept-language": "en"}
+    hits = _nominatim({"q": q, "viewbox": f"{w},{n},{e},{s_}", "bounded": 1, **common})
+    if not hits:
+        cand = _nominatim({"q": f"{q}, {box['label']}", "viewbox": f"{w},{n},{e},{s_}", **common})
+        hits = [h for h in cand if w <= float(h["lon"]) <= e and s_ <= float(h["lat"]) <= n]
+    return hits
+
+
+def suggest(city: str, q: str, limit: int = 8) -> list[dict]:
+    """Place suggestions for the origin / destination inputs, inside the named city."""
+    q = (q or "").strip()
+    out = []
+    if is_dhaka(city):
+        for k, v in cz.PLACES.items():
+            lab = k.replace("_", " ").title()
+            if not q or q.lower() in lab.lower():
+                out.append({"label": lab, "lat": v[0], "lng": v[1], "source": "known place"})
+    if len(q) < 2:
+        return out[:limit]
+    box = city_box(city)
+    if box is None:
+        return out[:limit]
+    try:
+        hits = _search_in(box, q, limit)
+    except Exception:                                   # noqa: BLE001 - suggestions are best effort
+        hits = []
+    seen = {o["label"] for o in out}
+    for h in hits:
+        parts = [x.strip() for x in h.get("display_name", "").split(",")]
+        lab = ", ".join(parts[:2]) if parts else q
+        if lab not in seen:
+            seen.add(lab)
+            out.append({"label": lab, "lat": float(h["lat"]), "lng": float(h["lon"]), "source": "OpenStreetMap"})
+    return out[:limit]
 
 
 def places() -> list[dict]:
@@ -186,6 +265,12 @@ def _run(job: str, p: dict) -> None:
             _JOBS[job].update(kw)
     try:
         city = p.get("city") or "dhaka"
+        import dataset_ops
+        scope = dataset_ops.scope_for(city)
+        if scope:                                       # an uploaded city dataset: the chosen checkpoint runs
+            res = dataset_ops.analyze_dataset(p, scope, emit)
+            emit(status="done", stage="done", result=res)
+            return
         horizon = int(p.get("horizon_min") or 30)
         dep = p.get("departure")
         lead = horizon
@@ -199,6 +284,9 @@ def _run(job: str, p: dict) -> None:
                 pass
         h = min([x for x in HORIZONS if x >= lead] or [60])
 
+        model_req = (p.get("model") or "").strip() or None      # a specific model, or the registry's choice
+        if model_req and model_req.lower() in ("auto", "best"):
+            model_req = None
         emit(stage="Fetching traffic", step=1)
         o = resolve_place(p.get("origin") or "farmgate", city)
         d = resolve_place(p.get("destination") or "shahbagh", city)
@@ -216,7 +304,7 @@ def _run(job: str, p: dict) -> None:
                    "steps_have": obs_mod.observatory.readiness(cid)["steps_have"] if cid else 0}
         if dhaka:
             from pipeline.routing.forecast_to_costs import recorded_forecast
-            fc = recorded_forecast("dhaka", HORIZONS, None, "latest")
+            fc = recorded_forecast("dhaka", HORIZONS, model_req, "latest")
             f = fc.get("forecast") or {}
             pred = {hh: dict(zip(f.get("node_ids", []), f["values"].get(hh) or f["values"].get(str(hh)) or []))
                     for hh in HORIZONS} if f else {hh: {} for hh in HORIZONS}
@@ -227,7 +315,7 @@ def _run(job: str, p: dict) -> None:
             from pipeline.forecasting.adapters.registry import forecast as run_forecast
             cd_city = obs_mod.observatory.city_data(cid)
             corr = service.corridors_for(cid)
-            fc = run_forecast(cd_city, HORIZONS)
+            fc = run_forecast(cd_city, HORIZONS, model_req)
             f = fc.get("forecast") or {}
             fc["input"] = cd_city.describe()
             observed, pred = levels_from_speeds(cd_city, f or None, corr)
@@ -381,3 +469,29 @@ def start(payload: dict) -> str:
 def status(job: str) -> dict:
     with _LOCK:
         return dict(_JOBS.get(job) or {"job": job, "status": "unknown"})
+
+
+def models_for_city(city: str) -> list[dict]:
+    """Which forecast models can serve THIS city's corridor history right now, with reasons —
+    the registry's own gates, so the menu never offers a model that would refuse."""
+    from pipeline.forecasting.adapters.registry import available_for
+    import observatory as obs_mod
+    cid = city_id_for(city)
+    out = [{"model": "auto", "label": "Automatic (best available)", "available": True, "reasons": []}]
+    try:
+        if is_dhaka(city):
+            from pipeline.routing.forecast_to_costs import recorded_city_data
+            cd = recorded_city_data("dhaka")
+            cd = cd[0] if isinstance(cd, tuple) else cd
+        elif cid and obs_mod.observatory.readiness(cid)["steps_have"] >= 1:
+            cd = obs_mod.observatory.city_data(cid)
+        else:
+            return out + [{"model": m, "label": m, "available": False, "reasons": ["no history for this city yet"]}
+                          for m in ("OpenCity-plus", "Chronos-Bolt", "historical_average", "persistence")]
+        for m in available_for(cd):
+            if m["model"].split("/")[0] in ("STAEformer", "GWNet", "STID"):
+                continue                                # benchmark-trained; not for a city's corridors
+            out.append({"model": m["model"], "label": m["model"], "available": m["available"], "reasons": m.get("reasons", [])[:2]})
+    except Exception as exc:                            # noqa: BLE001
+        out.append({"model": "Chronos-Bolt", "label": "Chronos-Bolt", "available": True, "reasons": [f"menu fallback: {exc}"]})
+    return out

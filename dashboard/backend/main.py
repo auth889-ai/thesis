@@ -744,6 +744,66 @@ def predict_lab_run(payload: dict):
     return {"job": predict_lab.start(payload or {}), "poll": "/api/predict-lab/{job}"}
 
 
+@app.post("/api/predict-lab/train", tags=["predict"])
+def predict_lab_train(payload: dict):
+    """Train an official BasicTS baseline (STID / GWNet) on THIS dataset — their data preparation,
+    config, runner and metrics, on CPU. Returns a job to poll; the model then appears in the menu."""
+    return {"job": predict_lab.train_start(payload or {}), "poll": "/api/predict-lab/train/{job}"}
+
+
+@app.get("/api/predict-lab/train/{job}", tags=["predict"])
+def predict_lab_train_status(job: str):
+    return predict_lab.train_status(job)
+
+
+# ---------------------------------------------------------------------------
+# TRAINING DISPATCHER: one job id from the Train button to a trusted (or honestly untrusted) model.
+# ---------------------------------------------------------------------------
+
+@app.post("/api/train", tags=["train"])
+def train_create(payload: dict):
+    """Create a training job. Policy: small jobs run here, larger ones on an AWS single-GPU worker
+    (unless `where` pins it). Returns the job id to poll."""
+    import train_jobs
+    try:
+        return train_jobs.start(payload or {})
+    except ValueError as exc:
+        return {"error": str(exc)}
+
+
+@app.get("/api/train", tags=["train"])
+def train_list():
+    import train_jobs
+    return {"jobs": train_jobs.list_jobs()}
+
+
+@app.get("/api/train/{job_id}", tags=["train"])
+def train_status(job_id: str):
+    """Stage (QUEUED … COMPLETE | FAILED), epoch and validation metrics while training, then the
+    validation / test tables, checkpoint verification and the trust gate."""
+    import train_jobs
+    return train_jobs.get(job_id)
+
+
+@app.post("/api/train/{job_id}/cancel", tags=["train"])
+def train_cancel(job_id: str):
+    """Stop a job; a cloud worker is terminated immediately."""
+    import train_jobs
+    return train_jobs.cancel(job_id)
+
+
+@app.get("/api/predict-lab/cloud", tags=["predict"])
+def predict_lab_cloud():
+    """Whether the GPU path is configured (AWS keys on the server, aws CLI present). Never a key value."""
+    return predict_lab.cloud()
+
+
+@app.get("/api/predict-lab/trained", tags=["predict"])
+def predict_lab_trained():
+    """Models trained here, with their test metrics beside persistence on the same split."""
+    return {"trained": predict_lab.trained()}
+
+
 @app.get("/api/predict-lab/{job}", tags=["predict"])
 def predict_lab_status(job: str):
     return predict_lab.status(job)
@@ -758,16 +818,39 @@ def operate_cities():
     watched = set(observatory_mod.observatory.cities())
     for cid in reg.list_ids():
         sp = reg.get(cid)
-        if sp and sp.display_name and not analyze.is_dhaka(sp.display_name):
+        if sp and sp.display_name and not analyze.is_dhaka(sp.display_name) and cid in watched:   # only cities with history
             out.append({"id": cid, "label": sp.display_name, "forecast": cid in watched,
                         "steps": observatory_mod.observatory.readiness(cid)["steps_have"] if cid in watched else 0})
+    import user_datasets
+    for d in user_datasets.datasets():                  # uploaded datasets with road coordinates are operable cities
+        if d.get("has_coords"):
+            out.append({"id": d["id"], "label": f"{d['name'].split(' —')[0]} (your upload)", "forecast": True, "dataset": True, "steps": d["steps"]})
     return {"cities": out}
 
 
 @app.get("/api/places", tags=["operate"])
-def places_list():
-    """Known places for the origin / destination inputs; free text and 'lat, lng' also work."""
-    return {"places": analyze.places()}
+def places_list(city: str = "dhaka", q: str = ""):
+    """Place suggestions for the origin / destination inputs, INSIDE the named city (known Dhaka
+    places, then OpenStreetMap bounded to the city). Free text and 'lat, lng' also work."""
+    if not q and analyze.is_dhaka(city):
+        return {"places": analyze.places()}
+    return {"places": analyze.suggest(city, q)}
+
+
+@app.get("/api/operate/models", tags=["operate"])
+def operate_models(city: str = "dhaka"):
+    """Forecast models that can serve this city right now, with the registry's reasons (flat)."""
+    return {"city": city, "models": analyze.models_for_city(city)}
+
+
+@app.get("/api/registry", tags=["operate"])
+def models_registry(scope: str = "dhaka"):
+    """THE MODEL REGISTRY for a scope (an uploaded dataset `user:<id>` or a city): grouped
+    Recommended / Trained on your city / Pretrained / Research, every entry with the gates it
+    passed, and what Automatic resolves to. Read fresh from disk — a finished training job
+    appears without a restart."""
+    import model_registry
+    return model_registry.registry(scope)
 
 
 @app.post("/api/analyze", tags=["operate"])
@@ -933,6 +1016,11 @@ def _start_observatory() -> None:
     the 288-step window fills in about a day. Sampling is off by default in tests, where a live
     API call per tick would be both slow and pointless.
     """
+    import train_jobs
+    try:
+        train_jobs.reattach_on_startup()
+    except Exception as exc:                            # noqa: BLE001
+        print(f"[train] could not re-attach jobs: {exc}")
     import os
     if os.environ.get("DHAKAFLOW_NO_OBSERVATORY"):
         return
