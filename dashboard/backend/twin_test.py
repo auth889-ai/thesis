@@ -122,23 +122,19 @@ def runtime_seed(analysis_run_id: str) -> int:
     return 100 + int(hashlib.sha256(analysis_run_id.encode()).hexdigest()[:6], 16) % 900
 
 
-def forecast_route_for_probe(rec: dict, net: str, origin_edge: str, destination_edge: str, out: Path, seed: int, horizon_min: int) -> tuple[list[str] | None, dict]:
-    """Prediction-aware arm on Dhaka: the same forecast-derived weights the chain uses, then
-    duarouter for the probe's trip (official router on those weights)."""
-    import subprocess
-    from pipeline.routing.forecast_to_costs import build_table, fetch_forecast, write_weights
-    res = fetch_forecast("dhaka", horizon_min, rec.get("resolved_model") if rec.get("resolved_model") not in (None, "none", "persistence") else None, source="recorded", as_of="latest")
-    if not res.get("forecast"):
-        return None, {"reason": str((res.get("decision") or {}).get("reason"))}
-    table = build_table(res, horizon_min, Path(net))
-    weights = write_weights(table, out / "forecast_weights.xml", 0.0, 3600.0)
-    trips = out / "probe_trip.xml"; trips.write_text(f'<routes>\n  <trip id="probe" depart="0" from="{origin_edge}" to="{destination_edge}"/>\n</routes>\n')
-    alt = out / "probe_route.rou.xml"
-    subprocess.run(["duarouter", "--net-file", net, "--route-files", str(trips), "--weight-files", str(weights), "--weight-attribute", "traveltime",
-                    "--output-file", str(alt), "--ignore-errors", "--no-warnings", "--no-step-log", "--seed", str(seed)], check=True, capture_output=True)
-    m = re.search(r'<route edges="([^"]+)"', alt.read_text())
-    return (m.group(1).split() if m else None), {"forecast_hash": pv.sha_json(table["edge_travel_times"]), "model": table["forecast"]["model"],
-                                                  "checkpoint": table["forecast"]["checkpoint"], "priced_edges": table["priced_edges"]}
+def optimized_route_for_probe(rec: dict, net: str, origin_edge: str, destination_edge: str, out: Path, seed: int) -> tuple[list[str] | None, dict]:
+    """Prediction-aware arm: the RoutingRun for THIS analysis (its stored forecast -> continuous
+    edge costs -> duarouter candidates -> admission). Returns the selected route and the public
+    routing record; a run without a stored forecast yields no route and a visible reason."""
+    import route_opt
+    rt = route_opt.find_existing(rec, origin_edge, destination_edge, seed)
+    reused = rt is not None
+    if rt is None:
+        try:
+            rt = route_opt.optimize_for_analysis(rec, net, origin_edge, destination_edge, out / "routing", seed, window_s=1800.0)
+        except route_opt.NoStoredForecast as exc:
+            return None, {"routing_run_id": None, "reason": str(exc)}
+    return rt.get("selected_route"), {**route_opt.public(rt), "reused_existing_routing_run": reused}
 
 
 def _run(job: str, analysis_run_id: str, gui: bool) -> None:
@@ -172,10 +168,12 @@ def _run(job: str, analysis_run_id: str, gui: bool) -> None:
         out.mkdir(parents=True, exist_ok=True)
         pa_route = None
         if scen.get("forecast_capable"):
-            pa_route, fc_info = forecast_route_for_probe(rec, net_path, od["origin"]["edge"], od["destination"]["edge"], out, seed, int(rec.get("horizon_min") or 15))
+            _set(job, stage="Optimizing route")
+            pa_route, fc_info = optimized_route_for_probe(rec, net_path, od["origin"]["edge"], od["destination"]["edge"], out, seed)
             if pa_route:
                 arms.append("prediction_aware")
-        _set(job, arms=arms, forecast_hash=fc_info.get("forecast_hash"), forecast=fc_info, model=fc_info.get("model") or rec.get("resolved_model"))
+        run.set(routing_run_id=fc_info.get("routing_run_id") or fc_id(fc_info), routing_decision=fc_info.get("decision"), future_cost_hash=fc_info.get("future_cost_hash"))
+        _set(job, arms=arms, routing_run_id=fc_id(fc_info), forecast_hash=fc_info.get("future_cost_hash"), forecast=fc_info, model=fc_info.get("resolved_model") or rec.get("resolved_model"))
         live_sim.owner = job
         for _ in range(120):
             if live_sim.state(with_vehicles=False).get("status") not in ("running", "paused", "starting"):
@@ -204,7 +202,8 @@ def _run(job: str, analysis_run_id: str, gui: bool) -> None:
             res = s["result"]
             results.append({"arm": arm, "seed": seed, "run_id": res["run_id"], "metrics": res["metrics"], "probe": s.get("probe"),
                             "routing_policy": {"baseline": "no rerouting", "reactive": "rerouteTraveltime on current travel times (30 % equipped + the probe)",
-                                               "prediction_aware": "probe routed by duarouter on forecast-derived edge costs"}[arm],
+                                               "prediction_aware": f"probe on the route selected by routing run {fc_id(fc_info)} ({fc_info.get('decision')}: forecast future cost + load + overlap, threshold {fc_info.get('threshold_s')} s)"}[arm],
+                            "routing_run_id": fc_id(fc_info) if arm == "prediction_aware" else None,
                             "routes_changed": res.get("reroutes", 0), "advisories_delivered": 0})
         _set(job, stage="Computing result")
         summary = ic.summarise([{k: v for k, v in x.items() if k != "probe"} for x in results]) if len(results) >= 2 else {}
@@ -214,7 +213,7 @@ def _run(job: str, analysis_run_id: str, gui: bool) -> None:
         result = {"simulation_run_id": sim_id, "analysis_run_id": analysis_run_id, "network": scen["id"], "network_edges": scen.get("edges"),
                   "demand_reality": scen.get("demand_reality"), "seed": seed, "seed_source": "generated at run time from the analysis run id",
                   "od_mapping": od, "probe_vehicle_id": probe_id, "arms": results, "summary": summary,
-                  "probe_travel_time_s": probe_tt, "probe_vs_baseline_pct": probe_cmp, "forecast": fc_info,
+                  "probe_travel_time_s": probe_tt, "probe_vs_baseline_pct": probe_cmp, "forecast": fc_info, "routing_run_id": fc_id(fc_info),
                   "label": "SIMULATED COUNTERFACTUAL — microscopic simulated vehicles in SUMO on this network; not a real-road measured outcome; single runtime seed (paired seeds under Research)",
                   "finished_utc": datetime.now(timezone.utc).isoformat()}
         run.set(status="done", probe={a: x.get("probe") for a, x in zip([x["arm"] for x in results], results)}, probe_travel_time_s=probe_tt, sumo_runs=[x["run_id"] for x in results],
@@ -232,6 +231,10 @@ def _run(job: str, analysis_run_id: str, gui: bool) -> None:
         live_sim.owner = None
         with _LOCK:
             _JOBS[job].pop("_prov", None)
+
+
+def fc_id(fc_info: dict) -> str | None:
+    return (fc_info or {}).get("run_id") or (fc_info or {}).get("routing_run_id")
 
 
 def _link_analysis(analysis_run_id: str, sim_id: str) -> None:

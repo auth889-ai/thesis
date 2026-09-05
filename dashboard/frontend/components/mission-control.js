@@ -428,7 +428,19 @@ export class MissionControl extends HTMLElement {
         destination edge <code>${od.destination?.edge}</code> (${od.destination?.distance_m} m) · probe <code>${rec.probe_vehicle_id}</code> · seed ${rec.seed} (${rec.seed_source})</div>
       <div class="tablewrap"><table><thead><tr><th>arm</th><th class="num">your trip</th><th class="num">probe route</th><th class="num">vehicle-hours</th><th class="num">mean TT</th><th class="num">p95 TT</th><th class="num">queue</th><th class="num">reroutes</th><th class="num">teleports</th></tr></thead><tbody>${rows}</tbody></table></div>
       ${verdict("prediction_aware")}${verdict("reactive")}
-      <p class="muted">${rec.label}${rec.forecast && rec.forecast.forecast_hash ? ` · forecast ${rec.forecast.model} (${rec.forecast.checkpoint || "—"}), edge-cost hash ${rec.forecast.forecast_hash}` : " · no validated corridor forecast prices this network, so the arms are baseline and reactive"}. <a href="/api/runs/${rec.simulation_run_id}" target="_blank">simulation provenance</a></p>`;
+      ${this.renderRouting(rec.forecast)}
+      <p class="muted">${rec.label}${rec.forecast && rec.forecast.future_cost_hash ? ` · forecast ${rec.forecast.resolved_model}, future edge-cost hash ${rec.forecast.future_cost_hash}` : ` · ${rec.forecast && rec.forecast.reason ? rec.forecast.reason : "no corridor forecast prices this network, so the arms are baseline and reactive"}`}. <a href="/api/runs/${rec.simulation_run_id}" target="_blank">simulation provenance</a></p>`;
+  }
+
+  renderRouting(rt) {
+    if (!rt || !rt.run_id) return "";
+    const rows = (rt.candidates || []).map(c => `<tr class="${c.route_id === rt.selected_route_id ? "hl" : ""}"><td>${c.is_current ? "current" : "alt " + c.index}${c.route_id === rt.selected_route_id ? " ✔" : ""}</td>
+      <td class="num">${c.n_edges}</td><td class="num">${(c.distance_m / 1000).toFixed(2)} km</td><td class="num">${Math.round(c.base_tt_s)} s</td><td class="num">${Math.round(c.forecast_future_tt_s)} s</td>
+      <td class="num">${c.load_penalty_s.toFixed(1)}</td><td class="num">${c.overlap_penalty_s.toFixed(1)}</td><td class="num"><b>${Math.round(c.final_cost_s)} s</b></td><td class="num">${Math.round(100 * c.overlap_with_current)} %</td></tr>`).join("");
+    return `<div class="note"><b>Route optimization</b> routing run <code>${rt.run_id}</code> from analysis <code>${rt.analysis_run_id}</code> · ${rt.priced_edges} edges priced from the ${rt.resolved_model} forecast (${rt.direct_edges} direct + ${rt.derived_edges} derived, ${rt.coverage_hops}-hop) ·
+      ${rt.candidates_real} of ${rt.candidates_requested + 1} candidates exist · decision <b>${rt.decision}</b>${rt.predicted_saving_s != null ? ` (predicted saving ${rt.predicted_saving_s} s = ${rt.predicted_saving_pct} %, threshold ${rt.threshold_s} s / ${rt.threshold_pct} %)` : ""}
+      <div class="tablewrap"><table><thead><tr><th>candidate</th><th class="num">edges</th><th class="num">length</th><th class="num">free-flow</th><th class="num">forecast future</th><th class="num">load pen.</th><th class="num">overlap pen.</th><th class="num">final cost</th><th class="num">overlap</th></tr></thead><tbody>${rows}</tbody></table></div>
+      <small class="muted">final cost = forecast future travel time + load penalty + overlap penalty (coefficients in ${rt.config_file}, hash ${rt.config_hash}) · <a href="/api/runs/${rt.run_id}" target="_blank">routing provenance</a></small></div>`;
   }
 
   renderCompare(rec) {

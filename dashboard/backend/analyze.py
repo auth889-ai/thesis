@@ -400,7 +400,11 @@ def _run(job: str, p: dict) -> None:
         acc = _accuracy(f.get("model", ""))
 
         run.set(raw_prediction_hash=pv.sha_json({str(k): {kk: (None if vv is None or vv != vv else round(float(vv), 4)) for kk, vv in v.items()} for k, v in pred.items()}),
-                raw_prediction_first10=[None if v is None or v != v else round(float(v), 3) for v in list(pred.get(HORIZONS[0], {}).values())[:10]])
+                raw_prediction_first10=[None if v is None or v != v else round(float(v), 3) for v in list(pred.get(HORIZONS[0], {}).values())[:10]],
+                # the full raw prediction (corridor -> value per horizon) is kept with the run so the route
+                # optimizer prices edges from THIS forecast, never from a recomputation on a later window
+                raw_prediction={str(k): {kk: (None if vv is None or vv != vv else round(float(vv), 4)) for kk, vv in v.items()} for k, v in pred.items()},
+                forecast_unit=f.get("unit") if f else None)
         run.stage("Evaluating routes", emit)
         if dhaka:
             axes = _corridor_polylines(corr)

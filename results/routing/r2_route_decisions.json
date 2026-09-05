@@ -1,0 +1,629 @@
+{
+ "seed": 11,
+ "horizon_s": 1800,
+ "horizon_min": 15,
+ "compliance": 0.3,
+ "as_of": "peak",
+ "net": "/Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+ "routes": "/Users/jannatulferdouseva/thesis/artifacts/gates/routes_repeat_1h.rou.xml.gz",
+ "vehicles": 2655,
+ "config": {
+  "version": 1,
+  "_doc": "Every coefficient the forecast-to-route optimizer uses. Nothing else in pipeline/routing/edge_costs.py or route_optimizer.py carries a number. The whole file is copied into every routing run's provenance.",
+  "edge_costs": {
+   "_rule": "future_tt_s = edge_length_m / bounded_predicted_speed_mps; predicted speed = speed_limit / ratio(forecast); the ratio is the interpolated live/free-flow travel-time ratio of the forecast congestion level (band midpoints in pipeline/forecasting/live_to_edges.py) or free_speed/predicted_speed when the model forecasts a speed",
+   "speed_lower_bound_mps": 1.0,
+   "speed_upper_bound": "edge speed limit (a forecast may not claim a road is faster than its limit)",
+   "coverage_hops": 1,
+   "decay_weight_by_hop": {
+    "1": 0.6,
+    "2": 0.35
+   },
+   "_decay": "DERIVED edge at graph distance h from a forecast-covered edge: ratio_h = 1 + decay_h x (ratio_direct - 1); nearest covered edge wins, ties to the worse; unpriced edges keep free flow and are never written",
+   "level_to_ratio_bands": "pipeline/forecasting/live_to_edges.py BAND_MID (FREE 1.08, SLOW 1.33, CONGESTED 1.75, SEVERE 2.50), interpolated between levels"
+  },
+  "candidates": {
+   "k_alternatives": 5,
+   "_generator": "duarouter (pinned eclipse-sumo v1_27_1) on the forecast weight file: run 0 exact weights; runs 1..K-1 with --weights.random-factor and distinct seeds (SUMO's documented route-diversification mechanism, Simulation/Routing.md 'Randomized travel times'); distinct edge sequences kept; the vehicle's current route is always candidate 0",
+   "weights_random_factor": 1.5
+  },
+  "generalized_cost": {
+   "_rule": "final_cost_s = forecast_future_tt_s + load_penalty_s + overlap_penalty_s",
+   "load_penalty": {
+    "_rule": "BPR volume-delay on the vehicles this optimizer has already admitted: load_penalty_s = sum_over_edges future_tt_e x alpha x (admitted_e / capacity_e)^beta; capacity_e = lanes x capacity_veh_per_lane_h x window_h",
+    "bpr_alpha": 0.15,
+    "bpr_beta": 4.0,
+    "capacity_veh_per_lane_h": 1800,
+    "_source": "Bureau of Public Roads volume-delay function, standard alpha=0.15 beta=4; 1800 veh/h/lane is the HCM saturation-flow order of magnitude"
+   },
+   "overlap_penalty": {
+    "_rule": "overlap_penalty_s = switch_cost_s x (1 - shared_length_fraction_with_current_route); the current route itself costs 0",
+    "switch_cost_s": 30.0
+   }
+  },
+  "decision": {
+   "_rule": "reroute only when predicted_saving_s = current_future_cost - best_alternative_future_cost >= min_saving_s AND predicted_saving_pct >= min_saving_pct",
+   "min_saving_s": 60.0,
+   "min_saving_pct": 5.0
+  },
+  "admission": {
+   "_rule": "thin TrafficTwin layer above SUMO routing: a vehicle is admitted to an alternative only if no edge of it would exceed max_edge_load_ratio after admission, and no more than max_share_per_alternative of the vehicles in the round are sent to the same alternative; a vehicle rerouted within reroute_cooldown_s is not advised again",
+   "max_edge_load_ratio": 1.0,
+   "max_share_per_alternative": 0.4,
+   "reroute_cooldown_s": 300,
+   "share_gate_min_vehicles": 5,
+   "_share_gate_min": "the share gate only applies to rounds of at least share_gate_min_vehicles vehicles: a single analysed trip is not a herd"
+  },
+  "_config_file": "pipeline/routing/routing_config.json",
+  "_config_hash": "ea08dddedc14"
+ },
+ "arm_status": {
+  "oracle": {
+   "status": "ok"
+  },
+  "Chronos-Bolt": {
+   "status": "ok"
+  },
+  "persistence": {
+   "status": "ok"
+  },
+  "historical_average": {
+   "status": "ok"
+  },
+  "random": {
+   "status": "ok"
+  },
+  "STID": {
+   "status": "REFUSED: STID/METR-LA: STID was trained on METR-LA and its weights encode that sensor graph; it cannot forecast dhaka. A city-specific model does not transfer \u2014 that is what a foundation model is for"
+  },
+  "GWNet": {
+   "status": "REFUSED: GWNet/METR-LA: GWNet was trained on METR-LA and its weights encode that sensor graph; it cannot forecast dhaka. A city-specific model does not transfer \u2014 that is what a foundation model is for"
+  }
+ },
+ "rows": [
+  {
+   "arm": "oracle",
+   "coverage_hops": null,
+   "model_served": "oracle",
+   "raw_forecast_hash": "(measured baseline edge travel times)",
+   "future_cost_hash": "cbfaff9a7641a6b6",
+   "priced_edges": 902,
+   "direct_edges": 902,
+   "derived_edges": 0,
+   "candidate_sets_hash": "ca22283b4677da12",
+   "candidate_costs_hash": "411cb832126bfdef",
+   "selected_routes_hash": "ecbb459dab50e6e5",
+   "mean_candidates_real": 2.934,
+   "vehicles": 2655,
+   "advised_above_threshold": 1024,
+   "admitted": 1024,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.0618,
+   "top_edge_concentration": 0.7324,
+   "decisions": {
+    "REROUTE": 1024,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1535,
+    "NO_ALTERNATIVE": 96
+   },
+   "wall_s": 5.8,
+   "pct_edge_costs_differ_vs_persistence": 100.0,
+   "mean_abs_pct_cost_diff_vs_persistence": 53.4,
+   "pct_best_path_differs_vs_persistence": 53.67,
+   "pct_decisions_differ_vs_persistence": 27.95,
+   "mean_jaccard_vs_persistence": 0.8542
+  },
+  {
+   "arm": "Chronos-Bolt",
+   "coverage_hops": 0,
+   "model_served": "Chronos-Bolt",
+   "raw_forecast_hash": "124feb1c4ec51d6e",
+   "future_cost_hash": "05151d12c7853eb1",
+   "priced_edges": 79,
+   "direct_edges": 79,
+   "derived_edges": 0,
+   "candidate_sets_hash": "f7470f9a4db98a73",
+   "candidate_costs_hash": "286b6944f8bad4a1",
+   "selected_routes_hash": "1f96f4a7dd4c8570",
+   "mean_candidates_real": 2.583,
+   "vehicles": 2655,
+   "advised_above_threshold": 608,
+   "admitted": 608,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.0588,
+   "top_edge_concentration": 0.8849,
+   "decisions": {
+    "NO_ALTERNATIVE": 234,
+    "REROUTE": 608,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1813
+   },
+   "wall_s": 5.9,
+   "pct_edge_costs_differ_vs_persistence": 100.0,
+   "mean_abs_pct_cost_diff_vs_persistence": 13.7,
+   "pct_best_path_differs_vs_persistence": 20.6,
+   "pct_decisions_differ_vs_persistence": 3.92,
+   "mean_jaccard_vs_persistence": 0.9668,
+   "pct_decisions_differ_vs_oracle": 31.79,
+   "mean_jaccard_vs_oracle": 0.8211
+  },
+  {
+   "arm": "persistence",
+   "coverage_hops": 0,
+   "model_served": "persistence",
+   "raw_forecast_hash": "20f58b79f737d01d",
+   "future_cost_hash": "0fd55d2360cc67a8",
+   "priced_edges": 79,
+   "direct_edges": 79,
+   "derived_edges": 0,
+   "candidate_sets_hash": "b63710ef8f6e23ec",
+   "candidate_costs_hash": "b57b28e96bdaf839",
+   "selected_routes_hash": "16ea04e5af000942",
+   "mean_candidates_real": 2.629,
+   "vehicles": 2655,
+   "advised_above_threshold": 571,
+   "admitted": 571,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.0414,
+   "top_edge_concentration": 0.8774,
+   "decisions": {
+    "NO_ALTERNATIVE": 227,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1857,
+    "REROUTE": 571
+   },
+   "wall_s": 5.6,
+   "pct_decisions_differ_vs_oracle": 27.95,
+   "mean_jaccard_vs_oracle": 0.8542
+  },
+  {
+   "arm": "historical_average",
+   "coverage_hops": 0,
+   "model_served": "historical_average",
+   "raw_forecast_hash": "7c87b1b1f9c30501",
+   "future_cost_hash": "88f9d119d8d15391",
+   "priced_edges": 79,
+   "direct_edges": 79,
+   "derived_edges": 0,
+   "candidate_sets_hash": "2737714a1bb4114e",
+   "candidate_costs_hash": "70366bf5bad70ab8",
+   "selected_routes_hash": "3ebfcea429926113",
+   "mean_candidates_real": 2.45,
+   "vehicles": 2655,
+   "advised_above_threshold": 458,
+   "admitted": 458,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.0588,
+   "top_edge_concentration": 0.8472,
+   "decisions": {
+    "NO_ALTERNATIVE": 276,
+    "REROUTE": 458,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1921
+   },
+   "wall_s": 5.5,
+   "pct_edge_costs_differ_vs_persistence": 100.0,
+   "mean_abs_pct_cost_diff_vs_persistence": 50.47,
+   "pct_best_path_differs_vs_persistence": 20.6,
+   "pct_decisions_differ_vs_persistence": 9.53,
+   "mean_jaccard_vs_persistence": 0.9211,
+   "pct_decisions_differ_vs_oracle": 33.11,
+   "mean_jaccard_vs_oracle": 0.7852
+  },
+  {
+   "arm": "random",
+   "coverage_hops": 0,
+   "model_served": "random",
+   "raw_forecast_hash": "787226417a9ae312",
+   "future_cost_hash": "0376bfda0eac7e15",
+   "priced_edges": 79,
+   "direct_edges": 79,
+   "derived_edges": 0,
+   "candidate_sets_hash": "7c0e35c3e162ed14",
+   "candidate_costs_hash": "eff715255d1824d6",
+   "selected_routes_hash": "1f96f4a7dd4c8570",
+   "mean_candidates_real": 2.511,
+   "vehicles": 2655,
+   "advised_above_threshold": 608,
+   "admitted": 608,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.0588,
+   "top_edge_concentration": 0.8849,
+   "decisions": {
+    "NO_ALTERNATIVE": 249,
+    "REROUTE": 608,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1798
+   },
+   "wall_s": 5.8,
+   "pct_edge_costs_differ_vs_persistence": 100.0,
+   "mean_abs_pct_cost_diff_vs_persistence": 26.74,
+   "pct_best_path_differs_vs_persistence": 20.6,
+   "pct_decisions_differ_vs_persistence": 3.92,
+   "mean_jaccard_vs_persistence": 0.9668,
+   "pct_decisions_differ_vs_oracle": 31.79,
+   "mean_jaccard_vs_oracle": 0.8211
+  },
+  {
+   "arm": "Chronos-Bolt",
+   "coverage_hops": 1,
+   "model_served": "Chronos-Bolt",
+   "raw_forecast_hash": "124feb1c4ec51d6e",
+   "future_cost_hash": "c146bcfaa5083cd2",
+   "priced_edges": 182,
+   "direct_edges": 79,
+   "derived_edges": 103,
+   "candidate_sets_hash": "b825fb169908a78b",
+   "candidate_costs_hash": "ed41e8695b8be510",
+   "selected_routes_hash": "d685d581023dd462",
+   "mean_candidates_real": 2.453,
+   "vehicles": 2655,
+   "advised_above_threshold": 655,
+   "admitted": 655,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.0618,
+   "top_edge_concentration": 0.8931,
+   "decisions": {
+    "NO_ALTERNATIVE": 229,
+    "REROUTE": 655,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1771
+   },
+   "wall_s": 5.8,
+   "pct_edge_costs_differ_vs_persistence": 100.0,
+   "mean_abs_pct_cost_diff_vs_persistence": 12.03,
+   "pct_best_path_differs_vs_persistence": 0.0,
+   "pct_decisions_differ_vs_persistence": 2.0,
+   "mean_jaccard_vs_persistence": 0.9876,
+   "pct_decisions_differ_vs_oracle": 34.73,
+   "mean_jaccard_vs_oracle": 0.8226
+  },
+  {
+   "arm": "persistence",
+   "coverage_hops": 1,
+   "model_served": "persistence",
+   "raw_forecast_hash": "20f58b79f737d01d",
+   "future_cost_hash": "8f8e35b572c3a3dc",
+   "priced_edges": 182,
+   "direct_edges": 79,
+   "derived_edges": 103,
+   "candidate_sets_hash": "e7adffa122c69298",
+   "candidate_costs_hash": "07adc836b1534cb7",
+   "selected_routes_hash": "de90eb38efa42a60",
+   "mean_candidates_real": 2.407,
+   "vehicles": 2655,
+   "advised_above_threshold": 708,
+   "admitted": 708,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.0621,
+   "top_edge_concentration": 0.9011,
+   "decisions": {
+    "NO_ALTERNATIVE": 229,
+    "REROUTE": 708,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1718
+   },
+   "wall_s": 5.3,
+   "pct_decisions_differ_vs_oracle": 32.81,
+   "mean_jaccard_vs_oracle": 0.8347
+  },
+  {
+   "arm": "historical_average",
+   "coverage_hops": 1,
+   "model_served": "historical_average",
+   "raw_forecast_hash": "7c87b1b1f9c30501",
+   "future_cost_hash": "9989150b0bfc8887",
+   "priced_edges": 182,
+   "direct_edges": 79,
+   "derived_edges": 103,
+   "candidate_sets_hash": "d03551e186b7912b",
+   "candidate_costs_hash": "ae8dd50585c9d5c0",
+   "selected_routes_hash": "b5f013d41cd32b5d",
+   "mean_candidates_real": 2.498,
+   "vehicles": 2655,
+   "advised_above_threshold": 458,
+   "admitted": 458,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.0588,
+   "top_edge_concentration": 0.8472,
+   "decisions": {
+    "NO_ALTERNATIVE": 252,
+    "REROUTE": 458,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1945
+   },
+   "wall_s": 5.4,
+   "pct_edge_costs_differ_vs_persistence": 100.0,
+   "mean_abs_pct_cost_diff_vs_persistence": 44.58,
+   "pct_best_path_differs_vs_persistence": 26.89,
+   "pct_decisions_differ_vs_persistence": 12.35,
+   "mean_jaccard_vs_persistence": 0.9266,
+   "pct_decisions_differ_vs_oracle": 34.95,
+   "mean_jaccard_vs_oracle": 0.7826
+  },
+  {
+   "arm": "random",
+   "coverage_hops": 1,
+   "model_served": "random",
+   "raw_forecast_hash": "787226417a9ae312",
+   "future_cost_hash": "90568d564380b7ba",
+   "priced_edges": 182,
+   "direct_edges": 79,
+   "derived_edges": 103,
+   "candidate_sets_hash": "8ec4cba20790ff63",
+   "candidate_costs_hash": "d6e150c58df94b9e",
+   "selected_routes_hash": "e758a2351e2fba64",
+   "mean_candidates_real": 2.53,
+   "vehicles": 2655,
+   "advised_above_threshold": 608,
+   "admitted": 608,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.0588,
+   "top_edge_concentration": 0.8849,
+   "decisions": {
+    "NO_ALTERNATIVE": 225,
+    "REROUTE": 608,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1822
+   },
+   "wall_s": 5.3,
+   "pct_edge_costs_differ_vs_persistence": 100.0,
+   "mean_abs_pct_cost_diff_vs_persistence": 23.93,
+   "pct_best_path_differs_vs_persistence": 6.97,
+   "pct_decisions_differ_vs_persistence": 3.77,
+   "mean_jaccard_vs_persistence": 0.9759,
+   "pct_decisions_differ_vs_oracle": 34.73,
+   "mean_jaccard_vs_oracle": 0.8144
+  },
+  {
+   "arm": "Chronos-Bolt",
+   "coverage_hops": 2,
+   "model_served": "Chronos-Bolt",
+   "raw_forecast_hash": "124feb1c4ec51d6e",
+   "future_cost_hash": "e5589ebf073d5554",
+   "priced_edges": 297,
+   "direct_edges": 79,
+   "derived_edges": 218,
+   "candidate_sets_hash": "8807af0fc82a2315",
+   "candidate_costs_hash": "35c183cccddcff42",
+   "selected_routes_hash": "ddbce3b7174d7e2b",
+   "mean_candidates_real": 2.492,
+   "vehicles": 2655,
+   "advised_above_threshold": 691,
+   "admitted": 691,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.0603,
+   "top_edge_concentration": 0.8987,
+   "decisions": {
+    "NO_ALTERNATIVE": 237,
+    "REROUTE": 691,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1727
+   },
+   "wall_s": 5.2,
+   "pct_edge_costs_differ_vs_persistence": 99.66,
+   "mean_abs_pct_cost_diff_vs_persistence": 10.35,
+   "pct_best_path_differs_vs_persistence": 0.0,
+   "pct_decisions_differ_vs_persistence": 3.99,
+   "mean_jaccard_vs_persistence": 0.9856,
+   "pct_decisions_differ_vs_oracle": 34.43,
+   "mean_jaccard_vs_oracle": 0.832
+  },
+  {
+   "arm": "persistence",
+   "coverage_hops": 2,
+   "model_served": "persistence",
+   "raw_forecast_hash": "20f58b79f737d01d",
+   "future_cost_hash": "f202cfae4a307c83",
+   "priced_edges": 297,
+   "direct_edges": 79,
+   "derived_edges": 218,
+   "candidate_sets_hash": "7f618fe9ef79584f",
+   "candidate_costs_hash": "e9012c6d8beae2b4",
+   "selected_routes_hash": "b7dc17e4fe593f6a",
+   "mean_candidates_real": 2.445,
+   "vehicles": 2655,
+   "advised_above_threshold": 746,
+   "admitted": 746,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.064,
+   "top_edge_concentration": 0.9062,
+   "decisions": {
+    "NO_ALTERNATIVE": 253,
+    "REROUTE": 746,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1656
+   },
+   "wall_s": 5.6,
+   "pct_decisions_differ_vs_oracle": 32.58,
+   "mean_jaccard_vs_oracle": 0.8427
+  },
+  {
+   "arm": "historical_average",
+   "coverage_hops": 2,
+   "model_served": "historical_average",
+   "raw_forecast_hash": "7c87b1b1f9c30501",
+   "future_cost_hash": "2538d68662116639",
+   "priced_edges": 297,
+   "direct_edges": 79,
+   "derived_edges": 218,
+   "candidate_sets_hash": "efd8e802fe3e78fe",
+   "candidate_costs_hash": "50dbdf11f6bcd838",
+   "selected_routes_hash": "4e217a0f1d2927c9",
+   "mean_candidates_real": 2.472,
+   "vehicles": 2655,
+   "advised_above_threshold": 458,
+   "admitted": 458,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.0588,
+   "top_edge_concentration": 0.8472,
+   "decisions": {
+    "NO_ALTERNATIVE": 242,
+    "REROUTE": 458,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1955
+   },
+   "wall_s": 5.4,
+   "pct_edge_costs_differ_vs_persistence": 100.0,
+   "mean_abs_pct_cost_diff_vs_persistence": 38.58,
+   "pct_best_path_differs_vs_persistence": 33.52,
+   "pct_decisions_differ_vs_persistence": 14.58,
+   "mean_jaccard_vs_persistence": 0.9144,
+   "pct_decisions_differ_vs_oracle": 34.95,
+   "mean_jaccard_vs_oracle": 0.7826
+  },
+  {
+   "arm": "random",
+   "coverage_hops": 2,
+   "model_served": "random",
+   "raw_forecast_hash": "787226417a9ae312",
+   "future_cost_hash": "a769f962adda8004",
+   "priced_edges": 297,
+   "direct_edges": 79,
+   "derived_edges": 218,
+   "candidate_sets_hash": "4788a4b91cd47bb7",
+   "candidate_costs_hash": "c3051df4aed84fcf",
+   "selected_routes_hash": "8bdc99819b5cb0f1",
+   "mean_candidates_real": 2.568,
+   "vehicles": 2655,
+   "advised_above_threshold": 608,
+   "admitted": 608,
+   "rejected_capacity": 0,
+   "rejected_share": 0,
+   "top_route_share": 0.0588,
+   "top_edge_concentration": 0.8849,
+   "decisions": {
+    "NO_ALTERNATIVE": 213,
+    "REROUTE": 608,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 1834
+   },
+   "wall_s": 4.9,
+   "pct_edge_costs_differ_vs_persistence": 99.66,
+   "mean_abs_pct_cost_diff_vs_persistence": 20.72,
+   "pct_best_path_differs_vs_persistence": 13.86,
+   "pct_decisions_differ_vs_persistence": 8.51,
+   "mean_jaccard_vs_persistence": 0.9611,
+   "pct_decisions_differ_vs_oracle": 34.73,
+   "mean_jaccard_vs_oracle": 0.8155
+  }
+ ],
+ "collapse": {
+  "0": {
+   "arms": [
+    "Chronos-Bolt",
+    "persistence",
+    "historical_average",
+    "random"
+   ],
+   "stages": {
+    "raw_forecast": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "edge_costs": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "candidate_sets": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "candidate_costs": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "selected_routes": {
+     "distinct": 3,
+     "identical_groups": [
+      [
+       "Chronos-Bolt",
+       "random"
+      ]
+     ]
+    }
+   },
+   "first_collapse_stage": "selected_routes",
+   "chronos_vs_random": {
+    "edge_costs_identical": false,
+    "selected_routes_identical": true,
+    "pct_decisions_differ": 0.0,
+    "pct_best_path_differ": 0.0
+   }
+  },
+  "1": {
+   "arms": [
+    "Chronos-Bolt",
+    "persistence",
+    "historical_average",
+    "random"
+   ],
+   "stages": {
+    "raw_forecast": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "edge_costs": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "candidate_sets": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "candidate_costs": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "selected_routes": {
+     "distinct": 4,
+     "identical_groups": []
+    }
+   },
+   "first_collapse_stage": null,
+   "chronos_vs_random": {
+    "edge_costs_identical": false,
+    "selected_routes_identical": false,
+    "pct_decisions_differ": 1.77,
+    "pct_best_path_differ": 6.97
+   }
+  },
+  "2": {
+   "arms": [
+    "Chronos-Bolt",
+    "persistence",
+    "historical_average",
+    "random"
+   ],
+   "stages": {
+    "raw_forecast": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "edge_costs": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "candidate_sets": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "candidate_costs": {
+     "distinct": 4,
+     "identical_groups": []
+    },
+    "selected_routes": {
+     "distinct": 4,
+     "identical_groups": []
+    }
+   },
+   "first_collapse_stage": null,
+   "chronos_vs_random": {
+    "edge_costs_identical": false,
+    "selected_routes_identical": false,
+    "pct_decisions_differ": 4.97,
+    "pct_best_path_differ": 13.86
+   }
+  }
+ },
+ "generated_utc": "2026-09-05T06:35:56Z"
+}

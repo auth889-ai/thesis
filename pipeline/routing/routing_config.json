@@ -1,0 +1,48 @@
+{
+  "version": 1,
+  "_doc": "Every coefficient the forecast-to-route optimizer uses. Nothing else in pipeline/routing/edge_costs.py or route_optimizer.py carries a number. The whole file is copied into every routing run's provenance.",
+  "edge_costs": {
+    "_rule": "future_tt_s = edge_length_m / bounded_predicted_speed_mps; predicted speed = speed_limit / ratio(forecast); the ratio is the interpolated live/free-flow travel-time ratio of the forecast congestion level (band midpoints in pipeline/forecasting/live_to_edges.py) or free_speed/predicted_speed when the model forecasts a speed",
+    "speed_lower_bound_mps": 1.0,
+    "speed_upper_bound": "edge speed limit (a forecast may not claim a road is faster than its limit)",
+    "coverage_hops": 1,
+    "decay_weight_by_hop": {
+      "1": 0.6,
+      "2": 0.35
+    },
+    "_decay": "DERIVED edge at graph distance h from a forecast-covered edge: ratio_h = 1 + decay_h x (ratio_direct - 1); nearest covered edge wins, ties to the worse; unpriced edges keep free flow and are never written",
+    "level_to_ratio_bands": "pipeline/forecasting/live_to_edges.py BAND_MID (FREE 1.08, SLOW 1.33, CONGESTED 1.75, SEVERE 2.50), interpolated between levels"
+  },
+  "candidates": {
+    "k_alternatives": 5,
+    "_generator": "duarouter (pinned eclipse-sumo v1_27_1) on the forecast weight file: run 0 exact weights; runs 1..K-1 with --weights.random-factor and distinct seeds (SUMO's documented route-diversification mechanism, Simulation/Routing.md 'Randomized travel times'); distinct edge sequences kept; the vehicle's current route is always candidate 0",
+    "weights_random_factor": 1.5
+  },
+  "generalized_cost": {
+    "_rule": "final_cost_s = forecast_future_tt_s + load_penalty_s + overlap_penalty_s",
+    "load_penalty": {
+      "_rule": "BPR volume-delay on the vehicles this optimizer has already admitted: load_penalty_s = sum_over_edges future_tt_e x alpha x (admitted_e / capacity_e)^beta; capacity_e = lanes x capacity_veh_per_lane_h x window_h",
+      "bpr_alpha": 0.15,
+      "bpr_beta": 4.0,
+      "capacity_veh_per_lane_h": 1800,
+      "_source": "Bureau of Public Roads volume-delay function, standard alpha=0.15 beta=4; 1800 veh/h/lane is the HCM saturation-flow order of magnitude"
+    },
+    "overlap_penalty": {
+      "_rule": "overlap_penalty_s = switch_cost_s x (1 - shared_length_fraction_with_current_route); the current route itself costs 0",
+      "switch_cost_s": 30.0
+    }
+  },
+  "decision": {
+    "_rule": "reroute only when predicted_saving_s = current_future_cost - best_alternative_future_cost >= min_saving_s AND predicted_saving_pct >= min_saving_pct",
+    "min_saving_s": 60.0,
+    "min_saving_pct": 5.0
+  },
+  "admission": {
+    "_rule": "thin TrafficTwin layer above SUMO routing: a vehicle is admitted to an alternative only if no edge of it would exceed max_edge_load_ratio after admission, and no more than max_share_per_alternative of the vehicles in the round are sent to the same alternative; a vehicle rerouted within reroute_cooldown_s is not advised again",
+    "max_edge_load_ratio": 1.0,
+    "max_share_per_alternative": 0.4,
+    "reroute_cooldown_s": 300,
+    "share_gate_min_vehicles": 5,
+    "_share_gate_min": "the share gate only applies to rounds of at least share_gate_min_vehicles vehicles: a single analysed trip is not a herd"
+  }
+}

@@ -1,0 +1,320 @@
+{
+ "config": {
+  "version": 1,
+  "_doc": "Every coefficient the forecast-to-route optimizer uses. Nothing else in pipeline/routing/edge_costs.py or route_optimizer.py carries a number. The whole file is copied into every routing run's provenance.",
+  "edge_costs": {
+   "_rule": "future_tt_s = edge_length_m / bounded_predicted_speed_mps; predicted speed = speed_limit / ratio(forecast); the ratio is the interpolated live/free-flow travel-time ratio of the forecast congestion level (band midpoints in pipeline/forecasting/live_to_edges.py) or free_speed/predicted_speed when the model forecasts a speed",
+   "speed_lower_bound_mps": 1.0,
+   "speed_upper_bound": "edge speed limit (a forecast may not claim a road is faster than its limit)",
+   "coverage_hops": 1,
+   "decay_weight_by_hop": {
+    "1": 0.6,
+    "2": 0.35
+   },
+   "_decay": "DERIVED edge at graph distance h from a forecast-covered edge: ratio_h = 1 + decay_h x (ratio_direct - 1); nearest covered edge wins, ties to the worse; unpriced edges keep free flow and are never written",
+   "level_to_ratio_bands": "pipeline/forecasting/live_to_edges.py BAND_MID (FREE 1.08, SLOW 1.33, CONGESTED 1.75, SEVERE 2.50), interpolated between levels"
+  },
+  "candidates": {
+   "k_alternatives": 5,
+   "_generator": "duarouter (pinned eclipse-sumo v1_27_1) on the forecast weight file: run 0 exact weights; runs 1..K-1 with --weights.random-factor and distinct seeds (SUMO's documented route-diversification mechanism, Simulation/Routing.md 'Randomized travel times'); distinct edge sequences kept; the vehicle's current route is always candidate 0",
+   "weights_random_factor": 1.5
+  },
+  "generalized_cost": {
+   "_rule": "final_cost_s = forecast_future_tt_s + load_penalty_s + overlap_penalty_s",
+   "load_penalty": {
+    "_rule": "BPR volume-delay on the vehicles this optimizer has already admitted: load_penalty_s = sum_over_edges future_tt_e x alpha x (admitted_e / capacity_e)^beta; capacity_e = lanes x capacity_veh_per_lane_h x window_h",
+    "bpr_alpha": 0.15,
+    "bpr_beta": 4.0,
+    "capacity_veh_per_lane_h": 1800,
+    "_source": "Bureau of Public Roads volume-delay function, standard alpha=0.15 beta=4; 1800 veh/h/lane is the HCM saturation-flow order of magnitude"
+   },
+   "overlap_penalty": {
+    "_rule": "overlap_penalty_s = switch_cost_s x (1 - shared_length_fraction_with_current_route); the current route itself costs 0",
+    "switch_cost_s": 30.0
+   }
+  },
+  "decision": {
+   "_rule": "reroute only when predicted_saving_s = current_future_cost - best_alternative_future_cost >= min_saving_s AND predicted_saving_pct >= min_saving_pct",
+   "min_saving_s": 60.0,
+   "min_saving_pct": 5.0
+  },
+  "admission": {
+   "_rule": "thin TrafficTwin layer above SUMO routing: a vehicle is admitted to an alternative only if no edge of it would exceed max_edge_load_ratio after admission, and no more than max_share_per_alternative of the vehicles in the round are sent to the same alternative; a vehicle rerouted within reroute_cooldown_s is not advised again",
+   "max_edge_load_ratio": 1.0,
+   "max_share_per_alternative": 0.4,
+   "reroute_cooldown_s": 300
+  },
+  "_config_file": "pipeline/routing/routing_config.json",
+  "_config_hash": "472b8ddd0d2d"
+ },
+ "seed": 522,
+ "window_s": 1800.0,
+ "net": "/Users/jannatulferdouseva/thesis/paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+ "generator": {
+  "generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+  "k_requested": 5,
+  "random_factor": 1.5,
+  "runs": [
+   {
+    "run": "static",
+    "weights": null,
+    "random_factor": null,
+    "seed": 522,
+    "routes": 1
+   },
+   {
+    "run": "alt_0",
+    "weights": "/Users/jannatulferdouseva/thesis/results/routing/optimize/an_c2a9c11c/future_weights.xml",
+    "random_factor": null,
+    "seed": 522,
+    "routes": 1
+   },
+   {
+    "run": "alt_1",
+    "weights": "/Users/jannatulferdouseva/thesis/results/routing/optimize/an_c2a9c11c/future_weights.xml",
+    "random_factor": 1.5,
+    "seed": 523,
+    "routes": 1
+   },
+   {
+    "run": "alt_2",
+    "weights": "/Users/jannatulferdouseva/thesis/results/routing/optimize/an_c2a9c11c/future_weights.xml",
+    "random_factor": 1.5,
+    "seed": 524,
+    "routes": 1
+   },
+   {
+    "run": "alt_3",
+    "weights": "/Users/jannatulferdouseva/thesis/results/routing/optimize/an_c2a9c11c/future_weights.xml",
+    "random_factor": 1.5,
+    "seed": 525,
+    "routes": 1
+   },
+   {
+    "run": "alt_4",
+    "weights": "/Users/jannatulferdouseva/thesis/results/routing/optimize/an_c2a9c11c/future_weights.xml",
+    "random_factor": 1.5,
+    "seed": 526,
+    "routes": 1
+   }
+  ]
+ },
+ "edge_costs": {
+  "analysis_run_id": "an_c2a9c11c",
+  "model": "Chronos-Bolt",
+  "horizon_min": 30,
+  "unit": "congestion_level_0_3",
+  "coverage_hops": 1,
+  "priced_edges": 182,
+  "direct_edges": 79,
+  "derived_edges": 103,
+  "network_edges": 6527,
+  "future_cost_hash": "a70d0e6f40eb73e8",
+  "raw_forecast_hash": "8d3c193a41843e73"
+ },
+ "stats": {
+  "vehicles": 1,
+  "decisions": {
+   "KEEP_CURRENT_BELOW_THRESHOLD": 1
+  },
+  "advised_above_threshold": 0,
+  "vehicles_admitted": 0,
+  "rejected_by_capacity_gate": 0,
+  "rejected_by_share_gate": 0,
+  "rejected_by_cooldown": 0,
+  "reroute_count": 0,
+  "top_route_share": 0.0,
+  "top_edge_flow_concentration": 0.0,
+  "mean_candidates_real": 2.0,
+  "candidates_real_histogram": {
+   "2": 1
+  },
+  "vehicles_with_fewer_than_k": 1
+ },
+ "decisions": [
+  {
+   "vehicle": "probe_an_c2a9c11c",
+   "candidates_requested": 5,
+   "candidates_real": 2,
+   "candidates": [
+    {
+     "base_tt_s": 127.41,
+     "forecast_future_tt_s": 180.9,
+     "distance_m": 2861.7,
+     "priced_length_fraction": 0.6068,
+     "route_id": "probe_an_c2a9c11c_c0",
+     "index": 0,
+     "edges": [
+      "296558616#1",
+      "263802751#7",
+      "26642183#4",
+      "-1278492489",
+      "343016048#1",
+      "343016048#2",
+      "343016048#3",
+      "343016048#4",
+      "343016048#5",
+      "698209679",
+      "528310084#0",
+      "528310084#1",
+      "528310084#2",
+      "528310084#3",
+      "528310084#4",
+      "528310084#5",
+      "528310084#6",
+      "565194019#4",
+      "565194019#5",
+      "565194019#6",
+      "565194019#7",
+      "155271803#0",
+      "155271803#1",
+      "155271803#2",
+      "155271803#3",
+      "691209729#2",
+      "691209729#3",
+      "691209729#4",
+      "691209729#5",
+      "691209729#6",
+      "691209729#8",
+      "691209729#9",
+      "691209729#10",
+      "691209729#11",
+      "691209729#12",
+      "691209729#13",
+      "691209729#14",
+      "691209729#15",
+      "235293033#1",
+      "235293033#2",
+      "235293033#3"
+     ],
+     "n_edges": 41,
+     "overlap_with_current": 1.0,
+     "predicted_load_ratio_max": 0.0,
+     "load_penalty_s": 0.0,
+     "overlap_penalty_s": 0.0,
+     "final_cost_s": 180.9,
+     "is_current": true
+    },
+    {
+     "base_tt_s": 128.07,
+     "forecast_future_tt_s": 177.39,
+     "distance_m": 2790.4,
+     "priced_length_fraction": 0.5089,
+     "route_id": "probe_an_c2a9c11c_c1",
+     "index": 1,
+     "edges": [
+      "296558616#1",
+      "263802751#7",
+      "26642183#4",
+      "-1278492489",
+      "343016048#1",
+      "343016048#2",
+      "343016048#3",
+      "343016048#4",
+      "343016048#5",
+      "698209679",
+      "528310084#0",
+      "528310084#1",
+      "528310084#2",
+      "528310084#3",
+      "528310084#4",
+      "528310084#5",
+      "240107302#0",
+      "240107302#1",
+      "240107302#2",
+      "240107302#3",
+      "240107302#4",
+      "240107302#5",
+      "565194019#5",
+      "565194019#6",
+      "565194019#7",
+      "155271803#0",
+      "155271803#1",
+      "155271803#2",
+      "155271803#3",
+      "691209729#2",
+      "691209729#3",
+      "691209729#4",
+      "691209729#5",
+      "691209729#6",
+      "691209729#8",
+      "691209729#9",
+      "691209729#10",
+      "691209729#11",
+      "691209729#12",
+      "691209729#13",
+      "691209729#14",
+      "691209729#15",
+      "235293033#1",
+      "235293033#2",
+      "235293033#3"
+     ],
+     "n_edges": 45,
+     "overlap_with_current": 0.85,
+     "predicted_load_ratio_max": 0.0,
+     "load_penalty_s": 0.0,
+     "overlap_penalty_s": 4.5,
+     "final_cost_s": 181.89,
+     "is_current": false
+    }
+   ],
+   "threshold_s": 60.0,
+   "threshold_pct": 5.0,
+   "current_future_cost_s": 180.9,
+   "alternative_future_cost_s": 181.89,
+   "best_alternative": "probe_an_c2a9c11c_c1",
+   "predicted_saving_s": -0.99,
+   "predicted_saving_pct": -0.55,
+   "decision": "KEEP_CURRENT_BELOW_THRESHOLD",
+   "selected": "probe_an_c2a9c11c_c0"
+  }
+ ],
+ "selected_routes": {
+  "probe_an_c2a9c11c": [
+   "296558616#1",
+   "263802751#7",
+   "26642183#4",
+   "-1278492489",
+   "343016048#1",
+   "343016048#2",
+   "343016048#3",
+   "343016048#4",
+   "343016048#5",
+   "698209679",
+   "528310084#0",
+   "528310084#1",
+   "528310084#2",
+   "528310084#3",
+   "528310084#4",
+   "528310084#5",
+   "528310084#6",
+   "565194019#4",
+   "565194019#5",
+   "565194019#6",
+   "565194019#7",
+   "155271803#0",
+   "155271803#1",
+   "155271803#2",
+   "155271803#3",
+   "691209729#2",
+   "691209729#3",
+   "691209729#4",
+   "691209729#5",
+   "691209729#6",
+   "691209729#8",
+   "691209729#9",
+   "691209729#10",
+   "691209729#11",
+   "691209729#12",
+   "691209729#13",
+   "691209729#14",
+   "691209729#15",
+   "235293033#1",
+   "235293033#2",
+   "235293033#3"
+  ]
+ },
+ "selected_routes_hash": "476025cb6c3a6031",
+ "candidate_sets_hash": "7f5960d57abf5d8b",
+ "candidate_costs_hash": "34b9535864c777ed"
+}

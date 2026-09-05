@@ -923,6 +923,44 @@ def twin_test_status(simulation_run_id: str):
     return twin_test.status(simulation_run_id)
 
 
+@app.post("/api/route/optimize", tags=["routing"])
+def route_optimize(payload: dict | None = None):
+    """ROUTE OPTIMIZATION for one AnalysisRun: its stored forecast -> continuous future edge costs ->
+    duarouter candidates -> threshold + capacity admission. Returns the RoutingRun with every
+    candidate's cost terms. 404 ANALYSIS_RUN_NOT_FOUND; 422 when the run holds no forecast."""
+    import route_opt, twin_test
+    from fastapi.responses import JSONResponse
+    payload = payload or {}
+    try:
+        rec = twin_test.load_analysis(str(payload.get("analysis_run_id") or ""))
+    except twin_test.AnalysisRunNotFound as exc:
+        return JSONResponse(status_code=404, content={"error": f"ANALYSIS_RUN_NOT_FOUND: {exc}"})
+    scen = twin_test.scenario_for(rec, lambda **k: None)
+    if payload.get("origin_edge") and payload.get("destination_edge"):
+        o_edge, d_edge = payload["origin_edge"], payload["destination_edge"]
+    else:
+        od = twin_test.map_od(scen["net"], rec["origin_resolved"], rec["destination_resolved"])
+        o_edge, d_edge = od["origin"]["edge"], od["destination"]["edge"]
+    seed = int(payload.get("seed") or twin_test.runtime_seed(rec["run_id"]))
+    out = config.REPO / "results/routing/optimize" / rec["run_id"]
+    try:
+        rt = route_opt.optimize_for_analysis(rec, scen["net"], o_edge, d_edge, out, seed, float(payload.get("window_s") or 1800),
+                                             hops=payload.get("hops"))
+    except route_opt.NoStoredForecast as exc:
+        return JSONResponse(status_code=422, content={"error": str(exc), "analysis_run_id": rec["run_id"]})
+    return route_opt.public(rt)
+
+
+@app.get("/api/route/optimize/{routing_run_id}", tags=["routing"])
+def route_optimize_get(routing_run_id: str):
+    import provenance as pv, route_opt
+    from fastapi.responses import JSONResponse
+    rec = pv.load(routing_run_id)
+    if not rec:
+        return JSONResponse(status_code=404, content={"error": f"ROUTING_RUN_NOT_FOUND: {routing_run_id}"})
+    return route_opt.public(rec)
+
+
 @app.post("/api/twin/compare", tags=["twin"])
 def twin_compare_start(payload: dict):
     """Baseline vs reactive on any generated network, paired seeds, CI verdict. Background job."""
