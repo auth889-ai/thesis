@@ -129,7 +129,9 @@ export class MissionControl extends HTMLElement {
     const city = this.querySelector("#city").value;
     const src = (this._cities || []).find(c => c.label === city || c.id === city);
     const scope = src && src.dataset ? src.id : city;
+    const seq = (this._modelSeq = (this._modelSeq || 0) + 1);
     const r = await api.modelRegistry(scope);
+    if (seq !== this._modelSeq) return;                 // a newer city was chosen while this one loaded
     const sel = this.querySelector("#model"); const keep = sel.value;
     const gate = (e) => e.eligible ? "" : e.trained === false ? ` — ${e.reason || "not trained"}` : e.gates && !e.gates.trust && e.trust ? ` — ${e.trust === "NOT_BETTER_THAN_BASELINE" ? "not better than baseline" : e.trust.toLowerCase()}` : e.reason ? ` — ${e.reason}` : "";
     sel.innerHTML = (r.groups || []).map(g => `<optgroup label="${g.title}">` + g.items.map(e => {
@@ -169,6 +171,7 @@ export class MissionControl extends HTMLElement {
     const req = {city: src && src.dataset ? src.id : typed, origin: this.querySelector("#origin").value,
                  destination: this.querySelector("#dest").value,
                  departure: this.querySelector("#depart").value ? new Date(this.querySelector("#depart").value).toISOString() : null,
+                 departure_local: this.querySelector("#depart").value || null,      // the wall clock as typed, for datasets with their own clock
                  horizon_min: Number(this.querySelector("#horizon").value), model: this.querySelector("#model").value};
     const steps = ["Fetching traffic", "Running forecast", "Evaluating alternatives"];
     const prog = this.querySelector("#progress");
@@ -220,7 +223,7 @@ export class MissionControl extends HTMLElement {
         <div><div class="k">Estimated time</div><div class="v">${mins(pr.covered ? pr.eta_s : rec.eta_now_s)}</div></div>
         <div><div class="k">Time saving</div><div class="v">${d.saving_s > 60 ? "~ " + Math.round(d.saving_s / 60) + " min" : "—"}</div></div>
         <div><div class="k">Congestion risk</div><div class="v"><span class="tag ${rtone}">${pr.covered ? (pr.risk === "HIGH" ? "Higher" : pr.risk === "MEDIUM" ? "Medium" : "Lower") : "unknown"}</span></div></div>
-        <div><div class="k">Confidence</div><div class="v">${conf}</div><div class="muted" style="font-size:11px">${confM ? "class accuracy on this city's own history" : ""}</div></div>
+        <div><div class="k">Confidence</div><div class="v">${conf}</div><div class="muted" style="font-size:11px">${confM ? (r.dataset ? "better than 'no change' on this data's held-out test" : "class accuracy on this city's own history") : ""}</div></div>
       </div>
       <details class="why"><summary>Why this recommendation?</summary><div class="muted">${d.reason}${d.basis ? ` · ${d.basis}` : ""}</div></details>
       ${!r.forecastable ? `<div class="compact-state" style="margin-top:8px"><b>No traffic history for ${r.city} yet</b> — travel times and routes are live, the prediction needs history.

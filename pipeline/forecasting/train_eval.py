@@ -148,6 +148,7 @@ def predict_chronos(vals: np.ndarray, t: np.ndarray, interval_s: int, quantity: 
     step_min = interval_s // 60
     hz = [step_min * k for k in range(1, OUT_LEN + 1)]
     out = np.full((len(ts), OUT_LEN, vals.shape[1]), np.nan)
+    predict_chronos.last_reason = None
     for i, t0 in enumerate(ts):
         hist = vals[max(0, t0 - 288):t0].astype("float32").copy(); hist[hist == 0] = np.nan
         cd = CityData(city_id="eval", node_ids=node_ids, values=hist, interval_s=interval_s,
@@ -155,6 +156,7 @@ def predict_chronos(vals: np.ndarray, t: np.ndarray, interval_s: int, quantity: 
         r = run_forecast(cd, hz, "Chronos-Bolt")
         f = r.get("forecast")
         if not f:
+            predict_chronos.last_reason = str((r.get("decision") or {}).get("reason") or r.get("error") or "no forecast returned")[:200]
             continue
         for k, h in enumerate(hz):
             v = f["values"].get(h) or f["values"].get(str(h))

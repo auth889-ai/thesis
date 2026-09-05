@@ -67,6 +67,8 @@ def _with_trained(ds: list[dict]) -> list[dict]:
     for d in ds:
         d["trainable"] = d["id"].startswith(("user:", "live:")) and d["steps"] >= bt.MIN_STEPS
         d["models"] = [f"{a}{TRAINED_SUFFIX}" for a in by.get(d["id"], [])] + d["models"]
+        if d["id"].startswith("user:") and "historical_average" not in d["models"]:
+            d["models"].append("historical_average")     # the registry's own baseline adapter
     return ds
 
 

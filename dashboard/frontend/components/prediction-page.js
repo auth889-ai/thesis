@@ -239,6 +239,10 @@ export class PredictionPage extends HTMLElement {
       rows.push(["looks at", "this one road's recent history"]);
     } else if (model === "persistence") {
       rows.push(["what it is", "the simplest possible guess: traffic stays as it is now — every real model must beat this"]);
+    } else if (model === "historical_average") {
+      rows.push(["what it is", "the average of this road at this time of day in the training data — a classical baseline"]);
+    } else if (model === "XGBoost" || model === "RandomForest") {
+      rows.push(["what it is", `${model === "XGBoost" ? "gradient-boosted trees" : "a random forest"} fitted on this data's recent readings — a classical baseline for comparison`]);
     } else {
       rows.push(["what it is", `${model} — a deep-learning traffic model trained on this city's benchmark data (GPU)`]);
     }

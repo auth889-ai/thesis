@@ -97,7 +97,7 @@ def plan(dataset: str, arch: str, epochs: int, where: str | None) -> dict:
         raise ValueError(f"unknown dataset {dataset}")
     if not dataset.startswith("user:"):
         raise ValueError("only uploaded / research datasets may train a model (live corridor history is Google-derived)")
-    est = bt.estimate_seconds(arch, ds["steps"], ds["nodes"], epochs)
+    est = bt.estimate_seconds(arch, ds["steps"], ds["nodes"], epochs) if arch not in RESEARCH_ARCHS else 10
     cloud_ok = predict_lab.cloud()["available"]
     if where in ("cpu", "local"):
         chosen = "local"
@@ -132,7 +132,9 @@ def _run(job_id: str) -> None:
             card = hit
         else:
             _set(job_id, cache_hit=False)
-            if j["where"] == "aws":
+            if arch in RESEARCH_ARCHS:
+                card = _fit_research(job_id, dataset, arch)
+            elif j["where"] == "aws":
                 card = _train_aws(job_id, prep, arch, epochs)
             else:
                 card = _train_local(job_id, dataset, arch, epochs)
@@ -141,7 +143,7 @@ def _run(job_id: str) -> None:
         _check_cancel(job_id)
         # VALIDATING: baselines + the trained model on the validation split; selection happens here
         _set(job_id, stage="VALIDATING", best_val_MAE=card.get("best_val_MAE"))
-        ev = card.get("evaluation") if hit else None
+        ev = card.get("evaluation") if (hit or arch in RESEARCH_ARCHS) else None
         if not ev:
             ev = bt.evaluate(card)
         _set(job_id, validation=ev["validation"], selected_by_validation=ev["selected_by_validation"], validation_MAE=ev["validation_MAE"])
@@ -149,16 +151,18 @@ def _run(job_id: str) -> None:
         # TESTING: the untouched last 20 %, reported once
         _set(job_id, stage="TESTING")
         sel = ev["selected_by_validation"]
-        _set(job_id, test=ev["test"], test_selected=ev["test"].get(sel), congestion_rule=ev.get("congestion_rule"))
+        _set(job_id, test=ev["test"], test_selected=ev["test"].get(arch), congestion_rule=ev.get("congestion_rule"))
         # VERIFYING_CHECKPOINT: reload and reproduce the reported test error
         _set(job_id, stage="VERIFYING_CHECKPOINT")
-        ver = card.get("verification") if hit else None
+        ver = card.get("verification") if (hit or arch in RESEARCH_ARCHS) else None
         if not ver:
             ver = bt.verify_checkpoint(card)
-        tr = te.trust(sel, ev["test"].get(sel) or {}, prep["quality"], ver)
+        # the card's trust is about THIS trained model; which model validation would pick is reported beside it
+        tr = te.trust(arch, ev["test"].get(arch) or {}, prep["quality"], ver)
+        tr_sel = tr if sel == arch else te.trust(sel, ev["test"].get(sel) or {}, prep["quality"], {"passed": True})
         card.update(evaluation=ev, verification=ver, trust=tr)
         bt.save_card(card)
-        _set(job_id, stage="COMPLETE", status="done", verification=ver, trust=tr, checkpoint=Path(card["checkpoint"]).name,
+        _set(job_id, stage="COMPLETE", status="done", verification=ver, trust=tr, trust_selected=tr_sel, checkpoint=Path(card["checkpoint"]).name,
              trained_on=card.get("trained_on"), model_name=f"{arch} · trained here", curve=card.get("curve", [])[-2 * epochs:])
     except _Cancelled:
         _fail(job_id, "cancelled by the user")
@@ -173,6 +177,27 @@ class _Cancelled(Exception):
 def _check_cancel(job_id: str) -> None:
     if job_id in _CANCEL:
         raise _Cancelled()
+
+
+RESEARCH_ARCHS = ("XGBoost", "RandomForest")
+
+
+def _fit_research(job_id: str, dataset: str, arch: str):
+    """XGBoost / Random Forest, fitted in a child process (their OpenMP runtime must not share the
+    server's process with torch), evaluated and verified by the same rules as the deep models."""
+    from pipeline.forecasting import basicts_train as bt
+    _set(job_id, stage="TRAINING", epoch=0, epochs=1, trained_on="this CPU", last_line=f"fitting {arch}")
+    code = ("import sys, json; sys.path.insert(0, %r); sys.path.insert(0, %r)\n"
+            "from pipeline.forecasting import research_baselines as rb\n"
+            "c = rb.fit(%r, %r); print('CARD ' + c['bts_name'] + '__' + c['arch'])") % (str(config.REPO), str(config.REPO / "dashboard/backend"), dataset, arch)
+    r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=1800, cwd=config.REPO)
+    if r.returncode != 0:
+        raise RuntimeError(f"{arch} failed: " + (r.stderr or r.stdout)[-600:])
+    card = bt.card_for(dataset, arch)
+    if not card:
+        raise RuntimeError(f"{arch} left no card")
+    _set(job_id, epoch=1, curve=[])
+    return card
 
 
 def _train_local(job_id: str, dataset: str, arch: str, epochs: int):
@@ -336,8 +361,9 @@ def _resume_aws(job_id: str) -> None:
         _set(job_id, stage="TESTING", validation=ev["validation"], test=ev["test"], selected_by_validation=ev["selected_by_validation"])
         _set(job_id, stage="VERIFYING_CHECKPOINT"); ver = bt.verify_checkpoint(card)
         sel = ev["selected_by_validation"]
-        tr = te.trust(sel, ev["test"].get(sel) or {}, prep["quality"], ver)
+        tr = te.trust(arch, ev["test"].get(arch) or {}, prep["quality"], ver)
         card.update(evaluation=ev, verification=ver, trust=tr); bt.save_card(card)
-        _set(job_id, stage="COMPLETE", status="done", verification=ver, trust=tr, test_selected=ev["test"].get(sel))
+        _set(job_id, stage="COMPLETE", status="done", verification=ver, trust=tr, selected_by_validation=sel, test_selected=ev["test"].get(arch),
+             validation=ev["validation"], test=ev["test"], validation_MAE=ev["validation_MAE"], checkpoint=Path(card["checkpoint"]).name)
     except BaseException as exc:                        # noqa: BLE001
         _fail(job_id, f"{type(exc).__name__}: {exc}")

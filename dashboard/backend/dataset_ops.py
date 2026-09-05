@@ -27,7 +27,7 @@ import numpy as np
 import config
 import user_datasets
 
-NEAR_M = 300
+NEAR_M = 500                                            # freeway detectors sit beside the carriageway; the routed polyline may be the other side
 HORIZONS = [15, 30, 60]
 
 
@@ -61,10 +61,10 @@ def moment_for(meta: dict, departure_iso: str | None) -> tuple[int, str]:
     week of the data (or the last matching slot of day when the data is shorter)."""
     T, step = meta["steps"], int(meta["interval_s"])
     first = datetime.fromisoformat(meta["first_utc"])
-    dep = datetime.fromisoformat(departure_iso) if departure_iso else datetime.now(timezone.utc)
-    if dep.tzinfo is None:
-        dep = dep.replace(tzinfo=timezone.utc)
-    dep = dep.astimezone(timezone.utc)
+    # the dataset's clock is the city's own wall clock (its timestamps carry no zone), so the
+    # departure is matched by ITS wall clock too — 08:00 in Los Angeles means 08:00 in the data
+    dep = datetime.fromisoformat(departure_iso) if departure_iso else datetime.now().astimezone()
+    dep = dep.replace(tzinfo=timezone.utc)
     last = first + timedelta(seconds=step * (T - 13))
     # walk back from the end of the data to the latest instant with the same weekday + time of day
     target = last.replace(hour=dep.hour, minute=dep.minute, second=0, microsecond=0)
@@ -77,6 +77,26 @@ def moment_for(meta: dict, departure_iso: str | None) -> tuple[int, str]:
     idx = int((target - first).total_seconds() // step)
     idx = max(12, min(T - 13, idx))
     return idx, (first + timedelta(seconds=step * idx)).isoformat()
+
+
+def research_predict(card: dict, as_of: int) -> np.ndarray:
+    """Run a fitted XGBoost / Random Forest in a child process and read back its (12, N)."""
+    import json as _json
+    import subprocess
+    import sys as _sys
+    code = ("import sys, json; sys.path.insert(0, %r); sys.path.insert(0, %r)\n"
+            "from pipeline.forecasting import research_baselines as rb\n"
+            "card = json.load(open(%r)); print(json.dumps(rb.predict(card, %d).tolist()))") % (
+        str(config.REPO), str(config.REPO / "dashboard/backend"), _card_path(card), int(as_of))
+    r = subprocess.run([_sys.executable, "-c", code], capture_output=True, text=True, timeout=300, cwd=config.REPO)
+    if r.returncode != 0:
+        raise RuntimeError("research model failed: " + (r.stderr or r.stdout)[-400:])
+    return np.asarray(_json.loads(r.stdout.strip().splitlines()[-1]), dtype="float64")
+
+
+def _card_path(card: dict) -> str:
+    from pipeline.forecasting import basicts_train as bt
+    return str(bt.CARDS / f"{card['bts_name']}__{card['arch']}.json")
 
 
 def forecast_all(scope: str, entry: dict, as_of: int) -> tuple[np.ndarray, np.ndarray, dict]:
@@ -95,8 +115,7 @@ def forecast_all(scope: str, entry: dict, as_of: int) -> tuple[np.ndarray, np.nd
     now = vals[as_of - 1].copy()
     info = {"model": model, "checkpoint": entry.get("checkpoint"), "as_of_index": as_of}
     if card and card.get("family") == "research":
-        from pipeline.forecasting import research_baselines as rb
-        pred = rb.predict(card, as_of)
+        pred = research_predict(card, as_of)              # separate process: xgboost/sklearn OpenMP vs torch's
     elif card:
         pred = bt.predict(card, as_of)
         info["checkpoint_sha256"] = te.sha256_file(__import__("pathlib").Path(card["checkpoint"]), 12)
@@ -138,7 +157,7 @@ def analyze_dataset(p: dict, scope: str, emit) -> dict:
     entry = model_registry.resolve(scope, p.get("model"))
     if not entry.get("eligible") and entry["model"] not in ("persistence", "historical_average", "Chronos-Bolt") and not entry.get("checkpoint_path"):
         raise RuntimeError(f"{entry.get('label', entry['model'])} is not available on this data: {entry.get('reason') or 'failed a gate'}")
-    as_of, as_of_time = moment_for(meta, p.get("departure"))
+    as_of, as_of_time = moment_for(meta, p.get("departure_local") or p.get("departure"))
     now, pred, info = forecast_all(scope, entry, as_of)
     raw, _ = bt._prepared(bt.bts_name(scope))
     vals = np.asarray(raw[:, :, 0], dtype="float64")
