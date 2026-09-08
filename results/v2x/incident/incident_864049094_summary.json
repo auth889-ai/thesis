@@ -1,0 +1,612 @@
+{
+ "scenario": "INCIDENT \u2014 lane speed cut to 2 m/s on motorway edge 864049094 (METR-LA detector 761599) from 600 s, identical in every arm; peak moment; 30 % penetration; ideal network; development seeds 101-103",
+ "incident": [
+  {
+   "edge": "864049094",
+   "t_start_s": 600.0,
+   "cap_mps": 2.0,
+   "applied": true
+  }
+ ],
+ "arms": {
+  "baseline": "no rerouting",
+  "reactive": "connected vehicles reroute on current SUMO travel times every 60 s",
+  "predictive_forecast_only": "207-node GWNet forecast \u2192 costs \u2192 optimizer \u2192 V2X (the forecast cannot see a synthetic incident)",
+  "predictive_fused": "as above plus OBSERVED status-message speeds fused into the cost table"
+ },
+ "reroutes_applied_total": {
+  "predictive_forecast_only": 51,
+  "predictive_fused": 358
+ },
+ "paired": {
+  "reactive_vs_baseline": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "reactive vs baseline",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 3,
+    "per_seed_pct": [
+     -0.809,
+     -0.381,
+     -0.815
+    ],
+    "mean_pct": -0.67,
+    "median_pct": -0.81,
+    "ci95": [
+     -1.29,
+     -0.05
+    ],
+    "wins": 3,
+    "losses": 0,
+    "ties": 0,
+    "label": "HELPED",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "reactive vs baseline",
+    "metric": "p95_travel_time_s",
+    "seeds": 3,
+    "per_seed_pct": [
+     -3.854,
+     -2.756,
+     0.809
+    ],
+    "mean_pct": -1.93,
+    "median_pct": -2.76,
+    "ci95": [
+     -7.99,
+     4.12
+    ],
+    "wins": 2,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "reactive vs baseline",
+    "metric": "total_waiting_s",
+    "seeds": 3,
+    "per_seed_pct": [
+     1.846,
+     0.161,
+     0.23
+    ],
+    "mean_pct": 0.75,
+    "median_pct": 0.23,
+    "ci95": [
+     -1.62,
+     3.11
+    ],
+    "wins": 0,
+    "losses": 3,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "reactive vs baseline",
+    "metric": "mean_queue_veh",
+    "seeds": 3,
+    "per_seed_pct": [
+     1.175,
+     1.658,
+     0.256
+    ],
+    "mean_pct": 1.03,
+    "median_pct": 1.18,
+    "ci95": [
+     -0.74,
+     2.8
+    ],
+    "wins": 0,
+    "losses": 3,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "reactive vs baseline",
+    "metric": "arrived",
+    "seeds": 3,
+    "per_seed_pct": [
+     0.467,
+     -0.707,
+     0.117
+    ],
+    "mean_pct": -0.04,
+    "median_pct": 0.12,
+    "ci95": [
+     -1.54,
+     1.46
+    ],
+    "wins": 2,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "reactive vs baseline",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "predictive_forecast_only_vs_baseline": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "predictive_forecast_only vs baseline",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 3,
+    "per_seed_pct": [
+     -0.694,
+     0.59,
+     0.31
+    ],
+    "mean_pct": 0.07,
+    "median_pct": 0.31,
+    "ci95": [
+     -1.61,
+     1.75
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "predictive_forecast_only vs baseline",
+    "metric": "p95_travel_time_s",
+    "seeds": 3,
+    "per_seed_pct": [
+     -4.695,
+     0.353,
+     2.281
+    ],
+    "mean_pct": -0.69,
+    "median_pct": 0.35,
+    "ci95": [
+     -9.64,
+     8.26
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "predictive_forecast_only vs baseline",
+    "metric": "total_waiting_s",
+    "seeds": 3,
+    "per_seed_pct": [
+     -1.965,
+     2.015,
+     2.926
+    ],
+    "mean_pct": 0.99,
+    "median_pct": 2.02,
+    "ci95": [
+     -5.47,
+     7.45
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "predictive_forecast_only vs baseline",
+    "metric": "mean_queue_veh",
+    "seeds": 3,
+    "per_seed_pct": [
+     -1.484,
+     3.315,
+     1.815
+    ],
+    "mean_pct": 1.22,
+    "median_pct": 1.81,
+    "ci95": [
+     -4.88,
+     7.31
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "predictive_forecast_only vs baseline",
+    "metric": "arrived",
+    "seeds": 3,
+    "per_seed_pct": [
+     -0.233,
+     -0.707,
+     0.583
+    ],
+    "mean_pct": -0.12,
+    "median_pct": -0.23,
+    "ci95": [
+     -1.74,
+     1.5
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "predictive_forecast_only vs baseline",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "predictive_fused_vs_baseline": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "predictive_fused vs baseline",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 3,
+    "per_seed_pct": [
+     -0.471,
+     0.623,
+     0.134
+    ],
+    "mean_pct": 0.1,
+    "median_pct": 0.13,
+    "ci95": [
+     -1.27,
+     1.46
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "predictive_fused vs baseline",
+    "metric": "p95_travel_time_s",
+    "seeds": 3,
+    "per_seed_pct": [
+     -2.943,
+     0.636,
+     1.692
+    ],
+    "mean_pct": -0.21,
+    "median_pct": 0.64,
+    "ci95": [
+     -6.24,
+     5.83
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "predictive_fused vs baseline",
+    "metric": "total_waiting_s",
+    "seeds": 3,
+    "per_seed_pct": [
+     -2.139,
+     1.128,
+     0.426
+    ],
+    "mean_pct": -0.19,
+    "median_pct": 0.43,
+    "ci95": [
+     -4.47,
+     4.08
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "predictive_fused vs baseline",
+    "metric": "mean_queue_veh",
+    "seeds": 3,
+    "per_seed_pct": [
+     -0.886,
+     2.224,
+     1.815
+    ],
+    "mean_pct": 1.05,
+    "median_pct": 1.81,
+    "ci95": [
+     -3.15,
+     5.25
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "predictive_fused vs baseline",
+    "metric": "arrived",
+    "seeds": 3,
+    "per_seed_pct": [
+     -0.7,
+     -0.824,
+     -0.35
+    ],
+    "mean_pct": -0.62,
+    "median_pct": -0.7,
+    "ci95": [
+     -1.24,
+     -0.01
+    ],
+    "wins": 0,
+    "losses": 3,
+    "ties": 0,
+    "label": "HURT",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "predictive_fused vs baseline",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "predictive_forecast_only_vs_reactive": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "predictive_forecast_only vs reactive",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 3,
+    "per_seed_pct": [
+     0.115,
+     0.975,
+     1.134
+    ],
+    "mean_pct": 0.74,
+    "median_pct": 0.97,
+    "ci95": [
+     -0.62,
+     2.1
+    ],
+    "wins": 0,
+    "losses": 3,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "predictive_forecast_only vs reactive",
+    "metric": "p95_travel_time_s",
+    "seeds": 3,
+    "per_seed_pct": [
+     -0.875,
+     3.198,
+     1.46
+    ],
+    "mean_pct": 1.26,
+    "median_pct": 1.46,
+    "ci95": [
+     -3.82,
+     6.34
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "predictive_forecast_only vs reactive",
+    "metric": "total_waiting_s",
+    "seeds": 3,
+    "per_seed_pct": [
+     -3.742,
+     1.851,
+     2.69
+    ],
+    "mean_pct": 0.27,
+    "median_pct": 1.85,
+    "ci95": [
+     -8.42,
+     8.95
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "predictive_forecast_only vs reactive",
+    "metric": "mean_queue_veh",
+    "seeds": 3,
+    "per_seed_pct": [
+     -2.627,
+     1.631,
+     1.555
+    ],
+    "mean_pct": 0.19,
+    "median_pct": 1.55,
+    "ci95": [
+     -5.87,
+     6.24
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "predictive_forecast_only vs reactive",
+    "metric": "arrived",
+    "seeds": 3,
+    "per_seed_pct": [
+     -0.697,
+     0.0,
+     0.466
+    ],
+    "mean_pct": -0.08,
+    "median_pct": 0.0,
+    "ci95": [
+     -1.53,
+     1.38
+    ],
+    "wins": 1,
+    "losses": 1,
+    "ties": 1,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "predictive_forecast_only vs reactive",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "predictive_fused_vs_reactive": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "predictive_fused vs reactive",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 3,
+    "per_seed_pct": [
+     0.34,
+     1.007,
+     0.957
+    ],
+    "mean_pct": 0.77,
+    "median_pct": 0.96,
+    "ci95": [
+     -0.15,
+     1.69
+    ],
+    "wins": 0,
+    "losses": 3,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "predictive_fused vs reactive",
+    "metric": "p95_travel_time_s",
+    "seeds": 3,
+    "per_seed_pct": [
+     0.948,
+     3.488,
+     0.876
+    ],
+    "mean_pct": 1.77,
+    "median_pct": 0.95,
+    "ci95": [
+     -1.93,
+     5.47
+    ],
+    "wins": 0,
+    "losses": 3,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "predictive_fused vs reactive",
+    "metric": "total_waiting_s",
+    "seeds": 3,
+    "per_seed_pct": [
+     -3.912,
+     0.965,
+     0.195
+    ],
+    "mean_pct": -0.92,
+    "median_pct": 0.2,
+    "ci95": [
+     -7.43,
+     5.6
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "predictive_fused vs reactive",
+    "metric": "mean_queue_veh",
+    "seeds": 3,
+    "per_seed_pct": [
+     -2.037,
+     0.557,
+     1.555
+    ],
+    "mean_pct": 0.03,
+    "median_pct": 0.56,
+    "ci95": [
+     -4.58,
+     4.63
+    ],
+    "wins": 1,
+    "losses": 2,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "predictive_fused vs reactive",
+    "metric": "arrived",
+    "seeds": 3,
+    "per_seed_pct": [
+     -1.161,
+     -0.119,
+     -0.466
+    ],
+    "mean_pct": -0.58,
+    "median_pct": -0.47,
+    "ci95": [
+     -1.9,
+     0.74
+    ],
+    "wins": 0,
+    "losses": 3,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "predictive_fused vs reactive",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  }
+ },
+ "per_seed": {
+  "101": {
+   "baseline": 188.86,
+   "reactive": 187.33,
+   "predictive_fused": 187.97,
+   "predictive_forecast_only": 187.55
+  },
+  "102": {
+   "baseline": 185.72,
+   "reactive": 185.01,
+   "predictive_fused": 186.87,
+   "predictive_forecast_only": 186.81
+  },
+  "103": {
+   "baseline": 182.43,
+   "reactive": 180.94,
+   "predictive_fused": 182.68,
+   "predictive_forecast_only": 183.0
+  }
+ },
+ "sources": {
+  "fused_run": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fused/report.json",
+  "forecast_only_run": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc/report.json"
+ }
+}

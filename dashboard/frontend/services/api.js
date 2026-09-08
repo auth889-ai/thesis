@@ -120,6 +120,8 @@ export const api = {
   ablation:      () => get("/api/experiment/ablation"),
   oracleGate:    (seedSet = "final") => get(`/api/experiment/oracle_gate?seed_set=${seedSet}`),
   learnedGate:   (seedSet = "final") => get(`/api/experiment/learned_gate?seed_set=${seedSet}`),
+  v2xLoop:       (run = "") => get(`/api/experiment/v2x_closed_loop${run ? `?run=${encodeURIComponent(run)}` : ""}`),
+  v2xTimeline:   (run, seed, arm = "predictive_v2x") => get(`/api/experiment/v2x_closed_loop/timeline?run=${encodeURIComponent(run)}&seed=${seed}&arm=${encodeURIComponent(arm)}`),
   forecastMap:   (ds, asOf = "latest", model = "") => get(`/api/forecast-map/${encodeURIComponent(ds)}?as_of=${asOf}${model ? `&model=${encodeURIComponent(model)}` : ""}`),
   forecastRoad:  (ds, node, asOf = "latest", models = "GWNet,persistence") => get(`/api/forecast-map/${encodeURIComponent(ds)}/road?node=${encodeURIComponent(node)}&as_of=${asOf}&models=${encodeURIComponent(models)}`),
   predictTrained: () => get("/api/predict-lab/trained"),

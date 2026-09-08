@@ -1,0 +1,74 @@
+{
+ "run": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480",
+ "seeds": [
+  101,
+  102,
+  103
+ ],
+ "sources": {
+  "persistence": {
+   "top1_agreement_with_oracle": 0.6265,
+   "pairwise_ranking_accuracy": 0.408,
+   "predicted_saving_abs_error_mean_s": 89.9924,
+   "predicted_saving_error_mean_s": -87.4646,
+   "decisions": 1534,
+   "false_positive_reroutes": 9,
+   "false_negative_reroutes": 615,
+   "source_reroutes": 75,
+   "oracle_reroutes": 681,
+   "decisive_edge_provenance": {
+    "UNPRICED": 5437,
+    "DERIVED": 370,
+    "DIRECT": 239
+   },
+   "edge_tt_MAE_vs_oracle_s": {
+    "DERIVED": 2.46,
+    "DIRECT": 16.396
+   }
+  },
+  "gwnet": {
+   "top1_agreement_with_oracle": 0.6264,
+   "pairwise_ranking_accuracy": 0.4052,
+   "predicted_saving_abs_error_mean_s": 90.406,
+   "predicted_saving_error_mean_s": -88.1822,
+   "decisions": 1534,
+   "false_positive_reroutes": 9,
+   "false_negative_reroutes": 616,
+   "source_reroutes": 74,
+   "oracle_reroutes": 681,
+   "decisive_edge_provenance": {
+    "UNPRICED": 4715,
+    "DERIVED": 342,
+    "DIRECT": 231
+   },
+   "edge_tt_MAE_vs_oracle_s": {
+    "DERIVED": 2.089,
+    "DIRECT": 18.242
+   }
+  },
+  "corrected": {
+   "top1_agreement_with_oracle": 0.6329,
+   "pairwise_ranking_accuracy": 0.4169,
+   "predicted_saving_abs_error_mean_s": 85.8987,
+   "predicted_saving_error_mean_s": -82.7433,
+   "decisions": 1534,
+   "false_positive_reroutes": 14,
+   "false_negative_reroutes": 587,
+   "source_reroutes": 108,
+   "oracle_reroutes": 681,
+   "decisive_edge_provenance": {
+    "UNPRICED": 6658,
+    "RESIDUAL_UPSTREAM": 200,
+    "OBSERVED": 114,
+    "DERIVED": 351,
+    "DIRECT": 181
+   },
+   "edge_tt_MAE_vs_oracle_s": {
+    "RESIDUAL_UPSTREAM": 3.575,
+    "OBSERVED": 42.428,
+    "DERIVED": 2.056,
+    "DIRECT": 6.213
+   }
+  }
+ }
+}

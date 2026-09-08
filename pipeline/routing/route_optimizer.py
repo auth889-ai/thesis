@@ -107,19 +107,73 @@ def candidates_from_sumo(net: Path, trips: list[dict], weights: Path | None, out
 # costing and decision
 # ---------------------------------------------------------------------------
 
-def route_terms(edges: list[str], edge_tt: dict[str, float], info: NetInfo) -> dict:
-    fut = base = dist = priced_len = 0.0
-    for e in edges:
-        ft = info.free_tt.get(e, 0.0)
-        base += ft
-        dist += info.length.get(e, 0.0)
-        if e in edge_tt:
-            fut += edge_tt[e]
-            priced_len += info.length.get(e, 0.0)
-        else:
-            fut += ft
+class TimeDependentCosts:
+    """Edge travel times that depend on WHEN the vehicle reaches the edge: one table per forecast
+    horizon (minutes ahead of now), linearly interpolated at the edge's expected entry time. Behaves
+    like a plain {edge: tt} mapping at horizon 0 for code that only knows one table."""
+
+    def __init__(self, tables: dict[int, dict[str, float]]):
+        self.h = sorted(int(k) for k in tables)
+        self.t = {int(k): {e: float(v) for e, v in tables[k].items()} for k in tables}
+        if not self.h:
+            raise ValueError("no horizon tables")
+
+    def at(self, edge: str, minutes_ahead: float, free_tt: float) -> float | None:
+        """travel time of `edge` when entered `minutes_ahead` minutes from now, or None if unpriced."""
+        m = max(self.h[0], min(self.h[-1], float(minutes_ahead)))
+        lo = max(k for k in self.h if k <= m); hi = min(k for k in self.h if k >= m)
+        a, b = self.t[lo].get(edge), self.t[hi].get(edge)
+        if a is None and b is None:
+            return None
+        a = free_tt if a is None else a; b = free_tt if b is None else b
+        return a if hi == lo else a + (b - a) * (m - lo) / (hi - lo)
+
+    # ---- mapping-like access at "now" (horizon 0 table), used by the load penalty and callers that expect a dict
+    def get(self, edge, default=None):
+        return self.t[self.h[0]].get(edge, default)
+
+    def __contains__(self, edge):
+        return any(edge in self.t[k] for k in self.h)
+
+    def __getitem__(self, edge):
+        return self.t[self.h[0]][edge]
+
+    def items(self):
+        return self.t[self.h[0]].items()
+
+    def __len__(self):
+        return len(self.t[self.h[0]])
+
+
+def route_terms(edges: list[str], edge_tt, info: NetInfo, depart_offset_s: float = 0.0) -> dict:
+    """Route cost. With a plain table every edge is priced at one horizon. With TimeDependentCosts
+    the walk accumulates travel time, so each edge is priced at the horizon the vehicle is expected
+    to reach it (offset + time spent on the edges before it); one refinement pass corrects the entry
+    times with the priced times of the previous pass."""
+    td = isinstance(edge_tt, TimeDependentCosts)
+    passes = 2 if td else 1
+    entry_tts = None
+    for _ in range(passes):
+        fut = base = dist = priced_len = 0.0; clock = float(depart_offset_s); this_pass = []
+        for i, e in enumerate(edges):
+            ft = info.free_tt.get(e, 0.0)
+            base += ft
+            dist += info.length.get(e, 0.0)
+            if td:
+                minutes = (clock if entry_tts is None else entry_tts[i]) / 60.0
+                v = edge_tt.at(e, minutes, ft)
+                tt = ft if v is None else v
+                priced = v is not None
+            else:
+                priced = e in edge_tt
+                tt = edge_tt[e] if priced else ft
+            this_pass.append(clock)
+            fut += tt; clock += tt
+            if priced:
+                priced_len += info.length.get(e, 0.0)
+        entry_tts = this_pass
     return {"base_tt_s": round(base, 2), "forecast_future_tt_s": round(fut, 2), "distance_m": round(dist, 1),
-            "priced_length_fraction": round(priced_len / dist, 4) if dist else 0.0}
+            "priced_length_fraction": round(priced_len / dist, 4) if dist else 0.0, "time_dependent": td}
 
 
 def overlap_fraction(edges: list[str], current: list[str], info: NetInfo) -> float:
@@ -246,8 +300,10 @@ def optimize(net_path: Path, trips: list[dict], table: dict, out_dir: Path, seed
     cfg = cfg or load_config()
     info = NetInfo(net_path)
     edge_tt = {k: float(v) for k, v in table["edge_travel_times"].items()}
+    if table.get("time_dependent"):                     # {horizon_min: {edge: tt}} — priced at each edge's expected entry time
+        edge_tt = TimeDependentCosts(table["time_dependent"])
     from pipeline.routing.edge_costs import write_weights
-    weights = write_weights(table, out_dir / "future_weights.xml", 0.0, max(float(window_s), 3600.0)) if edge_tt else None
+    weights = write_weights(table, out_dir / "future_weights.xml", 0.0, max(float(window_s), 3600.0)) if len(edge_tt) or table.get("time_dependent") else None
     cands, gen = candidates_from_sumo(net_path, trips, weights, out_dir, cfg, seed)
     adm = Admission(cfg, info, window_s, len(trips))
     decisions = []

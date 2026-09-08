@@ -1,0 +1,77 @@
+{
+ "city_id": "la_c4_central_wide",
+ "bbox": [
+  34.08,
+  -118.342,
+  34.16,
+  -118.222
+ ],
+ "network_hash": "0d81df27ab2d",
+ "sumo_edges": 15661,
+ "drivable_edges": 15661,
+ "drivable_km": 1914.3,
+ "area_km2": 98.0,
+ "detectors_inside_bbox": 83,
+ "mapped_GOOD": 83,
+ "distinct_direct_edges": 74,
+ "rejected_inside": {
+  "snap": 0,
+  "nearest": 0,
+  "no drivable": 0
+ },
+ "snap_median_m": 1.8,
+ "snap_max_m": 10.3,
+ "detector_density_per_km2": 0.847,
+ "model_coverage": {
+  "mapped_sensors": 83,
+  "DIRECT_edges": 74,
+  "DERIVED_edges": 134,
+  "UNFORECASTED_edges": 15453,
+  "coverage_hops": 1,
+  "future_cost_hash_15": "c79837e2a43abd7c"
+ },
+ "network_coverage": {
+  "pct_drivable_length_DIRECT": 2.01,
+  "pct_drivable_length_DIRECT_or_DERIVED": 3.41
+ },
+ "traffic_exposure": {
+  "vehicles_in_output": 866,
+  "pct_vehicles_touching_DIRECT": 45.38,
+  "pct_vehicles_touching_DIRECT_or_DERIVED": 57.97,
+  "vehicle_km_total": 6067.8,
+  "pct_vehicle_km_DIRECT": 11.55,
+  "pct_vehicle_km_DIRECT_or_DERIVED": 22.36,
+  "vehicle_hours_total": 166.1,
+  "pct_vehicle_time_DIRECT": 4.31,
+  "pct_vehicle_time_DIRECT_or_DERIVED": 8.44,
+  "note": "vehicle-time from vehroute exitTimes of the baseline development run; distance from edge lengths",
+  "sumo_wall_s": 8.7
+ },
+ "routing_exposure": {
+  "equipped_decisions": 272,
+  "decisions_with_a_priced_edge_in_candidates": 161,
+  "pct_decisions_exposed": 59.19,
+  "candidate_routes": 632,
+  "pct_candidate_routes_priced": 55.22,
+  "decisions_by_outcome": {
+   "KEEP_CURRENT_BELOW_THRESHOLD": 197,
+   "NO_ALTERNATIVE": 75
+  },
+  "note": "development demand and moment only; the routing config, thresholds and admission are the frozen production ones"
+ },
+ "demand": {
+  "file": "data/cities/la_c4_central_wide/sumo/la_c4_central_wide.rou.xml",
+  "hash": "1bae1db8f833",
+  "vehicles": 900,
+  "reality": "SYNTHETIC_WHAT_IF randomTrips on the real OSM network (development seed 101)"
+ },
+ "forecast": {
+  "model": "Graph WaveNet, 207-node METR-LA checkpoint",
+  "checkpoint_sha256": "548e399bd53c",
+  "as_of_index": 30395,
+  "raw_prediction_hash": "c53b33310b79504f",
+  "inference_seconds": 0.476,
+  "sensors_used": 83,
+  "sensors_ignored": 124
+ }
+}

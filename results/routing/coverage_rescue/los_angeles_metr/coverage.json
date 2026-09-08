@@ -1,0 +1,77 @@
+{
+ "city_id": "los_angeles_metr",
+ "bbox": [
+  34.045,
+  -118.3,
+  34.09,
+  -118.22
+ ],
+ "network_hash": "3a55f46d9693",
+ "sumo_edges": 8952,
+ "drivable_edges": 8952,
+ "drivable_km": 867.1,
+ "area_km2": 36.8,
+ "detectors_inside_bbox": 29,
+ "mapped_GOOD": 29,
+ "distinct_direct_edges": 27,
+ "rejected_inside": {
+  "snap": 0,
+  "nearest": 0,
+  "no drivable": 0
+ },
+ "snap_median_m": 2.1,
+ "snap_max_m": 11.9,
+ "detector_density_per_km2": 0.789,
+ "model_coverage": {
+  "mapped_sensors": 29,
+  "DIRECT_edges": 27,
+  "DERIVED_edges": 43,
+  "UNFORECASTED_edges": 8882,
+  "coverage_hops": 1,
+  "future_cost_hash_15": "d22bef6eced698b2"
+ },
+ "network_coverage": {
+  "pct_drivable_length_DIRECT": 1.55,
+  "pct_drivable_length_DIRECT_or_DERIVED": 2.07
+ },
+ "traffic_exposure": {
+  "vehicles_in_output": 900,
+  "pct_vehicles_touching_DIRECT": 31.33,
+  "pct_vehicles_touching_DIRECT_or_DERIVED": 37.56,
+  "vehicle_km_total": 3510.2,
+  "pct_vehicle_km_DIRECT": 10.71,
+  "pct_vehicle_km_DIRECT_or_DERIVED": 16.68,
+  "vehicle_hours_total": 105.44,
+  "pct_vehicle_time_DIRECT": 4.27,
+  "pct_vehicle_time_DIRECT_or_DERIVED": 6.77,
+  "note": "vehicle-time from vehroute exitTimes of the baseline development run; distance from edge lengths",
+  "sumo_wall_s": 7.6
+ },
+ "routing_exposure": {
+  "equipped_decisions": 272,
+  "decisions_with_a_priced_edge_in_candidates": 106,
+  "pct_decisions_exposed": 38.97,
+  "candidate_routes": 614,
+  "pct_candidate_routes_priced": 40.55,
+  "decisions_by_outcome": {
+   "NO_ALTERNATIVE": 92,
+   "KEEP_CURRENT_BELOW_THRESHOLD": 180
+  },
+  "note": "development demand and moment only; the routing config, thresholds and admission are the frozen production ones"
+ },
+ "demand": {
+  "file": "data/cities/los_angeles_metr/sumo/los_angeles_metr.rou.xml",
+  "hash": "98aaca579324",
+  "vehicles": 900,
+  "reality": "SYNTHETIC_WHAT_IF randomTrips on the real OSM network (development seed 101)"
+ },
+ "forecast": {
+  "model": "Graph WaveNet, 207-node METR-LA checkpoint",
+  "checkpoint_sha256": "548e399bd53c",
+  "as_of_index": 30395,
+  "raw_prediction_hash": "c53b33310b79504f",
+  "inference_seconds": 0.476,
+  "sensors_used": 29,
+  "sensors_ignored": 178
+ }
+}

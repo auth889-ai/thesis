@@ -1,0 +1,2457 @@
+{
+ "seed": 103,
+ "analysis_run_id": "an_v2x_s103",
+ "as_of_index": 32466,
+ "demand": {
+  "demand_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/demand_s103.rou.xml",
+  "demand_hash": "62f6e4c6562f",
+  "vehicles": 900
+ },
+ "fork": {
+  "t0_s": 480,
+  "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/fork/fork_state_s103_t480.xml",
+  "state_sha256": "0f9a687dc09c"
+ },
+ "arms": {
+  "baseline": {
+   "simulation_run_id": "sim_v2x_s103_baseline_ideal_p30",
+   "arm": "baseline",
+   "seed": 103,
+   "profile": "ideal",
+   "penetration": 0.3,
+   "moment": "peak",
+   "config_hash": "ea08dddedc14",
+   "network_hash": "0d81df27ab2d",
+   "fork": {
+    "t0_s": 480,
+    "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/fork/fork_state_s103_t480.xml",
+    "state_sha256": "0f9a687dc09c"
+   },
+   "information": "baseline",
+   "metrics": {
+    "arrived": 843,
+    "unfinished_at_horizon": 39,
+    "unfinished": 39,
+    "total_vehicle_hours": 180.2838888888889,
+    "mean_travel_time_all": 735.8526077097506,
+    "mean_travel_time_s": 717.4946619217081,
+    "p95_travel_time_s": 1338.0,
+    "mean_waiting_s": 136.51245551601423,
+    "total_waiting_s": 115080.0,
+    "mean_time_loss_s": 291.5034994068802,
+    "mean_depart_delay_s": 0.013048635824436536,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 0,
+    "loaded": 900,
+    "inserted": 900,
+    "running_at_end": 39,
+    "waiting_to_insert_at_end": 0,
+    "mean_queue_veh": 51.58,
+    "max_queue_veh": 103.0,
+    "mean_running_veh": 269.51,
+    "queue_steps": 2220,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "total_vehicle_hours_incl_never_inserted": 180.2839,
+    "teleport_events": [],
+    "reactive_reroute_calls": 0,
+    "incidents_applied": [
+     {
+      "edge": "864049094",
+      "t_start_s": 600,
+      "cap_mps": 2.0,
+      "lanes": 5
+     }
+    ],
+    "wall_s": 9.0
+   },
+   "network": {
+    "uplink": {
+     "channel": "uplink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 0,
+     "messages_rx": 0,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": null,
+     "latency_mean_ms": null,
+     "latency_median_ms": null,
+     "latency_p95_ms": null,
+     "latency_p99_ms": null,
+     "bytes_tx": 0,
+     "message_rate_per_s": 0.0,
+     "throughput_bytes_per_s": 0.0
+    },
+    "downlink": {
+     "channel": "downlink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 0,
+     "messages_rx": 0,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": null,
+     "latency_mean_ms": null,
+     "latency_median_ms": null,
+     "latency_p95_ms": null,
+     "latency_p99_ms": null,
+     "bytes_tx": 0,
+     "message_rate_per_s": 0.0,
+     "throughput_bytes_per_s": 0.0
+    },
+    "connected_vehicles": 250,
+    "vehicles_seen": 849,
+    "penetration_configured": 0.3,
+    "recommendations_delivered": 0,
+    "reroutes_applied": 0,
+    "recommendations_inapplicable": 0,
+    "incidents_detected": [],
+    "incident_detection_delay_s": null,
+    "lead_time": {
+     "incident_onset_s": 600.0,
+     "first_reroute_applied_s": null,
+     "first_reroute_after_onset_s": null,
+     "reroutes_before_onset": 0
+    }
+   },
+   "rounds": [],
+   "routing_run_ids": [],
+   "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/baseline/reroute_log.jsonl",
+   "reroutes_applied": 0,
+   "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/baseline"
+  },
+  "reactive": {
+   "simulation_run_id": "sim_v2x_s103_reactive_ideal_p30",
+   "arm": "reactive",
+   "seed": 103,
+   "profile": "ideal",
+   "penetration": 0.3,
+   "moment": "peak",
+   "config_hash": "ea08dddedc14",
+   "network_hash": "0d81df27ab2d",
+   "fork": {
+    "t0_s": 480,
+    "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/fork/fork_state_s103_t480.xml",
+    "state_sha256": "0f9a687dc09c"
+   },
+   "information": "reactive",
+   "metrics": {
+    "arrived": 839,
+    "unfinished_at_horizon": 43,
+    "unfinished": 43,
+    "total_vehicle_hours": 180.01638888888888,
+    "mean_travel_time_all": 734.7607709750567,
+    "mean_travel_time_s": 713.8915375446961,
+    "p95_travel_time_s": 1382.0,
+    "mean_waiting_s": 139.96901072705603,
+    "total_waiting_s": 117434.0,
+    "mean_time_loss_s": 295.54,
+    "mean_depart_delay_s": 0.013110846245530394,
+    "vehicles_rerouted_at_least_once": 41,
+    "teleports": 0,
+    "loaded": 900,
+    "inserted": 900,
+    "running_at_end": 43,
+    "waiting_to_insert_at_end": 0,
+    "mean_queue_veh": 53.11,
+    "max_queue_veh": 107.0,
+    "mean_running_veh": 269.08,
+    "queue_steps": 2220,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "total_vehicle_hours_incl_never_inserted": 180.0164,
+    "teleport_events": [],
+    "reactive_reroute_calls": 2835,
+    "incidents_applied": [
+     {
+      "edge": "864049094",
+      "t_start_s": 600,
+      "cap_mps": 2.0,
+      "lanes": 5
+     }
+    ],
+    "wall_s": 19.4
+   },
+   "network": {
+    "uplink": {
+     "channel": "uplink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 0,
+     "messages_rx": 0,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": null,
+     "latency_mean_ms": null,
+     "latency_median_ms": null,
+     "latency_p95_ms": null,
+     "latency_p99_ms": null,
+     "bytes_tx": 0,
+     "message_rate_per_s": 0.0,
+     "throughput_bytes_per_s": 0.0
+    },
+    "downlink": {
+     "channel": "downlink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 0,
+     "messages_rx": 0,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": null,
+     "latency_mean_ms": null,
+     "latency_median_ms": null,
+     "latency_p95_ms": null,
+     "latency_p99_ms": null,
+     "bytes_tx": 0,
+     "message_rate_per_s": 0.0,
+     "throughput_bytes_per_s": 0.0
+    },
+    "connected_vehicles": 255,
+    "vehicles_seen": 882,
+    "penetration_configured": 0.3,
+    "recommendations_delivered": 0,
+    "reroutes_applied": 0,
+    "recommendations_inapplicable": 0,
+    "incidents_detected": [],
+    "incident_detection_delay_s": null,
+    "lead_time": {
+     "incident_onset_s": 600.0,
+     "first_reroute_applied_s": null,
+     "first_reroute_after_onset_s": null,
+     "reroutes_before_onset": 0
+    }
+   },
+   "rounds": [],
+   "routing_run_ids": [],
+   "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/reactive/reroute_log.jsonl",
+   "reroutes_applied": 0,
+   "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/reactive"
+  },
+  "persistence_v2x": {
+   "simulation_run_id": "sim_v2x_s103_persistence_v2x_ideal_p30",
+   "arm": "persistence_v2x",
+   "seed": 103,
+   "profile": "ideal",
+   "penetration": 0.3,
+   "moment": "peak",
+   "config_hash": "ea08dddedc14",
+   "network_hash": "0d81df27ab2d",
+   "fork": {
+    "t0_s": 480,
+    "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/fork/fork_state_s103_t480.xml",
+    "state_sha256": "0f9a687dc09c"
+   },
+   "information": "persistence",
+   "metrics": {
+    "arrived": 842,
+    "unfinished_at_horizon": 40,
+    "unfinished": 40,
+    "total_vehicle_hours": 181.16666666666666,
+    "mean_travel_time_all": 739.4557823129252,
+    "mean_travel_time_s": 720.2874109263659,
+    "p95_travel_time_s": 1373.0,
+    "mean_waiting_s": 140.1104513064133,
+    "total_waiting_s": 117973.0,
+    "mean_time_loss_s": 296.75536817102136,
+    "mean_depart_delay_s": 0.023752969121140142,
+    "vehicles_rerouted_at_least_once": 11,
+    "teleports": 0,
+    "loaded": 900,
+    "inserted": 900,
+    "running_at_end": 40,
+    "waiting_to_insert_at_end": 0,
+    "mean_queue_veh": 52.93,
+    "max_queue_veh": 103.0,
+    "mean_running_veh": 270.95,
+    "queue_steps": 2220,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "total_vehicle_hours_incl_never_inserted": 181.1667,
+    "teleport_events": [],
+    "reactive_reroute_calls": 0,
+    "incidents_applied": [
+     {
+      "edge": "864049094",
+      "t_start_s": 600,
+      "cap_mps": 2.0,
+      "lanes": 5
+     }
+    ],
+    "wall_s": 90.7
+   },
+   "network": {
+    "uplink": {
+     "channel": "uplink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 15099,
+     "messages_rx": 15099,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": 1.0,
+     "latency_mean_ms": 0.0,
+     "latency_median_ms": 0.0,
+     "latency_p95_ms": 0.0,
+     "latency_p99_ms": 0.0,
+     "bytes_tx": 2617248,
+     "message_rate_per_s": 5.592,
+     "throughput_bytes_per_s": 969.4
+    },
+    "downlink": {
+     "channel": "downlink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 12,
+     "messages_rx": 12,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": 1.0,
+     "latency_mean_ms": 0.0,
+     "latency_median_ms": 0.0,
+     "latency_p95_ms": 0.0,
+     "latency_p99_ms": 0.0,
+     "bytes_tx": 29824,
+     "message_rate_per_s": 0.004,
+     "throughput_bytes_per_s": 11.0
+    },
+    "connected_vehicles": 255,
+    "vehicles_seen": 882,
+    "penetration_configured": 0.3,
+    "recommendations_delivered": 12,
+    "reroutes_applied": 12,
+    "recommendations_inapplicable": 0,
+    "incidents_detected": [
+     {
+      "edge": "864049094",
+      "detected_at_s": 1421,
+      "first_evidence_s": 1366.0,
+      "vehicles": 3,
+      "messages": 12,
+      "severity": 0.855,
+      "confidence": 0.5,
+      "observed_speed_mps": 1.36,
+      "expected_speed_mps": 12.18,
+      "true_onset_s": 600.0,
+      "detection_delay_s": 821.0,
+      "sim_time_s": 1421,
+      "last_seen_s": 2123,
+      "cleared_at_s": 2501
+     }
+    ],
+    "incident_detection_delay_s": 821.0,
+    "lead_time": {
+     "incident_onset_s": 600.0,
+     "first_reroute_applied_s": 600,
+     "first_reroute_after_onset_s": 0.0,
+     "reroutes_before_onset": 0
+    }
+   },
+   "rounds": [
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r0",
+     "round": 0,
+     "sim_time_s": 600,
+     "as_of_index": 32468,
+     "raw_prediction_hash": "881731f916ee211f",
+     "future_cost_hash": "de665808074d46ef",
+     "priced_edges": 202,
+     "reroute_budget": 6,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 31,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 21,
+      "REROUTE": 5
+     },
+     "correction": null,
+     "incidents_detected_so_far": 0,
+     "time_dependent": false,
+     "direct_edges": 72,
+     "derived_edges": 130,
+     "observed_edges_fused": 0,
+     "information": "persistence",
+     "inference_seconds": 0.038,
+     "vehicles_considered": 57,
+     "decisions": {
+      "NO_ALTERNATIVE": 31,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 21,
+      "REROUTE": 5
+     },
+     "recommendations_sent": 5,
+     "statuses_known": 74,
+     "edges_with_current_speed": 229
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r1",
+     "round": 1,
+     "sim_time_s": 900,
+     "as_of_index": 32469,
+     "raw_prediction_hash": "d5c7cd054142463f",
+     "future_cost_hash": "e8652bc8092b3d2d",
+     "priced_edges": 202,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 54,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 39,
+      "REROUTE": 1
+     },
+     "correction": null,
+     "incidents_detected_so_far": 0,
+     "time_dependent": false,
+     "direct_edges": 72,
+     "derived_edges": 130,
+     "observed_edges_fused": 0,
+     "information": "persistence",
+     "inference_seconds": 0.043,
+     "vehicles_considered": 94,
+     "decisions": {
+      "NO_ALTERNATIVE": 54,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 39,
+      "REROUTE": 1
+     },
+     "recommendations_sent": 1,
+     "statuses_known": 126,
+     "edges_with_current_speed": 336
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r2",
+     "round": 2,
+     "sim_time_s": 1200,
+     "as_of_index": 32470,
+     "raw_prediction_hash": "1b44774505b7769f",
+     "future_cost_hash": "ad2dac318d7cdb2a",
+     "priced_edges": 201,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 44,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 45,
+      "REROUTE": 2
+     },
+     "correction": null,
+     "incidents_detected_so_far": 0,
+     "time_dependent": false,
+     "direct_edges": 71,
+     "derived_edges": 130,
+     "observed_edges_fused": 0,
+     "information": "persistence",
+     "inference_seconds": 0.044,
+     "vehicles_considered": 91,
+     "decisions": {
+      "NO_ALTERNATIVE": 44,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 45,
+      "REROUTE": 2
+     },
+     "recommendations_sent": 2,
+     "statuses_known": 173,
+     "edges_with_current_speed": 361
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r3",
+     "round": 3,
+     "sim_time_s": 1500,
+     "as_of_index": 32471,
+     "raw_prediction_hash": "b8f2e40b4d2486df",
+     "future_cost_hash": "6c30937f57ac15ce",
+     "priced_edges": 202,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 56,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 39,
+      "REROUTE": 2
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 72,
+     "derived_edges": 130,
+     "observed_edges_fused": 0,
+     "information": "persistence",
+     "inference_seconds": 0.045,
+     "vehicles_considered": 97,
+     "decisions": {
+      "NO_ALTERNATIVE": 56,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 39,
+      "REROUTE": 2
+     },
+     "recommendations_sent": 2,
+     "statuses_known": 219,
+     "edges_with_current_speed": 346
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r4",
+     "round": 4,
+     "sim_time_s": 1800,
+     "as_of_index": 32472,
+     "raw_prediction_hash": "74e110443e3f7add",
+     "future_cost_hash": "e05ee52339864301",
+     "priced_edges": 201,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 54,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 36,
+      "REROUTE": 2
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 71,
+     "derived_edges": 130,
+     "observed_edges_fused": 0,
+     "information": "persistence",
+     "inference_seconds": 0.054,
+     "vehicles_considered": 92,
+     "decisions": {
+      "NO_ALTERNATIVE": 54,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 36,
+      "REROUTE": 2
+     },
+     "recommendations_sent": 2,
+     "statuses_known": 253,
+     "edges_with_current_speed": 334
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r5",
+     "round": 5,
+     "sim_time_s": 2100,
+     "as_of_index": 32473,
+     "raw_prediction_hash": "03e20e441eaeaa14",
+     "future_cost_hash": "9bba9037452e4c04",
+     "priced_edges": 201,
+     "reroute_budget": 5,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 39,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 11
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 71,
+     "derived_edges": 130,
+     "observed_edges_fused": 0,
+     "information": "persistence",
+     "inference_seconds": 0.044,
+     "vehicles_considered": 50,
+     "decisions": {
+      "NO_ALTERNATIVE": 39,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 11
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 182
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r6",
+     "round": 6,
+     "sim_time_s": 2400,
+     "as_of_index": 32474,
+     "raw_prediction_hash": "bc601d35b7868c97",
+     "future_cost_hash": "4584dab6642ac04a",
+     "priced_edges": 202,
+     "reroute_budget": 2,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 12,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 6
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 72,
+     "derived_edges": 130,
+     "observed_edges_fused": 0,
+     "information": "persistence",
+     "inference_seconds": 0.039,
+     "vehicles_considered": 18,
+     "decisions": {
+      "NO_ALTERNATIVE": 12,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 6
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 83
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r7",
+     "round": 7,
+     "sim_time_s": 2700,
+     "as_of_index": 32475,
+     "raw_prediction_hash": "7c3b2b430dea0521",
+     "future_cost_hash": "e51b91646c24cbba",
+     "priced_edges": 200,
+     "reroute_budget": 2,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 4,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 1
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 71,
+     "derived_edges": 129,
+     "observed_edges_fused": 0,
+     "information": "persistence",
+     "inference_seconds": 0.045,
+     "vehicles_considered": 5,
+     "decisions": {
+      "NO_ALTERNATIVE": 4,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 1
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 25
+    }
+   ],
+   "routing_run_ids": [
+    "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r0",
+    "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r1",
+    "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r2",
+    "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r3",
+    "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r4",
+    "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r5",
+    "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r6",
+    "rt_v2x_v2x_s103_persistence_v2x_ideal_p30_r7"
+   ],
+   "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/persistence_v2x/reroute_log.jsonl",
+   "reroutes_applied": 12,
+   "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/persistence_v2x"
+  },
+  "predictive_v2x": {
+   "simulation_run_id": "sim_v2x_s103_predictive_v2x_ideal_p30",
+   "arm": "predictive_v2x",
+   "seed": 103,
+   "profile": "ideal",
+   "penetration": 0.3,
+   "moment": "peak",
+   "config_hash": "ea08dddedc14",
+   "network_hash": "0d81df27ab2d",
+   "fork": {
+    "t0_s": 480,
+    "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/fork/fork_state_s103_t480.xml",
+    "state_sha256": "0f9a687dc09c"
+   },
+   "information": "gwnet",
+   "metrics": {
+    "arrived": 843,
+    "unfinished_at_horizon": 39,
+    "unfinished": 39,
+    "total_vehicle_hours": 180.66555555555556,
+    "mean_travel_time_all": 737.4104308390023,
+    "mean_travel_time_s": 719.8552787663108,
+    "p95_travel_time_s": 1357.0,
+    "mean_waiting_s": 137.87307236061685,
+    "total_waiting_s": 116227.0,
+    "mean_time_loss_s": 295.1498932384342,
+    "mean_depart_delay_s": 0.01542111506524318,
+    "vehicles_rerouted_at_least_once": 12,
+    "teleports": 0,
+    "loaded": 900,
+    "inserted": 900,
+    "running_at_end": 39,
+    "waiting_to_insert_at_end": 0,
+    "mean_queue_veh": 52.01,
+    "max_queue_veh": 113.0,
+    "mean_running_veh": 270.13,
+    "queue_steps": 2220,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "total_vehicle_hours_incl_never_inserted": 180.6656,
+    "teleport_events": [],
+    "reactive_reroute_calls": 0,
+    "incidents_applied": [
+     {
+      "edge": "864049094",
+      "t_start_s": 600,
+      "cap_mps": 2.0,
+      "lanes": 5
+     }
+    ],
+    "wall_s": 91.0
+   },
+   "network": {
+    "uplink": {
+     "channel": "uplink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 15026,
+     "messages_rx": 15026,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": 1.0,
+     "latency_mean_ms": 0.0,
+     "latency_median_ms": 0.0,
+     "latency_p95_ms": 0.0,
+     "latency_p99_ms": 0.0,
+     "bytes_tx": 2604889,
+     "message_rate_per_s": 5.565,
+     "throughput_bytes_per_s": 964.8
+    },
+    "downlink": {
+     "channel": "downlink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 14,
+     "messages_rx": 14,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": 1.0,
+     "latency_mean_ms": 0.0,
+     "latency_median_ms": 0.0,
+     "latency_p95_ms": 0.0,
+     "latency_p99_ms": 0.0,
+     "bytes_tx": 36876,
+     "message_rate_per_s": 0.005,
+     "throughput_bytes_per_s": 13.7
+    },
+    "connected_vehicles": 255,
+    "vehicles_seen": 882,
+    "penetration_configured": 0.3,
+    "recommendations_delivered": 14,
+    "reroutes_applied": 13,
+    "recommendations_inapplicable": 1,
+    "incidents_detected": [
+     {
+      "edge": "864049094",
+      "detected_at_s": 1166,
+      "first_evidence_s": 1111.0,
+      "vehicles": 3,
+      "messages": 10,
+      "severity": 0.863,
+      "confidence": 0.5,
+      "observed_speed_mps": 1.62,
+      "expected_speed_mps": 12.18,
+      "true_onset_s": 600.0,
+      "detection_delay_s": 566.0,
+      "sim_time_s": 1166,
+      "last_seen_s": 2123,
+      "cleared_at_s": 2521
+     }
+    ],
+    "incident_detection_delay_s": 566.0,
+    "lead_time": {
+     "incident_onset_s": 600.0,
+     "first_reroute_applied_s": 600,
+     "first_reroute_after_onset_s": 0.0,
+     "reroutes_before_onset": 0
+    }
+   },
+   "rounds": [
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r0",
+     "round": 0,
+     "sim_time_s": 600,
+     "as_of_index": 32468,
+     "raw_prediction_hash": "881731f916ee211f",
+     "future_cost_hash": "66699b408975fd6b",
+     "priced_edges": 208,
+     "reroute_budget": 6,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 32,
+      "REROUTE": 6,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 19
+     },
+     "correction": null,
+     "incidents_detected_so_far": 0,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet",
+     "inference_seconds": 0.042,
+     "vehicles_considered": 57,
+     "decisions": {
+      "NO_ALTERNATIVE": 32,
+      "REROUTE": 6,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 19
+     },
+     "recommendations_sent": 6,
+     "statuses_known": 74,
+     "edges_with_current_speed": 229
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r1",
+     "round": 1,
+     "sim_time_s": 900,
+     "as_of_index": 32469,
+     "raw_prediction_hash": "d5c7cd054142463f",
+     "future_cost_hash": "ffc76c4b709c2461",
+     "priced_edges": 208,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 52,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 38,
+      "REROUTE": 1
+     },
+     "correction": null,
+     "incidents_detected_so_far": 0,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet",
+     "inference_seconds": 0.046,
+     "vehicles_considered": 91,
+     "decisions": {
+      "NO_ALTERNATIVE": 52,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 38,
+      "REROUTE": 1
+     },
+     "recommendations_sent": 1,
+     "statuses_known": 126,
+     "edges_with_current_speed": 333
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r2",
+     "round": 2,
+     "sim_time_s": 1200,
+     "as_of_index": 32470,
+     "raw_prediction_hash": "1b44774505b7769f",
+     "future_cost_hash": "2f9f7e04739739c9",
+     "priced_edges": 208,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 50,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 44,
+      "REROUTE": 3
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet",
+     "inference_seconds": 0.039,
+     "vehicles_considered": 97,
+     "decisions": {
+      "NO_ALTERNATIVE": 50,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 44,
+      "REROUTE": 3
+     },
+     "recommendations_sent": 3,
+     "statuses_known": 173,
+     "edges_with_current_speed": 355
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r3",
+     "round": 3,
+     "sim_time_s": 1500,
+     "as_of_index": 32471,
+     "raw_prediction_hash": "b8f2e40b4d2486df",
+     "future_cost_hash": "948c1276a8355b59",
+     "priced_edges": 208,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 53,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 41,
+      "REROUTE": 2
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet",
+     "inference_seconds": 0.057,
+     "vehicles_considered": 96,
+     "decisions": {
+      "NO_ALTERNATIVE": 53,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 41,
+      "REROUTE": 2
+     },
+     "recommendations_sent": 2,
+     "statuses_known": 219,
+     "edges_with_current_speed": 364
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r4",
+     "round": 4,
+     "sim_time_s": 1800,
+     "as_of_index": 32472,
+     "raw_prediction_hash": "74e110443e3f7add",
+     "future_cost_hash": "78c5a2c4e31896bb",
+     "priced_edges": 208,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 54,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 38,
+      "REROUTE": 2
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet",
+     "inference_seconds": 0.044,
+     "vehicles_considered": 94,
+     "decisions": {
+      "NO_ALTERNATIVE": 54,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 38,
+      "REROUTE": 2
+     },
+     "recommendations_sent": 2,
+     "statuses_known": 253,
+     "edges_with_current_speed": 330
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r5",
+     "round": 5,
+     "sim_time_s": 2100,
+     "as_of_index": 32473,
+     "raw_prediction_hash": "03e20e441eaeaa14",
+     "future_cost_hash": "dd5ce1d11cb6f6f8",
+     "priced_edges": 208,
+     "reroute_budget": 5,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 34,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 11
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet",
+     "inference_seconds": 0.04,
+     "vehicles_considered": 45,
+     "decisions": {
+      "NO_ALTERNATIVE": 34,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 11
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 199
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r6",
+     "round": 6,
+     "sim_time_s": 2400,
+     "as_of_index": 32474,
+     "raw_prediction_hash": "bc601d35b7868c97",
+     "future_cost_hash": "89fe0e47a45fd5ae",
+     "priced_edges": 208,
+     "reroute_budget": 2,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 15,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 5
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet",
+     "inference_seconds": 0.043,
+     "vehicles_considered": 20,
+     "decisions": {
+      "NO_ALTERNATIVE": 15,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 5
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 84
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r7",
+     "round": 7,
+     "sim_time_s": 2700,
+     "as_of_index": 32475,
+     "raw_prediction_hash": "7c3b2b430dea0521",
+     "future_cost_hash": "c9b651b4971b7824",
+     "priced_edges": 208,
+     "reroute_budget": 2,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 4,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 1
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet",
+     "inference_seconds": 0.048,
+     "vehicles_considered": 5,
+     "decisions": {
+      "NO_ALTERNATIVE": 4,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 1
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 27
+    }
+   ],
+   "routing_run_ids": [
+    "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r0",
+    "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r1",
+    "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r2",
+    "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r3",
+    "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r4",
+    "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r5",
+    "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r6",
+    "rt_v2x_v2x_s103_predictive_v2x_ideal_p30_r7"
+   ],
+   "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/predictive_v2x/reroute_log.jsonl",
+   "reroutes_applied": 13,
+   "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/predictive_v2x"
+  },
+  "predictive_corrected_v2x": {
+   "simulation_run_id": "sim_v2x_s103_predictive_corrected_v2x_ideal_p30",
+   "arm": "predictive_corrected_v2x",
+   "seed": 103,
+   "profile": "ideal",
+   "penetration": 0.3,
+   "moment": "peak",
+   "config_hash": "ea08dddedc14",
+   "network_hash": "0d81df27ab2d",
+   "fork": {
+    "t0_s": 480,
+    "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/fork/fork_state_s103_t480.xml",
+    "state_sha256": "0f9a687dc09c"
+   },
+   "information": "gwnet+correction",
+   "metrics": {
+    "arrived": 843,
+    "unfinished_at_horizon": 39,
+    "unfinished": 39,
+    "total_vehicle_hours": 180.81833333333333,
+    "mean_travel_time_all": 738.0340136054422,
+    "mean_travel_time_s": 719.755634638197,
+    "p95_travel_time_s": 1381.0,
+    "mean_waiting_s": 139.0367734282325,
+    "total_waiting_s": 117208.0,
+    "mean_time_loss_s": 295.6960379596679,
+    "mean_depart_delay_s": 0.011862396204033215,
+    "vehicles_rerouted_at_least_once": 14,
+    "teleports": 0,
+    "loaded": 900,
+    "inserted": 900,
+    "running_at_end": 39,
+    "waiting_to_insert_at_end": 0,
+    "mean_queue_veh": 52.47,
+    "max_queue_veh": 107.0,
+    "mean_running_veh": 270.38,
+    "queue_steps": 2220,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "total_vehicle_hours_incl_never_inserted": 180.8183,
+    "teleport_events": [],
+    "reactive_reroute_calls": 0,
+    "incidents_applied": [
+     {
+      "edge": "864049094",
+      "t_start_s": 600,
+      "cap_mps": 2.0,
+      "lanes": 5
+     }
+    ],
+    "wall_s": 91.7
+   },
+   "network": {
+    "uplink": {
+     "channel": "uplink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 14978,
+     "messages_rx": 14978,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": 1.0,
+     "latency_mean_ms": 0.0,
+     "latency_median_ms": 0.0,
+     "latency_p95_ms": 0.0,
+     "latency_p99_ms": 0.0,
+     "bytes_tx": 2596187,
+     "message_rate_per_s": 5.547,
+     "throughput_bytes_per_s": 961.6
+    },
+    "downlink": {
+     "channel": "downlink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 15,
+     "messages_rx": 15,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": 1.0,
+     "latency_mean_ms": 0.0,
+     "latency_median_ms": 0.0,
+     "latency_p95_ms": 0.0,
+     "latency_p99_ms": 0.0,
+     "bytes_tx": 38074,
+     "message_rate_per_s": 0.006,
+     "throughput_bytes_per_s": 14.1
+    },
+    "connected_vehicles": 255,
+    "vehicles_seen": 882,
+    "penetration_configured": 0.3,
+    "recommendations_delivered": 15,
+    "reroutes_applied": 15,
+    "recommendations_inapplicable": 0,
+    "incidents_detected": [
+     {
+      "edge": "864049094",
+      "detected_at_s": 1166,
+      "first_evidence_s": 1111.0,
+      "vehicles": 3,
+      "messages": 10,
+      "severity": 0.936,
+      "confidence": 0.5,
+      "observed_speed_mps": 1.47,
+      "expected_speed_mps": 19.47,
+      "true_onset_s": 600.0,
+      "detection_delay_s": 566.0,
+      "sim_time_s": 1166,
+      "last_seen_s": 2103,
+      "cleared_at_s": 2481
+     }
+    ],
+    "incident_detection_delay_s": 566.0,
+    "lead_time": {
+     "incident_onset_s": 600.0,
+     "first_reroute_applied_s": 600,
+     "first_reroute_after_onset_s": 0.0,
+     "reroutes_before_onset": 0
+    }
+   },
+   "rounds": [
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r0",
+     "round": 0,
+     "sim_time_s": 600,
+     "as_of_index": 32468,
+     "raw_prediction_hash": "881731f916ee211f",
+     "future_cost_hash": "2e58c07f1a848ee3",
+     "priced_edges": 210,
+     "reroute_budget": 6,
+     "deferred_by_budget": 1,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 32,
+      "REROUTE": 6,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 18,
+      "DEFERRED_BUDGET": 1
+     },
+     "correction": {
+      "residual_edges": 2,
+      "propagated_edges": 6,
+      "by_kind_at_h0": {
+       "OBSERVED": 2,
+       "RESIDUAL_UPSTREAM": 6
+      },
+      "tau_min": 30.0,
+      "upstream_hops": 2,
+      "hop_decay": 0.5,
+      "largest_residuals": [
+       [
+        -3.35,
+        "123461836"
+       ],
+       [
+        -2.08,
+        "863790275"
+       ]
+      ]
+     },
+     "incidents_detected_so_far": 0,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet+correction",
+     "inference_seconds": 0.04,
+     "vehicles_considered": 57,
+     "decisions": {
+      "NO_ALTERNATIVE": 32,
+      "REROUTE": 7,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 18
+     },
+     "recommendations_sent": 6,
+     "statuses_known": 74,
+     "edges_with_current_speed": 229
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r1",
+     "round": 1,
+     "sim_time_s": 900,
+     "as_of_index": 32469,
+     "raw_prediction_hash": "d5c7cd054142463f",
+     "future_cost_hash": "210b758a1821f24e",
+     "priced_edges": 210,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 54,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 36,
+      "REROUTE": 1
+     },
+     "correction": {
+      "residual_edges": 4,
+      "propagated_edges": 7,
+      "by_kind_at_h0": {
+       "OBSERVED": 4,
+       "RESIDUAL_UPSTREAM": 7
+      },
+      "tau_min": 30.0,
+      "upstream_hops": 2,
+      "hop_decay": 0.5,
+      "largest_residuals": [
+       [
+        -8.32,
+        "978443691"
+       ],
+       [
+        -4.71,
+        "403194967"
+       ],
+       [
+        -4.61,
+        "124100070"
+       ],
+       [
+        -2.14,
+        "866543941-AddedOffRampEdge"
+       ]
+      ]
+     },
+     "incidents_detected_so_far": 0,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet+correction",
+     "inference_seconds": 0.046,
+     "vehicles_considered": 91,
+     "decisions": {
+      "NO_ALTERNATIVE": 54,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 36,
+      "REROUTE": 1
+     },
+     "recommendations_sent": 1,
+     "statuses_known": 126,
+     "edges_with_current_speed": 345
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r2",
+     "round": 2,
+     "sim_time_s": 1200,
+     "as_of_index": 32470,
+     "raw_prediction_hash": "1b44774505b7769f",
+     "future_cost_hash": "dc48d3ce0d75a559",
+     "priced_edges": 210,
+     "reroute_budget": 11,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 50,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 48,
+      "REROUTE": 4
+     },
+     "correction": {
+      "residual_edges": 3,
+      "propagated_edges": 9,
+      "by_kind_at_h0": {
+       "OBSERVED": 3,
+       "RESIDUAL_UPSTREAM": 9
+      },
+      "tau_min": 30.0,
+      "upstream_hops": 2,
+      "hop_decay": 0.5,
+      "largest_residuals": [
+       [
+        -15.75,
+        "978443691"
+       ],
+       [
+        -14.62,
+        "864049094"
+       ],
+       [
+        -3.12,
+        "864051442"
+       ]
+      ]
+     },
+     "incidents_detected_so_far": 1,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet+correction",
+     "inference_seconds": 0.052,
+     "vehicles_considered": 102,
+     "decisions": {
+      "NO_ALTERNATIVE": 50,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 48,
+      "REROUTE": 4
+     },
+     "recommendations_sent": 4,
+     "statuses_known": 173,
+     "edges_with_current_speed": 352
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r3",
+     "round": 3,
+     "sim_time_s": 1500,
+     "as_of_index": 32471,
+     "raw_prediction_hash": "b8f2e40b4d2486df",
+     "future_cost_hash": "ab299edb21985d58",
+     "priced_edges": 208,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 52,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 44,
+      "REROUTE": 2
+     },
+     "correction": {
+      "residual_edges": 2,
+      "propagated_edges": 4,
+      "by_kind_at_h0": {
+       "OBSERVED": 2,
+       "RESIDUAL_UPSTREAM": 4
+      },
+      "tau_min": 30.0,
+      "upstream_hops": 2,
+      "hop_decay": 0.5,
+      "largest_residuals": [
+       [
+        -19.87,
+        "864049094"
+       ],
+       [
+        -4.4,
+        "186220992"
+       ]
+      ]
+     },
+     "incidents_detected_so_far": 1,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet+correction",
+     "inference_seconds": 0.046,
+     "vehicles_considered": 98,
+     "decisions": {
+      "NO_ALTERNATIVE": 52,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 44,
+      "REROUTE": 2
+     },
+     "recommendations_sent": 2,
+     "statuses_known": 219,
+     "edges_with_current_speed": 381
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r4",
+     "round": 4,
+     "sim_time_s": 1800,
+     "as_of_index": 32472,
+     "raw_prediction_hash": "74e110443e3f7add",
+     "future_cost_hash": "c46cfb152db966fb",
+     "priced_edges": 213,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 54,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 38,
+      "REROUTE": 2
+     },
+     "correction": {
+      "residual_edges": 4,
+      "propagated_edges": 11,
+      "by_kind_at_h0": {
+       "OBSERVED": 4,
+       "RESIDUAL_UPSTREAM": 11
+      },
+      "tau_min": 30.0,
+      "upstream_hops": 2,
+      "hop_decay": 0.5,
+      "largest_residuals": [
+       [
+        -24.46,
+        "864049094"
+       ],
+       [
+        -13.84,
+        "404280189"
+       ],
+       [
+        -8.26,
+        "866618593"
+       ],
+       [
+        -5.88,
+        "403194967"
+       ]
+      ]
+     },
+     "incidents_detected_so_far": 1,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet+correction",
+     "inference_seconds": 0.046,
+     "vehicles_considered": 94,
+     "decisions": {
+      "NO_ALTERNATIVE": 54,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 38,
+      "REROUTE": 2
+     },
+     "recommendations_sent": 2,
+     "statuses_known": 253,
+     "edges_with_current_speed": 345
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r5",
+     "round": 5,
+     "sim_time_s": 2100,
+     "as_of_index": 32473,
+     "raw_prediction_hash": "03e20e441eaeaa14",
+     "future_cost_hash": "8dc0574581bb7b3f",
+     "priced_edges": 208,
+     "reroute_budget": 5,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 35,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 11
+     },
+     "correction": {
+      "residual_edges": 1,
+      "propagated_edges": 2,
+      "by_kind_at_h0": {
+       "OBSERVED": 1,
+       "RESIDUAL_UPSTREAM": 2
+      },
+      "tau_min": 30.0,
+      "upstream_hops": 2,
+      "hop_decay": 0.5,
+      "largest_residuals": [
+       [
+        -25.09,
+        "864049094"
+       ]
+      ]
+     },
+     "incidents_detected_so_far": 1,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet+correction",
+     "inference_seconds": 0.056,
+     "vehicles_considered": 46,
+     "decisions": {
+      "NO_ALTERNATIVE": 35,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 11
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 196
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r6",
+     "round": 6,
+     "sim_time_s": 2400,
+     "as_of_index": 32474,
+     "raw_prediction_hash": "bc601d35b7868c97",
+     "future_cost_hash": "fdce25962af03481",
+     "priced_edges": 208,
+     "reroute_budget": 2,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 9,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 7
+     },
+     "correction": {
+      "residual_edges": 1,
+      "propagated_edges": 2,
+      "by_kind_at_h0": {
+       "OBSERVED": 1,
+       "RESIDUAL_UPSTREAM": 2
+      },
+      "tau_min": 30.0,
+      "upstream_hops": 2,
+      "hop_decay": 0.5,
+      "largest_residuals": [
+       [
+        -26.18,
+        "864049094"
+       ]
+      ]
+     },
+     "incidents_detected_so_far": 1,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet+correction",
+     "inference_seconds": 0.045,
+     "vehicles_considered": 16,
+     "decisions": {
+      "NO_ALTERNATIVE": 9,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 7
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 68
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r7",
+     "round": 7,
+     "sim_time_s": 2700,
+     "as_of_index": 32475,
+     "raw_prediction_hash": "7c3b2b430dea0521",
+     "future_cost_hash": "c9b651b4971b7824",
+     "priced_edges": 208,
+     "reroute_budget": 2,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 3,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 1
+     },
+     "correction": {
+      "residual_edges": 0,
+      "propagated_edges": 0,
+      "by_kind_at_h0": {
+       "OBSERVED": 0,
+       "RESIDUAL_UPSTREAM": 0
+      },
+      "tau_min": 30.0,
+      "upstream_hops": 2,
+      "hop_decay": 0.5,
+      "largest_residuals": []
+     },
+     "incidents_detected_so_far": 1,
+     "time_dependent": true,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "gwnet+correction",
+     "inference_seconds": 0.046,
+     "vehicles_considered": 4,
+     "decisions": {
+      "NO_ALTERNATIVE": 3,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 1
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 23
+    }
+   ],
+   "routing_run_ids": [
+    "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r0",
+    "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r1",
+    "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r2",
+    "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r3",
+    "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r4",
+    "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r5",
+    "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r6",
+    "rt_v2x_v2x_s103_predictive_corrected_v2x_ideal_p30_r7"
+   ],
+   "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/predictive_corrected_v2x/reroute_log.jsonl",
+   "reroutes_applied": 15,
+   "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/predictive_corrected_v2x"
+  },
+  "oracle_v2x": {
+   "simulation_run_id": "sim_v2x_s103_oracle_v2x_ideal_p30",
+   "arm": "oracle_v2x",
+   "seed": 103,
+   "profile": "ideal",
+   "penetration": 0.3,
+   "moment": "peak",
+   "config_hash": "ea08dddedc14",
+   "network_hash": "0d81df27ab2d",
+   "fork": {
+    "t0_s": 480,
+    "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/fork/fork_state_s103_t480.xml",
+    "state_sha256": "0f9a687dc09c"
+   },
+   "information": "oracle",
+   "metrics": {
+    "arrived": 837,
+    "unfinished_at_horizon": 45,
+    "unfinished": 45,
+    "total_vehicle_hours": 180.70527777777778,
+    "mean_travel_time_all": 737.5725623582766,
+    "mean_travel_time_s": 715.6905615292712,
+    "p95_travel_time_s": 1376.0,
+    "mean_waiting_s": 137.46833930704898,
+    "total_waiting_s": 115061.0,
+    "mean_time_loss_s": 291.5430943847073,
+    "mean_depart_delay_s": 0.014336917562724014,
+    "vehicles_rerouted_at_least_once": 28,
+    "teleports": 0,
+    "loaded": 900,
+    "inserted": 900,
+    "running_at_end": 45,
+    "waiting_to_insert_at_end": 0,
+    "mean_queue_veh": 52.37,
+    "max_queue_veh": 105.0,
+    "mean_running_veh": 270.2,
+    "queue_steps": 2220,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "total_vehicle_hours_incl_never_inserted": 180.7053,
+    "teleport_events": [],
+    "reactive_reroute_calls": 0,
+    "incidents_applied": [
+     {
+      "edge": "864049094",
+      "t_start_s": 600,
+      "cap_mps": 2.0,
+      "lanes": 5
+     }
+    ],
+    "wall_s": 103.9
+   },
+   "network": {
+    "uplink": {
+     "channel": "uplink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 14933,
+     "messages_rx": 14933,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": 1.0,
+     "latency_mean_ms": 0.0,
+     "latency_median_ms": 0.0,
+     "latency_p95_ms": 0.0,
+     "latency_p99_ms": 0.0,
+     "bytes_tx": 2589118,
+     "message_rate_per_s": 5.531,
+     "throughput_bytes_per_s": 958.9
+    },
+    "downlink": {
+     "channel": "downlink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 53,
+     "messages_rx": 53,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": 1.0,
+     "latency_mean_ms": 0.0,
+     "latency_median_ms": 0.0,
+     "latency_p95_ms": 0.0,
+     "latency_p99_ms": 0.0,
+     "bytes_tx": 153744,
+     "message_rate_per_s": 0.02,
+     "throughput_bytes_per_s": 56.9
+    },
+    "connected_vehicles": 255,
+    "vehicles_seen": 882,
+    "penetration_configured": 0.3,
+    "recommendations_delivered": 53,
+    "reroutes_applied": 39,
+    "recommendations_inapplicable": 14,
+    "incidents_detected": [
+     {
+      "edge": "864049094",
+      "detected_at_s": 1745,
+      "first_evidence_s": 1687.0,
+      "vehicles": 3,
+      "messages": 10,
+      "severity": 0.857,
+      "confidence": 0.5,
+      "observed_speed_mps": 1.75,
+      "expected_speed_mps": 12.18,
+      "true_onset_s": 600.0,
+      "detection_delay_s": 1145.0,
+      "sim_time_s": 1745,
+      "last_seen_s": 1827,
+      "cleared_at_s": 2117
+     }
+    ],
+    "incident_detection_delay_s": 1145.0,
+    "lead_time": {
+     "incident_onset_s": 600.0,
+     "first_reroute_applied_s": 600,
+     "first_reroute_after_onset_s": 0.0,
+     "reroutes_before_onset": 0
+    }
+   },
+   "rounds": [
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r0",
+     "round": 0,
+     "sim_time_s": 600,
+     "as_of_index": 32468,
+     "raw_prediction_hash": "881731f916ee211f",
+     "future_cost_hash": "e99e53cdea0d304c",
+     "priced_edges": 4829,
+     "reroute_budget": 6,
+     "deferred_by_budget": 28,
+     "decisions_after_budget": {
+      "DEFERRED_BUDGET": 28,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 19,
+      "NO_ALTERNATIVE": 4,
+      "REROUTE": 6
+     },
+     "correction": null,
+     "incidents_detected_so_far": 0,
+     "time_dependent": false,
+     "direct_edges": 4829,
+     "derived_edges": 0,
+     "observed_edges_fused": 0,
+     "information": "oracle",
+     "inference_seconds": 0.044,
+     "vehicles_considered": 57,
+     "decisions": {
+      "REROUTE": 34,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 19,
+      "NO_ALTERNATIVE": 4
+     },
+     "recommendations_sent": 6,
+     "statuses_known": 74,
+     "edges_with_current_speed": 229
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r1",
+     "round": 1,
+     "sim_time_s": 900,
+     "as_of_index": 32469,
+     "raw_prediction_hash": "d5c7cd054142463f",
+     "future_cost_hash": "a17d799c4143f680",
+     "priced_edges": 5219,
+     "reroute_budget": 10,
+     "deferred_by_budget": 31,
+     "decisions_after_budget": {
+      "DEFERRED_BUDGET": 31,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 43,
+      "NO_ALTERNATIVE": 14,
+      "REROUTE": 10
+     },
+     "correction": null,
+     "incidents_detected_so_far": 0,
+     "time_dependent": false,
+     "direct_edges": 5219,
+     "derived_edges": 0,
+     "observed_edges_fused": 0,
+     "information": "oracle",
+     "inference_seconds": 0.048,
+     "vehicles_considered": 98,
+     "decisions": {
+      "REROUTE": 41,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 43,
+      "NO_ALTERNATIVE": 14
+     },
+     "recommendations_sent": 10,
+     "statuses_known": 126,
+     "edges_with_current_speed": 331
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r2",
+     "round": 2,
+     "sim_time_s": 1200,
+     "as_of_index": 32470,
+     "raw_prediction_hash": "1b44774505b7769f",
+     "future_cost_hash": "4f5ebf1590c50a88",
+     "priced_edges": 5412,
+     "reroute_budget": 10,
+     "deferred_by_budget": 29,
+     "decisions_after_budget": {
+      "DEFERRED_BUDGET": 29,
+      "NO_ALTERNATIVE": 14,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 44,
+      "REROUTE": 10
+     },
+     "correction": null,
+     "incidents_detected_so_far": 0,
+     "time_dependent": false,
+     "direct_edges": 5412,
+     "derived_edges": 0,
+     "observed_edges_fused": 0,
+     "information": "oracle",
+     "inference_seconds": 0.047,
+     "vehicles_considered": 97,
+     "decisions": {
+      "REROUTE": 39,
+      "NO_ALTERNATIVE": 14,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 44
+     },
+     "recommendations_sent": 10,
+     "statuses_known": 173,
+     "edges_with_current_speed": 363
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r3",
+     "round": 3,
+     "sim_time_s": 1500,
+     "as_of_index": 32471,
+     "raw_prediction_hash": "b8f2e40b4d2486df",
+     "future_cost_hash": "10e72fe845331341",
+     "priced_edges": 5236,
+     "reroute_budget": 11,
+     "deferred_by_budget": 31,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 19,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 42,
+      "DEFERRED_BUDGET": 31,
+      "REROUTE": 11
+     },
+     "correction": null,
+     "incidents_detected_so_far": 0,
+     "time_dependent": false,
+     "direct_edges": 5236,
+     "derived_edges": 0,
+     "observed_edges_fused": 0,
+     "information": "oracle",
+     "inference_seconds": 0.052,
+     "vehicles_considered": 103,
+     "decisions": {
+      "NO_ALTERNATIVE": 19,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 42,
+      "REROUTE": 42
+     },
+     "recommendations_sent": 11,
+     "statuses_known": 219,
+     "edges_with_current_speed": 401
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r4",
+     "round": 4,
+     "sim_time_s": 1800,
+     "as_of_index": 32472,
+     "raw_prediction_hash": "74e110443e3f7add",
+     "future_cost_hash": "59e5c75b804e0f09",
+     "priced_edges": 4412,
+     "reroute_budget": 10,
+     "deferred_by_budget": 19,
+     "decisions_after_budget": {
+      "KEEP_CURRENT_BELOW_THRESHOLD": 46,
+      "NO_ALTERNATIVE": 16,
+      "DEFERRED_BUDGET": 19,
+      "REROUTE": 10
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 4412,
+     "derived_edges": 0,
+     "observed_edges_fused": 0,
+     "information": "oracle",
+     "inference_seconds": 0.051,
+     "vehicles_considered": 91,
+     "decisions": {
+      "KEEP_CURRENT_BELOW_THRESHOLD": 46,
+      "NO_ALTERNATIVE": 16,
+      "REROUTE": 29
+     },
+     "recommendations_sent": 10,
+     "statuses_known": 253,
+     "edges_with_current_speed": 343
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r5",
+     "round": 5,
+     "sim_time_s": 2100,
+     "as_of_index": 32473,
+     "raw_prediction_hash": "03e20e441eaeaa14",
+     "future_cost_hash": "4099b382cea874d5",
+     "priced_edges": 2906,
+     "reroute_budget": 4,
+     "deferred_by_budget": 1,
+     "decisions_after_budget": {
+      "KEEP_CURRENT_BELOW_THRESHOLD": 25,
+      "NO_ALTERNATIVE": 9,
+      "DEFERRED_BUDGET": 1,
+      "REROUTE": 4
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 2906,
+     "derived_edges": 0,
+     "observed_edges_fused": 0,
+     "information": "oracle",
+     "inference_seconds": 0.046,
+     "vehicles_considered": 39,
+     "decisions": {
+      "KEEP_CURRENT_BELOW_THRESHOLD": 25,
+      "NO_ALTERNATIVE": 9,
+      "REROUTE": 5
+     },
+     "recommendations_sent": 4,
+     "statuses_known": 254,
+     "edges_with_current_speed": 182
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r6",
+     "round": 6,
+     "sim_time_s": 2400,
+     "as_of_index": 32474,
+     "raw_prediction_hash": "bc601d35b7868c97",
+     "future_cost_hash": "98164db9485f56da",
+     "priced_edges": 1497,
+     "reroute_budget": 2,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 7,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 9,
+      "REROUTE": 2
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 1497,
+     "derived_edges": 0,
+     "observed_edges_fused": 0,
+     "information": "oracle",
+     "inference_seconds": 0.053,
+     "vehicles_considered": 18,
+     "decisions": {
+      "NO_ALTERNATIVE": 7,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 9,
+      "REROUTE": 2
+     },
+     "recommendations_sent": 2,
+     "statuses_known": 254,
+     "edges_with_current_speed": 88
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r7",
+     "round": 7,
+     "sim_time_s": 2700,
+     "as_of_index": 32475,
+     "raw_prediction_hash": "7c3b2b430dea0521",
+     "future_cost_hash": "44136fa355b3678a",
+     "priced_edges": 0,
+     "reroute_budget": 2,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "KEEP_CURRENT_BELOW_THRESHOLD": 7,
+      "NO_ALTERNATIVE": 1
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 0,
+     "derived_edges": 0,
+     "observed_edges_fused": 0,
+     "information": "oracle",
+     "inference_seconds": 0.054,
+     "vehicles_considered": 8,
+     "decisions": {
+      "KEEP_CURRENT_BELOW_THRESHOLD": 7,
+      "NO_ALTERNATIVE": 1
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 40
+    }
+   ],
+   "routing_run_ids": [
+    "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r0",
+    "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r1",
+    "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r2",
+    "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r3",
+    "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r4",
+    "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r5",
+    "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r6",
+    "rt_v2x_v2x_s103_oracle_v2x_ideal_p30_r7"
+   ],
+   "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/oracle_v2x/reroute_log.jsonl",
+   "reroutes_applied": 39,
+   "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/oracle_v2x"
+  },
+  "random_v2x": {
+   "simulation_run_id": "sim_v2x_s103_random_v2x_ideal_p30",
+   "arm": "random_v2x",
+   "seed": 103,
+   "profile": "ideal",
+   "penetration": 0.3,
+   "moment": "peak",
+   "config_hash": "ea08dddedc14",
+   "network_hash": "0d81df27ab2d",
+   "fork": {
+    "t0_s": 480,
+    "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/fork/fork_state_s103_t480.xml",
+    "state_sha256": "0f9a687dc09c"
+   },
+   "information": "random",
+   "metrics": {
+    "arrived": 842,
+    "unfinished_at_horizon": 40,
+    "unfinished": 40,
+    "total_vehicle_hours": 181.93694444444444,
+    "mean_travel_time_all": 742.5997732426304,
+    "mean_travel_time_s": 725.103325415677,
+    "p95_travel_time_s": 1397.0,
+    "mean_waiting_s": 140.44299287410925,
+    "total_waiting_s": 118253.0,
+    "mean_time_loss_s": 298.72501187648453,
+    "mean_depart_delay_s": 0.017814726840855107,
+    "vehicles_rerouted_at_least_once": 22,
+    "teleports": 0,
+    "loaded": 900,
+    "inserted": 900,
+    "running_at_end": 40,
+    "waiting_to_insert_at_end": 0,
+    "mean_queue_veh": 53.01,
+    "max_queue_veh": 115.0,
+    "mean_running_veh": 272.19,
+    "queue_steps": 2220,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "total_vehicle_hours_incl_never_inserted": 181.9369,
+    "teleport_events": [],
+    "reactive_reroute_calls": 0,
+    "incidents_applied": [
+     {
+      "edge": "864049094",
+      "t_start_s": 600,
+      "cap_mps": 2.0,
+      "lanes": 5
+     }
+    ],
+    "wall_s": 92.4
+   },
+   "network": {
+    "uplink": {
+     "channel": "uplink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 15239,
+     "messages_rx": 15239,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": 1.0,
+     "latency_mean_ms": 0.0,
+     "latency_median_ms": 0.0,
+     "latency_p95_ms": 0.0,
+     "latency_p99_ms": 0.0,
+     "bytes_tx": 2641624,
+     "message_rate_per_s": 5.644,
+     "throughput_bytes_per_s": 978.4
+    },
+    "downlink": {
+     "channel": "downlink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 30,
+     "messages_rx": 30,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": 1.0,
+     "latency_mean_ms": 0.0,
+     "latency_median_ms": 0.0,
+     "latency_p95_ms": 0.0,
+     "latency_p99_ms": 0.0,
+     "bytes_tx": 84379,
+     "message_rate_per_s": 0.011,
+     "throughput_bytes_per_s": 31.3
+    },
+    "connected_vehicles": 255,
+    "vehicles_seen": 882,
+    "penetration_configured": 0.3,
+    "recommendations_delivered": 30,
+    "reroutes_applied": 28,
+    "recommendations_inapplicable": 2,
+    "incidents_detected": [
+     {
+      "edge": "864049094",
+      "detected_at_s": 1176,
+      "first_evidence_s": 1121.0,
+      "vehicles": 3,
+      "messages": 11,
+      "severity": 0.867,
+      "confidence": 0.5,
+      "observed_speed_mps": 1.58,
+      "expected_speed_mps": 12.18,
+      "true_onset_s": 600.0,
+      "detection_delay_s": 576.0,
+      "sim_time_s": 1176,
+      "last_seen_s": 2123,
+      "cleared_at_s": 2511
+     }
+    ],
+    "incident_detection_delay_s": 576.0,
+    "lead_time": {
+     "incident_onset_s": 600.0,
+     "first_reroute_applied_s": 600,
+     "first_reroute_after_onset_s": 0.0,
+     "reroutes_before_onset": 0
+    }
+   },
+   "rounds": [
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_random_v2x_ideal_p30_r0",
+     "round": 0,
+     "sim_time_s": 600,
+     "as_of_index": 32468,
+     "raw_prediction_hash": "881731f916ee211f",
+     "future_cost_hash": "721b386dbc2ba225",
+     "priced_edges": 208,
+     "reroute_budget": 6,
+     "deferred_by_budget": 4,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 29,
+      "DEFERRED_BUDGET": 4,
+      "REROUTE": 6,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 18
+     },
+     "correction": null,
+     "incidents_detected_so_far": 0,
+     "time_dependent": false,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "random",
+     "inference_seconds": 0.039,
+     "vehicles_considered": 57,
+     "decisions": {
+      "NO_ALTERNATIVE": 29,
+      "REROUTE": 10,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 18
+     },
+     "recommendations_sent": 6,
+     "statuses_known": 74,
+     "edges_with_current_speed": 229
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_random_v2x_ideal_p30_r1",
+     "round": 1,
+     "sim_time_s": 900,
+     "as_of_index": 32469,
+     "raw_prediction_hash": "d5c7cd054142463f",
+     "future_cost_hash": "af745889ac905f87",
+     "priced_edges": 208,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 53,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 34,
+      "REROUTE": 8
+     },
+     "correction": null,
+     "incidents_detected_so_far": 0,
+     "time_dependent": false,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "random",
+     "inference_seconds": 0.049,
+     "vehicles_considered": 95,
+     "decisions": {
+      "NO_ALTERNATIVE": 53,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 34,
+      "REROUTE": 8
+     },
+     "recommendations_sent": 8,
+     "statuses_known": 126,
+     "edges_with_current_speed": 332
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_random_v2x_ideal_p30_r2",
+     "round": 2,
+     "sim_time_s": 1200,
+     "as_of_index": 32470,
+     "raw_prediction_hash": "1b44774505b7769f",
+     "future_cost_hash": "a32f050a4b72cc48",
+     "priced_edges": 208,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 49,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 44,
+      "REROUTE": 5
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "random",
+     "inference_seconds": 0.046,
+     "vehicles_considered": 98,
+     "decisions": {
+      "NO_ALTERNATIVE": 49,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 44,
+      "REROUTE": 5
+     },
+     "recommendations_sent": 5,
+     "statuses_known": 173,
+     "edges_with_current_speed": 355
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_random_v2x_ideal_p30_r3",
+     "round": 3,
+     "sim_time_s": 1500,
+     "as_of_index": 32471,
+     "raw_prediction_hash": "b8f2e40b4d2486df",
+     "future_cost_hash": "3c53fe84ba52e60c",
+     "priced_edges": 208,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 50,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 41,
+      "REROUTE": 7
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "random",
+     "inference_seconds": 0.042,
+     "vehicles_considered": 98,
+     "decisions": {
+      "NO_ALTERNATIVE": 50,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 41,
+      "REROUTE": 7
+     },
+     "recommendations_sent": 7,
+     "statuses_known": 219,
+     "edges_with_current_speed": 411
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_random_v2x_ideal_p30_r4",
+     "round": 4,
+     "sim_time_s": 1800,
+     "as_of_index": 32472,
+     "raw_prediction_hash": "74e110443e3f7add",
+     "future_cost_hash": "4d9fc0d0a0a61686",
+     "priced_edges": 208,
+     "reroute_budget": 10,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 48,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 42,
+      "REROUTE": 4
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "random",
+     "inference_seconds": 0.051,
+     "vehicles_considered": 94,
+     "decisions": {
+      "NO_ALTERNATIVE": 48,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 42,
+      "REROUTE": 4
+     },
+     "recommendations_sent": 4,
+     "statuses_known": 253,
+     "edges_with_current_speed": 347
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_random_v2x_ideal_p30_r5",
+     "round": 5,
+     "sim_time_s": 2100,
+     "as_of_index": 32473,
+     "raw_prediction_hash": "03e20e441eaeaa14",
+     "future_cost_hash": "841a179fb189a097",
+     "priced_edges": 208,
+     "reroute_budget": 5,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 39,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 10
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "random",
+     "inference_seconds": 0.047,
+     "vehicles_considered": 49,
+     "decisions": {
+      "NO_ALTERNATIVE": 39,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 10
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 184
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_random_v2x_ideal_p30_r6",
+     "round": 6,
+     "sim_time_s": 2400,
+     "as_of_index": 32474,
+     "raw_prediction_hash": "bc601d35b7868c97",
+     "future_cost_hash": "1be69b5689dad41c",
+     "priced_edges": 208,
+     "reroute_budget": 2,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 9,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 5
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "random",
+     "inference_seconds": 0.043,
+     "vehicles_considered": 14,
+     "decisions": {
+      "NO_ALTERNATIVE": 9,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 5
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 87
+    },
+    {
+     "routing_run_id": "rt_v2x_v2x_s103_random_v2x_ideal_p30_r7",
+     "round": 7,
+     "sim_time_s": 2700,
+     "as_of_index": 32475,
+     "raw_prediction_hash": "7c3b2b430dea0521",
+     "future_cost_hash": "88832c8ebdd86936",
+     "priced_edges": 208,
+     "reroute_budget": 2,
+     "deferred_by_budget": 0,
+     "decisions_after_budget": {
+      "NO_ALTERNATIVE": 4,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 2
+     },
+     "correction": null,
+     "incidents_detected_so_far": 1,
+     "time_dependent": false,
+     "direct_edges": 74,
+     "derived_edges": 134,
+     "observed_edges_fused": 0,
+     "information": "random",
+     "inference_seconds": 0.046,
+     "vehicles_considered": 6,
+     "decisions": {
+      "NO_ALTERNATIVE": 4,
+      "KEEP_CURRENT_BELOW_THRESHOLD": 2
+     },
+     "recommendations_sent": 0,
+     "statuses_known": 254,
+     "edges_with_current_speed": 45
+    }
+   ],
+   "routing_run_ids": [
+    "rt_v2x_v2x_s103_random_v2x_ideal_p30_r0",
+    "rt_v2x_v2x_s103_random_v2x_ideal_p30_r1",
+    "rt_v2x_v2x_s103_random_v2x_ideal_p30_r2",
+    "rt_v2x_v2x_s103_random_v2x_ideal_p30_r3",
+    "rt_v2x_v2x_s103_random_v2x_ideal_p30_r4",
+    "rt_v2x_v2x_s103_random_v2x_ideal_p30_r5",
+    "rt_v2x_v2x_s103_random_v2x_ideal_p30_r6",
+    "rt_v2x_v2x_s103_random_v2x_ideal_p30_r7"
+   ],
+   "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/random_v2x/reroute_log.jsonl",
+   "reroutes_applied": 28,
+   "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480/s103/random_v2x"
+  }
+ }
+}

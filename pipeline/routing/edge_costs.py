@@ -65,6 +65,18 @@ def ratio_from_forecast(value: float, unit: str, free_speed_mps: float | None = 
 # the table
 # ---------------------------------------------------------------------------
 
+_NETS: dict = {}
+
+
+def _read_net(net_path: Path):
+    """sumolib network parsed once per (path, mtime) — parsing a large network on every call dominated the round time."""
+    import sumolib
+    key = (str(net_path), Path(net_path).stat().st_mtime)
+    if key not in _NETS:
+        _NETS.clear(); _NETS[key] = sumolib.net.readNet(str(net_path))
+    return _NETS[key]
+
+
 def build(forecast_values: dict[str, float], unit: str, corridor_map: dict[str, dict], net_path: Path,
           horizon_min: int, cfg: dict | None = None, hops: int | None = None, model: str | None = None,
           analysis_run_id: str | None = None, corridor_free_speed: dict[str, float] | None = None) -> dict:
@@ -77,7 +89,7 @@ def build(forecast_values: dict[str, float], unit: str, corridor_map: dict[str, 
     hops = int(ec["coverage_hops"] if hops is None else hops)
     v_min = float(ec["speed_lower_bound_mps"])
     decay = {int(k): float(v) for k, v in ec["decay_weight_by_hop"].items()}
-    net = sumolib.net.readNet(str(net_path))
+    net = _read_net(net_path)
 
     def geo(eid):
         try:

@@ -39,6 +39,7 @@ FAILURE IS REPORTED, NEVER PAPERED OVER
 from __future__ import annotations
 
 import json
+import os
 import threading
 import time
 import urllib.error
@@ -49,6 +50,12 @@ import corridors as _corridors
 import credentials as _secrets
 
 ROUTES_ENDPOINT = "https://routes.googleapis.com/directions/v2:computeRoutes"
+QUOTA_BACKOFF_S = 900.0          # after a 429 the key is exhausted: stop calling for 15 minutes instead of burning quota
+# COST CONTROLS. Compute Routes with TRAFFIC_ON_POLYLINE bills as the Enterprise SKU (the most expensive
+# tier, almost no free calls); without it the call is Advanced (traffic-aware duration only). The daily
+# cap is a hard stop counted in this process: once reached every call returns DAILY_CAP until midnight UTC.
+TRAFFIC_ON_POLYLINE = os.environ.get("GOOGLE_ROUTES_TRAFFIC_ON_POLYLINE", "0") == "1"
+DAILY_CAP = int(os.environ.get("GOOGLE_ROUTES_DAILY_CAP", "300"))
 FIELD_MASK = ",".join([
     "routes.duration",
     "routes.staticDuration",
@@ -205,6 +212,8 @@ class LiveService:
                 "calls": self._calls,
                 "failures": self._failures,
                 "last_request_status": self._last_status,
+                "quota_backoff_active": time.monotonic() < getattr(self, "_quota_until", 0.0), "quota_backoff_s": QUOTA_BACKOFF_S,
+                "daily_cap": DAILY_CAP, "calls_today": getattr(self, "_cap_calls", 0), "traffic_on_polyline_sku": TRAFFIC_ON_POLYLINE,
                 "last_success_utc": self._last_ok_utc,
                 "last_latency_ms": self._last_latency_ms,
                 "routing_preference": "TRAFFIC_AWARE_OPTIMAL",
@@ -224,17 +233,36 @@ class LiveService:
         if not key:
             self._last_status = "NO_CREDENTIALS"
             return [], "NO_CREDENTIALS", None
-        body = json.dumps({
+        req = {
             "origin": {"location": {"latLng": {"latitude": origin[0], "longitude": origin[1]}}},
             "destination": {"location": {"latLng": {"latitude": dest[0], "longitude": dest[1]}}},
             "travelMode": "DRIVE",
             "routingPreference": "TRAFFIC_AWARE_OPTIMAL",
             "computeAlternativeRoutes": bool(alternatives),
-            "extraComputations": ["TRAFFIC_ON_POLYLINE"],
-        }).encode()
+        }
+        if TRAFFIC_ON_POLYLINE:
+            req["extraComputations"] = ["TRAFFIC_ON_POLYLINE"]
+        body = json.dumps(req).encode()
+        # hard daily cap, counted here
+        day = time.strftime("%Y-%m-%d", time.gmtime())
+        with self._lock:
+            if getattr(self, "_cap_day", None) != day:
+                self._cap_day, self._cap_calls = day, 0
+            if self._cap_calls >= DAILY_CAP:
+                self._last_status = "DAILY_CAP"
+                return [], "DAILY_CAP", None
+            self._cap_calls += 1
         headers = {"Content-Type": "application/json",
                    "X-Goog-Api-Key": key,
                    "X-Goog-FieldMask": FIELD_MASK}
+        # quota back-off: after HTTP 429 (RESOURCE_EXHAUSTED) every further call would fail and still
+        # count against the key, so the client refuses to call for QUOTA_BACKOFF_S and says why
+        with self._lock:
+            until = getattr(self, "_quota_until", 0.0)
+        if time.monotonic() < until:
+            with self._lock:
+                self._last_status = "QUOTA_BACKOFF"
+            return [], "QUOTA_BACKOFF", None
         t0 = time.monotonic()
         payload, status, _ = _http(ROUTES_ENDPOINT, body, headers)
         latency = round((time.monotonic() - t0) * 1000, 1)
@@ -245,6 +273,9 @@ class LiveService:
             self._last_latency_ms = latency
             if status != "OK":
                 self._failures += 1
+                if "429" in str(status):
+                    self._quota_until = time.monotonic() + QUOTA_BACKOFF_S
+                    self._quota_backoff_until_utc = _now()
             else:
                 self._last_ok_utc = _now()
 

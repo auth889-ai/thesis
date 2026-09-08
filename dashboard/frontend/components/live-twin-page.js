@@ -36,14 +36,14 @@ export class LiveTwinPage extends HTMLElement {
             <div class="probeline" id="probe" hidden></div>
             <div class="toolbar"><button id="follow" class="btn" disabled>◎ Follow vehicle</button><span id="follownote" class="muted"></span></div>
           </div>
-          ${["Active vehicles", "Arrived", "Queue", "Waiting", "Reroutes", "Teleports"].map(l => `<div class="stat"><div class="stat-l">${l}</div><div class="stat-v">—</div><div class="stat-s"></div></div>`).join("")}
+          ${["Active vehicles", "Arrived", "Queue", "Waiting", "Reroutes", "Stuck vehicles"].map(l => `<div class="stat"><div class="stat-l">${l}</div><div class="stat-v">—</div><div class="stat-s"></div></div>`).join("")}
         </section>
       </div>
       <div class="grid grid-wide">
         <div>
           <div class="progress"><div id="prog" style="width:0%"></div></div>
           <div id="result" class="muted"></div>
-          <details class="why"><summary>Technical details</summary><div id="tech" class="kv"><div class="muted">launch a simulation</div></div></details>
+          <details class="why"><summary>Details for reviewers</summary><div id="tech" class="kv"><div class="muted">launch a simulation</div></div></details>
         </div>
         <div>
           <details class="why"><summary>Advanced settings</summary>
@@ -51,7 +51,7 @@ export class LiveTwinPage extends HTMLElement {
               ${slider("scale", "Demand multiplier", 0.2, 3, 0.1, 1.0)}
               ${slider("duration_s", "Duration (s)", 300, 3600, 60, 1500)}
               ${slider("step_delay_ms", "Playback delay (ms per simulated second)", 0, 500, 10, 200)}
-              <div class="muted">Drivers following advice: <b>30 %</b> · random seed: derived from the analysed trip (shown under Technical details)</div>
+              <div class="muted">Drivers following advice: <b>30 %</b> · every run of the same trip uses the same random draw (see Details for reviewers)</div>
               <label class="check"><input type="checkbox" id="gui" checked> open the actual SUMO-GUI window</label>
             </div>
             <div class="rule"><div class="panel-kicker">Free run without a trip</div>
@@ -104,9 +104,9 @@ export class LiveTwinPage extends HTMLElement {
     const x = (this._runs || []).find(y => y.run_id === this.querySelector("#scenario").value);
     const dhaka = x && /dhaka/i.test(x.city || "");
     this.querySelector("#od").innerHTML = x ? `<b>${x.origin}</b> → <b>${x.destination}</b> · ${cap(x.city)}` : "—";
-    this.querySelector("#demand").textContent = !x ? "—" : dhaka ? "REAL / CALIBRATED DATA · Dhaka road network" : "SYNTHETIC WHAT-IF DEMAND · REAL OSM ROAD NETWORK";
+    this.querySelector("#demand").textContent = !x ? "—" : dhaka ? "Calibrated Dhaka traffic on the real road network" : "Simulated what-if traffic on the real road network";
     this.querySelector("#launch").disabled = !x;
-    const pol = this.querySelector("#policy"); pol.querySelector("[value=prediction_aware]").textContent = dhaka ? POLICY.prediction_aware : "Prediction-aware — ORACLE / perfect-future debug arm (no validated forecast here)";
+    const pol = this.querySelector("#policy"); pol.querySelector("[value=prediction_aware]").textContent = dhaka ? POLICY.prediction_aware : "Prediction-aware (perfect-information test — research only)";
   }
 
   async launch() {
@@ -133,8 +133,8 @@ export class LiveTwinPage extends HTMLElement {
     if ((rec.arms || []).length > 1) return this.renderCompare(rec);
     const a = rec.arms[0] || {}; const p = a.probe || {}; const m = a.metrics || {};
     const tone = p.teleported ? "warn" : "ok";
-    this.querySelector("#result").innerHTML = `<div class="note ${tone}"><b>Run finished.</b> ${p.teleported ? `<b>Your vehicle was teleported</b> at ${p.teleported_at_s} s — its trip does not count as completed. ` : p.finished ? `Your trip took <b>${Math.round(p.travel_time_s)} s</b> (${(p.route_length_m / 1000).toFixed(2)} km, ${p.rerouted_times} reroutes). ` : "Your vehicle did not reach the destination within the run. "}
-      ${m.arrived} vehicles arrived, mean travel time ${m.mean_travel_time_s == null ? "—" : Math.round(m.mean_travel_time_s) + " s"}, ${m.teleports} teleports.
+    this.querySelector("#result").innerHTML = `<div class="note ${tone}"><b>Run finished.</b> ${p.teleported ? `<b>Your vehicle got stuck and was moved by the simulator</b> at ${p.teleported_at_s} s — its trip does not count as completed. ` : p.finished ? `Your trip took <b>${Math.round(p.travel_time_s)} s</b> (${(p.route_length_m / 1000).toFixed(2)} km, ${p.rerouted_times} reroutes). ` : "Your vehicle did not reach the destination within the run. "}
+      ${m.arrived} vehicles arrived, mean travel time ${m.mean_travel_time_s == null ? "—" : Math.round(m.mean_travel_time_s) + " s"}, ${m.teleports} stuck vehicles moved by the simulator.
       ${a.label ? `<br><small class="muted">${a.label}: ${a.routing_policy}</small>` : ""}</div>`;
   }
 

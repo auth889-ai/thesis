@@ -1,0 +1,409 @@
+{
+ "run": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_inc_fork480",
+ "seed": 101,
+ "controller_config_hash": "506db2440509",
+ "sources": {
+  "persistence": {
+   "rounds": 8,
+   "decisions": 482,
+   "top1_agreement_with_oracle": 0.6382,
+   "pairwise_ranking_accuracy": 0.391,
+   "false_positive_reroutes": 2,
+   "false_negative_reroutes": 187,
+   "source_reroutes": 25,
+   "oracle_reroutes": 210,
+   "predicted_saving_error_mean_s": -87.0455,
+   "predicted_saving_abs_error_mean_s": 89.7586,
+   "edge_tt_MAE_vs_oracle_s": {
+    "UNPRICED": null,
+    "DIRECT": 15.3299,
+    "DERIVED": 2.0187
+   },
+   "edges_compared": {
+    "UNPRICED": 12013,
+    "DIRECT": 215,
+    "DERIVED": 430
+   },
+   "decisive_edge_provenance": {
+    "UNPRICED": 2433,
+    "DIRECT": 94,
+    "DERIVED": 166
+   }
+  },
+  "gwnet": {
+   "rounds": 8,
+   "decisions": 482,
+   "top1_agreement_with_oracle": 0.6426,
+   "pairwise_ranking_accuracy": 0.3892,
+   "false_positive_reroutes": 2,
+   "false_negative_reroutes": 187,
+   "source_reroutes": 25,
+   "oracle_reroutes": 210,
+   "predicted_saving_error_mean_s": -87.8459,
+   "predicted_saving_abs_error_mean_s": 90.2175,
+   "edge_tt_MAE_vs_oracle_s": {
+    "UNPRICED": null,
+    "DIRECT": 16.3174,
+    "DERIVED": 1.7086
+   },
+   "edges_compared": {
+    "UNPRICED": 12001,
+    "DIRECT": 215,
+    "DERIVED": 439
+   },
+   "decisive_edge_provenance": {
+    "UNPRICED": 2028,
+    "DIRECT": 94,
+    "DERIVED": 157
+   }
+  },
+  "corrected": {
+   "rounds": 8,
+   "decisions": 482,
+   "top1_agreement_with_oracle": 0.6474,
+   "pairwise_ranking_accuracy": 0.4049,
+   "false_positive_reroutes": 4,
+   "false_negative_reroutes": 176,
+   "source_reroutes": 38,
+   "oracle_reroutes": 210,
+   "predicted_saving_error_mean_s": -79.9163,
+   "predicted_saving_abs_error_mean_s": 83.59,
+   "edge_tt_MAE_vs_oracle_s": {
+    "UNPRICED": null,
+    "RESIDUAL_UPSTREAM": 2.3017,
+    "DERIVED": 1.6217,
+    "DIRECT": 5.2111,
+    "OBSERVED": 35.4399
+   },
+   "edges_compared": {
+    "UNPRICED": 11992,
+    "RESIDUAL_UPSTREAM": 145,
+    "DERIVED": 340,
+    "DIRECT": 160,
+    "OBSERVED": 64
+   },
+   "decisive_edge_provenance": {
+    "UNPRICED": 2878,
+    "DIRECT": 74,
+    "DERIVED": 157,
+    "OBSERVED": 52,
+    "RESIDUAL_UPSTREAM": 81
+   }
+  }
+ },
+ "rounds": [
+  {
+   "round": 0,
+   "sim_time_s": 600,
+   "vehicles": 49,
+   "observed_edges_for_correction": 3336,
+   "correction": {
+    "residual_edges": 21,
+    "propagated_edges": 45,
+    "by_kind_at_h0": {
+     "OBSERVED": 21,
+     "RESIDUAL_UPSTREAM": 45
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -14.82,
+      "866532623"
+     ],
+     [
+      -11.6,
+      "166858623"
+     ],
+     [
+      -8.29,
+      "119257905"
+     ],
+     [
+      -5.39,
+      "1023269928"
+     ],
+     [
+      -5.3,
+      "123570150"
+     ]
+    ]
+   }
+  },
+  {
+   "round": 1,
+   "sim_time_s": 900,
+   "vehicles": 69,
+   "observed_edges_for_correction": 3674,
+   "correction": {
+    "residual_edges": 19,
+    "propagated_edges": 48,
+    "by_kind_at_h0": {
+     "OBSERVED": 17,
+     "RESIDUAL_UPSTREAM": 50
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -25.55,
+      "864049094"
+     ],
+     [
+      -8.72,
+      "124100069-AddedOffRampEdge"
+     ],
+     [
+      -8.43,
+      "32455824"
+     ],
+     [
+      -6.8,
+      "36040745-AddedOffRampEdge"
+     ],
+     [
+      -6.71,
+      "32304482"
+     ]
+    ]
+   }
+  },
+  {
+   "round": 2,
+   "sim_time_s": 1200,
+   "vehicles": 84,
+   "observed_edges_for_correction": 3975,
+   "correction": {
+    "residual_edges": 16,
+    "propagated_edges": 39,
+    "by_kind_at_h0": {
+     "OBSERVED": 15,
+     "RESIDUAL_UPSTREAM": 40
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -25.17,
+      "864049094"
+     ],
+     [
+      -9.01,
+      "32240306-AddedOnRampEdge"
+     ],
+     [
+      -7.8,
+      "77498005"
+     ],
+     [
+      -7.67,
+      "124100069-AddedOffRampEdge"
+     ],
+     [
+      -6.42,
+      "119257905"
+     ]
+    ]
+   }
+  },
+  {
+   "round": 3,
+   "sim_time_s": 1500,
+   "vehicles": 80,
+   "observed_edges_for_correction": 4006,
+   "correction": {
+    "residual_edges": 16,
+    "propagated_edges": 48,
+    "by_kind_at_h0": {
+     "OBSERVED": 15,
+     "RESIDUAL_UPSTREAM": 49
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -25.39,
+      "864049094"
+     ],
+     [
+      -12.43,
+      "866532623"
+     ],
+     [
+      -8.5,
+      "124100069-AddedOffRampEdge"
+     ],
+     [
+      -7.46,
+      "36040745-AddedOffRampEdge"
+     ],
+     [
+      -6.62,
+      "404280189"
+     ]
+    ]
+   }
+  },
+  {
+   "round": 4,
+   "sim_time_s": 1800,
+   "vehicles": 95,
+   "observed_edges_for_correction": 3691,
+   "correction": {
+    "residual_edges": 19,
+    "propagated_edges": 46,
+    "by_kind_at_h0": {
+     "OBSERVED": 17,
+     "RESIDUAL_UPSTREAM": 48
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -26.12,
+      "864049094"
+     ],
+     [
+      -13.85,
+      "866532623"
+     ],
+     [
+      -10.06,
+      "124100069-AddedOffRampEdge"
+     ],
+     [
+      -8.24,
+      "123461841-AddedOffRampEdge"
+     ],
+     [
+      -7.76,
+      "1372585819"
+     ]
+    ]
+   }
+  },
+  {
+   "round": 5,
+   "sim_time_s": 2100,
+   "vehicles": 66,
+   "observed_edges_for_correction": 2578,
+   "correction": {
+    "residual_edges": 13,
+    "propagated_edges": 33,
+    "by_kind_at_h0": {
+     "OBSERVED": 12,
+     "RESIDUAL_UPSTREAM": 34
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -25.66,
+      "864049094"
+     ],
+     [
+      -8.95,
+      "124100069-AddedOffRampEdge"
+     ],
+     [
+      -8.06,
+      "119257905"
+     ],
+     [
+      -7.36,
+      "32455824"
+     ],
+     [
+      -6.47,
+      "33411038#1"
+     ]
+    ]
+   }
+  },
+  {
+   "round": 6,
+   "sim_time_s": 2400,
+   "vehicles": 33,
+   "observed_edges_for_correction": 1742,
+   "correction": {
+    "residual_edges": 15,
+    "propagated_edges": 30,
+    "by_kind_at_h0": {
+     "OBSERVED": 15,
+     "RESIDUAL_UPSTREAM": 30
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -22.69,
+      "864049094"
+     ],
+     [
+      -8.51,
+      "978443691"
+     ],
+     [
+      -7.5,
+      "33411038#1"
+     ],
+     [
+      -6.46,
+      "32455824"
+     ],
+     [
+      -5.97,
+      "124100070"
+     ]
+    ]
+   }
+  },
+  {
+   "round": 7,
+   "sim_time_s": 2700,
+   "vehicles": 6,
+   "observed_edges_for_correction": 674,
+   "correction": {
+    "residual_edges": 5,
+    "propagated_edges": 14,
+    "by_kind_at_h0": {
+     "OBSERVED": 4,
+     "RESIDUAL_UPSTREAM": 15
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -26.17,
+      "864049094"
+     ],
+     [
+      -8.02,
+      "404280189"
+     ],
+     [
+      -7.69,
+      "33411038#1"
+     ],
+     [
+      -6.82,
+      "863796619-AddedOnRampEdge"
+     ],
+     [
+      -5.19,
+      "124100069-AddedOffRampEdge"
+     ]
+    ]
+   }
+  }
+ ],
+ "note": "offline replay on the baseline's per-round snapshots; the same vehicles and state under every information source"
+}

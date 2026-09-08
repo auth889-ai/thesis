@@ -9,8 +9,10 @@
  *   DIGITAL TWIN                                          → Test in Digital Twin
  *   MAP       the routes and the traffic state, now / +15 / +30 / +60
  *
- * Home owns no model selection, no route inspection and no simulation control; each of those has
- * exactly one page. The analysis result is handed to those pages through the run id in the hash.
+ * Home lets the viewer pick the forecast model (the registry's list for that city, unavailable ones
+ * greyed with the reason), shows the real computation stages with their measured seconds, and leads
+ * with the FORECAST (now vs at departure, what the model changed vs "no change") rather than the ETA.
+ * Route inspection and simulation control keep their own pages; the run id travels in the hash.
  */
 import {api, mins, km, ago, CATEGORY_LABEL} from "../services/api.js";
 import {basemapStyle} from "../services/basemap.js";
@@ -32,7 +34,8 @@ export class MissionControl extends HTMLElement {
             <label>Departure <input id="depart" type="datetime-local"></label>
             <label>From <input id="origin" list="places" value="${localStorage.getItem("tt.origin") || "Farmgate"}" placeholder="place or lat, lng" required></label>
             <label>To <input id="dest" list="places" value="${localStorage.getItem("tt.dest") || "Shahbagh"}" placeholder="place or lat, lng" required></label>
-            <button class="btn primary big" id="go">Analyze traffic →</button>
+            <label class="model">Forecast model <select id="model"><option value="auto">Automatic (best validated)</option></select></label>
+            <button class="btn primary big" id="go">Forecast &amp; route →</button>
             <datalist id="places"></datalist>
           </form>
         </section>
@@ -44,7 +47,7 @@ export class MissionControl extends HTMLElement {
       </div>
       <section class="card about" id="about" hidden>
         <div><b>About this analysis</b> <span id="aboutline" class="muted"></span></div>
-        <details class="why"><summary>Technical details</summary><div id="tech" class="kv"></div></details>
+        <details class="why"><summary>Details for reviewers</summary><div id="tech" class="kv"></div></details>
       </section>`;
     const d = new Date(Date.now() + 5 * 60000); d.setSeconds(0, 0);
     this.querySelector("#depart").value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
@@ -78,8 +81,22 @@ export class MissionControl extends HTMLElement {
         const r = await api.places(this.cityName(), el.value);
         this.querySelector("#places").innerHTML = (r.places || []).map(x => `<option value="${x.label}">`).join(""); }, 350); });
     }
-    this.querySelector("#city").addEventListener("change", () => api.places(this.querySelector("#city").value).then(r => {
-      this.querySelector("#places").innerHTML = (r.places || []).map(x => `<option value="${x.label}">`).join(""); }));
+    this.querySelector("#city").addEventListener("change", () => { api.places(this.querySelector("#city").value).then(r => {
+      this.querySelector("#places").innerHTML = (r.places || []).map(x => `<option value="${x.label}">`).join(""); }); this.loadModels(); });
+    this.loadModels();
+  }
+
+  cityId() { const typed = this.querySelector("#city").value; const src = (this._cities || []).find(c => c.label === typed); return src && src.dataset ? src.id : typed; }
+
+  /* the forecast models that can serve this city, from the registry — unavailable ones stay visible with the reason */
+  async loadModels() {
+    const sel = this.querySelector("#model"); const keep = sel.value;
+    let r; try { r = await api.operateModels(this.cityId()); } catch { return; }
+    const NAMES = {auto: "Automatic (best validated)", GWNet: "Graph WaveNet", STID: "STID", STAEformer: "STAEformer", DCRNN: "DCRNN", "Chronos-Bolt": "Chronos (pretrained)", "OpenCity-plus": "OpenCity (pretrained)", persistence: "Persistence (\"no change\")", historical_average: "Historical average"};
+    sel.innerHTML = (r.models || []).map(m => { const key = String(m.model).split("/")[0]; const why = (m.reasons || [])[0];
+      const tag = m.trust === "ROUTING_ELIGIBLE" ? " ✓ validated" : m.trained ? " · trained" : "";
+      return `<option value="${m.model}" ${m.available ? "" : "disabled"}>${NAMES[key] || m.label || m.model}${tag}${m.available ? "" : " — not available for this city"}</option>`; }).join("");
+    sel.value = [...sel.options].some(o => o.value === keep && !o.disabled) ? keep : "auto";
   }
 
   cityName() { return this.querySelector("#city").value.replace(/\s*\(your upload\)\s*$/i, ""); }
@@ -88,7 +105,8 @@ export class MissionControl extends HTMLElement {
     const style = await basemapStyle();
     this._map = new maplibregl.Map({container: this.querySelector("#mcmap"), style, center: [90.40, 23.76], zoom: 12});
     this._map.addControl(new maplibregl.NavigationControl({showCompass: false}), "top-left");
-    this._map.on("load", () => { this._ready = true; if (this._result) this.draw(); });
+    const ready = () => { this._ready = true; if (this._result) this.draw(); };
+    this._map.on("load", ready); this._map.on("style.load", ready);           // "load" waits for tiles and never fires in a background tab
     document.addEventListener("visibilitychange", () => { if (!document.hidden) this._map?.resize(); });
     new ResizeObserver(() => this._map?.resize()).observe(this.querySelector("#mcmap"));
   }
@@ -112,15 +130,16 @@ export class MissionControl extends HTMLElement {
     for (const [k, id] of [["tt.city", "#city"], ["tt.origin", "#origin"], ["tt.dest", "#dest"]]) localStorage.setItem(k, this.querySelector(id).value);
     const req = {city: src && src.dataset ? src.id : typed, origin: this.querySelector("#origin").value, destination: this.querySelector("#dest").value,
                  departure: this.querySelector("#depart").value ? new Date(this.querySelector("#depart").value).toISOString() : null,
-                 departure_local: this.querySelector("#depart").value || null, horizon_min: 30, model: "auto"};
-    const steps = ["Finding the places", "Reading live traffic", "Forecasting", "Comparing routes"];
+                 departure_local: this.querySelector("#depart").value || null, horizon_min: 30, model: this.querySelector("#model").value || "auto"};
+    this._lastReq = req;
+    const steps = ["Finding the places", "Reading current traffic", "Loading the model", "Running the model", "Comparing routes"];
     const prog = this.querySelector("#progress"); this.stage(prog, steps, 0);
     this.querySelector("#go").disabled = true;
     const j = await api.analyzeStart(req);
     for (let i = 0; i < 300 && !this._dead; i++) {
       await new Promise(r => setTimeout(r, 700));
       const s = await api.analyzeStatus(j.job);
-      const idx = /Resolving|Loading/.test(s.stage || "") ? 0 : /Fetching|Validating/.test(s.stage || "") ? 1 : /checkpoint|inference/i.test(s.stage || "") ? 2 : 3;
+      const idx = /Resolving/.test(s.stage || "") ? 0 : /Fetching|Validating/.test(s.stage || "") ? 1 : /checkpoint/i.test(s.stage || "") ? 2 : /inference/i.test(s.stage || "") ? 3 : 4;
       if (s.status === "done") {
         prog.hidden = true; this.querySelector("#go").disabled = false; this._result = s.result;
         try { sessionStorage.setItem(LAST_ANALYSIS_KEY, JSON.stringify(s.result)); } catch { /* the pages fall back to a fresh analysis */ }
@@ -149,10 +168,28 @@ export class MissionControl extends HTMLElement {
     const trusted = rp.policy === "PREDICTION_AWARE";
     const fut = [15, 30, 60].map(hh => { const p = now.forecast[hh] || {}; const [w, tone] = word(p.risk, p.covered);
       return `<div class="fut ${hh === h ? "sel" : ""}"><div class="k">+${hh} min</div><div class="v">${p.covered ? mins(p.eta_s) : mins(now.eta_now_s)}</div><span class="tag ${tone}">${w}</span></div>`; }).join("");
+    const pv = r.provenance || {}; const stages = r.stages || pv.stages || [];
+    const inf = stages.find(x => /inference/i.test(x.name)); const ck = stages.find(x => /checkpoint/i.test(x.name));
+    const ph = now.forecast[h] || {}; const etaFut = ph.covered ? ph.eta_s : null; const delta = etaFut != null ? etaFut - cur.eta_s : null;
+    const [fw, ftone] = word(ph.risk, ph.covered);
+    // the sensor the model moves most at this horizon — the reason behind the change, from the model's own outputs
+    const moves = (r.sensors || []).filter(sn => sn.now && sn.pred && sn.pred[h] != null).map(sn => ({sn, pct: 100 * (sn.pred[h] - sn.now) / sn.now})).sort((a, b) => Math.abs(b.pct) - Math.abs(a.pct));
+    const top = moves[0];
+    const isDataset = /^user:/.test((this._lastReq || {}).city || "") || !!r.dataset_scope;
+    const why = !r.forecastable ? "no model has history for this city, so the future equals now" : top && Math.abs(top.pct) >= 3
+      ? `${usedLabel} predicts ${top.sn.label || top.sn.id || "a sensor"} ${top.pct < 0 ? "slowing" : "speeding up"} ${Math.abs(top.pct).toFixed(0)} % by +${h} min${moves.length > 1 ? ` (${moves.filter(m => Math.abs(m.pct) >= 3).length} of ${moves.length} sensors change ≥ 3 %)` : ""}`
+      : `${usedLabel} predicts the network stays close to its current state by +${h} min`;
     this.querySelector("#side").innerHTML = `
-      <div class="eta"><div class="eta-big">${mins(cur.eta_s)}</div><span class="tag ${nowWord[1]}">${nowWord[0]}</span></div>
-      <div class="eta-sub">${r.origin.label} → ${r.destination.label}${cur.speed_kmh ? ` · ${cur.speed_kmh} km/h average` : ""} · now</div>
+      <div class="fc-head"><span class="fc-k">TRAFFIC FORECAST</span><span class="fc-model">${r.forecastable ? `${usedLabel} · ${kind}` : "no prediction model for this city"}${inf && inf.seconds != null ? ` · computed in ${inf.seconds < 0.01 ? "under 0.01" : inf.seconds.toFixed(2)} s` : ""}</span></div>
+      <div class="fc-pair">
+        <div class="fc-box"><div class="k">NOW · measured</div><div class="eta-big">${mins(cur.eta_s)}</div><span class="tag ${nowWord[1]}">${nowWord[0]}</span></div>
+        <div class="fc-arrow">→</div>
+        <div class="fc-box sel"><div class="k">AT DEPARTURE · +${h} min · predicted</div><div class="eta-big">${etaFut != null ? mins(etaFut) : mins(now.eta_now_s)}</div><span class="tag ${ftone}">${fw}</span></div>
+      </div>
+      <div class="fc-delta ${delta == null ? "" : delta > 30 ? "bad" : delta < -30 ? "good" : ""}">${delta == null ? `no forecast on this route: "no change" assumed` : `${delta > 0 ? "+" : ""}${Math.round(delta / 60)} min vs "no change" (persistence) · ${why}`}</div>
+      <div class="eta-sub">${r.origin.label} → ${r.destination.label}${cur.speed_kmh ? ` · ${cur.speed_kmh} km/h average now` : ""}</div>
       <div class="futrow">${fut}</div>
+      <div class="fc-src">Roads: OpenStreetMap · Current speeds: ${isDataset ? "recorded road sensors (your dataset)" : "Google Routes, live"} · Future speeds: ${r.forecastable ? `${usedLabel}, ${kind}` : "none available"}</div>
       <div class="row"><div><div class="k">AI forecast</div><div class="v">${r.forecastable ? usedLabel : "no history yet"}</div><div class="s">${kind}${r.forecastable ? ` · ${trusted ? "trusted for routing" : "routing stays reactive"}` : ""}</div>
         ${!r.forecastable ? (ob.watched ? `<div class="s">Collecting history — ${ob.steps_have} samples so far.</div>` : `<button class="btn" id="observe" style="margin-top:6px">Start collecting for ${r.city}</button><div id="obsnote" class="s"></div>`) : ""}</div>
         <a class="btn" href="#predict">View Prediction</a></div>
@@ -162,10 +199,10 @@ export class MissionControl extends HTMLElement {
     this.querySelector("#observe")?.addEventListener("click", () => this.observe());
     const about = this.querySelector("#about"); about.hidden = false;
     this.querySelector("#aboutline").textContent = r.forecastable ? `Predictions use ${usedLabel} on ${r.city}'s recorded roads; routes are live.` : `No prediction model has history for ${r.city} yet; travel times and routes are live measurements.`;
-    const pv = r.provenance || {};
     this.querySelector("#tech").innerHTML = [["analysis run id", r.run_id ? `${r.run_id} · <a href="/api/runs/${r.run_id}" target="_blank">provenance</a>` : "—"],
       ["model", `${pv.requested_model || "auto"} → ${pv.resolved_model || f.model || "—"}`], ["result source", r.result_source || "—"], ["traffic retrieved", r.retrieved_at || "—"],
-      ["hashes", `input ${pv.input_window_hash || "—"} · prediction ${pv.raw_prediction_hash || "—"}`]]
+      ["hashes", `input ${pv.input_window_hash || "—"} · prediction ${pv.raw_prediction_hash || "—"}`], ["checkpoint", pv.checkpoint_sha256 || "—"],
+      ["computation", stages.length ? stages.map(x => `${x.name.toLowerCase()} ${x.seconds != null ? x.seconds.toFixed(2) + " s" : ""}`).join(" · ") : "—"]]
       .map(([k, v]) => `<div class="kvrow"><div class="k">${k}</div><div class="v" style="font-size:12px;font-weight:400">${v}</div></div>`).join("");
   }
 

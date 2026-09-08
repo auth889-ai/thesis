@@ -1,0 +1,76 @@
+{
+ "checkpoint": "/Users/jannatulferdouseva/thesis/results/forecasting/checkpoints/GraphWaveNet/METR-LA_50_12_12/d1ffd3d52d3caacf60ebf59214673f7c/GraphWaveNet_best_val_MAE.pt",
+ "checkpoint_sha256": "548e399bd53cc54a",
+ "nodes": 207,
+ "steps": 34272,
+ "split": {
+  "train": [
+   0,
+   23990
+  ],
+  "val": [
+   23990,
+   27417
+  ],
+  "test": [
+   27417,
+   34272
+  ]
+ },
+ "test_windows": 6832,
+ "dataset_hash": "857a98d0ec47b353",
+ "graph_hash": "a35687c6",
+ "upstream_sha": "4c3e2d373c647667c2123e1591f2d79c229dfcc6",
+ "reload_seconds": 0.54,
+ "eval_seconds": 149.5,
+ "unit": "mph",
+ "held_out": {
+  "+15": {
+   "MAE": 2.7115,
+   "persistence_MAE": 4.0207,
+   "skill": 0.3256
+  },
+  "+30": {
+   "MAE": 3.0954,
+   "persistence_MAE": 5.1001,
+   "skill": 0.3931
+  },
+  "+60": {
+   "MAE": 3.5589,
+   "persistence_MAE": 6.8031,
+   "skill": 0.4769
+  }
+ },
+ "logged_test_metrics": {
+  "horizon_1": {
+   "MAE": 2.2394964694976807,
+   "MAPE": 0.05436306446790695,
+   "RMSE": 3.8730452060699463
+  },
+  "horizon_3": {
+   "MAE": 2.7115285396575928,
+   "MAPE": 0.07203914225101471,
+   "RMSE": 5.180000305175781
+  },
+  "horizon_6": {
+   "MAE": 3.095663547515869,
+   "MAPE": 0.08729611337184906,
+   "RMSE": 6.235043048858643
+  },
+  "horizon_12": {
+   "MAE": 3.5591187477111816,
+   "MAPE": 0.10674292594194412,
+   "RMSE": 7.364584922790527
+  },
+  "overall": {
+   "MAE": 3.061720848083496,
+   "MAPE": 0.08644279837608337,
+   "RMSE": 6.194940090179443
+  }
+ },
+ "published_GWNet_METR-LA": {
+  "+15": 2.69,
+  "+30": 3.07,
+  "+60": 3.53
+ }
+}

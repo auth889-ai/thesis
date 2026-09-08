@@ -68,18 +68,18 @@ export class PredictionPage extends HTMLElement {
           <div class="tf-grid">
             <div class="tf-maps" id="maps">
               <div class="tf-map" id="mapA"><div class="tf-map-cap" id="capA">NOW</div>
-                <div class="tf-legend"><div><i style="border-color:${STATE.NORMAL}"></i><b>DIRECT MODEL FORECAST</b> <span class="muted">mapped detector's own prediction</span></div>
-                  <div><i class="derived" style="border-color:${STATE.NORMAL}"></i><b>DERIVED FORECAST</b> <span class="muted">one hop, decayed</span></div>
-                  <div><i class="bg"></i><b>CURRENT / UNFORECASTED</b> <span class="muted">no model output</span></div>
-                  <div><span class="dot" style="background:#fff"></span><b>SENSOR</b> <span class="muted">model coverage, not in SUMO</span></div>
+                <div class="tf-legend"><div><i style="border-color:${STATE.NORMAL}"></i><b>PREDICTED</b> <span class="muted">road with its own sensor</span></div>
+                  <div><i class="derived" style="border-color:${STATE.NORMAL}"></i><b>ESTIMATED</b> <span class="muted">next to a sensor road</span></div>
+                  <div><i class="bg"></i><b>NOT FORECAST</b> <span class="muted">no sensor nearby</span></div>
+                  <div><span class="dot" style="background:#fff"></span><b>SENSOR</b> <span class="muted">predicted, not on a modelled road</span></div>
                   <div class="tf-scale"><span style="background:${STATE.NORMAL}">flowing ≥ 75 % of limit</span><span style="background:${STATE.SLOW}">slowing</span><span style="background:${STATE.TRAFFIC_JAM}">congested &lt; 50 %</span></div></div></div>
               <div class="tf-map" id="mapB" hidden><div class="tf-map-cap" id="capB">+30 MIN · GRAPH WAVENET</div></div>
             </div>
-            <aside class="tf-side">
+            <div class="tf-side">
               <div class="tf-card"><h4>Future network <span id="insph">+30 min</span></h4><div id="insp" class="tf-empty">Loading the forecast…</div></div>
               <div class="tf-card"><h4>AI status</h4><div id="status" class="tf-status"></div>
                 <div class="tf-actions"><button class="pillbtn light" data-go="models">Compare models</button><button class="pillbtn light" data-go="validation">Validation replay</button><button class="pillbtn maroon" data-go="train">Train model</button></div></div>
-            </aside>
+            </div>
             <div class="tf-bottom">
               <div class="tf-card"><div class="tf-road-h" id="roadh"><b>Select a road on the map</b></div>
                 <div class="tf-toggle" id="toggles"></div>
@@ -96,7 +96,7 @@ export class PredictionPage extends HTMLElement {
             <div id="cmpprog" class="progress-row" hidden></div>
             <div class="tf-chart" style="height:280px;margin-top:8px"><canvas id="cmpchart"></canvas></div>
             <div id="cmptable" class="board"></div>
-            <details class="why"><summary>Technical proof</summary><div id="cmptech" class="tablewrap"></div></details></div>
+            <details class="why"><summary>Details for reviewers</summary><div id="cmptech" class="tablewrap"></div></details></div>
         </section>
 
         <section id="tab-validation" hidden>
@@ -191,12 +191,12 @@ export class PredictionPage extends HTMLElement {
   /* ------------------------------------------------------------ the network forecast */
   async loadNetwork() {
     const ds = this._dsCur; if (!ds || !ds.id.startsWith("user:")) { this.querySelector("#insp").innerHTML = `<div class="tf-empty">Network forecasts need an uploaded dataset with road coordinates. Live corridors and benchmarks are served on their own pages.</div>`; return; }
-    this.querySelector("#insp").innerHTML = `<div class="tf-empty">Running the model on every sensor…</div>`;
+    this.querySelector("#insp").innerHTML = `<div class="tf-empty">Running the model on every sensor… (the first load also reads the road network: a few seconds)</div>`;
     let n;
     try { n = await api.forecastMap(ds.id, this._asOf); } catch (e) { this.querySelector("#insp").innerHTML = `<div class="note warn">${e.message || e}</div>`; return; }
     if (this._dead) return;
     this._net = n;
-    this.querySelector("#momentnote").innerHTML = `${n.mode === "LATEST" ? "latest moment in the data" : n.mode === "HELD_OUT" ? "held-out moment the model never saw" : "historical moment"} · <b>${fmtT(n.as_of_utc)}</b> · ${n.model === "GWNet" ? "Graph WaveNet" : name(n.model)}${n.provenance.inference_seconds != null ? ` · ${n.provenance.inference_seconds.toFixed(2)} s forward pass` : ""}`;
+    this.querySelector("#momentnote").innerHTML = `${n.mode === "LATEST" ? "latest moment in the data" : n.mode === "HELD_OUT" ? "held-out moment the model never saw" : "historical moment"} · <b>${fmtT(n.as_of_utc)}</b> · ${n.model === "GWNet" ? "Graph WaveNet" : name(n.model)}${n.provenance.inference_seconds != null ? ` · computed in ${n.provenance.inference_seconds.toFixed(2)} s` : ""}`;
     const mm = this.querySelector("#moment"); mm.hidden = this._asOf === "latest";
     if (mm.dataset.ds !== ds.id) { mm.dataset.ds = ds.id; mm.innerHTML = n.held_out.moments.map(m => `<option value="${m.index}">${fmtT(m.utc)}</option>`).join(""); }
     if (this._asOf !== "latest") mm.value = String(n.as_of_index);
@@ -281,7 +281,7 @@ export class PredictionPage extends HTMLElement {
     if (!rows.length) { el.innerHTML = `<div class="tf-empty">no sensor values at this moment</div>`; return; }
     const slow = rows.filter(r => r.pct <= -5).sort((a, b) => a.pct - b.pct), better = rows.filter(r => r.pct >= 5).sort((a, b) => b.pct - a.pct);
     const hot = rows.filter(r => cls(r.fut, r.lim) !== "NORMAL").sort((a, b) => (a.fut / (a.lim || 100)) - (b.fut / (b.lim || 100)));
-    const row = (r) => `<div class="row" data-node="${r.s.node}"><div class="n">${r.s.node.replace(/_/g, " ")}<small>${r.mapped ? `on SUMO edge ${r.s.mapped_edge} · DIRECT` : "sensor only · not in SUMO"}</small></div>
+    const row = (r) => `<div class="row" data-node="${r.s.node}"><div class="n">${r.s.node.replace(/_/g, " ")}<small>${r.mapped ? "on a modelled road" : "sensor not on a modelled road"}</small></div>
       <div class="d ${r.d < 0 ? "bad" : "good"}">${r.d > 0 ? "+" : ""}${r.d.toFixed(0)} km/h</div><div class="p">${Math.round(r.now)} → ${Math.round(r.fut)}<br>${r.pct > 0 ? "+" : ""}${r.pct.toFixed(0)} %</div></div>`;
     // onset: the first horizon at which a currently-flowing sensor leaves the flowing class
     const onset = rows.map(r => { const seq = ["15", "30", "60"].map(k => cls(r.s.pred[k], r.lim)); const i = seq.findIndex(k => k !== "NORMAL"); return i < 0 || cls(r.now, r.lim) !== "NORMAL" ? null : {r, i}; }).filter(Boolean).sort((a, b) => a.i - b.i)[0];
@@ -295,7 +295,7 @@ export class PredictionPage extends HTMLElement {
       ${!slow.length && !better.length ? `<div class="tf-note" style="margin-top:6px">The model predicts every sensor within ±5 % of its current speed at +${h} min: a stable network.</div>` : ""}
       ${onset ? `<div class="tf-onset"><b>Expected slowdown begins:</b> ${onset.r.s.node.replace(/_/g, " ")}, between ${onset.i === 0 ? "now and +15" : onset.i === 1 ? "+15 and +30" : "+30 and +60"} min (from the 15 / 30 / 60 min horizons; no finer resolution is claimed)</div>` : ""}
       ${mae != null ? `<div class="tf-kv" style="margin-top:8px"><span>vs what actually happened at +${h}</span><b></b><span>model MAE over ${acc.length} sensors</span><b>${mae.toFixed(2)} km/h</b><span>"no change" MAE</span><b>${pmae.toFixed(2)} km/h</b></div>` : ""}
-      <div class="tf-note" style="margin-top:8px">Model sensor coverage <b>${n.coverage.model_sensors}</b> · SUMO control coverage <b>${n.coverage.direct_edges} DIRECT + ${n.coverage.derived_edges} DERIVED</b> of ${n.coverage.network_edges ?? "—"} edges${n.coverage.rejected_sensors ? ` · ${n.coverage.rejected_sensors} sensors outside the scenario` : ""}</div>`;
+      <div class="tf-note" style="margin-top:8px"><b>${n.coverage.model_sensors}</b> sensors predicted · <b>${n.coverage.direct_edges}</b> roads predicted directly, <b>${n.coverage.derived_edges}</b> estimated nearby${n.coverage.network_edges ? `, the other ${(n.coverage.network_edges - n.coverage.direct_edges - n.coverage.derived_edges).toLocaleString()} road segments are not forecast` : ""}${n.coverage.rejected_sensors ? ` · ${n.coverage.rejected_sensors} sensors lie outside this map` : ""}</div>`;
     el.querySelectorAll("[data-node]").forEach(r => r.addEventListener("click", () => this.selectRoad(r.dataset.node, true)));
   }
 
@@ -307,7 +307,7 @@ export class PredictionPage extends HTMLElement {
     this.querySelector("#status").innerHTML = `<div class="model">${n.model === "GWNet" ? "Graph WaveNet" : name(n.model)}</div>
       <div class="flags"><span class="${trained ? "on" : ""}">${trained ? "TRAINED" : "PRETRAINED"}</span><span class="${validated ? "on" : ""}">VALIDATED</span><span class="${eligible ? "on" : ""}">ROUTING ELIGIBLE</span></div>
       <div class="tf-kv" style="margin-top:4px"><span>held-out MAE</span><b>${n.validation_MAE != null ? Number(n.validation_MAE).toFixed(2) + " km/h" : "—"}</b><span>skill vs persistence</span><b>${skill != null ? `${skill > 0 ? "+" : ""}${Math.round(skill * 100)} %` : "—"}</b>
-        <span>checkpoint</span><b>${n.checkpoint_sha256 ? "verified · " + n.checkpoint_sha256.slice(0, 8) : "—"}</b><span>forecast horizon</span><b>up to +60 min, 5-min steps</b><span>sensors / roads covered</span><b>${n.coverage.model_sensors} sensors · ${n.coverage.direct_edges} roads in SUMO</b></div>`;
+        <span>model file</span><b>${n.checkpoint_sha256 ? "verified" : "—"}</b><span>forecast horizon</span><b>up to +60 min, 5-min steps</b><span>sensors / roads covered</span><b>${n.coverage.model_sensors} sensors · ${n.coverage.direct_edges} roads in SUMO</b></div>`;
   }
 
   /* ------------------------------------------------------------ the selected road */
@@ -318,7 +318,7 @@ export class PredictionPage extends HTMLElement {
     const el = this.querySelector("#roadh"); el.innerHTML = `<b>${node.replace(/_/g, " ")}</b><span class="tf-note">loading…</span>`;
     let r; try { r = await api.forecastRoad(n.dataset, node, this._asOf); } catch (e) { el.innerHTML = `<b>${node}</b><span class="note warn">${e.message}</span>`; return; }
     if (this._dead || this._road !== node) return;
-    const prov = r.provenance === "DIRECT" ? `<span class="prov">DIRECT · SUMO edge ${r.mapped_edge}</span>` : `<span class="prov none">SENSOR ONLY · ${s.mapping_reason || "not mapped into SUMO"}</span>`;
+    const prov = r.provenance === "DIRECT" ? `<span class="prov">PREDICTED · on a modelled road</span>` : `<span class="prov none">SENSOR · not on a modelled road</span>`;
     el.innerHTML = `<b>${node.replace(/_/g, " ")}</b>${r.sensor_id ? `<span class="tf-note">METR-LA detector ${r.sensor_id}</span>` : ""}${prov}<span class="tf-note">${r.mode === "LATEST" ? "latest data" : r.mode === "HELD_OUT" ? "held-out replay" : "historical"} · ${fmtT(r.as_of_utc)}</span>`;
     const edge = n.edges.find(e => e.corridor === node && e.provenance === "DIRECT"); const lim = edge ? edge.limit_kmh : null;
     const gw = r.models.GWNet || Object.values(r.models).find(m => m.model !== "persistence"); const pe = r.models.persistence;
@@ -358,7 +358,7 @@ export class PredictionPage extends HTMLElement {
     const names = ds.node_names || []; const node = names[Number(road)] || road;
     let r; try { r = await api.forecastRoad(ds.id, node, idx); } catch (e) { note.textContent = e.message; return; }
     const gw = r.models.GWNet, pe = r.models.persistence;
-    note.innerHTML = `${fmtT(r.as_of_utc)} · the model saw only the 12 readings before this cutoff${gw && gw.inference_seconds != null ? ` · ${gw.inference_seconds.toFixed(2)} s forward pass` : ""}`;
+    note.innerHTML = `${fmtT(r.as_of_utc)} · the model saw only the 12 readings before this cutoff${gw && gw.inference_seconds != null ? ` · computed in ${gw.inference_seconds.toFixed(2)} s` : ""}`;
     const stepMin = r.interval_s / 60; const h = r.history; const labels = [...h.map((_, i) => `-${(h.length - i) * stepMin}m`), ...Array.from({length: 12}, (_, i) => `+${(i + 1) * stepMin}m`)];
     const pad = new Array(h.length).fill(null); const base = window.chartDefaults(); const bridge = (arr) => [...pad.slice(0, -1), h[h.length - 1], ...(arr || [])];
     this._vchart?.destroy();

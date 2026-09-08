@@ -1,0 +1,1178 @@
+{
+ "protocol": {
+  "protocol_id": "V2X_CLOSED_LOOP_v1",
+  "city_id": "la_c4_central_wide",
+  "network": "data/cities/la_c4_central_wide/sumo/la_c4_central_wide.net.xml",
+  "network_hash": "0d81df27ab2d",
+  "mapping_file": "results/routing/coverage_rescue/la_c4_central_wide/sensor_to_edge_207.json",
+  "mapping_hash": "d8414a9c7b0f",
+  "mapped_detectors": 83,
+  "detectors_total": 207,
+  "model": "GWNet",
+  "model_label": "Graph WaveNet (207-node METR-LA, verified)",
+  "checkpoint_path": "/Users/jannatulferdouseva/thesis/results/forecasting/checkpoints/GraphWaveNet/METR-LA_50_12_12/d1ffd3d52d3caacf60ebf59214673f7c/GraphWaveNet_best_val_MAE.pt",
+  "checkpoint_sha256": "548e399bd53c",
+  "dataset": "METR-LA",
+  "dataset_hash": "857a98d0ec47b353",
+  "graph_hash": "a35687c6",
+  "routing_config_hash": "ea08dddedc14",
+  "coverage_hops": 1,
+  "min_saving_s": 60.0,
+  "min_saving_pct": 5.0,
+  "admission": {
+   "_rule": "thin TrafficTwin layer above SUMO routing: a vehicle is admitted to an alternative only if no edge of it would exceed max_edge_load_ratio after admission, and no more than max_share_per_alternative of the vehicles in the round are sent to the same alternative; a vehicle rerouted within reroute_cooldown_s is not advised again",
+   "max_edge_load_ratio": 1.0,
+   "max_share_per_alternative": 0.4,
+   "reroute_cooldown_s": 300,
+   "share_gate_min_vehicles": 5,
+   "_share_gate_min": "the share gate only applies to rounds of at least share_gate_min_vehicles vehicles: a single analysed trip is not a herd"
+  },
+  "demand": "SYNTHETIC_WHAT_IF randomTrips on the real OSM network, one draw per seed, departures 0-1800 s",
+  "observations": "REAL METR-LA detector speeds (mph), replayed as lane speed caps on mapped edges in every arm",
+  "communication": "SIMULATED V2X (pipeline/v2x/channel.py) \u2014 not radio hardware",
+  "profile": "ideal",
+  "profile_params": {
+   "latency_ms": 0.0,
+   "jitter_ms": 0.0,
+   "loss": 0.0,
+   "ttl_s": 60.0
+  },
+  "penetration": 0.3,
+  "round_s": 300,
+  "horizon_min": 15,
+  "status_period_s": 10,
+  "reactive_period_s": 60,
+  "simulation_duration_s": 2700,
+  "time_to_teleport_s": 300,
+  "incident": [
+   {
+    "edge": "864049094",
+    "t_start_s": 600.0,
+    "cap_mps": 2.0
+   }
+  ],
+  "fuse_observed": false,
+  "fork_t0_s": 480,
+  "fork": "every arm is started from ONE SUMO state saved at fork_t0_s by a baseline prefix run (vehicles, positions, speeds, routes, signals, RNG); lane caps and incidents are re-applied identically after loading",
+  "controller": {
+   "time_dependent_costing": true,
+   "horizons_min": [
+    0,
+    15,
+    30,
+    60
+   ],
+   "correction": {
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "min_rel_residual": 0.15,
+    "observation_window_s": 60
+   },
+   "detector": {
+    "window_s": 60,
+    "min_vehicles": 3,
+    "min_messages": 5,
+    "ratio": 0.5
+   },
+   "admission": {
+    "max_reroute_fraction_per_round": 0.1,
+    "min_reroutes_per_round": 2,
+    "stagger_s": 5
+   },
+   "status": "DEVELOPMENT \u2014 not yet frozen",
+   "_hash": "332b75b7bb14"
+  },
+  "controller_config_hash": "332b75b7bb14",
+  "oracle": "oracle_v2x prices every edge with the sampledSeconds-weighted measured travel time of the paired BASELINE run over the routing window (edge_costs.oracle_table) \u2014 an experimental upper bound on future information, never leaked into the baseline",
+  "moment": "peak",
+  "moment_rule": "weekday 17:30 of the seed-th held-out weekday (evening rush hour); advances one dataset step per 300 s of simulation",
+  "sumo_version": "Eclipse SUMO sumo 1.27.1",
+  "seeds": [
+   101
+  ]
+ },
+ "seeds": [
+  101
+ ],
+ "arms": [
+  "predictive_corrected_v2x"
+ ],
+ "per_seed": [
+  {
+   "seed": 101,
+   "analysis_run_id": "an_v2x_s101",
+   "as_of_index": 31890,
+   "demand": {
+    "demand_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke2_inc_fork480/s101/demand_s101.rou.xml",
+    "demand_hash": "32e05641db07",
+    "vehicles": 900
+   },
+   "fork": {
+    "t0_s": 480,
+    "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke2_inc_fork480/s101/fork/fork_state_s101_t480.xml",
+    "state_sha256": "bd20b216eaeb"
+   },
+   "arms": {
+    "predictive_corrected_v2x": {
+     "simulation_run_id": "sim_v2x_s101_predictive_corrected_v2x_ideal_p30",
+     "arm": "predictive_corrected_v2x",
+     "seed": 101,
+     "profile": "ideal",
+     "penetration": 0.3,
+     "moment": "peak",
+     "config_hash": "ea08dddedc14",
+     "network_hash": "0d81df27ab2d",
+     "fork": {
+      "t0_s": 480,
+      "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke2_inc_fork480/s101/fork/fork_state_s101_t480.xml",
+      "state_sha256": "bd20b216eaeb"
+     },
+     "information": "gwnet+correction",
+     "network": {
+      "uplink": {
+       "channel": "uplink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 14416,
+       "messages_rx": 14416,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": 1.0,
+       "latency_mean_ms": 0.0,
+       "latency_median_ms": 0.0,
+       "latency_p95_ms": 0.0,
+       "latency_p99_ms": 0.0,
+       "bytes_tx": 2499333,
+       "message_rate_per_s": 5.339,
+       "throughput_bytes_per_s": 925.7
+      },
+      "downlink": {
+       "channel": "downlink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 39,
+       "messages_rx": 39,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": 1.0,
+       "latency_mean_ms": 0.0,
+       "latency_median_ms": 0.0,
+       "latency_p95_ms": 0.0,
+       "latency_p99_ms": 0.0,
+       "bytes_tx": 123764,
+       "message_rate_per_s": 0.014,
+       "throughput_bytes_per_s": 45.8
+      },
+      "connected_vehicles": 247,
+      "vehicles_seen": 879,
+      "penetration_configured": 0.3,
+      "recommendations_delivered": 39,
+      "reroutes_applied": 35,
+      "recommendations_inapplicable": 4,
+      "incidents_detected": [
+       {
+        "edge": "159669972#1",
+        "detected_at_s": 574,
+        "first_evidence_s": 517.0,
+        "vehicles": 3,
+        "messages": 6,
+        "severity": 0.983,
+        "confidence": 0.5,
+        "observed_speed_mps": 5.18,
+        "expected_speed_mps": 22.22,
+        "sim_time_s": 574,
+        "last_seen_s": 638,
+        "cleared_at_s": 675
+       },
+       {
+        "edge": "-397538762#1",
+        "detected_at_s": 601,
+        "first_evidence_s": 586.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 1.0,
+        "confidence": 0.5,
+        "observed_speed_mps": 1.12,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 601,
+        "last_seen_s": 661,
+        "cleared_at_s": 744
+       },
+       {
+        "edge": "405134848",
+        "detected_at_s": 626,
+        "first_evidence_s": 567.0,
+        "vehicles": 4,
+        "messages": 5,
+        "severity": 0.967,
+        "confidence": 0.667,
+        "observed_speed_mps": 0.61,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 626,
+        "last_seen_s": 678,
+        "cleared_at_s": 705
+       },
+       {
+        "edge": "405134839#0",
+        "detected_at_s": 666,
+        "first_evidence_s": 654.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 0.965,
+        "confidence": 0.5,
+        "observed_speed_mps": 0.48,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 666,
+        "last_seen_s": 734,
+        "cleared_at_s": 765
+       },
+       {
+        "edge": "-1317542861#1",
+        "detected_at_s": 697,
+        "first_evidence_s": 646.0,
+        "vehicles": 3,
+        "messages": 7,
+        "severity": 1.0,
+        "confidence": 0.5,
+        "observed_speed_mps": 0.0,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 697,
+        "last_seen_s": 716,
+        "cleared_at_s": 788
+       },
+       {
+        "edge": "405134844",
+        "detected_at_s": 704,
+        "first_evidence_s": 688.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 0.996,
+        "confidence": 0.5,
+        "observed_speed_mps": 0.9,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 704,
+        "last_seen_s": 766,
+        "cleared_at_s": 849
+       },
+       {
+        "edge": "1124392631",
+        "detected_at_s": 737,
+        "first_evidence_s": 686.0,
+        "vehicles": 3,
+        "messages": 8,
+        "severity": 0.965,
+        "confidence": 0.5,
+        "observed_speed_mps": 0.88,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 737,
+        "last_seen_s": 766,
+        "cleared_at_s": 841
+       },
+       {
+        "edge": "-607517410#1",
+        "detected_at_s": 826,
+        "first_evidence_s": 768.0,
+        "vehicles": 3,
+        "messages": 7,
+        "severity": 0.908,
+        "confidence": 0.5,
+        "observed_speed_mps": 1.99,
+        "expected_speed_mps": 22.22,
+        "sim_time_s": 826,
+        "last_seen_s": 858,
+        "cleared_at_s": 907
+       },
+       {
+        "edge": "864049094",
+        "detected_at_s": 900,
+        "first_evidence_s": 846.0,
+        "vehicles": 3,
+        "messages": 13,
+        "severity": 0.94,
+        "confidence": 0.5,
+        "observed_speed_mps": 1.59,
+        "expected_speed_mps": 19.42,
+        "true_onset_s": 600.0,
+        "detection_delay_s": 300.0,
+        "sim_time_s": 900,
+        "last_seen_s": 1368,
+        "cleared_at_s": 1665
+       },
+       {
+        "edge": "1423855087#0",
+        "detected_at_s": 986,
+        "first_evidence_s": 974.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 1.0,
+        "confidence": 0.5,
+        "observed_speed_mps": 0.0,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 986,
+        "last_seen_s": 1036,
+        "cleared_at_s": 1049
+       },
+       {
+        "edge": "1124392631",
+        "detected_at_s": 1104,
+        "first_evidence_s": 1067.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 0.956,
+        "confidence": 0.5,
+        "observed_speed_mps": 0.15,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 1104,
+        "last_seen_s": 1234,
+        "cleared_at_s": 1247
+       },
+       {
+        "edge": "-398048075#1",
+        "detected_at_s": 1161,
+        "first_evidence_s": 1112.0,
+        "vehicles": 3,
+        "messages": 6,
+        "severity": 0.918,
+        "confidence": 0.5,
+        "observed_speed_mps": 1.23,
+        "expected_speed_mps": 22.22,
+        "sim_time_s": 1161,
+        "last_seen_s": 1172,
+        "cleared_at_s": 1232
+       },
+       {
+        "edge": "1379676505",
+        "detected_at_s": 1190,
+        "first_evidence_s": 1136.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 0.938,
+        "confidence": 0.5,
+        "observed_speed_mps": 0.98,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 1190,
+        "last_seen_s": 1196,
+        "cleared_at_s": 1251
+       },
+       {
+        "edge": "1430851361#0",
+        "detected_at_s": 1210,
+        "first_evidence_s": 1156.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 0.9,
+        "confidence": 0.5,
+        "observed_speed_mps": 1.56,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 1210,
+        "last_seen_s": 1216,
+        "cleared_at_s": 1281
+       },
+       {
+        "edge": "-384790763",
+        "detected_at_s": 1211,
+        "first_evidence_s": 1162.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 0.933,
+        "confidence": 0.5,
+        "observed_speed_mps": 0.34,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 1211,
+        "last_seen_s": 1269,
+        "cleared_at_s": 1287
+       },
+       {
+        "edge": "-380732847",
+        "detected_at_s": 1217,
+        "first_evidence_s": 1169.0,
+        "vehicles": 3,
+        "messages": 6,
+        "severity": 0.959,
+        "confidence": 0.5,
+        "observed_speed_mps": 0.43,
+        "expected_speed_mps": 27.78,
+        "sim_time_s": 1217,
+        "last_seen_s": 1239,
+        "cleared_at_s": 1399
+       },
+       {
+        "edge": "-405141320",
+        "detected_at_s": 1223,
+        "first_evidence_s": 1179.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 0.999,
+        "confidence": 0.5,
+        "observed_speed_mps": 0.01,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 1223,
+        "last_seen_s": 1239,
+        "cleared_at_s": 1284
+       },
+       {
+        "edge": "1124392631",
+        "detected_at_s": 1374,
+        "first_evidence_s": 1314.0,
+        "vehicles": 4,
+        "messages": 6,
+        "severity": 0.922,
+        "confidence": 0.5,
+        "observed_speed_mps": 0.93,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 1374,
+        "last_seen_s": 1636,
+        "cleared_at_s": 1717
+       },
+       {
+        "edge": "406233252",
+        "detected_at_s": 1396,
+        "first_evidence_s": 1349.0,
+        "vehicles": 3,
+        "messages": 6,
+        "severity": 0.941,
+        "confidence": 0.5,
+        "observed_speed_mps": 1.56,
+        "expected_speed_mps": 22.22,
+        "sim_time_s": 1396,
+        "last_seen_s": 1429,
+        "cleared_at_s": 1579
+       },
+       {
+        "edge": "1379676505",
+        "detected_at_s": 1403,
+        "first_evidence_s": 1391.0,
+        "vehicles": 4,
+        "messages": 5,
+        "severity": 0.933,
+        "confidence": 0.667,
+        "observed_speed_mps": 0.19,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 1403,
+        "last_seen_s": 1459,
+        "cleared_at_s": 1474
+       },
+       {
+        "edge": "1430851361#0",
+        "detected_at_s": 1429,
+        "first_evidence_s": 1419.0,
+        "vehicles": 4,
+        "messages": 5,
+        "severity": 0.991,
+        "confidence": 0.667,
+        "observed_speed_mps": 0.18,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 1429,
+        "last_seen_s": 1481,
+        "cleared_at_s": 1494
+       },
+       {
+        "edge": "-380766328#1",
+        "detected_at_s": 1691,
+        "first_evidence_s": 1635.0,
+        "vehicles": 4,
+        "messages": 5,
+        "severity": 0.897,
+        "confidence": 0.667,
+        "observed_speed_mps": 1.62,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 1691,
+        "last_seen_s": 1695,
+        "cleared_at_s": 1752
+       },
+       {
+        "edge": "603531501#2",
+        "detected_at_s": 1720,
+        "first_evidence_s": 1706.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 1.0,
+        "confidence": 0.5,
+        "observed_speed_mps": 1.31,
+        "expected_speed_mps": 27.78,
+        "sim_time_s": 1720,
+        "last_seen_s": 1780,
+        "cleared_at_s": 1795
+       },
+       {
+        "edge": "864049094",
+        "detected_at_s": 1847,
+        "first_evidence_s": 1791.0,
+        "vehicles": 3,
+        "messages": 13,
+        "severity": 0.948,
+        "confidence": 0.5,
+        "observed_speed_mps": 1.3,
+        "expected_speed_mps": 27.55,
+        "true_onset_s": 600.0,
+        "detection_delay_s": 1247.0,
+        "sim_time_s": 1847,
+        "last_seen_s": 2191,
+        "cleared_at_s": 2327
+       },
+       {
+        "edge": "406270403",
+        "detected_at_s": 1856,
+        "first_evidence_s": 1846.0,
+        "vehicles": 3,
+        "messages": 6,
+        "severity": 0.907,
+        "confidence": 0.5,
+        "observed_speed_mps": 2.55,
+        "expected_speed_mps": 27.78,
+        "sim_time_s": 1856,
+        "last_seen_s": 1906,
+        "cleared_at_s": 1924
+       },
+       {
+        "edge": "1317553245",
+        "detected_at_s": 1885,
+        "first_evidence_s": 1866.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 0.922,
+        "confidence": 0.667,
+        "observed_speed_mps": 1.23,
+        "expected_speed_mps": 15.65,
+        "sim_time_s": 1885,
+        "last_seen_s": 1929,
+        "cleared_at_s": 1956
+       },
+       {
+        "edge": "1549162105#0",
+        "detected_at_s": 2025,
+        "first_evidence_s": 1970.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 1.0,
+        "confidence": 0.5,
+        "observed_speed_mps": 0.0,
+        "expected_speed_mps": 27.78,
+        "sim_time_s": 2025,
+        "last_seen_s": 2030,
+        "cleared_at_s": 2193
+       },
+       {
+        "edge": "406236239#0",
+        "detected_at_s": 2031,
+        "first_evidence_s": 2019.0,
+        "vehicles": 3,
+        "messages": 5,
+        "severity": 0.981,
+        "confidence": 0.5,
+        "observed_speed_mps": 3.86,
+        "expected_speed_mps": 27.78,
+        "sim_time_s": 2031,
+        "last_seen_s": 2104,
+        "cleared_at_s": 2122
+       }
+      ],
+      "incident_detection_delay_s": null,
+      "lead_time": {
+       "incident_onset_s": 600.0,
+       "first_reroute_applied_s": 600,
+       "first_reroute_after_onset_s": 0.0,
+       "reroutes_before_onset": 0
+      }
+     },
+     "rounds": [
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r0",
+       "round": 0,
+       "sim_time_s": 600,
+       "as_of_index": 31892,
+       "raw_prediction_hash": "6dbbb729c7cec8cb",
+       "future_cost_hash": "85a9c13fb5c6a075",
+       "priced_edges": 952,
+       "reroute_budget": 5,
+       "deferred_by_budget": 1,
+       "decisions_after_budget": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 25,
+        "DEFERRED_BUDGET": 1,
+        "REROUTE": 5,
+        "NO_ALTERNATIVE": 18
+       },
+       "correction": {
+        "residual_edges": 120,
+        "propagated_edges": 631,
+        "by_kind_at_h0": {
+         "OBSERVED": 111,
+         "RESIDUAL_UPSTREAM": 640
+        },
+        "tau_min": 30.0,
+        "upstream_hops": 2,
+        "hop_decay": 0.5,
+        "largest_residuals": [
+         [
+          -27.78,
+          "-380732847"
+         ],
+         [
+          -27.78,
+          "-406236201#1"
+         ],
+         [
+          -27.78,
+          "32013398#0"
+         ],
+         [
+          -27.78,
+          "398255523#0"
+         ],
+         [
+          -27.78,
+          "406236218"
+         ]
+        ]
+       },
+       "incidents_detected_so_far": 1,
+       "time_dependent": true,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet+correction",
+       "inference_seconds": 1.151,
+       "vehicles_considered": 49,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 25,
+        "REROUTE": 6,
+        "NO_ALTERNATIVE": 18
+       },
+       "recommendations_sent": 5,
+       "statuses_known": 70,
+       "edges_with_current_speed": 191
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r1",
+       "round": 1,
+       "sim_time_s": 900,
+       "as_of_index": 31893,
+       "raw_prediction_hash": "74ccaab3026280ef",
+       "future_cost_hash": "5dee9099ba487ca2",
+       "priced_edges": 1313,
+       "reroute_budget": 8,
+       "deferred_by_budget": 5,
+       "decisions_after_budget": {
+        "NO_ALTERNATIVE": 39,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 20,
+        "DEFERRED_BUDGET": 5,
+        "REROUTE": 8
+       },
+       "correction": {
+        "residual_edges": 166,
+        "propagated_edges": 963,
+        "by_kind_at_h0": {
+         "OBSERVED": 156,
+         "RESIDUAL_UPSTREAM": 973
+        },
+        "tau_min": 30.0,
+        "upstream_hops": 2,
+        "hop_decay": 0.5,
+        "largest_residuals": [
+         [
+          -27.78,
+          "-406215511#1"
+         ],
+         [
+          -27.78,
+          "167712598"
+         ],
+         [
+          -27.72,
+          "397538272"
+         ],
+         [
+          -27.24,
+          "1549162105#0"
+         ],
+         [
+          -26.95,
+          "406236204"
+         ]
+        ]
+       },
+       "incidents_detected_so_far": 9,
+       "time_dependent": true,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet+correction",
+       "inference_seconds": 0.062,
+       "vehicles_considered": 72,
+       "decisions": {
+        "NO_ALTERNATIVE": 39,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 20,
+        "REROUTE": 13
+       },
+       "recommendations_sent": 8,
+       "statuses_known": 112,
+       "edges_with_current_speed": 261
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r2",
+       "round": 2,
+       "sim_time_s": 1200,
+       "as_of_index": 31894,
+       "raw_prediction_hash": "5f21ac23ea0bf9af",
+       "future_cost_hash": "1bd84e73950be2f0",
+       "priced_edges": 1568,
+       "reroute_budget": 8,
+       "deferred_by_budget": 8,
+       "decisions_after_budget": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 28,
+        "NO_ALTERNATIVE": 36,
+        "REROUTE": 8,
+        "DEFERRED_BUDGET": 8
+       },
+       "correction": {
+        "residual_edges": 208,
+        "propagated_edges": 1167,
+        "by_kind_at_h0": {
+         "OBSERVED": 194,
+         "RESIDUAL_UPSTREAM": 1181
+        },
+        "tau_min": 30.0,
+        "upstream_hops": 2,
+        "hop_decay": 0.5,
+        "largest_residuals": [
+         [
+          -27.78,
+          "-1529769076"
+         ],
+         [
+          -27.78,
+          "-183090346"
+         ],
+         [
+          -27.78,
+          "-406236222"
+         ],
+         [
+          -27.78,
+          "398206956#0"
+         ],
+         [
+          -27.78,
+          "398254894#0"
+         ]
+        ]
+       },
+       "incidents_detected_so_far": 13,
+       "time_dependent": true,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet+correction",
+       "inference_seconds": 0.045,
+       "vehicles_considered": 80,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 28,
+        "NO_ALTERNATIVE": 36,
+        "REROUTE": 16
+       },
+       "recommendations_sent": 8,
+       "statuses_known": 157,
+       "edges_with_current_speed": 323
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r3",
+       "round": 3,
+       "sim_time_s": 1500,
+       "as_of_index": 31895,
+       "raw_prediction_hash": "195e846871ba018d",
+       "future_cost_hash": "8f7a4a26034aa306",
+       "priced_edges": 1573,
+       "reroute_budget": 9,
+       "deferred_by_budget": 0,
+       "decisions_after_budget": {
+        "NO_ALTERNATIVE": 39,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 38,
+        "REROUTE": 5
+       },
+       "correction": {
+        "residual_edges": 196,
+        "propagated_edges": 1187,
+        "by_kind_at_h0": {
+         "OBSERVED": 185,
+         "RESIDUAL_UPSTREAM": 1198
+        },
+        "tau_min": 30.0,
+        "upstream_hops": 2,
+        "hop_decay": 0.5,
+        "largest_residuals": [
+         [
+          -27.78,
+          "-398050925#1"
+         ],
+         [
+          -27.78,
+          "-406236222"
+         ],
+         [
+          -27.78,
+          "-406236249#1"
+         ],
+         [
+          -27.78,
+          "-761633642#1"
+         ],
+         [
+          -27.78,
+          "173449003"
+         ]
+        ]
+       },
+       "incidents_detected_so_far": 21,
+       "time_dependent": true,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet+correction",
+       "inference_seconds": 0.06,
+       "vehicles_considered": 82,
+       "decisions": {
+        "NO_ALTERNATIVE": 39,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 38,
+        "REROUTE": 5
+       },
+       "recommendations_sent": 5,
+       "statuses_known": 197,
+       "edges_with_current_speed": 353
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r4",
+       "round": 4,
+       "sim_time_s": 1800,
+       "as_of_index": 31896,
+       "raw_prediction_hash": "fb3315a33572f874",
+       "future_cost_hash": "78f380a6fb3561ae",
+       "priced_edges": 1576,
+       "reroute_budget": 10,
+       "deferred_by_budget": 1,
+       "decisions_after_budget": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 41,
+        "NO_ALTERNATIVE": 39,
+        "REROUTE": 10,
+        "DEFERRED_BUDGET": 1
+       },
+       "correction": {
+        "residual_edges": 216,
+        "propagated_edges": 1173,
+        "by_kind_at_h0": {
+         "OBSERVED": 196,
+         "RESIDUAL_UPSTREAM": 1193
+        },
+        "tau_min": 30.0,
+        "upstream_hops": 2,
+        "hop_decay": 0.5,
+        "largest_residuals": [
+         [
+          -39.44,
+          "520217588"
+         ],
+         [
+          -29.06,
+          "885077905#0"
+         ],
+         [
+          -27.78,
+          "-405505542#1"
+         ],
+         [
+          -27.78,
+          "-406215511#1"
+         ],
+         [
+          -27.78,
+          "-826374342"
+         ]
+        ]
+       },
+       "incidents_detected_so_far": 23,
+       "time_dependent": true,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet+correction",
+       "inference_seconds": 0.049,
+       "vehicles_considered": 91,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 41,
+        "NO_ALTERNATIVE": 39,
+        "REROUTE": 11
+       },
+       "recommendations_sent": 10,
+       "statuses_known": 246,
+       "edges_with_current_speed": 349
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r5",
+       "round": 5,
+       "sim_time_s": 2100,
+       "as_of_index": 31897,
+       "raw_prediction_hash": "3484cb87ca31872a",
+       "future_cost_hash": "6696688f0ae89fb6",
+       "priced_edges": 1305,
+       "reroute_budget": 6,
+       "deferred_by_budget": 0,
+       "decisions_after_budget": {
+        "NO_ALTERNATIVE": 28,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 25,
+        "REROUTE": 3
+       },
+       "correction": {
+        "residual_edges": 157,
+        "propagated_edges": 953,
+        "by_kind_at_h0": {
+         "OBSERVED": 148,
+         "RESIDUAL_UPSTREAM": 962
+        },
+        "tau_min": 30.0,
+        "upstream_hops": 2,
+        "hop_decay": 0.5,
+        "largest_residuals": [
+         [
+          -27.78,
+          "-159705428#1"
+         ],
+         [
+          -27.78,
+          "1549162105#0"
+         ],
+         [
+          -27.78,
+          "403600129#0"
+         ],
+         [
+          -27.78,
+          "405505523#0"
+         ],
+         [
+          -27.78,
+          "406236204"
+         ]
+        ]
+       },
+       "incidents_detected_so_far": 28,
+       "time_dependent": true,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet+correction",
+       "inference_seconds": 0.05,
+       "vehicles_considered": 56,
+       "decisions": {
+        "NO_ALTERNATIVE": 28,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 25,
+        "REROUTE": 3
+       },
+       "recommendations_sent": 3,
+       "statuses_known": 247,
+       "edges_with_current_speed": 253
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r6",
+       "round": 6,
+       "sim_time_s": 2400,
+       "as_of_index": 31898,
+       "raw_prediction_hash": "858ad94d1b752070",
+       "future_cost_hash": "22a92268c3622974",
+       "priced_edges": 779,
+       "reroute_budget": 3,
+       "deferred_by_budget": 0,
+       "decisions_after_budget": {
+        "NO_ALTERNATIVE": 22,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 6
+       },
+       "correction": {
+        "residual_edges": 80,
+        "propagated_edges": 501,
+        "by_kind_at_h0": {
+         "OBSERVED": 78,
+         "RESIDUAL_UPSTREAM": 503
+        },
+        "tau_min": 30.0,
+        "upstream_hops": 2,
+        "hop_decay": 0.5,
+        "largest_residuals": [
+         [
+          -27.78,
+          "-406260205"
+         ],
+         [
+          -27.78,
+          "406236210#0"
+         ],
+         [
+          -27.78,
+          "406236230#0"
+         ],
+         [
+          -27.78,
+          "406270390"
+         ],
+         [
+          -27.78,
+          "535581782#0"
+         ]
+        ]
+       },
+       "incidents_detected_so_far": 28,
+       "time_dependent": true,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet+correction",
+       "inference_seconds": 0.043,
+       "vehicles_considered": 28,
+       "decisions": {
+        "NO_ALTERNATIVE": 22,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 6
+       },
+       "recommendations_sent": 0,
+       "statuses_known": 247,
+       "edges_with_current_speed": 131
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r7",
+       "round": 7,
+       "sim_time_s": 2700,
+       "as_of_index": 31899,
+       "raw_prediction_hash": "b640b0caa9752caa",
+       "future_cost_hash": "0dff450685406f89",
+       "priced_edges": 478,
+       "reroute_budget": 2,
+       "deferred_by_budget": 0,
+       "decisions_after_budget": {
+        "NO_ALTERNATIVE": 3,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 2
+       },
+       "correction": {
+        "residual_edges": 38,
+        "propagated_edges": 232,
+        "by_kind_at_h0": {
+         "OBSERVED": 35,
+         "RESIDUAL_UPSTREAM": 235
+        },
+        "tau_min": 30.0,
+        "upstream_hops": 2,
+        "hop_decay": 0.5,
+        "largest_residuals": [
+         [
+          -27.78,
+          "-398208587#1"
+         ],
+         [
+          -27.78,
+          "605489093#0"
+         ],
+         [
+          -27.77,
+          "-166901263"
+         ],
+         [
+          -27.77,
+          "967761403#2"
+         ],
+         [
+          -25.14,
+          "398208588#0"
+         ]
+        ]
+       },
+       "incidents_detected_so_far": 28,
+       "time_dependent": true,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet+correction",
+       "inference_seconds": 0.055,
+       "vehicles_considered": 5,
+       "decisions": {
+        "NO_ALTERNATIVE": 3,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 2
+       },
+       "recommendations_sent": 0,
+       "statuses_known": 247,
+       "edges_with_current_speed": 55
+      }
+     ],
+     "routing_run_ids": [
+      "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r0",
+      "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r1",
+      "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r2",
+      "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r3",
+      "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r4",
+      "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r5",
+      "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r6",
+      "rt_v2x_v2x_s101_predictive_corrected_v2x_ideal_p30_r7"
+     ],
+     "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke2_inc_fork480/s101/predictive_corrected_v2x/reroute_log.jsonl",
+     "reroutes_applied": 35,
+     "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke2_inc_fork480/s101/predictive_corrected_v2x",
+     "metrics": {
+      "arrived": 832,
+      "unfinished_at_horizon": 47,
+      "unfinished": 47,
+      "total_vehicle_hours": 186.72944444444445,
+      "mean_travel_time_all": 764.7622298065984,
+      "mean_travel_time_s": 744.5072115384615,
+      "p95_travel_time_s": 1422.0,
+      "mean_waiting_s": 143.78485576923077,
+      "total_waiting_s": 119629.0,
+      "mean_time_loss_s": 303.6058173076923,
+      "mean_depart_delay_s": 0.009615384615384616,
+      "vehicles_rerouted_at_least_once": 29,
+      "teleports": 0,
+      "loaded": 900,
+      "inserted": 900,
+      "running_at_end": 47,
+      "waiting_to_insert_at_end": 0,
+      "mean_queue_veh": 54.29,
+      "max_queue_veh": 110.0,
+      "mean_running_veh": 279.96,
+      "queue_steps": 2220,
+      "never_inserted": 0,
+      "never_inserted_vehicle_hours": 0.0,
+      "total_vehicle_hours_incl_never_inserted": 186.7294,
+      "reactive_reroute_calls": 0,
+      "incidents_applied": [
+       {
+        "edge": "864049094",
+        "t_start_s": 600,
+        "cap_mps": 2.0,
+        "lanes": 5
+       }
+      ],
+      "wall_s": 104.6
+     }
+    }
+   }
+  }
+ ],
+ "paired": {},
+ "network_summary": null,
+ "reroutes_by_arm": {
+  "predictive_corrected_v2x": 35
+ },
+ "fork_state_identical_across_arms": true,
+ "fork_state_hashes": {
+  "101": "bd20b216eaeb"
+ },
+ "verdict_predictive_v2x_vs_baseline": null,
+ "generated_utc": "2026-09-08T09:11:59.663552+00:00",
+ "run_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke2_inc_fork480"
+}

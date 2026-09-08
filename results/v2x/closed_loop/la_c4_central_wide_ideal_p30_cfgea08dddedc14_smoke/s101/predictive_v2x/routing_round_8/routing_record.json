@@ -1,0 +1,234 @@
+{
+ "config": {
+  "version": 1,
+  "_doc": "Every coefficient the forecast-to-route optimizer uses. Nothing else in pipeline/routing/edge_costs.py or route_optimizer.py carries a number. The whole file is copied into every routing run's provenance.",
+  "edge_costs": {
+   "_rule": "future_tt_s = edge_length_m / bounded_predicted_speed_mps; predicted speed = speed_limit / ratio(forecast); the ratio is the interpolated live/free-flow travel-time ratio of the forecast congestion level (band midpoints in pipeline/forecasting/live_to_edges.py) or free_speed/predicted_speed when the model forecasts a speed",
+   "speed_lower_bound_mps": 1.0,
+   "speed_upper_bound": "edge speed limit (a forecast may not claim a road is faster than its limit)",
+   "coverage_hops": 1,
+   "decay_weight_by_hop": {
+    "1": 0.6,
+    "2": 0.35
+   },
+   "_decay": "DERIVED edge at graph distance h from a forecast-covered edge: ratio_h = 1 + decay_h x (ratio_direct - 1); nearest covered edge wins, ties to the worse; unpriced edges keep free flow and are never written",
+   "level_to_ratio_bands": "pipeline/forecasting/live_to_edges.py BAND_MID (FREE 1.08, SLOW 1.33, CONGESTED 1.75, SEVERE 2.50), interpolated between levels"
+  },
+  "candidates": {
+   "k_alternatives": 5,
+   "_generator": "duarouter (pinned eclipse-sumo v1_27_1) on the forecast weight file: run 0 exact weights; runs 1..K-1 with --weights.random-factor and distinct seeds (SUMO's documented route-diversification mechanism, Simulation/Routing.md 'Randomized travel times'); distinct edge sequences kept; the vehicle's current route is always candidate 0",
+   "weights_random_factor": 1.5
+  },
+  "generalized_cost": {
+   "_rule": "final_cost_s = forecast_future_tt_s + load_penalty_s + overlap_penalty_s",
+   "load_penalty": {
+    "_rule": "BPR volume-delay on the vehicles this optimizer has already admitted: load_penalty_s = sum_over_edges future_tt_e x alpha x (admitted_e / capacity_e)^beta; capacity_e = lanes x capacity_veh_per_lane_h x window_h",
+    "bpr_alpha": 0.15,
+    "bpr_beta": 4.0,
+    "capacity_veh_per_lane_h": 1800,
+    "_source": "Bureau of Public Roads volume-delay function, standard alpha=0.15 beta=4; 1800 veh/h/lane is the HCM saturation-flow order of magnitude"
+   },
+   "overlap_penalty": {
+    "_rule": "overlap_penalty_s = switch_cost_s x (1 - shared_length_fraction_with_current_route); the current route itself costs 0",
+    "switch_cost_s": 30.0
+   }
+  },
+  "decision": {
+   "_rule": "reroute only when predicted_saving_s = current_future_cost - best_alternative_future_cost >= min_saving_s AND predicted_saving_pct >= min_saving_pct",
+   "min_saving_s": 60.0,
+   "min_saving_pct": 5.0
+  },
+  "admission": {
+   "_rule": "thin TrafficTwin layer above SUMO routing: a vehicle is admitted to an alternative only if no edge of it would exceed max_edge_load_ratio after admission, and no more than max_share_per_alternative of the vehicles in the round are sent to the same alternative; a vehicle rerouted within reroute_cooldown_s is not advised again",
+   "max_edge_load_ratio": 1.0,
+   "max_share_per_alternative": 0.4,
+   "reroute_cooldown_s": 300,
+   "share_gate_min_vehicles": 5,
+   "_share_gate_min": "the share gate only applies to rounds of at least share_gate_min_vehicles vehicles: a single analysed trip is not a herd"
+  },
+  "_config_file": "pipeline/routing/routing_config.json",
+  "_config_hash": "ea08dddedc14"
+ },
+ "seed": 101,
+ "window_s": 300.0,
+ "net": "/Users/jannatulferdouseva/thesis/data/cities/la_c4_central_wide/sumo/la_c4_central_wide.net.xml",
+ "generator": {
+  "generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+  "k_requested": 5,
+  "random_factor": 1.5,
+  "runs": [
+   {
+    "run": "static",
+    "weights": null,
+    "random_factor": null,
+    "seed": 101,
+    "routes": 0
+   },
+   {
+    "run": "alt_0",
+    "weights": "/Users/jannatulferdouseva/thesis/results/v2x/closed_loop/la_c4_central_wide_ideal_p30_cfgea08dddedc14_smoke/s101/predictive_v2x/routing_round_8/future_weights.xml",
+    "random_factor": null,
+    "seed": 101,
+    "routes": 2
+   },
+   {
+    "run": "alt_1",
+    "weights": "/Users/jannatulferdouseva/thesis/results/v2x/closed_loop/la_c4_central_wide_ideal_p30_cfgea08dddedc14_smoke/s101/predictive_v2x/routing_round_8/future_weights.xml",
+    "random_factor": 1.5,
+    "seed": 102,
+    "routes": 2
+   },
+   {
+    "run": "alt_2",
+    "weights": "/Users/jannatulferdouseva/thesis/results/v2x/closed_loop/la_c4_central_wide_ideal_p30_cfgea08dddedc14_smoke/s101/predictive_v2x/routing_round_8/future_weights.xml",
+    "random_factor": 1.5,
+    "seed": 103,
+    "routes": 2
+   },
+   {
+    "run": "alt_3",
+    "weights": "/Users/jannatulferdouseva/thesis/results/v2x/closed_loop/la_c4_central_wide_ideal_p30_cfgea08dddedc14_smoke/s101/predictive_v2x/routing_round_8/future_weights.xml",
+    "random_factor": 1.5,
+    "seed": 104,
+    "routes": 2
+   },
+   {
+    "run": "alt_4",
+    "weights": "/Users/jannatulferdouseva/thesis/results/v2x/closed_loop/la_c4_central_wide_ideal_p30_cfgea08dddedc14_smoke/s101/predictive_v2x/routing_round_8/future_weights.xml",
+    "random_factor": 1.5,
+    "seed": 105,
+    "routes": 2
+   }
+  ]
+ },
+ "edge_costs": {
+  "analysis_run_id": null,
+  "model": "GWNet-207",
+  "horizon_min": 15,
+  "unit": "speed_mps",
+  "coverage_hops": 1,
+  "priced_edges": 208,
+  "direct_edges": 74,
+  "derived_edges": 134,
+  "network_edges": 15661,
+  "future_cost_hash": "5f4c809c11f61ee0",
+  "raw_forecast_hash": "a59fb4886220e702"
+ },
+ "stats": {
+  "vehicles": 2,
+  "decisions": {
+   "NO_ALTERNATIVE": 1,
+   "KEEP_CURRENT_BELOW_THRESHOLD": 1
+  },
+  "advised_above_threshold": 0,
+  "vehicles_admitted": 0,
+  "rejected_by_capacity_gate": 0,
+  "rejected_by_share_gate": 0,
+  "rejected_by_cooldown": 0,
+  "reroute_count": 0,
+  "top_route_share": 0.0,
+  "top_edge_flow_concentration": 0.0,
+  "mean_candidates_real": 1.5,
+  "candidates_real_histogram": {
+   "1": 1,
+   "2": 1
+  },
+  "vehicles_with_fewer_than_k": 2
+ },
+ "decisions": [
+  {
+   "vehicle": "veh820",
+   "candidates_requested": 5,
+   "candidates_real": 1,
+   "threshold_s": 60.0,
+   "threshold_pct": 5.0,
+   "decision": "NO_ALTERNATIVE",
+   "selected": "veh820_c0",
+   "current_future_cost_s": 48.01,
+   "alternative_future_cost_s": null,
+   "predicted_saving_s": 0.0,
+   "predicted_saving_pct": 0.0
+  },
+  {
+   "vehicle": "veh840",
+   "candidates_requested": 5,
+   "candidates_real": 2,
+   "threshold_s": 60.0,
+   "threshold_pct": 5.0,
+   "current_future_cost_s": 124.19,
+   "alternative_future_cost_s": 141.936,
+   "best_alternative": "veh840_c1",
+   "predicted_saving_s": -17.75,
+   "predicted_saving_pct": -14.29,
+   "decision": "KEEP_CURRENT_BELOW_THRESHOLD",
+   "selected": "veh840_c0"
+  }
+ ],
+ "selected_routes": {
+  "veh820": [
+   "398048124#0",
+   "405192249",
+   "398048141",
+   "398048113#0",
+   "398048122#0",
+   "398048155",
+   "398048120",
+   "398048151#0",
+   "380771846#0",
+   "398238203",
+   "398238085#0",
+   "398238084#0",
+   "398238086#0",
+   "398237846#0",
+   "398237847",
+   "398237288#0",
+   "185720612#0",
+   "398236855"
+  ],
+  "veh840": [
+   "552125258",
+   "552125260",
+   "405193620",
+   "405134862#0",
+   "-997149745#1",
+   "-405134838",
+   "-405134826",
+   "-405134836#1",
+   "-405134849",
+   "-405134828",
+   "-405134837",
+   "-405134847",
+   "-405134846",
+   "-405134844",
+   "-405134827",
+   "-405134851#1",
+   "-405134839#1",
+   "-405134854#1",
+   "-405134854#0",
+   "-405134825",
+   "-405134848",
+   "-405134843",
+   "-405134841",
+   "-405134845",
+   "-405134834",
+   "-405192243#1",
+   "159669972#3",
+   "159669972#5",
+   "159669972#6",
+   "1513813841",
+   "1118966083#1",
+   "1118966083#2",
+   "1513813842",
+   "172081775#0",
+   "172081775#1",
+   "172081775#2",
+   "172081775#3",
+   "172081775#4",
+   "4377284#0",
+   "4377284#1"
+  ]
+ },
+ "selected_routes_hash": "48603a961fa4fe71",
+ "candidate_sets_hash": "746dd8831d444346",
+ "candidate_costs_hash": "42f1a94602da8ba5"
+}

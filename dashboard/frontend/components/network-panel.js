@@ -4,11 +4,50 @@ import {api} from "../services/api.js";
 import {int, num} from "../services/format.js";
 
 class NetworkPanel extends BasePanel {
-  fetchData() { return api.network(); }
+  async fetchData() {
+    const [d, loop] = await Promise.all([api.network(), api.v2xLoop().catch(() => ({available: false}))]);
+    let detail = null;
+    if (loop.available && loop.runs?.length) {
+      const withReroutes = [...loop.runs].reverse().find(r => (r.network?.reroutes_applied_total || 0) > 0) || loop.runs.at(-1);
+      detail = await api.v2xLoop(withReroutes.run).catch(() => null);
+    }
+    return {...d, loop, loopDetail: detail?.run || null};
+  }
+
+  /* SIMULATED V2X CLOSED LOOP — the vertical slice: forecast → costs → optimizer → message → latency/loss → reroute */
+  loopSection(d) {
+    const L = d.loop; if (!L || !L.available) return this.card("Simulated V2X closed loop", `<div class="muted">No closed-loop run yet. <code>python pipeline/v2x/closed_loop.py --city la_c4_central_wide --seeds 101 --profile ideal</code></div>`, "");
+    const runs = [...L.runs].reverse(); const latest = d.loopDetail; const P = latest?.protocol || {}; const N = latest?.network_summary || {}; const dn = N.downlink || {}, up = N.uplink || {};
+    const pct = (v) => v == null ? "—" : `${v > 0 ? "+" : ""}${num(v, 2)} %`;
+    const key = "total_vehicle_hours_incl_never_inserted";
+    const pb = latest?.paired?.predictive_v2x_vs_baseline?.[key] || {};
+    const ex = (latest?.reroute_examples || []).filter(e => e.outcome === "APPLIED").slice(0, 5);
+    return `
+    <div class="tilehead">Simulated V2X closed loop <span class="muted">SIMULATED communication · SYNTHETIC what-if demand on the real OSM network · real METR-LA observations · verified 207-node Graph WaveNet</span></div>
+    <div class="kpis">
+      ${this.kpi("Connected vehicles", N.connected_vehicles_mean == null ? "—" : `${Math.round(N.connected_vehicles_mean)} / 900`, `penetration ${Math.round((P.penetration || 0) * 100)} % · profile ${P.profile || "—"}`)}
+      ${this.kpi("Messages TX / RX", `${int((up.messages_tx || 0) + (dn.messages_tx || 0))} / ${int((up.messages_rx || 0) + (dn.messages_rx || 0))}`, `downlink dropped ${int(dn.messages_dropped || 0)} · expired ${int(dn.messages_expired || 0)}`)}
+      ${this.kpi("PDR (downlink)", dn.packet_delivery_ratio == null ? "—" : `${num(dn.packet_delivery_ratio * 100, 1)} %`, `median latency ${dn.latency_median_ms ?? "—"} ms · p95 ${dn.latency_p95_ms ?? "—"} ms`)}
+      ${this.kpi("Vehicles rerouted", int(N.reroutes_applied_total || 0), `by delivered recommendations · ${int(N.recommendations_inapplicable_total || 0)} arrived too late`, "good")}
+      ${this.kpi("Vehicle-hours vs baseline", pct(pb.mean_pct), `${pb.seeds || 0} seeds · CI ${pb.ci95 ? `${num(pb.ci95[0], 2)} … ${num(pb.ci95[1], 2)}` : "—"} · ${pb.label || "—"}`, pb.label === "HELPED" ? "good" : pb.label === "HURT" ? "bad" : "")}
+    </div>
+    ${this.card("Runs (development seeds — diagnostics, not the frozen result)", this.table(
+      [{h: "run"}, {h: "profile"}, {h: "latency ms", num: true}, {h: "loss", num: true}, {h: "penetration", num: true}, {h: "seeds", num: true}, {h: "downlink TX/RX/drop"}, {h: "PDR", num: true}, {h: "lat med ms", num: true}, {h: "reroutes", num: true}, {h: "veh-h vs baseline", num: true}, {h: "label"}],
+      runs.map(r => { const n = r.network || {}; const dd = n.downlink || {}; const s = r.paired?.predictive_v2x_vs_baseline || {};
+        return [r.run.replace(/_cfg.*$/, ""), r.profile, r.profile_params?.latency_ms ?? "—", r.profile_params?.loss ?? "—", `${Math.round(r.penetration * 100)} %`, r.seeds.length,
+                `${int(dd.messages_tx || 0)}/${int(dd.messages_rx || 0)}/${int(dd.messages_dropped || 0)}`, dd.packet_delivery_ratio == null ? "—" : num(dd.packet_delivery_ratio, 2), dd.latency_median_ms ?? "—", int(n.reroutes_applied_total || 0), pct(s.mean_pct), s.label || "—"]; })),
+      "every row is a full SUMO execution per arm and seed; baseline/reactive arms shared only where identical")}
+    ${ex.length ? this.card("Vehicles that actually changed route because a message arrived", this.table(
+      [{h: "vehicle"}, {h: "sim time s", num: true}, {h: "latency ms", num: true}, {h: "old → new route (edges)"}, {h: "predicted cost s", num: true}, {h: "saving s", num: true}, {h: "routing run"}, {h: "forecast hash"}],
+      ex.map(e => [e.vehicle_id, e.sim_time_s, e.latency_ms, `${(e.old_route || []).length} → ${(e.new_route || []).length}`, `${num(e.old_predicted_cost_s, 0)} → ${num(e.new_predicted_cost_s, 0)}`, num(e.predicted_saving_s, 1), e.routing_run_id, e.forecast_hash])),
+      `from ${latest?.run_dir || ""}/…/reroute_log.jsonl — model ${P.model_label || ""}, checkpoint ${P.checkpoint_sha256 || ""}, ${P.mapped_detectors || ""} detectors mapped`) : ""}`;
+  }
 
   template(d) {
     const full = d.penetration.at(-1) ?? {};
     return `
+    ${this.loopSection(d)}
+    <div class="tilehead" style="margin-top:14px">Eclipse MOSAIC penetration sweep <span class="muted">official stack, Dhaka R1, DENM hazard advisories</span></div>
     <div class="kpis">
       ${this.kpi("Delivery ratio", full.delivery_ratio == null ? "—" : `${num(full.delivery_ratio * 100, 1)} %`, "at full penetration", "good")}
       ${this.kpi("Mean latency", `${num(full.latency_ms, 1)} ms`, "ITS-G5 ad-hoc, measured")}

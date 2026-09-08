@@ -255,3 +255,23 @@ def test_learned_gate_endpoint_reads_the_newest_report_or_says_it_is_missing(cli
     assert r["available"] and r["verdict"] == "HELPED" and r["learned_vs_persistence"]["pair"] == "learned_predictive vs persistence_predictive"
     assert r["oracle_research_only"]["label"] == "HELPED" and r["provenance"]["checkpoint_sha256"] == "abc" and len(r["per_seed"]) == 10
     assert r["outcome"].startswith("A")
+
+
+def test_v2x_closed_loop_endpoint_lists_runs_and_reroute_examples(client, tmp_path, monkeypatch):
+    """The V2X closed-loop results are read as-is; the reroute examples come from the run's own log."""
+    import json
+    import config
+    monkeypatch.setattr(config, "REPO", tmp_path)
+    assert client.get("/api/experiment/v2x_closed_loop").json()["available"] is False
+    d = tmp_path / "results/v2x/closed_loop/la_x_peak_ideal_p30_cfgz"; (d / "s101/predictive_v2x").mkdir(parents=True)
+    (d / "s101/predictive_v2x/reroute_log.jsonl").write_text(json.dumps({"vehicle_id": "veh1", "outcome": "APPLIED", "latency_ms": 12.0, "forecast_hash": "abc"}) + "\n")
+    rep = {"protocol": {"city_id": "la_x", "profile": "ideal", "profile_params": {}, "penetration": 0.3, "moment": "peak", "model_label": "GWNet", "checkpoint_sha256": "548e", "mapped_detectors": 83, "communication": "SIMULATED V2X", "demand": "SYNTHETIC"},
+           "seeds": [101], "arms": ["baseline", "predictive_v2x"], "paired": {"predictive_v2x_vs_baseline": {"total_vehicle_hours_incl_never_inserted": {"mean_pct": -0.6, "label": "INCONCLUSIVE"}}},
+           "network_summary": {"reroutes_applied_total": 17}, "generated_utc": "x",
+           "per_seed": [{"seed": 101, "arms": {"predictive_v2x": {"reroute_log_file": "results/v2x/closed_loop/la_x_peak_ideal_p30_cfgz/s101/predictive_v2x/reroute_log.jsonl", "metrics": {}}}}]}
+    (d / "report.json").write_text(json.dumps(rep))
+    r = client.get("/api/experiment/v2x_closed_loop").json()
+    assert r["available"] and r["runs"][0]["paired"]["predictive_v2x_vs_baseline"]["mean_pct"] == -0.6 and r["runs"][0]["network"]["reroutes_applied_total"] == 17
+    r = client.get("/api/experiment/v2x_closed_loop?run=la_x_peak_ideal_p30_cfgz").json()
+    assert r["run"]["reroute_examples"][0]["vehicle_id"] == "veh1" and r["run"]["reroute_examples"][0]["outcome"] == "APPLIED"
+    assert client.get("/api/experiment/v2x_closed_loop?run=nope").status_code == 404

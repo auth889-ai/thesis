@@ -1,0 +1,77 @@
+{
+ "city_id": "la_c2_hollywood_101_5",
+ "bbox": [
+  34.06,
+  -118.318,
+  34.12,
+  -118.218
+ ],
+ "network_hash": "fbed352e7c08",
+ "sumo_edges": 12828,
+ "drivable_edges": 12828,
+ "drivable_km": 1425.7,
+ "area_km2": 61.3,
+ "detectors_inside_bbox": 52,
+ "mapped_GOOD": 52,
+ "distinct_direct_edges": 45,
+ "rejected_inside": {
+  "snap": 0,
+  "nearest": 0,
+  "no drivable": 0
+ },
+ "snap_median_m": 2.0,
+ "snap_max_m": 11.9,
+ "detector_density_per_km2": 0.849,
+ "model_coverage": {
+  "mapped_sensors": 52,
+  "DIRECT_edges": 45,
+  "DERIVED_edges": 76,
+  "UNFORECASTED_edges": 12707,
+  "coverage_hops": 1,
+  "future_cost_hash_15": "89130489ced32974"
+ },
+ "network_coverage": {
+  "pct_drivable_length_DIRECT": 1.67,
+  "pct_drivable_length_DIRECT_or_DERIVED": 2.44
+ },
+ "traffic_exposure": {
+  "vehicles_in_output": 894,
+  "pct_vehicles_touching_DIRECT": 40.27,
+  "pct_vehicles_touching_DIRECT_or_DERIVED": 52.8,
+  "vehicle_km_total": 4622.4,
+  "pct_vehicle_km_DIRECT": 13.31,
+  "pct_vehicle_km_DIRECT_or_DERIVED": 19.67,
+  "vehicle_hours_total": 135.09,
+  "pct_vehicle_time_DIRECT": 5.27,
+  "pct_vehicle_time_DIRECT_or_DERIVED": 7.89,
+  "note": "vehicle-time from vehroute exitTimes of the baseline development run; distance from edge lengths",
+  "sumo_wall_s": 8.4
+ },
+ "routing_exposure": {
+  "equipped_decisions": 272,
+  "decisions_with_a_priced_edge_in_candidates": 145,
+  "pct_decisions_exposed": 53.31,
+  "candidate_routes": 659,
+  "pct_candidate_routes_priced": 58.88,
+  "decisions_by_outcome": {
+   "KEEP_CURRENT_BELOW_THRESHOLD": 187,
+   "NO_ALTERNATIVE": 85
+  },
+  "note": "development demand and moment only; the routing config, thresholds and admission are the frozen production ones"
+ },
+ "demand": {
+  "file": "data/cities/la_c2_hollywood_101_5/sumo/la_c2_hollywood_101_5.rou.xml",
+  "hash": "ced6f22fad9b",
+  "vehicles": 900,
+  "reality": "SYNTHETIC_WHAT_IF randomTrips on the real OSM network (development seed 101)"
+ },
+ "forecast": {
+  "model": "Graph WaveNet, 207-node METR-LA checkpoint",
+  "checkpoint_sha256": "548e399bd53c",
+  "as_of_index": 30395,
+  "raw_prediction_hash": "c53b33310b79504f",
+  "inference_seconds": 0.476,
+  "sensors_used": 52,
+  "sensors_ignored": 155
+ }
+}

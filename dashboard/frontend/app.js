@@ -10,6 +10,7 @@
  */
 import {stream} from "./services/stream.js";
 import "./components/mission-control.js";
+import "./components/control-room.js";
 import "./components/city-overview-page.js";
 import "./components/forecast-page.js";
 import "./components/crosscity-page.js";
@@ -29,8 +30,10 @@ const PAGES = {
                    sub: "Traffic now, traffic later, the model in use and the recommended route — with links into each feature"},
   predict:        {tag: "prediction-page",     title: "Traffic Forecast",
                    sub: "See where congestion will form before it happens."},
+  control:        {tag: "control-room",        title: "Control Room",
+                   sub: "Connected vehicles, the forecast, the incident detector and the route recommendations — one run, replayed second by second"},
   results:        {tag: "results-page",        title: "Results",
-                   sub: "The verified outcome under the frozen protocol"},
+                   sub: "Does smart routing help? What our traffic simulation found"},
   archive:        {tag: "archive-page",        title: "Archived Experiments",
                    sub: "Earlier experiments under previous routing protocols — kept for the record, not comparable with the current results"},
   city:           {tag: "city-overview-page",  title: "City Overview",

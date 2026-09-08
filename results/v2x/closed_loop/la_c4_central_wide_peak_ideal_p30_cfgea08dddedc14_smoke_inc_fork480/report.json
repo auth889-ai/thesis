@@ -1,0 +1,2800 @@
+{
+ "protocol": {
+  "protocol_id": "V2X_CLOSED_LOOP_v1",
+  "city_id": "la_c4_central_wide",
+  "network": "data/cities/la_c4_central_wide/sumo/la_c4_central_wide.net.xml",
+  "network_hash": "0d81df27ab2d",
+  "mapping_file": "results/routing/coverage_rescue/la_c4_central_wide/sensor_to_edge_207.json",
+  "mapping_hash": "d8414a9c7b0f",
+  "mapped_detectors": 83,
+  "detectors_total": 207,
+  "model": "GWNet",
+  "model_label": "Graph WaveNet (207-node METR-LA, verified)",
+  "checkpoint_path": "/Users/jannatulferdouseva/thesis/results/forecasting/checkpoints/GraphWaveNet/METR-LA_50_12_12/d1ffd3d52d3caacf60ebf59214673f7c/GraphWaveNet_best_val_MAE.pt",
+  "checkpoint_sha256": "548e399bd53c",
+  "dataset": "METR-LA",
+  "dataset_hash": "857a98d0ec47b353",
+  "graph_hash": "a35687c6",
+  "routing_config_hash": "ea08dddedc14",
+  "coverage_hops": 1,
+  "min_saving_s": 60.0,
+  "min_saving_pct": 5.0,
+  "admission": {
+   "_rule": "thin TrafficTwin layer above SUMO routing: a vehicle is admitted to an alternative only if no edge of it would exceed max_edge_load_ratio after admission, and no more than max_share_per_alternative of the vehicles in the round are sent to the same alternative; a vehicle rerouted within reroute_cooldown_s is not advised again",
+   "max_edge_load_ratio": 1.0,
+   "max_share_per_alternative": 0.4,
+   "reroute_cooldown_s": 300,
+   "share_gate_min_vehicles": 5,
+   "_share_gate_min": "the share gate only applies to rounds of at least share_gate_min_vehicles vehicles: a single analysed trip is not a herd"
+  },
+  "demand": "SYNTHETIC_WHAT_IF randomTrips on the real OSM network, one draw per seed, departures 0-1800 s",
+  "observations": "REAL METR-LA detector speeds (mph), replayed as lane speed caps on mapped edges in every arm",
+  "communication": "SIMULATED V2X (pipeline/v2x/channel.py) \u2014 not radio hardware",
+  "profile": "ideal",
+  "profile_params": {
+   "latency_ms": 0.0,
+   "jitter_ms": 0.0,
+   "loss": 0.0,
+   "ttl_s": 60.0
+  },
+  "penetration": 0.3,
+  "round_s": 300,
+  "horizon_min": 15,
+  "status_period_s": 10,
+  "reactive_period_s": 60,
+  "simulation_duration_s": 2700,
+  "time_to_teleport_s": 300,
+  "incident": [
+   {
+    "edge": "864049094",
+    "t_start_s": 600.0,
+    "cap_mps": 2.0
+   }
+  ],
+  "fuse_observed": false,
+  "fork_t0_s": 480,
+  "fork": "every arm is started from ONE SUMO state saved at fork_t0_s by a baseline prefix run (vehicles, positions, speeds, routes, signals, RNG); lane caps and incidents are re-applied identically after loading",
+  "oracle": "oracle_v2x prices every edge with the sampledSeconds-weighted measured travel time of the paired BASELINE run over the routing window (edge_costs.oracle_table) \u2014 an experimental upper bound on future information, never leaked into the baseline",
+  "moment": "peak",
+  "moment_rule": "weekday 17:30 of the seed-th held-out weekday (evening rush hour); advances one dataset step per 300 s of simulation",
+  "sumo_version": "Eclipse SUMO sumo 1.27.1",
+  "seeds": [
+   101
+  ]
+ },
+ "seeds": [
+  101
+ ],
+ "arms": [
+  "baseline",
+  "reactive",
+  "persistence_v2x",
+  "predictive_v2x",
+  "oracle_v2x",
+  "random_v2x"
+ ],
+ "per_seed": [
+  {
+   "seed": 101,
+   "analysis_run_id": "an_v2x_s101",
+   "as_of_index": 31890,
+   "demand": {
+    "demand_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/demand_s101.rou.xml",
+    "demand_hash": "84367ea96b02",
+    "vehicles": 900
+   },
+   "fork": {
+    "t0_s": 480,
+    "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/fork/fork_state_s101_t480.xml",
+    "state_sha256": "6d0cfaec52ba"
+   },
+   "arms": {
+    "baseline": {
+     "simulation_run_id": "sim_v2x_s101_baseline_ideal_p30",
+     "arm": "baseline",
+     "seed": 101,
+     "profile": "ideal",
+     "penetration": 0.3,
+     "moment": "peak",
+     "config_hash": "ea08dddedc14",
+     "network_hash": "0d81df27ab2d",
+     "fork": {
+      "t0_s": 480,
+      "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/fork/fork_state_s101_t480.xml",
+      "state_sha256": "6d0cfaec52ba"
+     },
+     "information": "baseline",
+     "network": {
+      "uplink": {
+       "channel": "uplink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 0,
+       "messages_rx": 0,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": null,
+       "latency_mean_ms": null,
+       "latency_median_ms": null,
+       "latency_p95_ms": null,
+       "latency_p99_ms": null,
+       "bytes_tx": 0,
+       "message_rate_per_s": 0.0,
+       "throughput_bytes_per_s": 0.0
+      },
+      "downlink": {
+       "channel": "downlink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 0,
+       "messages_rx": 0,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": null,
+       "latency_mean_ms": null,
+       "latency_median_ms": null,
+       "latency_p95_ms": null,
+       "latency_p99_ms": null,
+       "bytes_tx": 0,
+       "message_rate_per_s": 0.0,
+       "throughput_bytes_per_s": 0.0
+      },
+      "connected_vehicles": 0,
+      "vehicles_seen": 0,
+      "penetration_configured": 0.3,
+      "recommendations_delivered": 0,
+      "reroutes_applied": 0,
+      "recommendations_inapplicable": 0
+     },
+     "rounds": [],
+     "routing_run_ids": [],
+     "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/baseline/reroute_log.jsonl",
+     "reroutes_applied": 0,
+     "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/baseline",
+     "metrics": {
+      "arrived": 832,
+      "unfinished_at_horizon": 47,
+      "unfinished": 47,
+      "total_vehicle_hours": 187.73333333333332,
+      "mean_travel_time_all": 768.8737201365187,
+      "mean_travel_time_s": 748.6298076923077,
+      "p95_travel_time_s": 1406.0,
+      "mean_waiting_s": 145.07572115384616,
+      "total_waiting_s": 120703.0,
+      "mean_time_loss_s": 305.08352163461535,
+      "mean_depart_delay_s": 0.009615384615384616,
+      "vehicles_rerouted_at_least_once": 0,
+      "teleports": 0,
+      "loaded": 900,
+      "inserted": 900,
+      "running_at_end": 47,
+      "waiting_to_insert_at_end": 0,
+      "mean_queue_veh": 54.8,
+      "max_queue_veh": 104.0,
+      "mean_running_veh": 281.59,
+      "queue_steps": 2220,
+      "never_inserted": 0,
+      "never_inserted_vehicle_hours": 0.0,
+      "total_vehicle_hours_incl_never_inserted": 187.7333,
+      "reactive_reroute_calls": 0,
+      "incidents_applied": [
+       {
+        "edge": "864049094",
+        "t_start_s": 600,
+        "cap_mps": 2.0,
+        "lanes": 5
+       }
+      ],
+      "wall_s": 8.2
+     }
+    },
+    "reactive": {
+     "simulation_run_id": "sim_v2x_s101_reactive_ideal_p30",
+     "arm": "reactive",
+     "seed": 101,
+     "profile": "ideal",
+     "penetration": 0.3,
+     "moment": "peak",
+     "config_hash": "ea08dddedc14",
+     "network_hash": "0d81df27ab2d",
+     "fork": {
+      "t0_s": 480,
+      "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/fork/fork_state_s101_t480.xml",
+      "state_sha256": "6d0cfaec52ba"
+     },
+     "information": "reactive",
+     "network": {
+      "uplink": {
+       "channel": "uplink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 0,
+       "messages_rx": 0,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": null,
+       "latency_mean_ms": null,
+       "latency_median_ms": null,
+       "latency_p95_ms": null,
+       "latency_p99_ms": null,
+       "bytes_tx": 0,
+       "message_rate_per_s": 0.0,
+       "throughput_bytes_per_s": 0.0
+      },
+      "downlink": {
+       "channel": "downlink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 0,
+       "messages_rx": 0,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": null,
+       "latency_mean_ms": null,
+       "latency_median_ms": null,
+       "latency_p95_ms": null,
+       "latency_p99_ms": null,
+       "bytes_tx": 0,
+       "message_rate_per_s": 0.0,
+       "throughput_bytes_per_s": 0.0
+      },
+      "connected_vehicles": 247,
+      "vehicles_seen": 879,
+      "penetration_configured": 0.3,
+      "recommendations_delivered": 0,
+      "reroutes_applied": 0,
+      "recommendations_inapplicable": 0
+     },
+     "rounds": [],
+     "routing_run_ids": [],
+     "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/reactive/reroute_log.jsonl",
+     "reroutes_applied": 0,
+     "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/reactive",
+     "metrics": {
+      "arrived": 836,
+      "unfinished_at_horizon": 43,
+      "unfinished": 43,
+      "total_vehicle_hours": 186.32777777777778,
+      "mean_travel_time_all": 763.1171786120592,
+      "mean_travel_time_s": 745.023923444976,
+      "p95_travel_time_s": 1391.0,
+      "mean_waiting_s": 145.7523923444976,
+      "total_waiting_s": 121849.0,
+      "mean_time_loss_s": 305.896543062201,
+      "mean_depart_delay_s": 0.011961722488038277,
+      "vehicles_rerouted_at_least_once": 49,
+      "teleports": 0,
+      "loaded": 900,
+      "inserted": 900,
+      "running_at_end": 43,
+      "waiting_to_insert_at_end": 0,
+      "mean_queue_veh": 54.98,
+      "max_queue_veh": 108.0,
+      "mean_running_veh": 279.31,
+      "queue_steps": 2220,
+      "never_inserted": 0,
+      "never_inserted_vehicle_hours": 0.0,
+      "total_vehicle_hours_incl_never_inserted": 186.3278,
+      "reactive_reroute_calls": 2762,
+      "incidents_applied": [
+       {
+        "edge": "864049094",
+        "t_start_s": 600,
+        "cap_mps": 2.0,
+        "lanes": 5
+       }
+      ],
+      "wall_s": 19.9
+     }
+    },
+    "persistence_v2x": {
+     "simulation_run_id": "sim_v2x_s101_persistence_v2x_ideal_p30",
+     "arm": "persistence_v2x",
+     "seed": 101,
+     "profile": "ideal",
+     "penetration": 0.3,
+     "moment": "peak",
+     "config_hash": "ea08dddedc14",
+     "network_hash": "0d81df27ab2d",
+     "fork": {
+      "t0_s": 480,
+      "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/fork/fork_state_s101_t480.xml",
+      "state_sha256": "6d0cfaec52ba"
+     },
+     "information": "persistence",
+     "network": {
+      "uplink": {
+       "channel": "uplink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 14570,
+       "messages_rx": 14570,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": 1.0,
+       "latency_mean_ms": 0.0,
+       "latency_median_ms": 0.0,
+       "latency_p95_ms": 0.0,
+       "latency_p99_ms": 0.0,
+       "bytes_tx": 2525732,
+       "message_rate_per_s": 5.396,
+       "throughput_bytes_per_s": 935.5
+      },
+      "downlink": {
+       "channel": "downlink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 18,
+       "messages_rx": 18,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": 1.0,
+       "latency_mean_ms": 0.0,
+       "latency_median_ms": 0.0,
+       "latency_p95_ms": 0.0,
+       "latency_p99_ms": 0.0,
+       "bytes_tx": 54601,
+       "message_rate_per_s": 0.007,
+       "throughput_bytes_per_s": 20.2
+      },
+      "connected_vehicles": 247,
+      "vehicles_seen": 879,
+      "penetration_configured": 0.3,
+      "recommendations_delivered": 18,
+      "reroutes_applied": 18,
+      "recommendations_inapplicable": 0
+     },
+     "rounds": [
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r0",
+       "round": 0,
+       "sim_time_s": 600,
+       "as_of_index": 31892,
+       "raw_prediction_hash": "6dbbb729c7cec8cb",
+       "future_cost_hash": "376ca45ea1ad0404",
+       "priced_edges": 202,
+       "direct_edges": 72,
+       "derived_edges": 130,
+       "observed_edges_fused": 0,
+       "information": "persistence",
+       "inference_seconds": 1.202,
+       "vehicles_considered": 49,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 26,
+        "NO_ALTERNATIVE": 21,
+        "REROUTE": 2
+       },
+       "recommendations_sent": 2,
+       "statuses_known": 70,
+       "edges_with_current_speed": 191
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r1",
+       "round": 1,
+       "sim_time_s": 900,
+       "as_of_index": 31893,
+       "raw_prediction_hash": "74ccaab3026280ef",
+       "future_cost_hash": "84dbaf68a82ae52f",
+       "priced_edges": 201,
+       "direct_edges": 71,
+       "derived_edges": 130,
+       "observed_edges_fused": 0,
+       "information": "persistence",
+       "inference_seconds": 0.043,
+       "vehicles_considered": 69,
+       "decisions": {
+        "NO_ALTERNATIVE": 36,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 30,
+        "REROUTE": 3
+       },
+       "recommendations_sent": 3,
+       "statuses_known": 112,
+       "edges_with_current_speed": 254
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r2",
+       "round": 2,
+       "sim_time_s": 1200,
+       "as_of_index": 31894,
+       "raw_prediction_hash": "5f21ac23ea0bf9af",
+       "future_cost_hash": "3def7148409877d9",
+       "priced_edges": 201,
+       "direct_edges": 71,
+       "derived_edges": 130,
+       "observed_edges_fused": 0,
+       "information": "persistence",
+       "inference_seconds": 0.066,
+       "vehicles_considered": 87,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 42,
+        "NO_ALTERNATIVE": 42,
+        "REROUTE": 3
+       },
+       "recommendations_sent": 3,
+       "statuses_known": 157,
+       "edges_with_current_speed": 315
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r3",
+       "round": 3,
+       "sim_time_s": 1500,
+       "as_of_index": 31895,
+       "raw_prediction_hash": "195e846871ba018d",
+       "future_cost_hash": "720e39711f933526",
+       "priced_edges": 202,
+       "direct_edges": 72,
+       "derived_edges": 130,
+       "observed_edges_fused": 0,
+       "information": "persistence",
+       "inference_seconds": 0.049,
+       "vehicles_considered": 81,
+       "decisions": {
+        "NO_ALTERNATIVE": 44,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 34,
+        "REROUTE": 3
+       },
+       "recommendations_sent": 3,
+       "statuses_known": 197,
+       "edges_with_current_speed": 346
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r4",
+       "round": 4,
+       "sim_time_s": 1800,
+       "as_of_index": 31896,
+       "raw_prediction_hash": "fb3315a33572f874",
+       "future_cost_hash": "8965dfbc99230ce8",
+       "priced_edges": 202,
+       "direct_edges": 72,
+       "derived_edges": 130,
+       "observed_edges_fused": 0,
+       "information": "persistence",
+       "inference_seconds": 0.041,
+       "vehicles_considered": 99,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 43,
+        "NO_ALTERNATIVE": 49,
+        "REROUTE": 7
+       },
+       "recommendations_sent": 7,
+       "statuses_known": 246,
+       "edges_with_current_speed": 356
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r5",
+       "round": 5,
+       "sim_time_s": 2100,
+       "as_of_index": 31897,
+       "raw_prediction_hash": "3484cb87ca31872a",
+       "future_cost_hash": "ac650300839fb9d0",
+       "priced_edges": 202,
+       "direct_edges": 72,
+       "derived_edges": 130,
+       "observed_edges_fused": 0,
+       "information": "persistence",
+       "inference_seconds": 0.045,
+       "vehicles_considered": 67,
+       "decisions": {
+        "NO_ALTERNATIVE": 41,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 26
+       },
+       "recommendations_sent": 0,
+       "statuses_known": 247,
+       "edges_with_current_speed": 274
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r6",
+       "round": 6,
+       "sim_time_s": 2400,
+       "as_of_index": 31898,
+       "raw_prediction_hash": "858ad94d1b752070",
+       "future_cost_hash": "89474e0313463070",
+       "priced_edges": 202,
+       "direct_edges": 72,
+       "derived_edges": 130,
+       "observed_edges_fused": 0,
+       "information": "persistence",
+       "inference_seconds": 0.06,
+       "vehicles_considered": 31,
+       "decisions": {
+        "NO_ALTERNATIVE": 23,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 8
+       },
+       "recommendations_sent": 0,
+       "statuses_known": 247,
+       "edges_with_current_speed": 136
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r7",
+       "round": 7,
+       "sim_time_s": 2700,
+       "as_of_index": 31899,
+       "raw_prediction_hash": "b640b0caa9752caa",
+       "future_cost_hash": "9d14c232692d1649",
+       "priced_edges": 202,
+       "direct_edges": 72,
+       "derived_edges": 130,
+       "observed_edges_fused": 0,
+       "information": "persistence",
+       "inference_seconds": 0.044,
+       "vehicles_considered": 11,
+       "decisions": {
+        "NO_ALTERNATIVE": 8,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 3
+       },
+       "recommendations_sent": 0,
+       "statuses_known": 247,
+       "edges_with_current_speed": 58
+      }
+     ],
+     "routing_run_ids": [
+      "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r0",
+      "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r1",
+      "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r2",
+      "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r3",
+      "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r4",
+      "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r5",
+      "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r6",
+      "rt_v2x_v2x_s101_persistence_v2x_ideal_p30_r7"
+     ],
+     "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/persistence_v2x/reroute_log.jsonl",
+     "reroutes_applied": 18,
+     "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/persistence_v2x",
+     "metrics": {
+      "arrived": 832,
+      "unfinished_at_horizon": 47,
+      "unfinished": 47,
+      "total_vehicle_hours": 186.89305555555555,
+      "mean_travel_time_all": 765.4323094425483,
+      "mean_travel_time_s": 744.7944711538462,
+      "p95_travel_time_s": 1406.0,
+      "mean_waiting_s": 144.10216346153845,
+      "total_waiting_s": 119893.0,
+      "mean_time_loss_s": 303.43548076923076,
+      "mean_depart_delay_s": 0.006009615384615385,
+      "vehicles_rerouted_at_least_once": 14,
+      "teleports": 0,
+      "loaded": 900,
+      "inserted": 900,
+      "running_at_end": 47,
+      "waiting_to_insert_at_end": 0,
+      "mean_queue_veh": 54.59,
+      "max_queue_veh": 106.0,
+      "mean_running_veh": 280.23,
+      "queue_steps": 2220,
+      "never_inserted": 0,
+      "never_inserted_vehicle_hours": 0.0,
+      "total_vehicle_hours_incl_never_inserted": 186.8931,
+      "reactive_reroute_calls": 0,
+      "incidents_applied": [
+       {
+        "edge": "864049094",
+        "t_start_s": 600,
+        "cap_mps": 2.0,
+        "lanes": 5
+       }
+      ],
+      "wall_s": 103.3
+     }
+    },
+    "predictive_v2x": {
+     "simulation_run_id": "sim_v2x_s101_predictive_v2x_ideal_p30",
+     "arm": "predictive_v2x",
+     "seed": 101,
+     "profile": "ideal",
+     "penetration": 0.3,
+     "moment": "peak",
+     "config_hash": "ea08dddedc14",
+     "network_hash": "0d81df27ab2d",
+     "fork": {
+      "t0_s": 480,
+      "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/fork/fork_state_s101_t480.xml",
+      "state_sha256": "6d0cfaec52ba"
+     },
+     "information": "gwnet",
+     "network": {
+      "uplink": {
+       "channel": "uplink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 14560,
+       "messages_rx": 14560,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": 1.0,
+       "latency_mean_ms": 0.0,
+       "latency_median_ms": 0.0,
+       "latency_p95_ms": 0.0,
+       "latency_p99_ms": 0.0,
+       "bytes_tx": 2524110,
+       "message_rate_per_s": 5.393,
+       "throughput_bytes_per_s": 934.9
+      },
+      "downlink": {
+       "channel": "downlink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 16,
+       "messages_rx": 16,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": 1.0,
+       "latency_mean_ms": 0.0,
+       "latency_median_ms": 0.0,
+       "latency_p95_ms": 0.0,
+       "latency_p99_ms": 0.0,
+       "bytes_tx": 47491,
+       "message_rate_per_s": 0.006,
+       "throughput_bytes_per_s": 17.6
+      },
+      "connected_vehicles": 247,
+      "vehicles_seen": 879,
+      "penetration_configured": 0.3,
+      "recommendations_delivered": 16,
+      "reroutes_applied": 16,
+      "recommendations_inapplicable": 0
+     },
+     "rounds": [
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r0",
+       "round": 0,
+       "sim_time_s": 600,
+       "as_of_index": 31892,
+       "raw_prediction_hash": "6dbbb729c7cec8cb",
+       "future_cost_hash": "3bd04b60f3c62e12",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet",
+       "inference_seconds": 0.069,
+       "vehicles_considered": 49,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 27,
+        "NO_ALTERNATIVE": 20,
+        "REROUTE": 2
+       },
+       "recommendations_sent": 2,
+       "statuses_known": 70,
+       "edges_with_current_speed": 191
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r1",
+       "round": 1,
+       "sim_time_s": 900,
+       "as_of_index": 31893,
+       "raw_prediction_hash": "74ccaab3026280ef",
+       "future_cost_hash": "1a67a2857e9729ed",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet",
+       "inference_seconds": 0.055,
+       "vehicles_considered": 69,
+       "decisions": {
+        "NO_ALTERNATIVE": 36,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 30,
+        "REROUTE": 3
+       },
+       "recommendations_sent": 3,
+       "statuses_known": 112,
+       "edges_with_current_speed": 254
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r2",
+       "round": 2,
+       "sim_time_s": 1200,
+       "as_of_index": 31894,
+       "raw_prediction_hash": "5f21ac23ea0bf9af",
+       "future_cost_hash": "ac91a9846bede822",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet",
+       "inference_seconds": 0.058,
+       "vehicles_considered": 87,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 40,
+        "NO_ALTERNATIVE": 44,
+        "REROUTE": 3
+       },
+       "recommendations_sent": 3,
+       "statuses_known": 157,
+       "edges_with_current_speed": 315
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r3",
+       "round": 3,
+       "sim_time_s": 1500,
+       "as_of_index": 31895,
+       "raw_prediction_hash": "195e846871ba018d",
+       "future_cost_hash": "6be1b04cc0f52236",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet",
+       "inference_seconds": 0.054,
+       "vehicles_considered": 82,
+       "decisions": {
+        "NO_ALTERNATIVE": 44,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 36,
+        "REROUTE": 2
+       },
+       "recommendations_sent": 2,
+       "statuses_known": 197,
+       "edges_with_current_speed": 344
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r4",
+       "round": 4,
+       "sim_time_s": 1800,
+       "as_of_index": 31896,
+       "raw_prediction_hash": "fb3315a33572f874",
+       "future_cost_hash": "184ff6599d03e800",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet",
+       "inference_seconds": 0.048,
+       "vehicles_considered": 97,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 42,
+        "NO_ALTERNATIVE": 49,
+        "REROUTE": 6
+       },
+       "recommendations_sent": 6,
+       "statuses_known": 246,
+       "edges_with_current_speed": 360
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r5",
+       "round": 5,
+       "sim_time_s": 2100,
+       "as_of_index": 31897,
+       "raw_prediction_hash": "3484cb87ca31872a",
+       "future_cost_hash": "dc730af6025e2443",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet",
+       "inference_seconds": 0.052,
+       "vehicles_considered": 59,
+       "decisions": {
+        "NO_ALTERNATIVE": 39,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 20
+       },
+       "recommendations_sent": 0,
+       "statuses_known": 247,
+       "edges_with_current_speed": 259
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r6",
+       "round": 6,
+       "sim_time_s": 2400,
+       "as_of_index": 31898,
+       "raw_prediction_hash": "858ad94d1b752070",
+       "future_cost_hash": "b55f93cfa738d817",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet",
+       "inference_seconds": 0.047,
+       "vehicles_considered": 26,
+       "decisions": {
+        "NO_ALTERNATIVE": 17,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 9
+       },
+       "recommendations_sent": 0,
+       "statuses_known": 247,
+       "edges_with_current_speed": 130
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r7",
+       "round": 7,
+       "sim_time_s": 2700,
+       "as_of_index": 31899,
+       "raw_prediction_hash": "b640b0caa9752caa",
+       "future_cost_hash": "e55737b16c8f8490",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "gwnet",
+       "inference_seconds": 0.053,
+       "vehicles_considered": 10,
+       "decisions": {
+        "NO_ALTERNATIVE": 7,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 3
+       },
+       "recommendations_sent": 0,
+       "statuses_known": 247,
+       "edges_with_current_speed": 57
+      }
+     ],
+     "routing_run_ids": [
+      "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r0",
+      "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r1",
+      "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r2",
+      "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r3",
+      "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r4",
+      "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r5",
+      "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r6",
+      "rt_v2x_v2x_s101_predictive_v2x_ideal_p30_r7"
+     ],
+     "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/predictive_v2x/reroute_log.jsonl",
+     "reroutes_applied": 16,
+     "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/predictive_v2x",
+     "metrics": {
+      "arrived": 834,
+      "unfinished_at_horizon": 45,
+      "unfinished": 45,
+      "total_vehicle_hours": 186.5325,
+      "mean_travel_time_all": 763.9556313993174,
+      "mean_travel_time_s": 744.689448441247,
+      "p95_travel_time_s": 1410.0,
+      "mean_waiting_s": 143.5071942446043,
+      "total_waiting_s": 119685.0,
+      "mean_time_loss_s": 302.6940767386091,
+      "mean_depart_delay_s": 0.008393285371702638,
+      "vehicles_rerouted_at_least_once": 14,
+      "teleports": 0,
+      "loaded": 900,
+      "inserted": 900,
+      "running_at_end": 45,
+      "waiting_to_insert_at_end": 0,
+      "mean_queue_veh": 53.91,
+      "max_queue_veh": 108.0,
+      "mean_running_veh": 279.64,
+      "queue_steps": 2220,
+      "never_inserted": 0,
+      "never_inserted_vehicle_hours": 0.0,
+      "total_vehicle_hours_incl_never_inserted": 186.5325,
+      "reactive_reroute_calls": 0,
+      "incidents_applied": [
+       {
+        "edge": "864049094",
+        "t_start_s": 600,
+        "cap_mps": 2.0,
+        "lanes": 5
+       }
+      ],
+      "wall_s": 108.2
+     }
+    },
+    "oracle_v2x": {
+     "simulation_run_id": "sim_v2x_s101_oracle_v2x_ideal_p30",
+     "arm": "oracle_v2x",
+     "seed": 101,
+     "profile": "ideal",
+     "penetration": 0.3,
+     "moment": "peak",
+     "config_hash": "ea08dddedc14",
+     "network_hash": "0d81df27ab2d",
+     "fork": {
+      "t0_s": 480,
+      "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/fork/fork_state_s101_t480.xml",
+      "state_sha256": "6d0cfaec52ba"
+     },
+     "information": "oracle",
+     "network": {
+      "uplink": {
+       "channel": "uplink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 14319,
+       "messages_rx": 14319,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": 1.0,
+       "latency_mean_ms": 0.0,
+       "latency_median_ms": 0.0,
+       "latency_p95_ms": 0.0,
+       "latency_p99_ms": 0.0,
+       "bytes_tx": 2484799,
+       "message_rate_per_s": 5.303,
+       "throughput_bytes_per_s": 920.3
+      },
+      "downlink": {
+       "channel": "downlink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 134,
+       "messages_rx": 134,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": 1.0,
+       "latency_mean_ms": 0.0,
+       "latency_median_ms": 0.0,
+       "latency_p95_ms": 0.0,
+       "latency_p99_ms": 0.0,
+       "bytes_tx": 348540,
+       "message_rate_per_s": 0.05,
+       "throughput_bytes_per_s": 129.1
+      },
+      "connected_vehicles": 247,
+      "vehicles_seen": 879,
+      "penetration_configured": 0.3,
+      "recommendations_delivered": 134,
+      "reroutes_applied": 134,
+      "recommendations_inapplicable": 0
+     },
+     "rounds": [
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r0",
+       "round": 0,
+       "sim_time_s": 600,
+       "as_of_index": 31892,
+       "raw_prediction_hash": "6dbbb729c7cec8cb",
+       "future_cost_hash": "f58085257975bdb3",
+       "priced_edges": 4786,
+       "direct_edges": 4786,
+       "derived_edges": 0,
+       "observed_edges_fused": 0,
+       "information": "oracle",
+       "inference_seconds": 0.052,
+       "vehicles_considered": 49,
+       "decisions": {
+        "REROUTE": 23,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 20,
+        "NO_ALTERNATIVE": 6
+       },
+       "recommendations_sent": 23,
+       "statuses_known": 70,
+       "edges_with_current_speed": 191
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r1",
+       "round": 1,
+       "sim_time_s": 900,
+       "as_of_index": 31893,
+       "raw_prediction_hash": "74ccaab3026280ef",
+       "future_cost_hash": "d49ebca77a41454b",
+       "priced_edges": 5274,
+       "direct_edges": 5274,
+       "derived_edges": 0,
+       "observed_edges_fused": 0,
+       "information": "oracle",
+       "inference_seconds": 0.058,
+       "vehicles_considered": 69,
+       "decisions": {
+        "NO_ALTERNATIVE": 17,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 26,
+        "REROUTE": 26
+       },
+       "recommendations_sent": 26,
+       "statuses_known": 112,
+       "edges_with_current_speed": 291
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r2",
+       "round": 2,
+       "sim_time_s": 1200,
+       "as_of_index": 31894,
+       "raw_prediction_hash": "5f21ac23ea0bf9af",
+       "future_cost_hash": "2df6540cb26db325",
+       "priced_edges": 5387,
+       "direct_edges": 5387,
+       "derived_edges": 0,
+       "observed_edges_fused": 0,
+       "information": "oracle",
+       "inference_seconds": 0.047,
+       "vehicles_considered": 82,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 42,
+        "REROUTE": 30,
+        "NO_ALTERNATIVE": 10
+       },
+       "recommendations_sent": 30,
+       "statuses_known": 157,
+       "edges_with_current_speed": 341
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r3",
+       "round": 3,
+       "sim_time_s": 1500,
+       "as_of_index": 31895,
+       "raw_prediction_hash": "195e846871ba018d",
+       "future_cost_hash": "f655de0fe599d20f",
+       "priced_edges": 5169,
+       "direct_edges": 5169,
+       "derived_edges": 0,
+       "observed_edges_fused": 0,
+       "information": "oracle",
+       "inference_seconds": 0.063,
+       "vehicles_considered": 78,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 50,
+        "NO_ALTERNATIVE": 14,
+        "REROUTE": 14
+       },
+       "recommendations_sent": 14,
+       "statuses_known": 197,
+       "edges_with_current_speed": 335
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r4",
+       "round": 4,
+       "sim_time_s": 1800,
+       "as_of_index": 31896,
+       "raw_prediction_hash": "fb3315a33572f874",
+       "future_cost_hash": "488487fac1c725b6",
+       "priced_edges": 4410,
+       "direct_edges": 4410,
+       "derived_edges": 0,
+       "observed_edges_fused": 0,
+       "information": "oracle",
+       "inference_seconds": 0.057,
+       "vehicles_considered": 92,
+       "decisions": {
+        "NO_ALTERNATIVE": 17,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 41,
+        "REROUTE": 34
+       },
+       "recommendations_sent": 34,
+       "statuses_known": 246,
+       "edges_with_current_speed": 366
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r5",
+       "round": 5,
+       "sim_time_s": 2100,
+       "as_of_index": 31897,
+       "raw_prediction_hash": "3484cb87ca31872a",
+       "future_cost_hash": "aa2ff5958555c212",
+       "priced_edges": 3142,
+       "direct_edges": 3142,
+       "derived_edges": 0,
+       "observed_edges_fused": 0,
+       "information": "oracle",
+       "inference_seconds": 0.05,
+       "vehicles_considered": 57,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 39,
+        "NO_ALTERNATIVE": 11,
+        "REROUTE": 7
+       },
+       "recommendations_sent": 7,
+       "statuses_known": 247,
+       "edges_with_current_speed": 276
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r6",
+       "round": 6,
+       "sim_time_s": 2400,
+       "as_of_index": 31898,
+       "raw_prediction_hash": "858ad94d1b752070",
+       "future_cost_hash": "8e74aa249e4b0259",
+       "priced_edges": 1964,
+       "direct_edges": 1964,
+       "derived_edges": 0,
+       "observed_edges_fused": 0,
+       "information": "oracle",
+       "inference_seconds": 0.048,
+       "vehicles_considered": 29,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 23,
+        "NO_ALTERNATIVE": 6
+       },
+       "recommendations_sent": 0,
+       "statuses_known": 247,
+       "edges_with_current_speed": 134
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r7",
+       "round": 7,
+       "sim_time_s": 2700,
+       "as_of_index": 31899,
+       "raw_prediction_hash": "b640b0caa9752caa",
+       "future_cost_hash": "44136fa355b3678a",
+       "priced_edges": 0,
+       "direct_edges": 0,
+       "derived_edges": 0,
+       "observed_edges_fused": 0,
+       "information": "oracle",
+       "inference_seconds": 0.047,
+       "vehicles_considered": 8,
+       "decisions": {
+        "NO_ALTERNATIVE": 3,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 5
+       },
+       "recommendations_sent": 0,
+       "statuses_known": 247,
+       "edges_with_current_speed": 54
+      }
+     ],
+     "routing_run_ids": [
+      "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r0",
+      "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r1",
+      "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r2",
+      "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r3",
+      "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r4",
+      "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r5",
+      "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r6",
+      "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r7"
+     ],
+     "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/oracle_v2x/reroute_log.jsonl",
+     "reroutes_applied": 134,
+     "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/oracle_v2x",
+     "metrics": {
+      "arrived": 836,
+      "unfinished_at_horizon": 43,
+      "unfinished": 43,
+      "total_vehicle_hours": 186.09777777777776,
+      "mean_travel_time_all": 762.1751990898748,
+      "mean_travel_time_s": 744.0813397129186,
+      "p95_travel_time_s": 1374.0,
+      "mean_waiting_s": 135.6255980861244,
+      "total_waiting_s": 113383.0,
+      "mean_time_loss_s": 293.5528947368421,
+      "mean_depart_delay_s": 0.007177033492822967,
+      "vehicles_rerouted_at_least_once": 114,
+      "teleports": 1,
+      "loaded": 900,
+      "inserted": 900,
+      "running_at_end": 43,
+      "waiting_to_insert_at_end": 0,
+      "mean_queue_veh": 50.78,
+      "max_queue_veh": 105.0,
+      "mean_running_veh": 278.94,
+      "queue_steps": 2220,
+      "never_inserted": 0,
+      "never_inserted_vehicle_hours": 0.0,
+      "total_vehicle_hours_incl_never_inserted": 186.0978,
+      "reactive_reroute_calls": 0,
+      "incidents_applied": [
+       {
+        "edge": "864049094",
+        "t_start_s": 600,
+        "cap_mps": 2.0,
+        "lanes": 5
+       }
+      ],
+      "wall_s": 110.3
+     }
+    },
+    "random_v2x": {
+     "simulation_run_id": "sim_v2x_s101_random_v2x_ideal_p30",
+     "arm": "random_v2x",
+     "seed": 101,
+     "profile": "ideal",
+     "penetration": 0.3,
+     "moment": "peak",
+     "config_hash": "ea08dddedc14",
+     "network_hash": "0d81df27ab2d",
+     "fork": {
+      "t0_s": 480,
+      "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/fork/fork_state_s101_t480.xml",
+      "state_sha256": "6d0cfaec52ba"
+     },
+     "information": "random",
+     "network": {
+      "uplink": {
+       "channel": "uplink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 15019,
+       "messages_rx": 15019,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": 1.0,
+       "latency_mean_ms": 0.0,
+       "latency_median_ms": 0.0,
+       "latency_p95_ms": 0.0,
+       "latency_p99_ms": 0.0,
+       "bytes_tx": 2603285,
+       "message_rate_per_s": 5.563,
+       "throughput_bytes_per_s": 964.2
+      },
+      "downlink": {
+       "channel": "downlink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 32,
+       "messages_rx": 32,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": 1.0,
+       "latency_mean_ms": 0.0,
+       "latency_median_ms": 0.0,
+       "latency_p95_ms": 0.0,
+       "latency_p99_ms": 0.0,
+       "bytes_tx": 97159,
+       "message_rate_per_s": 0.012,
+       "throughput_bytes_per_s": 36.0
+      },
+      "connected_vehicles": 247,
+      "vehicles_seen": 879,
+      "penetration_configured": 0.3,
+      "recommendations_delivered": 32,
+      "reroutes_applied": 32,
+      "recommendations_inapplicable": 0
+     },
+     "rounds": [
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_random_v2x_ideal_p30_r0",
+       "round": 0,
+       "sim_time_s": 600,
+       "as_of_index": 31892,
+       "raw_prediction_hash": "6dbbb729c7cec8cb",
+       "future_cost_hash": "3386e4ff54e91e36",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "random",
+       "inference_seconds": 0.053,
+       "vehicles_considered": 49,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 31,
+        "NO_ALTERNATIVE": 18
+       },
+       "recommendations_sent": 0,
+       "statuses_known": 70,
+       "edges_with_current_speed": 191
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_random_v2x_ideal_p30_r1",
+       "round": 1,
+       "sim_time_s": 900,
+       "as_of_index": 31893,
+       "raw_prediction_hash": "74ccaab3026280ef",
+       "future_cost_hash": "e3883628b592ce19",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "random",
+       "inference_seconds": 0.051,
+       "vehicles_considered": 69,
+       "decisions": {
+        "NO_ALTERNATIVE": 35,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 24,
+        "REROUTE": 10
+       },
+       "recommendations_sent": 10,
+       "statuses_known": 112,
+       "edges_with_current_speed": 262
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_random_v2x_ideal_p30_r2",
+       "round": 2,
+       "sim_time_s": 1200,
+       "as_of_index": 31894,
+       "raw_prediction_hash": "5f21ac23ea0bf9af",
+       "future_cost_hash": "89eaee528b1e68e9",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "random",
+       "inference_seconds": 0.048,
+       "vehicles_considered": 87,
+       "decisions": {
+        "NO_ALTERNATIVE": 40,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 40,
+        "REROUTE": 7
+       },
+       "recommendations_sent": 7,
+       "statuses_known": 157,
+       "edges_with_current_speed": 309
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_random_v2x_ideal_p30_r3",
+       "round": 3,
+       "sim_time_s": 1500,
+       "as_of_index": 31895,
+       "raw_prediction_hash": "195e846871ba018d",
+       "future_cost_hash": "70b7ce788cf6332d",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "random",
+       "inference_seconds": 0.044,
+       "vehicles_considered": 79,
+       "decisions": {
+        "NO_ALTERNATIVE": 36,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 41,
+        "REROUTE": 2
+       },
+       "recommendations_sent": 2,
+       "statuses_known": 197,
+       "edges_with_current_speed": 345
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_random_v2x_ideal_p30_r4",
+       "round": 4,
+       "sim_time_s": 1800,
+       "as_of_index": 31896,
+       "raw_prediction_hash": "fb3315a33572f874",
+       "future_cost_hash": "d917b5444c6f22d8",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "random",
+       "inference_seconds": 0.05,
+       "vehicles_considered": 96,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 46,
+        "NO_ALTERNATIVE": 40,
+        "REROUTE": 10
+       },
+       "recommendations_sent": 10,
+       "statuses_known": 246,
+       "edges_with_current_speed": 342
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_random_v2x_ideal_p30_r5",
+       "round": 5,
+       "sim_time_s": 2100,
+       "as_of_index": 31897,
+       "raw_prediction_hash": "3484cb87ca31872a",
+       "future_cost_hash": "7acfbf3def24df40",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "random",
+       "inference_seconds": 0.047,
+       "vehicles_considered": 64,
+       "decisions": {
+        "KEEP_CURRENT_BELOW_THRESHOLD": 26,
+        "NO_ALTERNATIVE": 36,
+        "REROUTE": 2
+       },
+       "recommendations_sent": 2,
+       "statuses_known": 247,
+       "edges_with_current_speed": 269
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_random_v2x_ideal_p30_r6",
+       "round": 6,
+       "sim_time_s": 2400,
+       "as_of_index": 31898,
+       "raw_prediction_hash": "858ad94d1b752070",
+       "future_cost_hash": "d421a5b3d62d7c4f",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "random",
+       "inference_seconds": 0.045,
+       "vehicles_considered": 34,
+       "decisions": {
+        "NO_ALTERNATIVE": 24,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 9,
+        "REROUTE": 1
+       },
+       "recommendations_sent": 1,
+       "statuses_known": 247,
+       "edges_with_current_speed": 143
+      },
+      {
+       "routing_run_id": "rt_v2x_v2x_s101_random_v2x_ideal_p30_r7",
+       "round": 7,
+       "sim_time_s": 2700,
+       "as_of_index": 31899,
+       "raw_prediction_hash": "b640b0caa9752caa",
+       "future_cost_hash": "704d4f20a43ec4aa",
+       "priced_edges": 208,
+       "direct_edges": 74,
+       "derived_edges": 134,
+       "observed_edges_fused": 0,
+       "information": "random",
+       "inference_seconds": 0.051,
+       "vehicles_considered": 13,
+       "decisions": {
+        "NO_ALTERNATIVE": 9,
+        "KEEP_CURRENT_BELOW_THRESHOLD": 4
+       },
+       "recommendations_sent": 0,
+       "statuses_known": 247,
+       "edges_with_current_speed": 59
+      }
+     ],
+     "routing_run_ids": [
+      "rt_v2x_v2x_s101_random_v2x_ideal_p30_r0",
+      "rt_v2x_v2x_s101_random_v2x_ideal_p30_r1",
+      "rt_v2x_v2x_s101_random_v2x_ideal_p30_r2",
+      "rt_v2x_v2x_s101_random_v2x_ideal_p30_r3",
+      "rt_v2x_v2x_s101_random_v2x_ideal_p30_r4",
+      "rt_v2x_v2x_s101_random_v2x_ideal_p30_r5",
+      "rt_v2x_v2x_s101_random_v2x_ideal_p30_r6",
+      "rt_v2x_v2x_s101_random_v2x_ideal_p30_r7"
+     ],
+     "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/random_v2x/reroute_log.jsonl",
+     "reroutes_applied": 32,
+     "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/random_v2x",
+     "metrics": {
+      "arrived": 829,
+      "unfinished_at_horizon": 50,
+      "unfinished": 50,
+      "total_vehicle_hours": 189.20138888888889,
+      "mean_travel_time_all": 774.8862343572241,
+      "mean_travel_time_s": 753.6176115802172,
+      "p95_travel_time_s": 1427.0,
+      "mean_waiting_s": 149.1785283474065,
+      "total_waiting_s": 123669.0,
+      "mean_time_loss_s": 312.2125693606755,
+      "mean_depart_delay_s": 0.012062726176115802,
+      "vehicles_rerouted_at_least_once": 24,
+      "teleports": 0,
+      "loaded": 900,
+      "inserted": 900,
+      "running_at_end": 50,
+      "waiting_to_insert_at_end": 0,
+      "mean_queue_veh": 56.53,
+      "max_queue_veh": 111.0,
+      "mean_running_veh": 283.97,
+      "queue_steps": 2220,
+      "never_inserted": 0,
+      "never_inserted_vehicle_hours": 0.0,
+      "total_vehicle_hours_incl_never_inserted": 189.2014,
+      "reactive_reroute_calls": 0,
+      "incidents_applied": [
+       {
+        "edge": "864049094",
+        "t_start_s": 600,
+        "cap_mps": 2.0,
+        "lanes": 5
+       }
+      ],
+      "wall_s": 100.8
+     }
+    }
+   }
+  }
+ ],
+ "paired": {
+  "reactive_vs_baseline": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "reactive vs baseline",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.749
+    ],
+    "mean_pct": -0.75,
+    "median_pct": -0.75,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_travel_time_all": {
+    "pair": "reactive vs baseline",
+    "metric": "mean_travel_time_all",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.749
+    ],
+    "mean_pct": -0.75,
+    "median_pct": -0.75,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "reactive vs baseline",
+    "metric": "p95_travel_time_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     -1.067
+    ],
+    "mean_pct": -1.07,
+    "median_pct": -1.07,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "reactive vs baseline",
+    "metric": "total_waiting_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.949
+    ],
+    "mean_pct": 0.95,
+    "median_pct": 0.95,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "reactive vs baseline",
+    "metric": "mean_queue_veh",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.328
+    ],
+    "mean_pct": 0.33,
+    "median_pct": 0.33,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "reactive vs baseline",
+    "metric": "arrived",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.481
+    ],
+    "mean_pct": 0.48,
+    "median_pct": 0.48,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "reactive vs baseline",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "persistence_v2x_vs_baseline": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "persistence_v2x vs baseline",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.448
+    ],
+    "mean_pct": -0.45,
+    "median_pct": -0.45,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_travel_time_all": {
+    "pair": "persistence_v2x vs baseline",
+    "metric": "mean_travel_time_all",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.448
+    ],
+    "mean_pct": -0.45,
+    "median_pct": -0.45,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "persistence_v2x vs baseline",
+    "metric": "p95_travel_time_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.0
+    ],
+    "mean_pct": 0.0,
+    "median_pct": 0.0,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 0,
+    "ties": 1,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "persistence_v2x vs baseline",
+    "metric": "total_waiting_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.671
+    ],
+    "mean_pct": -0.67,
+    "median_pct": -0.67,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "persistence_v2x vs baseline",
+    "metric": "mean_queue_veh",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.383
+    ],
+    "mean_pct": -0.38,
+    "median_pct": -0.38,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "persistence_v2x vs baseline",
+    "metric": "arrived",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.0
+    ],
+    "mean_pct": 0.0,
+    "median_pct": 0.0,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 0,
+    "ties": 1,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "persistence_v2x vs baseline",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "persistence_v2x_vs_reactive": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "persistence_v2x vs reactive",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.303
+    ],
+    "mean_pct": 0.3,
+    "median_pct": 0.3,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_travel_time_all": {
+    "pair": "persistence_v2x vs reactive",
+    "metric": "mean_travel_time_all",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.303
+    ],
+    "mean_pct": 0.3,
+    "median_pct": 0.3,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "persistence_v2x vs reactive",
+    "metric": "p95_travel_time_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     1.078
+    ],
+    "mean_pct": 1.08,
+    "median_pct": 1.08,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "persistence_v2x vs reactive",
+    "metric": "total_waiting_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     -1.605
+    ],
+    "mean_pct": -1.6,
+    "median_pct": -1.6,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "persistence_v2x vs reactive",
+    "metric": "mean_queue_veh",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.709
+    ],
+    "mean_pct": -0.71,
+    "median_pct": -0.71,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "persistence_v2x vs reactive",
+    "metric": "arrived",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.478
+    ],
+    "mean_pct": -0.48,
+    "median_pct": -0.48,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "persistence_v2x vs reactive",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "predictive_v2x_vs_baseline": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "predictive_v2x vs baseline",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.64
+    ],
+    "mean_pct": -0.64,
+    "median_pct": -0.64,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_travel_time_all": {
+    "pair": "predictive_v2x vs baseline",
+    "metric": "mean_travel_time_all",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.64
+    ],
+    "mean_pct": -0.64,
+    "median_pct": -0.64,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "predictive_v2x vs baseline",
+    "metric": "p95_travel_time_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.284
+    ],
+    "mean_pct": 0.28,
+    "median_pct": 0.28,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "predictive_v2x vs baseline",
+    "metric": "total_waiting_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.843
+    ],
+    "mean_pct": -0.84,
+    "median_pct": -0.84,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "predictive_v2x vs baseline",
+    "metric": "mean_queue_veh",
+    "seeds": 1,
+    "per_seed_pct": [
+     -1.624
+    ],
+    "mean_pct": -1.62,
+    "median_pct": -1.62,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "predictive_v2x vs baseline",
+    "metric": "arrived",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.24
+    ],
+    "mean_pct": 0.24,
+    "median_pct": 0.24,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "predictive_v2x vs baseline",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "predictive_v2x_vs_reactive": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "predictive_v2x vs reactive",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.11
+    ],
+    "mean_pct": 0.11,
+    "median_pct": 0.11,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_travel_time_all": {
+    "pair": "predictive_v2x vs reactive",
+    "metric": "mean_travel_time_all",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.11
+    ],
+    "mean_pct": 0.11,
+    "median_pct": 0.11,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "predictive_v2x vs reactive",
+    "metric": "p95_travel_time_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     1.366
+    ],
+    "mean_pct": 1.37,
+    "median_pct": 1.37,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "predictive_v2x vs reactive",
+    "metric": "total_waiting_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     -1.776
+    ],
+    "mean_pct": -1.78,
+    "median_pct": -1.78,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "predictive_v2x vs reactive",
+    "metric": "mean_queue_veh",
+    "seeds": 1,
+    "per_seed_pct": [
+     -1.946
+    ],
+    "mean_pct": -1.95,
+    "median_pct": -1.95,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "predictive_v2x vs reactive",
+    "metric": "arrived",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.239
+    ],
+    "mean_pct": -0.24,
+    "median_pct": -0.24,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "predictive_v2x vs reactive",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "oracle_v2x_vs_baseline": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "oracle_v2x vs baseline",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.871
+    ],
+    "mean_pct": -0.87,
+    "median_pct": -0.87,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_travel_time_all": {
+    "pair": "oracle_v2x vs baseline",
+    "metric": "mean_travel_time_all",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.871
+    ],
+    "mean_pct": -0.87,
+    "median_pct": -0.87,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "oracle_v2x vs baseline",
+    "metric": "p95_travel_time_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     -2.276
+    ],
+    "mean_pct": -2.28,
+    "median_pct": -2.28,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "oracle_v2x vs baseline",
+    "metric": "total_waiting_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     -6.064
+    ],
+    "mean_pct": -6.06,
+    "median_pct": -6.06,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "oracle_v2x vs baseline",
+    "metric": "mean_queue_veh",
+    "seeds": 1,
+    "per_seed_pct": [
+     -7.336
+    ],
+    "mean_pct": -7.34,
+    "median_pct": -7.34,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "oracle_v2x vs baseline",
+    "metric": "arrived",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.481
+    ],
+    "mean_pct": 0.48,
+    "median_pct": 0.48,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "oracle_v2x vs baseline",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "oracle_v2x_vs_reactive": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "oracle_v2x vs reactive",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.123
+    ],
+    "mean_pct": -0.12,
+    "median_pct": -0.12,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_travel_time_all": {
+    "pair": "oracle_v2x vs reactive",
+    "metric": "mean_travel_time_all",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.123
+    ],
+    "mean_pct": -0.12,
+    "median_pct": -0.12,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "oracle_v2x vs reactive",
+    "metric": "p95_travel_time_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     -1.222
+    ],
+    "mean_pct": -1.22,
+    "median_pct": -1.22,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "oracle_v2x vs reactive",
+    "metric": "total_waiting_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     -6.948
+    ],
+    "mean_pct": -6.95,
+    "median_pct": -6.95,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "oracle_v2x vs reactive",
+    "metric": "mean_queue_veh",
+    "seeds": 1,
+    "per_seed_pct": [
+     -7.639
+    ],
+    "mean_pct": -7.64,
+    "median_pct": -7.64,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "oracle_v2x vs reactive",
+    "metric": "arrived",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.0
+    ],
+    "mean_pct": 0.0,
+    "median_pct": 0.0,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 0,
+    "ties": 1,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "oracle_v2x vs reactive",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "random_v2x_vs_baseline": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "random_v2x vs baseline",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.782
+    ],
+    "mean_pct": 0.78,
+    "median_pct": 0.78,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_travel_time_all": {
+    "pair": "random_v2x vs baseline",
+    "metric": "mean_travel_time_all",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.782
+    ],
+    "mean_pct": 0.78,
+    "median_pct": 0.78,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "random_v2x vs baseline",
+    "metric": "p95_travel_time_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     1.494
+    ],
+    "mean_pct": 1.49,
+    "median_pct": 1.49,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "random_v2x vs baseline",
+    "metric": "total_waiting_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     2.457
+    ],
+    "mean_pct": 2.46,
+    "median_pct": 2.46,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "random_v2x vs baseline",
+    "metric": "mean_queue_veh",
+    "seeds": 1,
+    "per_seed_pct": [
+     3.157
+    ],
+    "mean_pct": 3.16,
+    "median_pct": 3.16,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "random_v2x vs baseline",
+    "metric": "arrived",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.361
+    ],
+    "mean_pct": -0.36,
+    "median_pct": -0.36,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "random_v2x vs baseline",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "random_v2x_vs_reactive": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "random_v2x vs reactive",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 1,
+    "per_seed_pct": [
+     1.542
+    ],
+    "mean_pct": 1.54,
+    "median_pct": 1.54,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_travel_time_all": {
+    "pair": "random_v2x vs reactive",
+    "metric": "mean_travel_time_all",
+    "seeds": 1,
+    "per_seed_pct": [
+     1.542
+    ],
+    "mean_pct": 1.54,
+    "median_pct": 1.54,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "random_v2x vs reactive",
+    "metric": "p95_travel_time_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     2.588
+    ],
+    "mean_pct": 2.59,
+    "median_pct": 2.59,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "random_v2x vs reactive",
+    "metric": "total_waiting_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     1.494
+    ],
+    "mean_pct": 1.49,
+    "median_pct": 1.49,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "random_v2x vs reactive",
+    "metric": "mean_queue_veh",
+    "seeds": 1,
+    "per_seed_pct": [
+     2.819
+    ],
+    "mean_pct": 2.82,
+    "median_pct": 2.82,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "random_v2x vs reactive",
+    "metric": "arrived",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.837
+    ],
+    "mean_pct": -0.84,
+    "median_pct": -0.84,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "random_v2x vs reactive",
+    "metric": "teleports",
+    "seeds": 0,
+    "label": "INCONCLUSIVE"
+   }
+  },
+  "predictive_v2x_vs_oracle_v2x": {
+   "total_vehicle_hours_incl_never_inserted": {
+    "pair": "predictive_v2x vs oracle_v2x",
+    "metric": "total_vehicle_hours_incl_never_inserted",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.234
+    ],
+    "mean_pct": 0.23,
+    "median_pct": 0.23,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_travel_time_all": {
+    "pair": "predictive_v2x vs oracle_v2x",
+    "metric": "mean_travel_time_all",
+    "seeds": 1,
+    "per_seed_pct": [
+     0.234
+    ],
+    "mean_pct": 0.23,
+    "median_pct": 0.23,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "p95_travel_time_s": {
+    "pair": "predictive_v2x vs oracle_v2x",
+    "metric": "p95_travel_time_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     2.62
+    ],
+    "mean_pct": 2.62,
+    "median_pct": 2.62,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "total_waiting_s": {
+    "pair": "predictive_v2x vs oracle_v2x",
+    "metric": "total_waiting_s",
+    "seeds": 1,
+    "per_seed_pct": [
+     5.558
+    ],
+    "mean_pct": 5.56,
+    "median_pct": 5.56,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "mean_queue_veh": {
+    "pair": "predictive_v2x vs oracle_v2x",
+    "metric": "mean_queue_veh",
+    "seeds": 1,
+    "per_seed_pct": [
+     6.164
+    ],
+    "mean_pct": 6.16,
+    "median_pct": 6.16,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   },
+   "arrived": {
+    "pair": "predictive_v2x vs oracle_v2x",
+    "metric": "arrived",
+    "seeds": 1,
+    "per_seed_pct": [
+     -0.239
+    ],
+    "mean_pct": -0.24,
+    "median_pct": -0.24,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 0,
+    "losses": 1,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": false
+   },
+   "teleports": {
+    "pair": "predictive_v2x vs oracle_v2x",
+    "metric": "teleports",
+    "seeds": 1,
+    "per_seed_pct": [
+     -100.0
+    ],
+    "mean_pct": -100.0,
+    "median_pct": -100.0,
+    "ci95": [
+     null,
+     null
+    ],
+    "wins": 1,
+    "losses": 0,
+    "ties": 0,
+    "label": "INCONCLUSIVE",
+    "lower_is_better": true
+   }
+  }
+ },
+ "network_summary": {
+  "connected_vehicles_mean": 247.0,
+  "reroutes_applied_total": 16,
+  "recommendations_inapplicable_total": 0,
+  "downlink": {
+   "messages_tx": 16.0,
+   "messages_rx": 16.0,
+   "messages_dropped": 0.0,
+   "messages_expired": 0.0,
+   "packet_delivery_ratio": 1.0,
+   "latency_median_ms": 0.0,
+   "latency_p95_ms": 0.0,
+   "latency_p99_ms": 0.0
+  },
+  "uplink": {
+   "messages_tx": 14560.0,
+   "messages_rx": 14560.0,
+   "messages_dropped": 0.0,
+   "packet_delivery_ratio": 1.0,
+   "latency_median_ms": 0.0,
+   "latency_p95_ms": 0.0
+  }
+ },
+ "reroutes_by_arm": {
+  "baseline": 0,
+  "reactive": 0,
+  "persistence_v2x": 18,
+  "predictive_v2x": 16,
+  "oracle_v2x": 134,
+  "random_v2x": 32
+ },
+ "fork_state_identical_across_arms": true,
+ "fork_state_hashes": {
+  "101": "6d0cfaec52ba"
+ },
+ "verdict_predictive_v2x_vs_baseline": "INCONCLUSIVE",
+ "generated_utc": "2026-09-08T09:01:47.775059+00:00",
+ "run_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480"
+}

@@ -127,6 +127,9 @@ class Observatory:
 
     def _loop(self) -> None:
         sampled: set[str] = set()
+        import os
+        if os.environ.get("TRAFFICTWIN_RECORDER", "0") != "1":      # the recorder polls every corridor of every watched city every 5 min: billable calls — opt in explicitly
+            return
         while not self._stop.is_set():
             for city in self.cities():
                 if self._stop.is_set():

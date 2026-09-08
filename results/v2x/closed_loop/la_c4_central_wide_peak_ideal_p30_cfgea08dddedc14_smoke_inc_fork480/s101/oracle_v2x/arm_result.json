@@ -1,0 +1,310 @@
+{
+ "simulation_run_id": "sim_v2x_s101_oracle_v2x_ideal_p30",
+ "arm": "oracle_v2x",
+ "seed": 101,
+ "profile": "ideal",
+ "penetration": 0.3,
+ "moment": "peak",
+ "config_hash": "ea08dddedc14",
+ "network_hash": "0d81df27ab2d",
+ "fork": {
+  "t0_s": 480,
+  "state_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/fork/fork_state_s101_t480.xml",
+  "state_sha256": "6d0cfaec52ba"
+ },
+ "information": "oracle",
+ "metrics": {
+  "arrived": 836,
+  "unfinished_at_horizon": 43,
+  "unfinished": 43,
+  "total_vehicle_hours": 186.09777777777776,
+  "mean_travel_time_all": 762.1751990898748,
+  "mean_travel_time_s": 744.0813397129186,
+  "p95_travel_time_s": 1374.0,
+  "mean_waiting_s": 135.6255980861244,
+  "total_waiting_s": 113383.0,
+  "mean_time_loss_s": 293.5528947368421,
+  "mean_depart_delay_s": 0.007177033492822967,
+  "vehicles_rerouted_at_least_once": 114,
+  "teleports": 1,
+  "loaded": 900,
+  "inserted": 900,
+  "running_at_end": 43,
+  "waiting_to_insert_at_end": 0,
+  "mean_queue_veh": 50.78,
+  "max_queue_veh": 105.0,
+  "mean_running_veh": 278.94,
+  "queue_steps": 2220,
+  "never_inserted": 0,
+  "never_inserted_vehicle_hours": 0.0,
+  "total_vehicle_hours_incl_never_inserted": 186.0978,
+  "teleport_events": [
+   {
+    "vehicle_id": "veh811",
+    "sim_time_s": 2169,
+    "connected": true
+   }
+  ],
+  "reactive_reroute_calls": 0,
+  "incidents_applied": [
+   {
+    "edge": "864049094",
+    "t_start_s": 600,
+    "cap_mps": 2.0,
+    "lanes": 5
+   }
+  ],
+  "wall_s": 110.3
+ },
+ "network": {
+  "uplink": {
+   "channel": "uplink",
+   "latency_profile": {
+    "latency_ms": 0.0,
+    "jitter_ms": 0.0,
+    "loss": 0.0,
+    "ttl_s": 60.0,
+    "source": "configured"
+   },
+   "messages_tx": 14319,
+   "messages_rx": 14319,
+   "messages_dropped": 0,
+   "messages_expired": 0,
+   "undelivered_at_end": 0,
+   "packet_delivery_ratio": 1.0,
+   "latency_mean_ms": 0.0,
+   "latency_median_ms": 0.0,
+   "latency_p95_ms": 0.0,
+   "latency_p99_ms": 0.0,
+   "bytes_tx": 2484799,
+   "message_rate_per_s": 5.303,
+   "throughput_bytes_per_s": 920.3
+  },
+  "downlink": {
+   "channel": "downlink",
+   "latency_profile": {
+    "latency_ms": 0.0,
+    "jitter_ms": 0.0,
+    "loss": 0.0,
+    "ttl_s": 60.0,
+    "source": "configured"
+   },
+   "messages_tx": 134,
+   "messages_rx": 134,
+   "messages_dropped": 0,
+   "messages_expired": 0,
+   "undelivered_at_end": 0,
+   "packet_delivery_ratio": 1.0,
+   "latency_mean_ms": 0.0,
+   "latency_median_ms": 0.0,
+   "latency_p95_ms": 0.0,
+   "latency_p99_ms": 0.0,
+   "bytes_tx": 348540,
+   "message_rate_per_s": 0.05,
+   "throughput_bytes_per_s": 129.1
+  },
+  "connected_vehicles": 247,
+  "vehicles_seen": 879,
+  "penetration_configured": 0.3,
+  "recommendations_delivered": 134,
+  "reroutes_applied": 134,
+  "recommendations_inapplicable": 0
+ },
+ "rounds": [
+  {
+   "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r0",
+   "round": 0,
+   "sim_time_s": 600,
+   "as_of_index": 31892,
+   "raw_prediction_hash": "6dbbb729c7cec8cb",
+   "future_cost_hash": "f58085257975bdb3",
+   "priced_edges": 4786,
+   "direct_edges": 4786,
+   "derived_edges": 0,
+   "observed_edges_fused": 0,
+   "information": "oracle",
+   "inference_seconds": 0.052,
+   "vehicles_considered": 49,
+   "decisions": {
+    "REROUTE": 23,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 20,
+    "NO_ALTERNATIVE": 6
+   },
+   "recommendations_sent": 23,
+   "statuses_known": 70,
+   "edges_with_current_speed": 191
+  },
+  {
+   "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r1",
+   "round": 1,
+   "sim_time_s": 900,
+   "as_of_index": 31893,
+   "raw_prediction_hash": "74ccaab3026280ef",
+   "future_cost_hash": "d49ebca77a41454b",
+   "priced_edges": 5274,
+   "direct_edges": 5274,
+   "derived_edges": 0,
+   "observed_edges_fused": 0,
+   "information": "oracle",
+   "inference_seconds": 0.058,
+   "vehicles_considered": 69,
+   "decisions": {
+    "NO_ALTERNATIVE": 17,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 26,
+    "REROUTE": 26
+   },
+   "recommendations_sent": 26,
+   "statuses_known": 112,
+   "edges_with_current_speed": 291
+  },
+  {
+   "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r2",
+   "round": 2,
+   "sim_time_s": 1200,
+   "as_of_index": 31894,
+   "raw_prediction_hash": "5f21ac23ea0bf9af",
+   "future_cost_hash": "2df6540cb26db325",
+   "priced_edges": 5387,
+   "direct_edges": 5387,
+   "derived_edges": 0,
+   "observed_edges_fused": 0,
+   "information": "oracle",
+   "inference_seconds": 0.047,
+   "vehicles_considered": 82,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 42,
+    "REROUTE": 30,
+    "NO_ALTERNATIVE": 10
+   },
+   "recommendations_sent": 30,
+   "statuses_known": 157,
+   "edges_with_current_speed": 341
+  },
+  {
+   "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r3",
+   "round": 3,
+   "sim_time_s": 1500,
+   "as_of_index": 31895,
+   "raw_prediction_hash": "195e846871ba018d",
+   "future_cost_hash": "f655de0fe599d20f",
+   "priced_edges": 5169,
+   "direct_edges": 5169,
+   "derived_edges": 0,
+   "observed_edges_fused": 0,
+   "information": "oracle",
+   "inference_seconds": 0.063,
+   "vehicles_considered": 78,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 50,
+    "NO_ALTERNATIVE": 14,
+    "REROUTE": 14
+   },
+   "recommendations_sent": 14,
+   "statuses_known": 197,
+   "edges_with_current_speed": 335
+  },
+  {
+   "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r4",
+   "round": 4,
+   "sim_time_s": 1800,
+   "as_of_index": 31896,
+   "raw_prediction_hash": "fb3315a33572f874",
+   "future_cost_hash": "488487fac1c725b6",
+   "priced_edges": 4410,
+   "direct_edges": 4410,
+   "derived_edges": 0,
+   "observed_edges_fused": 0,
+   "information": "oracle",
+   "inference_seconds": 0.057,
+   "vehicles_considered": 92,
+   "decisions": {
+    "NO_ALTERNATIVE": 17,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 41,
+    "REROUTE": 34
+   },
+   "recommendations_sent": 34,
+   "statuses_known": 246,
+   "edges_with_current_speed": 366
+  },
+  {
+   "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r5",
+   "round": 5,
+   "sim_time_s": 2100,
+   "as_of_index": 31897,
+   "raw_prediction_hash": "3484cb87ca31872a",
+   "future_cost_hash": "aa2ff5958555c212",
+   "priced_edges": 3142,
+   "direct_edges": 3142,
+   "derived_edges": 0,
+   "observed_edges_fused": 0,
+   "information": "oracle",
+   "inference_seconds": 0.05,
+   "vehicles_considered": 57,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 39,
+    "NO_ALTERNATIVE": 11,
+    "REROUTE": 7
+   },
+   "recommendations_sent": 7,
+   "statuses_known": 247,
+   "edges_with_current_speed": 276
+  },
+  {
+   "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r6",
+   "round": 6,
+   "sim_time_s": 2400,
+   "as_of_index": 31898,
+   "raw_prediction_hash": "858ad94d1b752070",
+   "future_cost_hash": "8e74aa249e4b0259",
+   "priced_edges": 1964,
+   "direct_edges": 1964,
+   "derived_edges": 0,
+   "observed_edges_fused": 0,
+   "information": "oracle",
+   "inference_seconds": 0.048,
+   "vehicles_considered": 29,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 23,
+    "NO_ALTERNATIVE": 6
+   },
+   "recommendations_sent": 0,
+   "statuses_known": 247,
+   "edges_with_current_speed": 134
+  },
+  {
+   "routing_run_id": "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r7",
+   "round": 7,
+   "sim_time_s": 2700,
+   "as_of_index": 31899,
+   "raw_prediction_hash": "b640b0caa9752caa",
+   "future_cost_hash": "44136fa355b3678a",
+   "priced_edges": 0,
+   "direct_edges": 0,
+   "derived_edges": 0,
+   "observed_edges_fused": 0,
+   "information": "oracle",
+   "inference_seconds": 0.047,
+   "vehicles_considered": 8,
+   "decisions": {
+    "NO_ALTERNATIVE": 3,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 5
+   },
+   "recommendations_sent": 0,
+   "statuses_known": 247,
+   "edges_with_current_speed": 54
+  }
+ ],
+ "routing_run_ids": [
+  "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r0",
+  "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r1",
+  "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r2",
+  "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r3",
+  "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r4",
+  "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r5",
+  "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r6",
+  "rt_v2x_v2x_s101_oracle_v2x_ideal_p30_r7"
+ ],
+ "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/oracle_v2x/reroute_log.jsonl",
+ "reroutes_applied": 134,
+ "out_dir": "results/v2x/closed_loop/la_c4_central_wide_peak_ideal_p30_cfgea08dddedc14_smoke_inc_fork480/s101/oracle_v2x"
+}

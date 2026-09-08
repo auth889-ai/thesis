@@ -42,7 +42,7 @@ export class RouteAdvisorPage extends HTMLElement {
           <div id="routes" class="route-strip"></div>
         </section>
       </div>
-      <details class="why" id="tech" hidden><summary>Technical details</summary><div id="techrows" class="kv"></div></details>`;
+      <details class="why" id="tech" hidden><summary>Details for reviewers</summary><div id="techrows" class="kv"></div></details>`;
     const d = new Date(Date.now() + 5 * 60000); d.setSeconds(0, 0);
     this.querySelector("#depart").value = new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
     this.querySelector("#ask").addEventListener("submit", (e) => { e.preventDefault(); this.run(); });
@@ -164,10 +164,10 @@ export class RouteAdvisorPage extends HTMLElement {
     const recKey = r.decision.recommended;
     this.querySelector(`[data-load="${recKey}"]`).textContent = loadWord; this.querySelector(`[data-cap="${recKey}"]`).textContent = capWord;
     const sel = rt.candidates.find(c => c.route_id === rt.selected_route_id) || cur;
-    this.querySelector("#costs").innerHTML = `<div class="costs"><div class="muted">Cost of the analysed trip on the simulation network, from the forecast (${rt.resolved_model || "trusted model"}, ${rt.priced_edges} road segments priced):</div>
+    this.querySelector("#costs").innerHTML = `<div class="costs"><div class="muted">How the routes compare on the simulation network, using the ${rt.resolved_model || "trusted model"} forecast for ${rt.priced_edges} road segments:</div>
       <table class="mini"><thead><tr><th>candidate</th><th>forecast travel time</th><th>load penalty</th><th>overlap penalty</th><th>total cost</th></tr></thead>
       <tbody>${rt.candidates.map(c => `<tr class="${c.route_id === rt.selected_route_id ? "hl" : ""}"><td>${c.is_current ? "current route" : `alternative ${c.index}`}${c.route_id === rt.selected_route_id ? " ✔" : ""}</td><td>${Math.round(c.forecast_future_tt_s)} s</td><td>${c.load_penalty_s.toFixed(1)} s</td><td>${c.overlap_penalty_s.toFixed(1)} s</td><td><b>${Math.round(c.final_cost_s)} s</b></td></tr>`).join("")}</tbody></table>
-      <div class="muted">Decision: <b>${(rt.decision || "").replace(/_/g, " ").toLowerCase()}</b>${rt.predicted_saving_s != null ? ` — predicted saving ${rt.predicted_saving_s} s, threshold ${rt.threshold_s} s` : ""}${sel && sel !== cur ? "" : ""}.</div></div>`;
+      <div class="muted">Decision: <b>${({REROUTE: "switch to the recommended route", KEEP_CURRENT_BELOW_THRESHOLD: "keep the current route — the predicted saving is below the switching threshold", NO_ALTERNATIVE: "keep the current route — no distinct alternative", REJECTED_CAPACITY: "keep the current route — the alternative is predicted to be over capacity", REJECTED_SHARE: "keep the current route — too many drivers already advised onto it", REJECTED_COOLDOWN: "keep the current route — advised recently"})[rt.decision] || (rt.decision || "").replace(/_/g, " ").toLowerCase()}</b>${rt.predicted_saving_s != null ? ` (predicted saving ${Math.round(rt.predicted_saving_s)} s, needs ${rt.threshold_s} s)` : ""}.</div></div>`;
   }
 
   clear() { const m = this._map; (this._ids || []).forEach(id => { if (m.getLayer(id)) m.removeLayer(id); if (m.getSource(id)) m.removeSource(id); }); this._ids = []; (this._markers || []).forEach(x => x.remove()); this._markers = []; }

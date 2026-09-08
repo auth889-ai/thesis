@@ -533,6 +533,21 @@ def models_for_city(city: str) -> list[dict]:
     import observatory as obs_mod
     cid = city_id_for(city)
     out = [{"model": "auto", "label": "Automatic (best available)", "available": True, "reasons": []}]
+    scope = city if str(city).startswith("user:") else cid if str(cid or "").startswith("user:") else None
+    if scope:                                          # an uploaded dataset: the registry's own list for that data (trained, pretrained, baselines)
+        import model_registry
+        try:
+            reg = model_registry.registry(scope)
+        except (Exception, SystemExit) as exc:         # noqa: BLE001
+            return out + [{"model": "GWNet", "label": "GWNet", "available": False, "reasons": [f"registry unavailable: {exc}"[:200]]}]
+        for g in reg.get("groups", []):
+            for e in g.get("items", []):
+                if e.get("model") == "auto":
+                    continue
+                out.append({"model": e["model"], "label": e.get("label") or e["model"], "available": bool(e.get("can_forecast")),
+                            "reasons": [x for x in [e.get("reason") or e.get("trust_message")] if x][:2], "status": e.get("status"), "trust": e.get("trust"),
+                            "trained": bool(e.get("trained")), "test_skill": e.get("test_skill"), "group": g.get("key")})
+        return out
     try:
         if is_dhaka(city):
             from pipeline.routing.forecast_to_costs import recorded_city_data
