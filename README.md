@@ -40,7 +40,7 @@ The scientific closed loop combines public METR-LA observations with a synthetic
 Install the local Python packages once after installing the runtime dependencies:
 
 ```bash
-python -m pip install --no-deps -e .
+python -m pip install --no-deps -e packages/traffictwin
 ```
 
 This is a workspace/editable installation. It does not download datasets or start training.
