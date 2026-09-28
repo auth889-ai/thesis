@@ -19,7 +19,7 @@ import subprocess
 
 from traffictwin.common import evidence_paths as config
 from traffictwin.common.evidence_paths import LEVELS
-from app.api.schemas import *  # noqa: F403
+from app.schemas import *  # noqa: F403
 
 
 # ---------------------------------------------------------------- evidence access

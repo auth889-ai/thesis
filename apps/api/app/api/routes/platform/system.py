@@ -7,7 +7,7 @@ from datetime import datetime, timezone
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, StreamingResponse
 from traffictwin.common import evidence_paths as config
-from traffictwin.protocols.evidence import panel_readers as readers
+from app.services import panel_readers as readers
 from traffictwin.common import credentials as key_store
 from fastapi import APIRouter
 

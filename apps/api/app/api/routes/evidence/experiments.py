@@ -5,7 +5,7 @@ import json
 import sys
 import threading
 from traffictwin.common import evidence_paths as config
-from traffictwin.protocols.evidence.json_reader import _read_json
+from app.services.json_reader import _read_json
 from fastapi import APIRouter
 
 router = APIRouter()

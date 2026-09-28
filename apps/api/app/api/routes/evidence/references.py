@@ -27,7 +27,7 @@ def references():
 
 
 def render_markdown(data: dict) -> str:
-    L = ["# References", "", "Every external research artifact the TrafficTwin code uses, with the files that use it. Generated from `docs/references.json` (`python -m app.api.references`); the same data is served at `/api/references` and shown on the References page of the web application.", ""]
+    L = ["# References", "", "Every external research artifact the TrafficTwin code uses, with the files that use it. Generated from `docs/references.json` (`python -m app.api.routes.evidence.references`); the same data is served at `/api/references` and shown on the References page of the web application.", ""]
     for g in data["groups"]:
         L += [f"## {g['title']}", ""]
         for i, it in enumerate(g["items"], 1):

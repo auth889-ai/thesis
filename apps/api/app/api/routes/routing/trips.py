@@ -4,8 +4,8 @@ from __future__ import annotations
 from traffictwin.common import evidence_paths as config
 from traffictwin.data.live_providers import observatory as observatory_mod
 from traffictwin.optimization import trip_analysis as analyze
-from app.api.dependencies import _city_bits
-from app.api.cities import city
+from app.api.deps import _city_bits
+from app.api.routes.platform.cities import city
 from fastapi import APIRouter
 
 router = APIRouter()

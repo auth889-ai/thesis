@@ -5,7 +5,7 @@ from traffictwin.data.live_providers import observatory as observatory_mod
 from traffictwin.data.live_providers import google_routes as live_service
 from traffictwin.optimization import trip_analysis as analyze
 from traffictwin.data import city_corridors
-from app.api.dependencies import _city_bits
+from app.api.deps import _city_bits
 from fastapi import APIRouter
 
 router = APIRouter()

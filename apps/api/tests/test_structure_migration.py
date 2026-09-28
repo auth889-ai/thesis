@@ -39,10 +39,10 @@ def test_extracted_routers_have_no_unresolved_global_dependencies():
         for child in table.get_children():
             check(child, available, path)
 
-    for path in (ROOT / "apps/api/app/api").glob("*.py"):
-        if path.name in {"schemas.py", "dependencies.py"}:
+    for path in (ROOT / "apps/api/app/api/routes").rglob("*.py"):
+        if path.name == "__init__.py":
             continue
-        module = importlib.import_module("app.api." + path.stem)
+        module = importlib.import_module("app.api.routes." + ".".join(path.relative_to(ROOT / "apps/api/app/api/routes").with_suffix("").parts))
         check(symtable.symtable(path.read_text(), str(path), "exec"), set(vars(module)) | set(vars(builtins)), path)
 
 
@@ -58,7 +58,7 @@ def test_packager_includes_both_web_directories():
 
 
 def test_backend_root_contains_only_application_assembly_and_configuration():
-    assert {p.name for p in (ROOT / "apps/api/app").glob("*.py")} == {"__init__.py", "main.py"}
+    assert {p.name for p in (ROOT / "apps/api/app").glob("*.py")} == {"__init__.py", "main.py", "schemas.py"}
 
 
 def test_primary_pages_are_separate_from_legacy_and_shared_components():
