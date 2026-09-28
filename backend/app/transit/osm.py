@@ -5,16 +5,26 @@ import json
 import urllib.parse
 import urllib.request
 
-ENDPOINT = "https://overpass-api.de/api/interpreter"
+# Public Overpass instances, tried in order: the main server is often busy (504), the mirrors carry the same data.
+ENDPOINTS = ["https://overpass-api.de/api/interpreter", "https://overpass.kumi.systems/api/interpreter", "https://maps.mail.ru/osm/tools/overpass/api/interpreter"]
 USER_AGENT = "traffictwin/1.0 (research; commute planning)"
 MODES = "subway|light_rail|monorail|train|tram"
 
 
-def query(data: str, timeout_s: int = 60) -> dict:
+def query(data: str, timeout_s: int = 45) -> dict:
+    """The first instance that answers with JSON; the answer records which one did."""
     body = urllib.parse.urlencode({"data": data}).encode()
-    req = urllib.request.Request(ENDPOINT, data=body, headers={"User-Agent": USER_AGENT})
-    with urllib.request.urlopen(req, timeout=timeout_s) as r:
-        return json.loads(r.read().decode())
+    last: Exception | None = None
+    for endpoint in ENDPOINTS:
+        req = urllib.request.Request(endpoint, data=body, headers={"User-Agent": USER_AGENT})
+        try:
+            with urllib.request.urlopen(req, timeout=timeout_s) as r:
+                payload = json.loads(r.read().decode())
+            payload["_endpoint"] = endpoint
+            return payload
+        except Exception as exc:                        # noqa: BLE001 - try the next instance
+            last = exc
+    raise RuntimeError(f"no Overpass instance answered ({type(last).__name__}: {str(last)[:80]})")
 
 
 def _tag(tags: dict, *keys: str) -> str | None:
@@ -67,5 +77,5 @@ def rail_lines(south: float, west: float, north: float, east: float) -> list[dic
             continue
         lines.append({"id": rel["id"], "mode": t.get("route"), "name": _tag(t, "name:en", "name") or f"line {rel['id']}", "network": _tag(t, "network:en", "network"),
                       "ref": t.get("ref"), "operator": _tag(t, "operator:en", "operator"), "interval_s": _seconds(t.get("interval")), "duration_s": _seconds(t.get("duration")),
-                      "opening_hours": t.get("opening_hours"), "stops": stops, "source": "openstreetmap", "osm_timestamp": payload.get("osm3s", {}).get("timestamp_osm_base")})
+                      "opening_hours": t.get("opening_hours"), "stops": stops, "source": "openstreetmap", "osm_timestamp": payload.get("osm3s", {}).get("timestamp_osm_base"), "osm_endpoint": payload.get("_endpoint")})
     return lines
