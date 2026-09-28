@@ -63,20 +63,31 @@ def test_backend_root_contains_only_application_assembly_and_configuration():
     assert {p.name for p in (ROOT / "backend/app").glob("*.py")} == {"__init__.py", "main.py", "router.py", "config.py", "paths.py", "evidence_paths.py", "credentials.py", "dependencies.py", "middleware.py", "schemas.py"}
 
 
-def test_primary_pages_are_separate_from_legacy_and_shared_components():
-    assert {p.name for p in (ROOT / "frontend/src/pages").glob("*.js")} == {
-        "system.js", "prediction.js", "control_room.js", "results.js", "references.js"
-    }
-    assert not list((ROOT / "frontend/src/components").glob("*-page.js"))
+def test_web_app_is_organised_by_feature():
+    """React + TypeScript: one page per feature folder, shared UI outside the features, no legacy module tree."""
+    features = ROOT / "frontend/src/features"
+    assert {p.name for p in features.iterdir() if p.is_dir()} == {"assistant", "mobility", "forecast", "twin", "results", "references", "system"}
+    for page in ("assistant/TodayPage", "mobility/MobilityPage", "forecast/ForecastPage", "twin/ControlRoomPage", "results/ResultsPage", "references/ReferencesPage", "system/SystemPage"):
+        assert (features / f"{page}.tsx").is_file(), page
+    assert not (ROOT / "frontend/legacy_src").exists() and not (ROOT / "frontend/src/pages").exists()
+    assert not list((ROOT / "frontend/src").rglob("*.js")), "the web app is TypeScript only"
+
+
+def test_web_source_files_stay_small():
+    """A file that does one thing stays readable; the old 500-line page files are not allowed back."""
+    big = [(p.relative_to(ROOT).as_posix(), n) for p in (ROOT / "frontend/src").rglob("*.ts*")
+           if not p.name.endswith(".d.ts") and (n := len(p.read_text().splitlines())) > 200]
+    assert not big, big
 
 
 def test_browser_relative_module_imports_resolve_inside_frontend():
     frontend = (ROOT / "frontend/src").resolve()
-    imports = re.compile(r"^import\s+(?:.*?\s+from\s+)?[\"'](\.[^\"']+)[\"']", re.MULTILINE)
-    for path in frontend.rglob("*.js"):
+    imports = re.compile(r"^import\s+(?:.*?\s+from\s+)?[\"'](\.[^\"']+|@/[^\"']+)[\"']", re.MULTILINE)
+    for path in list(frontend.rglob("*.ts")) + list(frontend.rglob("*.tsx")):
         for specifier in imports.findall(path.read_text()):
-            target = (path.parent / specifier).resolve()
-            assert target.is_relative_to(frontend) and target.is_file(), (path, specifier)
+            base = frontend / specifier[2:] if specifier.startswith("@/") else path.parent / specifier
+            candidates = [base, base / "index.tsx", *(base.with_name(base.name + ext) for ext in (".ts", ".tsx", ".d.ts", ".css"))]
+            assert any(c.is_file() for c in candidates) and base.resolve().is_relative_to(frontend), (path, specifier)
 
 
 def test_moved_adapters_resolve_the_original_repository_and_data_paths():

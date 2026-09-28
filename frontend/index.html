@@ -4,34 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>TrafficTwin</title>
-<link rel="stylesheet" href="./src/styles/app.css">
-<link rel="stylesheet" href="./src/styles/execution.css">
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.min.css">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/maplibre-gl/4.7.1/maplibre-gl.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
-<script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 </head>
 <body>
-<div class="app">
-  <aside>
-    <div class="brand"><span class="brand-mark">TT</span><span>TrafficTwin</span><small>FORECAST · OPTIMIZATION · V2X · SUMO</small></div>
-    <nav>
-      <button data-page="system" aria-current="true">System</button>
-      <button data-page="predict">Prediction</button>
-      <button data-page="control">Control Room</button>
-      <button data-page="results">Results</button>
-      <button data-page="references">References</button>
-    </nav>
-    <div class="conn">
-      <div><span class="dot offline" id="dot"></span><span id="conn-label">connecting…</span></div>
-      <button id="theme" class="theme-button"><i data-lucide="sun-moon"></i><span>Theme</span></button>
-    </div>
-  </aside>
-  <main>
-    <header class="page"><h1 id="title">Live Traffic</h1><p id="subtitle"></p></header>
-    <div id="outlet"></div>
-  </main>
-</div>
-<script type="module" src="./src/app.js"></script>
+<div id="root"></div>
+<script type="module" src="/src/main.tsx"></script>
 </body>
 </html>
