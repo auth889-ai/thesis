@@ -22,7 +22,7 @@ backend/
     interfaces/  common/  nlp/  tools/
   tests/                       grouped like the code (rebuild/, forecasting/, city/, federated/, live/, API tests)
   pyproject.toml  requirements.txt  README.md
-frontend/                      web app (Vite, Vitest, TypeScript): index.html, src/{app.js, pages/, components/, services/, styles/}, dist/ when built
+frontend/                      web app (Vite, React 19, TypeScript, Vitest): index.html, src/{main.tsx, app/, components/, lib/, features/<domain>/, styles/}, dist/ when built
 mobile/                        mobile app (Expo / React Native, TypeScript): App.tsx, src/api/client.ts — same API as the web app
 research/                      protocol runners: closed_loop/ routing/ networking/ · reports/ (results builders) · notebooks/
 infra/                         api.Dockerfile, docker-compose.yml, service.yaml
@@ -31,7 +31,7 @@ scripts/  docs/  data/  results/  tests/platform/  upstream/
 
 ## Migration status
 
-Done (2026-09-28): steps 1–7. Remaining: retire or promote the ten `frontend/src/pages/legacy/*` pages; give the web app a `package.json` with Vite and Vitest and move it to TypeScript page by page; split `twin/live/runtime.py` (664 lines) and `routing/trip_analysis.py` (593 lines).
+Done (2026-09-29): steps 1–7; the web app rebuilt as React + TypeScript with one feature folder per page (legacy pages removed); `routing/trip_analysis.py`, `twin/live/runtime.py`, `networking/mosaic/penetration_sweep.py` and `forecasting/training/aws_train.py` split into packages of single-responsibility modules behind the same import surface.
 
 ## Rules the test enforces
 

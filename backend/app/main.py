@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from fastapi import FastAPI
+from starlette.exceptions import HTTPException
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
@@ -42,7 +43,18 @@ if config.FRONTEND.exists():
     def index():
         return FileResponse(config.FRONTEND / "index.html")
 
-    app.mount("/", StaticFiles(directory=config.FRONTEND), name="web")                    # the app's own relative assets (last: API routes win)
+    class SPAStaticFiles(StaticFiles):
+        """The web app routes in the browser (/today, /mobility, ...): an unknown path without a file
+        extension gets index.html so a deep link or a refresh lands on the page, never a 404."""
+        async def get_response(self, path, scope):
+            try:
+                return await super().get_response(path, scope)
+            except HTTPException as exc:
+                if exc.status_code == 404 and "." not in path.rsplit("/", 1)[-1] and not path.startswith("api/"):
+                    return await super().get_response("index.html", scope)
+                raise
+
+    app.mount("/", SPAStaticFiles(directory=config.FRONTEND), name="web")                 # the app's own relative assets (last: API routes win)
 
 
 if __name__ == "__main__":

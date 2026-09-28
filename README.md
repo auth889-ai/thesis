@@ -71,7 +71,7 @@ a separate mode. These single-seed execution checks never update research gates.
 | Path | Responsibility |
 | --- | --- |
 | [backend/](backend/README.md) | FastAPI server: small entry point, `api/`, and domain-grouped adapters |
-| [frontend/](frontend/README.md) | Four primary `pages/`, preserved legacy pages, shared components, API client, CSS |
+| [frontend/](frontend/README.md) | React + TypeScript web app: one `features/<domain>/` folder per page, shared components, typed API client |
 | `backend/app/forecasting/` | Deep-learning inference contract and checkpoint registry |
 | `backend/app/networking/` | Simulated V2X channel and online state correction |
 | `backend/app/routing/` | Edge costs, route optimization, coverage diagnostics |

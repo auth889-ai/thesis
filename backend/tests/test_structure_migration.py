@@ -33,6 +33,16 @@ def test_frontend_is_served_from_its_canonical_directory(client):
             assert response.content == path.read_bytes()
 
 
+def test_browser_routes_fall_back_to_the_app_shell(client):
+    """/today, /mobility, ... are routes inside the web app: a deep link or a refresh gets index.html; a missing asset stays a 404."""
+    from app import config
+    for path in ("/today", "/mobility", "/control-room"):
+        response = client.get(path)
+        assert response.status_code == 200 and response.content == (config.FRONTEND / "index.html").read_bytes(), path
+    assert client.get("/assets/missing-file.js").status_code == 404
+    assert client.get("/api/does-not-exist").status_code == 404
+
+
 def test_extracted_routers_have_no_unresolved_global_dependencies():
     def check(table, available, path):
         for symbol in table.get_symbols():
