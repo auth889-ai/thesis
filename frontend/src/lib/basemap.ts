@@ -1,6 +1,7 @@
 /**
  * The basemap is only a backdrop: every coloured line comes from the API, never from the tiles.
- * The server picks the tile provider (/api/config/map); Esri's keyless street map is the default.
+ * The server picks the tile provider (/api/config/map); Esri's keyless street map is the default. The
+ * attribution names the tiles only; where the traffic came from is stated by each page in words.
  */
 import type {StyleSpecification} from "maplibre-gl";
 
@@ -14,7 +15,7 @@ let cached: Promise<StyleSpecification> | null = null;
 export function basemapStyle(): Promise<StyleSpecification> {
   cached ??= api.mapConfig().catch((): {tiles?: string; attribution?: string} => ({})).then((c) => ({
     version: 8 as const,
-    sources: {base: {type: "raster" as const, tiles: [c.tiles || DEFAULT_TILES], tileSize: 256, maxzoom: 19, attribution: c.attribution || DEFAULT_ATTRIBUTION}},
+    sources: {base: {type: "raster" as const, tiles: [c.tiles || DEFAULT_TILES], tileSize: 256, maxzoom: 19, attribution: DEFAULT_ATTRIBUTION}},
     layers: [{id: "base", type: "raster" as const, source: "base"}],
   }));
   return cached;

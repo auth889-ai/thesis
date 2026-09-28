@@ -89,7 +89,7 @@ select:focus, input:focus, textarea:focus { outline: 2px solid color-mix(in srgb
 .card-head p { margin: 2px 0 0; font-size: 12.5px; }
 .grid { display: grid; gap: var(--gap); }
 .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.grid.wide { grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); }
+.grid.wide { grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); align-items: start; }
 @media (max-width: 1000px) { .grid.two, .grid.three, .grid.wide { grid-template-columns: 1fr; } }
 .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .muted { color: var(--ink-muted); } .small { font-size: 12px; } .mono { font-family: var(--mono); font-size: 12px; }

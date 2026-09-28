@@ -24,17 +24,15 @@ export function MobilityPage() {
         {analysis.isPending && <div style={{marginTop: 10}}><Steps steps={STAGES} current={analysis.stage} /></div>}
         {analysis.error ? <div style={{marginTop: 10}}><ErrorNote error={analysis.error} /></div> : null}
       </Card>
-      <div className="grid wide">
-        <Card title={r ? `${r.origin.label ?? "A"} → ${r.destination.label ?? "B"}` : "Map"} sub={r ? `${r.routes.length} routes · horizon +${r.horizon_min} min` : "the routes appear here once a trip is analysed"}>
+      <div className={r ? "grid wide" : "stack"}>
+        <Card title={r ? `${r.origin.label ?? "A"} → ${r.destination.label ?? "B"}` : "Your city"} sub={r ? `${r.routes.length} routes · horizon +${r.horizon_min} min` : "the routes are drawn here once a trip is analysed"}>
           <RouteMap result={r} highlight={highlight} />
         </Card>
-        <div className="stack">
-          {r ? <Card title="Route options"><RouteCards r={r} onPick={setHighlight} /></Card> : <Card title="Route options"><p className="muted">Analyse a trip to compare its routes now and at departure.</p></Card>}
-        </div>
+        {r && <Card title="Route options" sub="now, at departure, and why one is recommended"><RouteCards r={r} onPick={setHighlight} /></Card>}
       </div>
       {fields && <CommutePlanner trip={{city: fields.city, origin: fields.origin, destination: fields.destination}} />}
       <div className="phototiles">
-        <PhotoCard photo="crossing" title="Ask the assistant" text={'"Be there by nine, remind me when to leave."'} to="/today" />
+        <PhotoCard photo="aerial" title="Ask the assistant" text={'"Be there by nine, remind me when to leave."'} to="/today" />
         <PhotoCard photo="metroCar" title="The city an hour ahead" text="Where congestion forms next, on the map." to="/city" />
       </div>
     </div>

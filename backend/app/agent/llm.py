@@ -25,10 +25,17 @@ class Turn:
 
 class Bedrock:
     def __init__(self, model: str | None = None, region: str | None = None):
+        """Keys come from the process environment or the server's .env (never from the client); a
+        missing key is reported as such, not as a missing model."""
         import boto3
-        self.region = region or os.environ.get("BEDROCK_REGION") or os.environ.get("AWS_REGION") or "us-west-2"
-        self.client = boto3.client("bedrock-runtime", region_name=self.region)
-        self.model = model or os.environ.get("TRAFFICTWIN_AGENT_MODEL") or self._first_available()
+        from app import credentials
+        key, secret = credentials.load("AWS_ACCESS_KEY_ID"), credentials.load("AWS_SECRET_ACCESS_KEY")
+        if not key or not secret:
+            raise RuntimeError("no AWS credentials on the server: set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env")
+        self.region = region or credentials.load("BEDROCK_REGION") or credentials.load("AWS_REGION") or "us-west-2"
+        self.client = boto3.client("bedrock-runtime", region_name=self.region, aws_access_key_id=key, aws_secret_access_key=secret,
+                                   aws_session_token=credentials.load("AWS_SESSION_TOKEN") or None)
+        self.model = model or credentials.load("TRAFFICTWIN_AGENT_MODEL") or self._first_available()
 
     def _first_available(self) -> str:
         for mid in DEFAULT_MODELS:
@@ -37,7 +44,7 @@ class Bedrock:
                 return mid
             except Exception:                                  # noqa: BLE001 - try the next
                 continue
-        raise RuntimeError("no Bedrock text model with tool use is available to this AWS identity")
+        raise RuntimeError(f"no Bedrock text model with tool use is available to this AWS identity in {self.region} (tried {', '.join(DEFAULT_MODELS)})")
 
     def complete(self, system: str, messages: list[dict], tools: list[dict], max_tokens: int = 1200) -> Turn:
         kw = {"modelId": self.model, "system": [{"text": system}], "messages": messages, "inferenceConfig": {"maxTokens": max_tokens, "temperature": 0.2}}

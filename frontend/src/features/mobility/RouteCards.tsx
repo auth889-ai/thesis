@@ -4,13 +4,22 @@ import type {TripResult} from "./types";
 
 const risk = (p?: {covered: boolean; risk: string}) => (!p?.covered ? ["live estimate", "neutral"] : p.risk === "HIGH" ? ["heavy", "bad"] : p.risk === "MEDIUM" ? ["some congestion", "warn"] : ["flowing", "ok"]) as [string, "ok" | "warn" | "bad" | "neutral"];
 
+/** Where the answer came from, in one plain sentence. */
+export function provenanceWords(r: TripResult): string {
+  const basis = r.source.traffic_basis ?? "";
+  const when = (basis.match(/as of (\S+)/)?.[1] ?? "").replace("T", " ").slice(0, 16);
+  const traffic = r.source.is_live ? "live traffic from the provider" : basis.startsWith("RECORDED") ? `the last recorded traffic (${when})` : "free-flow times (no recorded traffic for this city yet)";
+  const fd = r.forecast_decision ?? {};
+  const forecast = r.forecastable ? `forecast by ${fd.label ?? fd.model ?? "the validated model"}` : "no forecast for this city yet, routes ranked on current traffic";
+  return `Based on ${traffic}, routed on the city's own road network, ${forecast}.`;
+}
+
 /** Every candidate route: ETA now, ETA at departure, congestion, and why one is recommended. */
 export function RouteCards({r, onPick}: {r: TripResult; onPick?: (index: number) => void}) {
   const h = String(r.horizon_min);
   const etaAt = (c: TripResult["routes"][number]) => (c.forecast[h]?.covered ? c.forecast[h].eta_s : c.eta_now_s);
   const rec = r.routes.find((c) => c.recommended) ?? r.routes[0];
   const best = etaAt(rec);
-  const fd = r.forecast_decision ?? {};
   return (
     <div className="stack">
       <div className="routecards">
@@ -26,9 +35,7 @@ export function RouteCards({r, onPick}: {r: TripResult; onPick?: (index: number)
         })}
       </div>
       <div className="note ok"><b>Route {r.decision.recommended}</b> — {r.decision.reason}{r.decision.basis ? ` ${r.decision.basis}.` : ""}</div>
-      <Provenance>
-        Traffic: <b>{r.source.traffic}</b>{r.source.traffic_basis ? ` (${r.source.traffic_basis.toLowerCase().replace(/_/g, " ")})` : ""} · {r.source.is_live ? "live" : "not live"} · routing: <b>{r.source.routing}</b> · forecast: <b>{r.forecastable ? fd.label || fd.model || "the trusted model" : "none for this city, routes ranked on current traffic"}</b>{fd.status ? ` (${fd.status.toLowerCase()})` : ""}{r.retrieved_at ? ` · traffic read ${new Date(r.retrieved_at).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}` : ""}
-      </Provenance>
+      <Provenance>{provenanceWords(r)}</Provenance>
     </div>
   );
 }
