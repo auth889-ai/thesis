@@ -67,3 +67,18 @@ export type ScenarioBlock = {oracle_gate: {status: string} | null; arms: {arm: s
 export const stressEvidence = () => request<StressEvidence>("/api/experiment/stress");
 export const researchStatus = () => request<{gates: Record<string, {status: string; scope?: string; reason?: string}>}>("/api/research/status");
 export const health = () => request<Record<string, unknown>>("/api/health");
+
+// ---- commute planner: "leave at 7:46, 87 % chance of arriving by 9:00"
+export type CommuteOption = {route: string; covered: boolean; expected_s: number; on_time_probability: number | null; worst_corridor: string | null};
+export type CommutePlan = {
+  city: string; origin: {label?: string}; destination: {label?: string}; arrive_by_local: string; now_utc: string; buffer_min: number; on_time_target: number;
+  recommended: {depart_utc: string; depart_local: string; route: string; on_time_probability: number | null; expected_s: number; leave_in_min: number};
+  routes: {key: string; description?: string; distance_m: number | null; static_s: number | null; corridors: string[]; now: CommuteOption; at_departure: CommuteOption}[];
+  departures: {depart_local: string; best_route: string; on_time_probability: number | null; expected_s: number}[];
+  day_profile: {slot: number; time: string; expected_s: number | null; expected_level: number | null}[];
+  congestion_window: {from: string; to: string; peak_level: number} | null;
+  provenance: {kind: string; traffic: string; routing: string; probability: string};
+};
+
+export const commutePlan = (req: {city?: string; origin: string; destination: string; arrive_by: string; buffer_min?: number}) =>
+  request<CommutePlan>("/api/commute/plan", {method: "POST", body: JSON.stringify({city: "dhaka", ...req})});
