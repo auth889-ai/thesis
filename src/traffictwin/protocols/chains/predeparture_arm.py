@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Predictive routing applied BEFORE departure (no mid-trip route changes).
 
-    python src/pipeline/routing/predeparture_arm.py --source oracle      --seeds 11,12,13 --horizon 7200
-    python src/pipeline/routing/predeparture_arm.py --source persistence --seeds 11,12,13 --horizon 7200
+    python -m traffictwin.protocols.chains.predeparture_arm --source oracle      --seeds 11,12,13 --horizon 7200
+    python -m traffictwin.protocols.chains.predeparture_arm --source persistence --seeds 11,12,13 --horizon 7200
 
 Motivation (results/routing/stats.md, 10 seeds): every en-route arm raises teleports 3-5x versus
 static -> mid-trip route swaps near junctions create lane conflicts that eat the routing gain.
@@ -28,7 +28,7 @@ from pathlib import Path
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-from pipeline.routing import predictive_routing as pr  # noqa: E402
+from traffictwin.digital_twin import runtime as pr  # noqa: E402
 from traffictwin.protocols.chains.run_arms import shift_weights  # noqa: E402
 
 RESULTS = REPO / "results/routing"   # overridden by --results

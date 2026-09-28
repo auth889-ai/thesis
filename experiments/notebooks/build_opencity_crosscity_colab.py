@@ -48,7 +48,7 @@ CELLS = [
       "os.chdir(REPO)",
       "WS = pathlib.Path('/root/.dhakaflow/upstream'); WS.mkdir(parents=True, exist_ok=True)",
       "os.environ['DHAKAFLOW_WORKSPACE'] = str(WS)",
-      "!python src/pipeline/upstream/fetch_upstream.py --name OpenCity",
+      "!python -m traffictwin.tools.fetch_upstream --name OpenCity",
       "OC = WS/'OpenCity'",
       "!git -C {OC} rev-parse HEAD"),
  code("!pip -q install fastdtw tslearn huggingface_hub"),

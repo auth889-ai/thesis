@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Turn the impairment runs into the table the research question asks for.
 
-    python src/pipeline/federated/summarise_impairment.py
+    python -m traffictwin.forecasting.federated.summarise_impairment
 
 Reads every `results/federated/*_impairment_*.json` produced by the run launchers and writes
 `results/federated/impairment.md` + `.json`: one row per (method, profile), carrying both halves
@@ -100,7 +100,7 @@ def main() -> int:
     if not rows:
         print(f"no impairment runs in {rel(OUT)}.\n"
               f"Produce them on a GPU host:\n"
-              f"  python src/pipeline/federated/run_fedgtp.py --sweep --epochs 50 --device cuda:0\n"
+              f"  python -m traffictwin.forecasting.federated.run_fedgtp --sweep --epochs 50 --device cuda:0\n"
               f"  (or experiments/notebooks/FedGTP_Impairment_Colab.ipynb)")
         return 1
     add_degradation(rows)
@@ -144,8 +144,8 @@ def main() -> int:
         for r in stale:
             L.append(f"- `{r['method']}/{r['profile']}` — {r['drops_before_cache']} of "
                      f"{r['dropped_updates']} drops")
-    L.append("\nRegenerate: `python src/pipeline/federated/summarise_impairment.py`. "
-             "Runs: `python src/pipeline/federated/run_fedgtp.py --sweep`. "
+    L.append("\nRegenerate: `python -m traffictwin.forecasting.federated.summarise_impairment`. "
+             "Runs: `python -m traffictwin.forecasting.federated.run_fedgtp --sweep`. "
              "Machine-readable: `impairment.json`.\n")
     (OUT / "impairment.md").write_text("\n".join(L))
     if not a.quiet:

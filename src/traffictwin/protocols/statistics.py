@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Paired-seed statistics for the routing arms.
 
-    python src/pipeline/routing/stats.py --horizon 1800
+    python -m traffictwin.protocols.statistics --horizon 1800
         reads  results/routing/arms_h1800.json   ({arm: {seed: per-run record}} from run_arms.py)
         writes results/routing/stats.md, results/routing/stats.json
 

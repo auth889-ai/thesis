@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Figures for Phase 1 — every number read from the evidence files, never typed.
 
-    python src/pipeline/forecasting/make_figures.py            # -> docs/figures/*.png
+    python -m traffictwin.forecasting.evaluation.make_figures            # -> docs/figures/*.png
 
 Four panels, one job each:
   1 accuracy_vs_horizon   does the model beat the trivial predictors, and by how much?

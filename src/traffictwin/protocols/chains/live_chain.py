@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """The whole live chain in one command: live Dhaka -> forecast -> routing -> counterfactual -> decision.
 
-    python src/pipeline/routing/live_chain.py --seeds 11,12,13                     # on the CURRENT live state
-    python src/pipeline/routing/live_chain.py --seeds 11,12,13 --horizon-min 30    # route on a 30-min-ahead forecast
-    python src/pipeline/routing/live_chain.py --levels karwanbazar_to_shahbagh=3   # WHAT-IF (labelled, not evidence)
+    python -m traffictwin.protocols.chains.live_chain --seeds 11,12,13                     # on the CURRENT live state
+    python -m traffictwin.protocols.chains.live_chain --seeds 11,12,13 --horizon-min 30    # route on a 30-min-ahead forecast
+    python -m traffictwin.protocols.chains.live_chain --levels karwanbazar_to_shahbagh=3   # WHAT-IF (labelled, not evidence)
 
     live APIs -> state -> forecast -> future edge times -> router -> SUMO counterfactual -> ACT / NO_ACTION
 
@@ -41,7 +41,7 @@ from pathlib import Path
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 from traffictwin.forecasting.live.live_to_edges import MAP_FILE, latest_levels, multiplier, write_weights  # noqa: E402
-from pipeline.routing import predictive_routing as pr  # noqa: E402
+from traffictwin.digital_twin import runtime as pr  # noqa: E402
 from traffictwin.protocols.chains.predeparture_arm import VEH_RE, read_routes  # noqa: E402
 
 RESULTS = REPO / "results/routing"
@@ -239,7 +239,7 @@ def main() -> int:
                       f"(mean {dec.get('mean_pct')} %)."]
     lines += ["", f"## Decision: **{dec['decision']}**", "", dec["reason"], "",
               f"Rule: {dec.get('rule', 'no congestion observed -> no intervention')}", "",
-              "Regenerate: `python src/pipeline/routing/live_chain.py --seeds " + a.seeds + "`."]
+              "Regenerate: `python -m traffictwin.protocols.chains.live_chain --seeds " + a.seeds + "`."]
     (RESULTS / f"live_chain{a.tag}.md").write_text("\n".join(lines) + "\n")
     print(f"[live_chain] wrote {RESULTS / ('live_chain' + a.tag + '.md')}")
     return 0

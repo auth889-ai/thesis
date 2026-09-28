@@ -9,7 +9,7 @@ and summarised in the mandated report.
 
 Usage:
     export GOOGLE_MAPS_API_KEY=...   # restricted key: Routes API + Weather API
-    python src/pipeline/forecasting/run_live_capture.py
+    python -m traffictwin.forecasting.live.run_live_capture
 """
 from __future__ import annotations
 
@@ -51,7 +51,7 @@ def main() -> int:
             "enable 'Weather API'",
             "Credentials -> Create API key -> restrict to Routes API + Weather API",
             "put GOOGLE_MAPS_API_KEY=<key> in the root .env (gitignored) or environment",
-            "rerun: python src/pipeline/forecasting/run_live_capture.py",
+            "rerun: python -m traffictwin.forecasting.live.run_live_capture",
         ]
         print(json.dumps(report, indent=2))
         return 1

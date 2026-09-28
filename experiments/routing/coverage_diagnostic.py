@@ -9,8 +9,8 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(REPO), str(REPO / "src")]
-from pipeline.v2x import closed_loop as cl
-from pipeline.routing import edge_costs as ec
+from traffictwin.orchestration import closed_loop as cl
+from traffictwin.optimization import edge_costs as ec
 from traffictwin.protocols.oracle_gate import sha_file
 
 REFERENCE = "la_c4_central_wide_prepeak_ideal_p30_cfgea08dddedc14_stressA_eval_fork1200_x8_peak_arterial"

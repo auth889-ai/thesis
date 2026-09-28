@@ -8,8 +8,8 @@ reduce arrivals or increase teleports relative to the reference arm.
 
 Examples:
 
-    python src/pipeline/routing/decision_guard.py --horizon 7200 --reference reactive
-    python src/pipeline/routing/decision_guard.py --horizon 900 --reference static
+    python -m traffictwin.optimization.decision_guard --horizon 7200 --reference reactive
+    python -m traffictwin.optimization.decision_guard --horizon 900 --reference static
 """
 from __future__ import annotations
 

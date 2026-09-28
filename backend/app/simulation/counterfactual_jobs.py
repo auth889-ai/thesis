@@ -37,7 +37,7 @@ from pathlib import Path
 
 from backend.app.config import REPO
 RESULTS = REPO / "results/routing"
-SCRIPT = REPO / "src/pipeline/routing/live_chain.py"
+SCRIPT_MODULE = "traffictwin.protocols.chains.live_chain"
 
 # live category -> the recorder's ordinal level that live_to_edges maps to a travel-time multiplier
 CATEGORY_LEVEL = {"NORMAL": 0.0, "SLOW": 1.0, "TRAFFIC_JAM": 2.5, "UNKNOWN": 0.0}
@@ -97,7 +97,7 @@ class Runner:
     def _run(self, job_id: str) -> None:
         job = self._jobs[job_id]
         tag = f"_live_{job_id}"
-        cmd = [sys.executable, str(SCRIPT),
+        cmd = [sys.executable, "-m", SCRIPT_MODULE,
                "--seeds", ",".join(str(s) for s in job["seeds"]),
                "--horizon", str(job["horizon_s"]),
                "--compliance", str(job["compliance"]),

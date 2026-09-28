@@ -11,7 +11,7 @@ never set by hand.
     TRAFFIC_BENEFIT_ESTABLISHED      unseen-seed evaluation: vehicle-hours vs baseline AND vs reactive both
                                      HELPED (CI excludes zero), teleports not HURT, on evaluation seeds only
 
-    python src/pipeline/v2x/controller_gate.py --run results/v2x/closed_loop/<eval run dir> --arm predictive_corrected_v2x
+    python -m traffictwin.protocols.controller_gate --run results/v2x/closed_loop/<eval run dir> --arm predictive_corrected_v2x
 """
 from __future__ import annotations
 

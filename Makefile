@@ -13,7 +13,7 @@ help:            ## list targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-12s %s\n", $$1, $$2}'
 
 status:          ## what exists, what is real, what is missing
-	$(PY) main.py status
+	$(PY) -c "import json; from traffictwin.research_status import compute_research_status as c; print(json.dumps(c(), indent=1))"
 
 test:            ## the test suite: pipeline + backend API (~1 min, no SUMO, no live API)
 	$(PY) -m pytest -q
@@ -29,16 +29,16 @@ canonical-package: ## package the frozen canonical evidence without rerunning SU
 
 # ---------------------------------------------------------------- the four experiments
 backtest:        ## E1 how accurate is the forecast on Dhaka's own recorded data (rolling origin, ~15 s)
-	$(PY) src/pipeline/forecasting/live_backtest.py
+	$(PY) -m traffictwin.forecasting.live.live_backtest
 
 chain:           ## E2 forecast -> edge costs -> routing -> SUMO, three arms, paired seeds (~1 min)
-	$(PY) src/pipeline/routing/integrated_chain.py --seeds $(SEEDS) --horizon $(H) --as-of peak --tag _ideal
+	$(PY) -m traffictwin.protocols.chains.integrated_chain --seeds $(SEEDS) --horizon $(H) --as-of peak --tag _ideal
 
 ablation:        ## E3 does forecast QUALITY reach the road: oracle / model / persistence / random (~5 min)
-	$(PY) src/pipeline/routing/forecast_quality_ablation.py --seeds $(SEEDS) --horizon $(H)
+	$(PY) -m traffictwin.protocols.chains.forecast_quality_ablation --seeds $(SEEDS) --horizon $(H)
 
 coverage:        ## E5 is pricing COVERAGE the bottleneck: model vs noise at 0 / 3 / 8 hops (~10 min)
-	$(PY) src/pipeline/routing/forecast_quality_ablation.py --seeds $(SEEDS) --horizon $(H) \
+	$(PY) -m traffictwin.protocols.chains.forecast_quality_ablation --seeds $(SEEDS) --horizon $(H) \
 	    --hops 0,3,8 --conditions Chronos-Bolt,random --out results/routing/ablation_coverage.json
 
 sweep:           ## E4 penetration curve: compliance 0..100 % x seeds (~10 min)
@@ -48,20 +48,20 @@ sweep-v2x:       ## E4b V2X condition x compliance heatmap (~45 min)
 	$(PY) src/pipeline/routing/chain_sweep.py --grid v2x --compliance 0.1,0.2,0.4 --seeds $(SEEDS) --horizon $(H)
 
 opencity-smoke:  ## OpenCity-plus forward pass through the authors' harness on this CPU (12-node slice, ~2 min)
-	$(PY) src/pipeline/forecasting/opencity_city_eval.py --source metrla-smoke
+	$(PY) -m traffictwin.forecasting.opencity.opencity_city_eval --source metrla-smoke
 
 train-city:      ## E7 train the official STID baseline on an uploaded / observed city through the pinned BasicTS harness (CPU)
-	$(PY) src/pipeline/forecasting/basicts_train.py --dataset $(or $(DATASET),user:los_angeles_two_weeks) --arch $(or $(ARCH),STID) --epochs $(or $(EPOCHS),30)
+	$(PY) -m traffictwin.forecasting.training.basicts_train --dataset $(or $(DATASET),user:los_angeles_two_weeks) --arch $(or $(ARCH),STID) --epochs $(or $(EPOCHS),30)
 
 train-city-gpu:  ## E7 on an AWS spot GPU (g5.xlarge): same harness, 100 epochs; the app's "run on: AWS GPU" does this
-	$(PY) src/pipeline/forecasting/aws_train.py --launch --city-dataset $(or $(DATASET),user:los_angeles_two_weeks) --models $(or $(ARCH),STID) --epochs $(or $(EPOCHS),100) --allow-on-demand --max-hours 1
-	@echo "watch: $(PY) src/pipeline/forecasting/aws_train.py --status --job city-...; collect: --collect-city city-..."
+	$(PY) -m traffictwin.forecasting.training.aws_train --launch --city-dataset $(or $(DATASET),user:los_angeles_two_weeks) --models $(or $(ARCH),STID) --epochs $(or $(EPOCHS),100) --allow-on-demand --max-hours 1
+	@echo "watch: $(PY) -m traffictwin.forecasting.training.aws_train --status --job city-...; collect: --collect-city city-..."
 
 opencity:        ## E6 OpenCity-plus zero-shot on the persisted live window (needs ~4 days of observation)
-	$(PY) src/pipeline/forecasting/opencity_city_eval.py --source observatory --city dhaka
+	$(PY) -m traffictwin.forecasting.opencity.opencity_city_eval --source observatory --city dhaka
 
 figures:         ## F1-F5 from the JSON evidence -> results/figures/
-	$(PY) src/pipeline/results/make_figures.py
+	$(PY) -m traffictwin.protocols.figures
 
 results:         ## audit every evidence file and rebuild results/RESULTS.md (no simulation)
 	$(PY) results/evidence_audit.py

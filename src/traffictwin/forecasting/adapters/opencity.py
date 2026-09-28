@@ -59,7 +59,7 @@ class OpenCityAdapter(ForecastAdapter):
             raise NotAvailable(self.name, c["reasons"])
         raise NotAvailable(self.name, [
             "OpenCity runs through the authors' own harness as a batch evaluation, not in the "
-            "request path: `python src/pipeline/forecasting/opencity_city_eval.py --source observatory` "
+            "request path: `python -m traffictwin.forecasting.opencity.opencity_city_eval --source observatory` "
             "(CPU path verified on a 12-node slice; see results/forecasting/opencity_df_smoke.json). "
             "Its harness needs 1,176 steps of history; the persisted observatory window is "
             "accumulating them. This adapter reports capability and never fabricates a value."])

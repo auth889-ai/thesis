@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Load a trained checkpoint and forecast an unseen test window — proof the model is usable, not just scored.
 
-    python src/pipeline/forecasting/infer_from_checkpoint.py --list
-    python src/pipeline/forecasting/infer_from_checkpoint.py --model GWNet --dataset METR-LA
-    python src/pipeline/forecasting/infer_from_checkpoint.py --model GWNet --dataset METR-LA --window 500 --sensors 3
+    python -m traffictwin.forecasting.infer_from_checkpoint --list
+    python -m traffictwin.forecasting.infer_from_checkpoint --model GWNet --dataset METR-LA
+    python -m traffictwin.forecasting.infer_from_checkpoint --model GWNet --dataset METR-LA --window 500 --sensors 3
 
 A metrics table proves a training run finished. It does not prove the artefact can be reloaded and
 used, which is what "reproducible" actually requires. This script:
@@ -99,7 +99,7 @@ def main() -> int:
     if a.list or not cks:
         if not cks:
             print(f"no checkpoints under {CKPT_DIR}\n"
-                  f"fetch them:  python src/pipeline/forecasting/aws_train.py --job <job> --collect-checkpoints")
+                  f"fetch them:  python -m traffictwin.forecasting.training.aws_train --job <job> --collect-checkpoints")
             return 1
         print(f"{'arch':<16} {'dataset':<10} {'size MB':>8}  path")
         for c in cks:

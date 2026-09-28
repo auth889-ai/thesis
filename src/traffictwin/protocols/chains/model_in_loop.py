@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Forecast model -> routing: the trained model's predictions steer trips on the twin it was tested on.
 
-    python src/pipeline/routing/model_in_loop.py --model STID --compliance 0.1
-    python src/pipeline/routing/model_in_loop.py --model GWNet --horizons 15,60 --compliance 0.05,0.1
+    python -m traffictwin.protocols.chains.model_in_loop --model STID --compliance 0.1
+    python -m traffictwin.protocols.chains.model_in_loop --model GWNet --horizons 15,60 --compliance 0.05,0.1
 
 The twin dataset's test split is the tail of seed --seed's 8-h SUMO run (rows -> sim time via data.npz).
 This script re-simulates exactly that run (same tiled routes, scale and seed as data/forecasting/dhaka_twin/
@@ -35,7 +35,7 @@ import numpy as np
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-from pipeline.routing import predictive_routing as pr  # noqa: E402
+from traffictwin.digital_twin import runtime as pr  # noqa: E402
 from traffictwin.protocols.chains.predeparture_arm import VEH_RE, read_routes  # noqa: E402
 from traffictwin.protocols.chains.run_arms import shift_weights  # noqa: E402
 
@@ -142,7 +142,7 @@ def main() -> int:
          "persistence": filter_to_sensors(shift_weights(static_dir / "edgedata.xml", base / "w_persist_raw.xml", 300), base / "w_persistence.xml", sensors)}
     for h in (int(x) for x in a.horizons.split(",")):
         wf = base / f"w_model{h}.xml"
-        subprocess.run([sys.executable, str(REPO / "src/pipeline/forecasting/forecast_to_weights.py"), "--source", "model", "--pred", str(pred),
+        subprocess.run([sys.executable, "-m", "traffictwin.optimization.forecast_to_weights", "--source", "model", "--pred", str(pred),
                         "--sensor-nodes", str(TWIN / "sensor_nodes.json"), "--horizon-min", str(h), "--t0", str(a.t0), "--period", "300",
                         "--out", str(wf)], check=True, capture_output=True)
         w[f"model@{h}"] = wf
@@ -165,7 +165,7 @@ def main() -> int:
         dv = f"{100 * (m['window_vehicle_hours'] / s['window_vehicle_hours'] - 1):+.1f} %" if name != "static" else "–"
         de = f"{100 * (m['equipped_mean_tt_s'] / s['equipped_mean_tt_s'] - 1):+.1f} %" if name != "static" and m.get("equipped_mean_tt_s") and s.get("equipped_mean_tt_s") else "–"
         lines.append(f"| {name} | " + " | ".join(f"{m[c]:.1f}" if isinstance(m[c], float) else str(m[c]) for c in cols) + f" | {m.get('routes_changed', 0)} | {dv} | {de} |")
-    lines += ["", f"Regenerate: `python src/pipeline/routing/model_in_loop.py --model {a.model} --horizons {a.horizons} --compliance {a.compliance}` (wall {time.time() - t_start:.0f} s)."]
+    lines += ["", f"Regenerate: `python -m traffictwin.protocols.chains.model_in_loop --model {a.model} --horizons {a.horizons} --compliance {a.compliance}` (wall {time.time() - t_start:.0f} s)."]
     (REPO / f"results/routing/model_in_loop_{a.model}.md").write_text("\n".join(lines) + "\n")
     (REPO / f"results/routing/model_in_loop_{a.model}.json").write_text(json.dumps({"config": {k: v for k, v in vars(a).items() if k != "pred"} | {"pred": str(pred)}, "results": res}, indent=1, default=str))
     print("\n".join(lines))

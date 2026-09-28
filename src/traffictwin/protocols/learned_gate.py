@@ -23,8 +23,8 @@ Every learned run: load the verified checkpoint, run inference at this seed's da
 hash the raw prediction, build the edge-cost table, write RoutingRuns, run SUMO. Provenance
 records (an_/rt_/sim_) go to the same store the product uses.
 
-    python src/pipeline/routing/learned_gate.py --seeds dev
-    python src/pipeline/routing/learned_gate.py --seeds final
+    python -m traffictwin.protocols.learned_gate --seeds dev
+    python -m traffictwin.protocols.learned_gate --seeds final
 """
 from __future__ import annotations
 
@@ -45,9 +45,9 @@ import numpy as np
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-from pipeline.routing import edge_costs as ec              # noqa: E402
-from pipeline.routing import predictive_routing as pr     # noqa: E402
-from pipeline.routing import route_optimizer as ro        # noqa: E402
+from traffictwin.optimization import edge_costs as ec              # noqa: E402
+from traffictwin.digital_twin import runtime as pr     # noqa: E402
+from traffictwin.optimization import route_optimizer as ro        # noqa: E402
 from traffictwin.protocols.oracle_gate import TCRIT, concentration, never_inserted_charge, paired, probe_tripinfo, sha_file, sumo_version  # noqa: E402
 from traffictwin.digital_twin import sensor_map                      # noqa: E402
 from traffictwin.digital_twin.scenario_builder import scenario_dir, sumo_tools_dir  # noqa: E402

@@ -11,8 +11,8 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
-from pipeline.routing import edge_costs as ec                   # noqa: E402
-from pipeline.routing import route_optimizer as ro              # noqa: E402
+from traffictwin.optimization import edge_costs as ec                   # noqa: E402
+from traffictwin.optimization import route_optimizer as ro              # noqa: E402
 from traffictwin.optimization import network_assignment as na               # noqa: E402
 
 needs_sumo = pytest.mark.skipif(shutil.which("netgenerate") is None or shutil.which("duarouter") is None, reason="SUMO binaries not installed")

@@ -18,7 +18,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(REPO), str(REPO / "src")]
 
 from traffictwin.protocols.oracle_gate import paired  # noqa: E402
-from pipeline.v2x.closed_loop import Forecaster  # noqa: E402
+from traffictwin.orchestration.closed_loop import Forecaster  # noqa: E402
 from traffictwin.research_status import compute_research_status  # noqa: E402
 
 KEY = "total_vehicle_hours_incl_never_inserted"

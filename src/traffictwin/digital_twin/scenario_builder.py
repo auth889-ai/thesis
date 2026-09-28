@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """CitySpec -> OSM -> netconvert -> a runnable SUMO scenario, for a city nobody hard-coded.
 
-    python src/pipeline/city/sumo_scenario.py --city nairobi_kenya --build
-    python src/pipeline/city/sumo_scenario.py --city nairobi_kenya --gui
+    python -m traffictwin.digital_twin.scenario_builder --city nairobi_kenya --build
+    python -m traffictwin.digital_twin.scenario_builder --city nairobi_kenya --gui
 
 The digital-twin half of the system was reachable only for the six Dhaka corridors that had been
 mapped by hand. This closes that: any city the registry can instantiate can also be converted into

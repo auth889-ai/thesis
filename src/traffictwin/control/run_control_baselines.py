@@ -28,7 +28,7 @@ HERE = Path(__file__).resolve()
 REPO = HERE.parents[2]
 sys.path.insert(0, str(REPO / "paper_labs" / "01_sumo_foundation" / "src"))
 
-NET = REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"
+NET = REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz"
 ROUTES = Path("/tmp/due_routes.rou.xml.gz")     # staged on the VM (E4 v200 DUE)
 END_S = 10800
 

@@ -155,11 +155,11 @@ def _run(job: str, p: dict) -> None:
             if dataset.startswith("user:"):               # their CSV contract, the whole uploaded graph
                 from backend.app.datasets import uploads as user_datasets
                 pp = user_datasets.paths(dataset.split(":", 1)[1])
-                cmd = [sys.executable, str(config.REPO / "src/pipeline/forecasting/opencity_predict.py"),
+                cmd = [sys.executable, "-m", "traffictwin.forecasting.opencity.opencity_predict",
                        "--source", "csv", "--csv", str(pp["csv"]), "--adj", str(pp["adj"]),
                        "--as-of", str(end), "--horizons", "15,30,60", "--out", str(out)]
             else:
-                cmd = [sys.executable, str(config.REPO / "src/pipeline/forecasting/opencity_predict.py"),
+                cmd = [sys.executable, "-m", "traffictwin.forecasting.opencity.opencity_predict",
                        "--source", "dataset", "--dataset", dataset, "--region", str(region), "--nodes", str(n_nodes),
                        "--as-of", str(end), "--horizons", "15,30,60", "--out", str(out)]
             proc = subprocess.run(cmd, capture_output=True, text=True, timeout=1200, cwd=config.REPO)
@@ -196,7 +196,7 @@ def _run(job: str, p: dict) -> None:
             emit(stage=f"Running the model ({model})", step=3)
             n_train = int(T * 0.7); test_lo = n_train + int(T * 0.1)
             window = max(0, end - 12 - test_lo)          # the script's window starts its 12 input steps at test_lo + window
-            cmd = [sys.executable, str(config.REPO / "src/pipeline/forecasting/infer_from_checkpoint.py"),
+            cmd = [sys.executable, "-m", "traffictwin.forecasting.infer_from_checkpoint",
                    "--model", cli, "--dataset", ds_map[dataset], "--window", str(window),
                    "--sensors", str(region + 1), "--verify-windows", "0"]
             proc = subprocess.run(cmd, capture_output=True, text=True, timeout=600, cwd=config.REPO)
@@ -321,7 +321,7 @@ AWS_VARS = ("AWS_ACCESS_KEY_ID", "AWS_SECRET_ACCESS_KEY", "AWS_REGION", "AWS_DEF
 
 
 def _aws_env() -> dict | None:
-    """The AWS credentials from src/pipeline/core/.env, for the aws CLI the launcher shells out to.
+    """The AWS credentials from .env, for the aws CLI the launcher shells out to.
     Server-side only: no endpoint ever returns a value from here."""
     import os
     from backend.app.credentials import load
@@ -343,7 +343,7 @@ def cloud() -> dict:
     return {"available": ok, "provider": "aws" if ok else None,
             "instance": "g5.xlarge (1× A10G, 24 GB) — spot first, on-demand if no spot capacity",
             "estimate": "about $0.10–0.50 per run: boot + install ≈ 4 min, then seconds per epoch; the instance terminates itself",
-            "why_not": None if ok else ("aws CLI not installed" if env else "no AWS keys in src/pipeline/core/.env")}
+            "why_not": None if ok else ("aws CLI not installed" if env else "no AWS keys in .env")}
 
 
 def _train_cloud_run(job: str, p: dict) -> None:
@@ -362,7 +362,7 @@ def _train_cloud_run(job: str, p: dict) -> None:
         dataset, arch, epochs = p.get("dataset", ""), p.get("arch", "STID"), int(p.get("epochs", 100))
         name = at.city_job_name(dataset)
         emit(stage="Preparing the data and sending it to the cloud", cloud_job=name)
-        cmd = [sys.executable, str(config.REPO / "src/pipeline/forecasting/aws_train.py"), "--launch", "--city-dataset", dataset,
+        cmd = [sys.executable, "-m", "traffictwin.forecasting.training.aws_train", "--launch", "--city-dataset", dataset,
                "--models", arch, "--epochs", str(epochs), "--allow-on-demand", "--max-hours", "1", "--job", name]
         r = subprocess.run(cmd, capture_output=True, text=True, cwd=config.REPO, env=env, timeout=900)
         if r.returncode != 0:

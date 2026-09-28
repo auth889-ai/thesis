@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Turn the live Dhaka feed into the schema OpenCity actually consumes — and say when it is valid.
 
-    python src/pipeline/forecasting/dhaka_opencity_schema.py --check
-    python src/pipeline/forecasting/dhaka_opencity_schema.py --build --out data/forecasting/cities/DHAKA_LIVE
+    python -m traffictwin.forecasting.opencity.dhaka_opencity_schema --check
+    python -m traffictwin.forecasting.opencity.dhaka_opencity_schema --build --out data/forecasting/cities/DHAKA_LIVE
 
 WHY THE LIVE PREDICTION LOOKS HARDCODED, AND WHAT FIXES IT
     The live page predicts an ordinal congestion CLASS (FREE_FLOW / SLOW / CONGESTED / SEVERE),

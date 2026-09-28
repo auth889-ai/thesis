@@ -36,7 +36,7 @@ def experiment_oracle_gate(seed_set: str = "final"):
     root = config.REPO / "results/routing/oracle_gate"
     cands = sorted(root.glob(f"FINAL_PROTOCOL_v1_{seed_set}_cfg*/report.json"), key=lambda f: f.stat().st_mtime) if root.exists() else []
     if not cands:
-        return {"available": False, "command": f"python src/pipeline/routing/oracle_gate.py --seeds {seed_set}"}
+        return {"available": False, "command": f"python -m traffictwin.protocols.oracle_gate --seeds {seed_set}"}
     rep = json.loads(cands[-1].read_text())
     P = rep.get("protocol", {})
     return {"available": True, "result_source": "RESEARCH_BENCHMARK", "report": str(cands[-1].relative_to(config.REPO)), "seed_set": rep.get("seed_set"),
@@ -55,7 +55,7 @@ def experiment_learned_gate(seed_set: str = "final"):
     root = config.REPO / "results/routing/learned_gate"
     cands = sorted(root.glob(f"FINAL_LEARNED_PROTOCOL_v1_{seed_set}_cfg*/report.json"), key=lambda f: f.stat().st_mtime) if root.exists() else []
     if not cands:
-        return {"available": False, "command": f"python src/pipeline/routing/learned_gate.py --seeds {seed_set}"}
+        return {"available": False, "command": f"python -m traffictwin.protocols.learned_gate --seeds {seed_set}"}
     rep = json.loads(cands[-1].read_text())
     P = rep.get("protocol", {})
     key = P.get("primary_metric_key", "total_vehicle_hours_incl_never_inserted")
@@ -93,7 +93,7 @@ def experiment_chain(tag: str = "_ideal", run_id: str | None = None):
         return {"available": False,
                 "missing": str(f.relative_to(config.REPO)),
                 "run_it": "POST /api/experiment/chain/run",
-                "command": "python src/pipeline/routing/integrated_chain.py --seeds 11,12,13,14,15"}
+                "command": "python -m traffictwin.protocols.chains.integrated_chain --seeds 11,12,13,14,15"}
     rec = json.loads(f.read_text())
     kind = str(((rec.get("options") or rec.get("request") or {}).get("forecast_kind")) or rec.get("forecast_kind") or "").lower()
     src = "SYNTHETIC_WHAT_IF" if kind in ("random", "oracle") else "RESEARCH_BENCHMARK"

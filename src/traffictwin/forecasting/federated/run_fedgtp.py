@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Run the official FedGTP under a communication-impairment profile, and record what the link did.
 
-    python src/pipeline/federated/run_fedgtp.py --profile ideal --epochs 5 --device cuda
-    python src/pipeline/federated/run_fedgtp.py --sweep --epochs 50 --device cuda
-    python src/pipeline/federated/run_fedgtp.py --profile ideal --epochs 1 --device cpu --dry-run
+    python -m traffictwin.forecasting.federated.run_fedgtp --profile ideal --epochs 5 --device cuda
+    python -m traffictwin.forecasting.federated.run_fedgtp --sweep --epochs 50 --device cuda
+    python -m traffictwin.forecasting.federated.run_fedgtp --profile ideal --epochs 1 --device cpu --dry-run
 
 This answers the first half of the research question: *how do realistic V2X communication
 constraints affect distributed traffic forecasting accuracy?* It launches the authors' own
@@ -41,7 +41,7 @@ sys.path.insert(0, str(REPO))
 UPSTREAM = Path(os.environ.get("DHAKAFLOW_WORKSPACE", Path.home() / ".dhakaflow/upstream")) / "FedGTP"
 PINNED_SHA = "ff128f5bed7780b384776d03fe0bad8110575a64"
 OUT = REPO / "results/federated"
-BOOT = REPO / "src/pipeline/federated/_fedgtp_boot.py"
+BOOT = REPO / "src/traffictwin/forecasting/federated/_fedgtp_boot.py"
 
 SWEEP = ["ideal", "mosaic_v2x", "latency_50", "latency_200", "latency_1000",
          "loss_10", "loss_30", "mosaic_loss_10"]
@@ -58,7 +58,7 @@ def free_port() -> int:
 def check_upstream() -> str:
     if not UPSTREAM.exists():
         raise SystemExit(f"pinned FedGTP checkout missing at {UPSTREAM}\n"
-                         f"  python src/pipeline/upstream/fetch_upstream.py --name FedGTP")
+                         f"  python -m traffictwin.tools.fetch_upstream --name FedGTP")
     sha = subprocess.check_output(["git", "-C", str(UPSTREAM), "rev-parse", "HEAD"], text=True).strip()
     if sha != PINNED_SHA:
         raise SystemExit(f"FedGTP checkout is at {sha}, not the pinned {PINNED_SHA}")

@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Paired-seed driver for every routing arm on the Dhaka R1 network.
 
-    python src/pipeline/routing/run_arms.py --seeds 11,12,13 --horizon 1800 --jobs 3
-    python src/pipeline/routing/stats.py --horizon 1800            # then the statistics
+    python -m traffictwin.protocols.chains.run_arms --seeds 11,12,13 --horizon 1800 --jobs 3
+    python -m traffictwin.protocols.statistics --horizon 1800            # then the statistics
 
 For every seed the same net, demand (routes_repeat_1h, --scale 0.584), horizon and
 compliance are used; only the routing rule differs.  Static is run FIRST for each seed
@@ -45,7 +45,7 @@ from pathlib import Path
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-from pipeline.routing import predictive_routing as pr  # noqa: E402
+from traffictwin.digital_twin import runtime as pr  # noqa: E402
 
 ALL_ARMS = ["static", "reactive", "predictive_oracle", "predictive_persistence", "due"]
 

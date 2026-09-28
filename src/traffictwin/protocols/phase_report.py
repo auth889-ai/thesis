@@ -2,7 +2,7 @@
 """Assemble the oracle / identical-state-fork phase report from the run files — every table is read from
 report.json, decision_agreement.json, controller_status.json and the sweep JSONs; nothing is typed in.
 
-    python src/pipeline/v2x/phase_report.py
+    python -m traffictwin.protocols.phase_report
 """
 from __future__ import annotations
 

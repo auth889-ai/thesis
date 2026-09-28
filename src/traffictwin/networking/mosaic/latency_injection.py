@@ -39,7 +39,7 @@ from pathlib import Path
 
 from traffictwin.paths import REPO
 RESULTS = REPO / "results/networking"
-V2X_BUS = REPO / "src/pipeline/adapters/networking/v2x_bus.py"
+V2X_BUS = REPO / "src/traffictwin/networking/v2x_bus.py"
 ADDED_MS = [0, 500, 2000, 5000]
 LOSS_PCT = [0, 10, 30]
 
@@ -144,7 +144,7 @@ def main():
     md += ["", "single DENM: one advisory per vehicle, lost with probability `loss`. 1 Hz repeat: the official "
                "WeatherWarningApp re-sends a DENM every second while in the hazard, so a vehicle with slack "
                "tth - latency gets one extra chance per second (P = 1 - loss^n).",
-           "", "Regenerate: `python src/pipeline/networking/latency_injection.py [--base sweep]`."]
+           "", "Regenerate: `python -m traffictwin.networking.mosaic.latency_injection [--base sweep]`."]
     (RESULTS / "latency.md").write_text("\n".join(md) + "\n")
     print("\n".join(md))
 

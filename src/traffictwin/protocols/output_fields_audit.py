@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """GATE 9 — every numeric output the Operations UI displays, traced to its backend source.
 
-    python src/pipeline/audit/output_fields_audit.py [--run-id an_xxx] [--out docs/audit/output_fields_audit.json]
+    python -m traffictwin.protocols.output_fields_audit [--run-id an_xxx] [--out docs/audit/output_fields_audit.json]
 
 For each displayed field: the frontend component, the API endpoint, the backend function that
 produces it, the source type, and `hardcoded` (true only if the value does not come from a request

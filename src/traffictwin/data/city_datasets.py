@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """One interface for ANY city's traffic sensor data.
 
-    python src/pipeline/forecasting/city_datasets.py --list                  # what is available and where
-    python src/pipeline/forecasting/city_datasets.py --city METR-LA          # load, validate, summarise
-    python src/pipeline/forecasting/city_datasets.py --city METR-LA --export data/forecasting/cities/metr_la.npz
+    python -m traffictwin.data.city_datasets --list                  # what is available and where
+    python -m traffictwin.data.city_datasets --city METR-LA          # load, validate, summarise
+    python -m traffictwin.data.city_datasets --city METR-LA --export data/forecasting/cities/metr_la.npz
 
 The forecasting and federated code must not care which city it is looking at. This module is the
 only place that knows about file formats, so a new city is added by registering a loader, not by

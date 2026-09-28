@@ -36,7 +36,7 @@ def assert_no_google_content(row: dict) -> None:
 
 def test_route_advisor_dry_run_persists_only_compliant_metadata(tmp_path):
     out = tmp_path / "advice.jsonl"
-    result = run("src/pipeline/live/route_advisor.py", "--dry-run", "--corridor", "farmgate_to_shahbagh", "--out", str(out))
+    result = run("-m", "traffictwin.optimization.route_advisor", "--dry-run", "--corridor", "farmgate_to_shahbagh", "--out", str(out))
     assert result.returncode == 0, result.stderr + result.stdout[-800:]
     rows = read_jsonl(out)
     assert len(rows) == 1
@@ -50,7 +50,7 @@ def test_route_advisor_dry_run_persists_only_compliant_metadata(tmp_path):
 
 def test_route_advisor_live_requires_yes(tmp_path):
     out = tmp_path / "advice.jsonl"
-    result = run("src/pipeline/live/route_advisor.py", "--live", "--corridor", "farmgate_to_shahbagh", "--out", str(out))
+    result = run("-m", "traffictwin.optimization.route_advisor", "--live", "--corridor", "farmgate_to_shahbagh", "--out", str(out))
     assert result.returncode == 2
     assert not out.exists()
 
@@ -58,7 +58,7 @@ def test_route_advisor_live_requires_yes(tmp_path):
 def test_pilot_trip_start_complete_and_summary(tmp_path):
     log = tmp_path / "pilot.jsonl"
     result = run(
-        "src/pipeline/live/user_trip_logger.py", "start",
+        "-m", "traffictwin.data.user_trips", "start",
         "--participant", "person-a",
         "--advice-id", "adv123",
         "--corridor", "farmgate_to_shahbagh",
@@ -68,7 +68,7 @@ def test_pilot_trip_start_complete_and_summary(tmp_path):
     assert result.returncode == 0, result.stderr
     trip_id = json.loads(result.stdout)["trip_id"]
     result = run(
-        "src/pipeline/live/user_trip_logger.py", "complete",
+        "-m", "traffictwin.data.user_trips", "complete",
         "--trip-id", trip_id,
         "--arrived-utc", "2026-09-01T10:18:30+00:00",
         "--log", str(log),

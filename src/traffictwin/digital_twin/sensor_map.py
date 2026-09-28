@@ -17,7 +17,7 @@ Each usable detector is snapped to the nearest passenger edge of the scenario's 
 Rejected detectors are listed and never priced. The opposite carriageway, when within
 OPPOSITE_M, is recorded as `opposite_edge` so the direction ambiguity is visible.
 
-    python src/pipeline/city/sensor_map.py --dataset user:los_angeles --city los_angeles_metr
+    python -m traffictwin.digital_twin.sensor_map --dataset user:los_angeles --city los_angeles_metr
 """
 from __future__ import annotations
 

@@ -97,7 +97,7 @@ def city_forecast_accuracy(city_id: str):
     if city_id != "dhaka" or not f.exists():
         return {"available": False, "city_id": city_id,
                 "missing": "results/forecasting/live_backtest.json",
-                "command": "python src/pipeline/forecasting/live_backtest.py"}
+                "command": "python -m traffictwin.forecasting.live.live_backtest"}
     return {"available": True, "result_source": "RESEARCH_BENCHMARK", **json.loads(f.read_text())}
 
 

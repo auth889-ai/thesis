@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Run OpenCity — the authors' harness, their released weights — on a city of OURS.
 
-    python src/pipeline/forecasting/opencity_city_eval.py --source observatory --city dhaka
-    python src/pipeline/forecasting/opencity_city_eval.py --source metrla-smoke        # CPU path check
+    python -m traffictwin.forecasting.opencity.opencity_city_eval --source observatory --city dhaka
+    python -m traffictwin.forecasting.opencity.opencity_city_eval --source metrla-smoke        # CPU path check
 
 Until now OpenCity was a capability label here: the adapter reported its gates and refused, and
 the only forward passes were the published-benchmark reproductions on a GPU. This script is the
@@ -149,7 +149,7 @@ def run(name: str, vals: np.ndarray, A: np.ndarray, batch: int, timeout: int,
     try:
         CONF.write_text(re.sub(r"^dataset_use\s*=.*$", f"dataset_use = ['{name}']", original,
                                count=1, flags=re.MULTILINE))
-        boot = REPO / "src/pipeline/forecasting/_opencity_boot.py"
+        boot = REPO / "src/traffictwin/forecasting/opencity/_opencity_boot.py"
         cmd = [sys.executable, str(boot), "-mode", "test", "-model", "OpenCity",
                "-load_pretrain_path", WEIGHTS, "-batch_size", str(batch),
                "-test_ratio", str(test_ratio), "-val_ratio", "0.0",
@@ -200,7 +200,7 @@ def readiness(city: str = "dhaka") -> dict:
         "source": meta,
         "cpu_path_verified": json.loads(smoke.read_text()) if smoke.exists() else None,
         "result": json.loads(done.read_text()) if done.exists() else None,
-        "command": f"python src/pipeline/forecasting/opencity_city_eval.py --source observatory --city {city}",
+        "command": f"python -m traffictwin.forecasting.opencity.opencity_city_eval --source observatory --city {city}",
     }
 
 

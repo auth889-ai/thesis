@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """How accurate is the forecast on THIS city's own recorded data? A rolling-origin backtest.
 
-    python src/pipeline/forecasting/live_backtest.py                 # every model, 15/30/60 min
-    python src/pipeline/forecasting/live_backtest.py --stride 1      # every bin (slower)
+    python -m traffictwin.forecasting.live.live_backtest                 # every model, 15/30/60 min
+    python -m traffictwin.forecasting.live.live_backtest --stride 1      # every bin (slower)
 
 At every origin bin t the recorded series is cut at t, each model forecasts t+15/30/60 min from
 that history alone, and the forecast is scored against what the recorder later actually wrote.
@@ -132,7 +132,7 @@ def backtest(vals, mask, corridors, bins, models, horizons=HORIZONS, stride=3,
         "horizons_min": horizons,
         "rows": rows, "verdict": verdict, "traces": traces,
         "wall_s": round(time.time() - t0, 1),
-        "command": "python src/pipeline/forecasting/live_backtest.py",
+        "command": "python -m traffictwin.forecasting.live.live_backtest",
     }
 
 

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """V2X advisory for OUR event (NLP report or forecast), not the stock ice stub.
 
-    python src/pipeline/networking/event_sweep.py --source nlp_event --p 0.25 --seed 11 --duration 900
-    python src/pipeline/networking/event_sweep.py --source predicted --p 1.0
-    python src/pipeline/networking/event_sweep.py --aggregate
+    python -m traffictwin.networking.mosaic.event_sweep --source nlp_event --p 0.25 --seed 11 --duration 900
+    python -m traffictwin.networking.mosaic.event_sweep --source predicted --p 1.0
+    python -m traffictwin.networking.mosaic.event_sweep --aggregate
 
 Reuses src/pipeline/networking/penetration_sweep.py unchanged (build_scenario / run_mosaic / parse_point) and
 only rewrites two scenario inputs:
@@ -34,7 +34,7 @@ from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 from traffictwin.networking.mosaic import penetration_sweep as ps  # noqa: E402
 
-NET = REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"
+NET = REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz"
 EVENT = REPO / "results/nlp/events_karwan_bazar.jsonl"
 RESULTS = ps.RESULTS
 
@@ -141,7 +141,7 @@ def aggregate():
     for r in rows:
         md.append("| " + " | ".join("" if r[c] is None else (f"{r[c]:.3g}" if isinstance(r[c], float) else str(r[c])) for c in cols) + " |")
     descs = {json.loads(f.read_text())["event"]["desc"] for f in RESULTS.glob("event_*_p*_s*.json")}
-    md += ["", *[f"* {d}" for d in sorted(descs)], "", "Regenerate: `python src/pipeline/networking/event_sweep.py --source nlp_event --p <P> --seed <S>`; `--aggregate` rebuilds this table."]
+    md += ["", *[f"* {d}" for d in sorted(descs)], "", "Regenerate: `python -m traffictwin.networking.mosaic.event_sweep --source nlp_event --p <P> --seed <S>`; `--aggregate` rebuilds this table."]
     (RESULTS / "event_sweep.md").write_text("\n".join(md) + "\n")
     print("\n".join(md))
 

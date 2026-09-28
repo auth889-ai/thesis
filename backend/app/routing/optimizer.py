@@ -42,7 +42,7 @@ def _forecast_from_analysis(rec: dict, horizon_min: int) -> tuple[dict[str, floa
 def optimize_for_analysis(rec: dict, net: str | Path, origin_edge: str, destination_edge: str, out: Path, seed: int,
                           window_s: float = 1800.0, current_route: list[str] | None = None, hops: int | None = None) -> dict:
     """One RoutingRun for the analysed trip. Raises NoStoredForecast when the run carries no forecast."""
-    from pipeline.routing import edge_costs as ec, route_optimizer as ro
+    from traffictwin.optimization import edge_costs as ec, route_optimizer as ro
     analysis_run_id = rec["run_id"]
     horizon_min = int(rec.get("horizon_min") or 15)
     rt_id = "rt_" + uuid.uuid4().hex[:8]

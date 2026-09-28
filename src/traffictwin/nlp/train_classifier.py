@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Train / evaluate the 3-class traffic-text classifier {incident, congestion, irrelevant}.
 
-    python src/pipeline/nlp/train_classifier.py                      # TF-IDF (word+char n-grams) + LogisticRegression
-    python src/pipeline/nlp/train_classifier.py --augment-seed       # + the same model with the 150 Dhaka seed posts added
-    python src/pipeline/nlp/train_classifier.py --model distilbert   # distilbert-base-uncased, HF Trainer, 3 epochs
+    python -m traffictwin.nlp.train_classifier                      # TF-IDF (word+char n-grams) + LogisticRegression
+    python -m traffictwin.nlp.train_classifier --augment-seed       # + the same model with the 150 Dhaka seed posts added
+    python -m traffictwin.nlp.train_classifier --model distilbert   # distilbert-base-uncased, HF Trainer, 3 epochs
 
 Baseline protocol: 5-fold stratified CV on TRAIN+VAL (accuracy, macro-F1 mean +- sd), then refit on
 TRAIN+VAL and score the frozen held-out TEST once: accuracy, macro-F1, per-class P/R/F1, confusion
@@ -41,7 +41,7 @@ def load_splits() -> dict[str, pd.DataFrame]:
     for name in ["train", "val", "test"]:
         p = DATA / f"{name}.csv"
         if not p.exists():
-            sys.exit(f"missing {p}: run `python src/pipeline/nlp/get_data.py` first")
+            sys.exit(f"missing {p}: run `python -m traffictwin.nlp.get_data` first")
         df = pd.read_csv(p).dropna(subset=["text", "label"])
         df = df[df["label"].isin(LABELS)]
         out[name] = df.reset_index(drop=True)
@@ -136,8 +136,8 @@ def run_tfidf_lr(sp: dict[str, pd.DataFrame], a, augment: bool = False) -> dict:
 COLAB_CMD = """# --- run on Google Colab (T4, ~20 min) ---
 !pip -q install transformers datasets accelerate scikit-learn
 from google.colab import drive; drive.mount('/content/drive')
-!git clone <YOUR_REPO_URL> thesis && cd thesis && python src/pipeline/nlp/get_data.py
-!cd thesis && python src/pipeline/nlp/train_classifier.py --model distilbert --epochs 3 --batch-size 32 --force
+!git clone <YOUR_REPO_URL> thesis && cd thesis && python -m traffictwin.nlp.get_data
+!cd thesis && python -m traffictwin.nlp.train_classifier --model distilbert --epochs 3 --batch-size 32 --force
 # then copy results/nlp/classifier.json, classifier.md and results/nlp/distilbert/ back into the repo
 """
 
@@ -236,7 +236,7 @@ def write_reports(all_res: dict, manifest: dict | None) -> None:
                   "```", *[f"{LABELS[i]:>11s} " + " ".join(f"{v:6d}" for v in row) for i, row in enumerate(cm)], "```"]
     lines += ["", "Dhaka-seed column: `tfidf_lr`/`distilbert` = zero-shot (seed never trained on); "
               "`tfidf_lr_dhaka_aug` = 5-fold over the seed with the real corpus + 4/5 seed in training.",
-              "", "Regenerate: `python src/pipeline/nlp/get_data.py && python src/pipeline/nlp/train_classifier.py --augment-seed` "
+              "", "Regenerate: `python -m traffictwin.nlp.get_data && python -m traffictwin.nlp.train_classifier --augment-seed` "
               "(`--model distilbert` for the transformer row)."]
     (RESULTS / "classifier.md").write_text("\n".join(lines) + "\n")
 

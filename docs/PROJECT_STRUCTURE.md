@@ -19,6 +19,11 @@ traffictwin/                      the library (installed as `traffictwin`, lives
   protocols/     the research protocols: oracle gate, stress calibration, scenario A/B, controller gate,
                  statistics (paired t interval, bootstrap, Wilcoxon), report generators
   nlp/           incident classifier (Dabiri traffic tweets)
+  interfaces/    abstract contracts of every subsystem
+  common/        city model, reality labels, units, typed records, registries
+  perception/    vehicle detection and tracking (RT-DETR, ByteTrack) — off the canonical path
+  control/       signal-control baselines and RL arms — the control benchmark
+  tools/         upstream fetch, reproduction records
   research_status.py, paths.py, configuration.py
 
 backend/app/                      FastAPI application — thin routers, no science
@@ -42,28 +47,26 @@ tests/                            mirrors the packages: tests/traffictwin, tests
 docs/                             structure, methodology, references (generated), reports
 results/                          generated evidence; only small summaries are versioned (see .gitignore)
 data/                             datasets and built scenarios (not versioned)
-archive/                          frozen labs (paper_labs), legacy code — kept for provenance, never imported
 upstream/                         pins and manifests of official third-party code (no clones)
 ```
 
-## Migration from the current tree
+## Migration status
 
-`src/pipeline` (183 files, 27 000 lines, 13 sub-packages) is the old research code. It is migrated
-into `traffictwin` one sub-package at a time, each step leaving the suite green:
+Done (2026-09-28). The old `src/pipeline` research package (183 modules) and the `src/dashboard`
+compatibility shims are gone; every module lives in `traffictwin` and every script runs as
+`python -m traffictwin.<module>`. The frozen paper labs, the legacy dashboard, the export bundles and the
+archived datasets were moved outside the repository (`~/thesis_archive_<date>/`); the assets the
+application reads from them are versioned in `data/cities/dhaka_r1` (gzip networks + manifest) and
+`results/utd19`.
 
-| step | from `src/pipeline/…` | to `traffictwin/…` | notes |
-|---|---|---|---|
-| 1 | routing/ (oracle_gate, learned_gate, stats, decision_guard, forecast_to_costs, chains) | protocols/, routing/ | protocols get the gates and statistics; routing keeps cost building |
-| 2 | v2x/ (closed_loop, stress_*, controller_gate, phase/stress reports, corridor_diversity, route_headroom, network_assignment) | control/, protocols/ | closed_loop is already duplicated in traffictwin.orchestration — keep one |
-| 3 | forecasting/ (basicts_train, aws_train, evaluate_models, benchmark_floors, adapters, opencity_*, chronos, federated_forecast, live_to_edges) | forecasting/ | split training / evaluation / adapters / federated |
-| 4 | city/ (sumo_scenario, sensor_map, coverage_rescue, datasets) | digital_twin/scenarios, data/ | |
-| 5 | networking/, nlp/, federated/ | networking/mosaic, nlp/, forecasting/federated | |
-| 6 | core/, adapters/, audit/, results/, upstream/, live/ | archive/ or folded where still used | perception/tracking adapters are off the canonical path |
-| 7 | `src/dashboard/backend` alias shims | removed | once nothing imports the old flat names |
+Additional layers that the migration surfaced: `traffictwin/interfaces` (subsystem contracts),
+`traffictwin/common` (shared vocabulary: city model, reality labels, units, registries),
+`traffictwin/perception` and `traffictwin/control` (the detection and signal-control subsystems, off the
+canonical closed-loop path), `traffictwin/tools` (upstream fetch, reproduction records).
 
-Then: `backend/app/simulation/runtime.py` and `backend/app/routing/trip_analysis.py` split into services;
-frontend `pages/legacy/*` retired or promoted to `pages/` one file each; `legacy/`, `paper_labs/`
-moved to `archive/`; root `main.py` becomes `traffictwin/cli.py`.
+Still to do: split `backend/app/simulation/runtime.py` and `backend/app/routing/trip_analysis.py` into
+services; retire or promote the ten `frontend/pages/legacy/*` pages; give the frontend a `package.json`
+with a dev server and a test runner (Vite + Vitest) and migrate it to TypeScript one page at a time.
 
 ## Rules the test enforces
 

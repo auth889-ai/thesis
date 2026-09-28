@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """CONGESTED TRAFFIC EXPERIMENT — two research scenarios on the calibrated stress level, ORACLE SANITY FIRST.
 
-    python src/pipeline/v2x/stress_experiment.py --scenario A --stage oracle          # baseline / reactive / oracle from one identical fork
-    python src/pipeline/v2x/stress_experiment.py --scenario A --stage learned         # refused unless the oracle gate PASSED
-    python src/pipeline/v2x/stress_experiment.py --scenario B --stage oracle          # incident in the stress scenario
+    python -m traffictwin.protocols.stress_experiment --scenario A --stage oracle          # baseline / reactive / oracle from one identical fork
+    python -m traffictwin.protocols.stress_experiment --scenario A --stage learned         # refused unless the oracle gate PASSED
+    python -m traffictwin.protocols.stress_experiment --scenario B --stage oracle          # incident in the stress scenario
 
 Scenario A  FORECASTABLE CONGESTION: demand profile `peak` (0-600 s normal · 600-1500 s rising · 1500-2400 s
             the bottleneck develops · 2400-3600 s peak), every arm forked from ONE saved SUMO state at
@@ -36,7 +36,7 @@ from pathlib import Path
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 
-from pipeline.v2x import closed_loop as cl        # noqa: E402
+from traffictwin.orchestration import closed_loop as cl        # noqa: E402
 
 KEY = "total_vehicle_hours_incl_never_inserted"
 PASS_LABELS = {"HELPED", "BETTER"}                       # src/pipeline/routing/oracle_gate.paired() labels a lower-is-better metric HELPED / HURT / INCONCLUSIVE

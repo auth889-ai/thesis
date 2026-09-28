@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Cross-city evaluation with the official OpenCity foundation model.
 
-    python src/pipeline/forecasting/opencity_crosscity.py --list
-    python src/pipeline/forecasting/opencity_crosscity.py --dataset PEMS07M
-    python src/pipeline/forecasting/opencity_crosscity.py --all-zeroshot
+    python -m traffictwin.forecasting.opencity.opencity_crosscity --list
+    python -m traffictwin.forecasting.opencity.opencity_crosscity --dataset PEMS07M
+    python -m traffictwin.forecasting.opencity.opencity_crosscity --all-zeroshot
 
 THE POINT THIS SCRIPT EXISTS TO GET RIGHT
     "Zero-shot" means the model never saw that city during pre-training. OpenCity's own
@@ -73,7 +73,7 @@ def exposure(dataset: str) -> str:
 def check_clone() -> str:
     if not OC.exists():
         raise SystemExit(f"OpenCity checkout missing at {OC}\n"
-                         f"  python src/pipeline/upstream/fetch_upstream.py --name OpenCity")
+                         f"  python -m traffictwin.tools.fetch_upstream --name OpenCity")
     sha = subprocess.check_output(["git", "-C", str(OC), "rev-parse", "HEAD"], text=True).strip()
     if sha != PINNED_SHA:
         raise SystemExit(f"OpenCity is at {sha}, not the pinned {PINNED_SHA}")
@@ -121,7 +121,7 @@ def run_one(dataset: str, test_ratio: float, batch_size: int, timeout: int,
         # Launched through _opencity_boot.py, which restores NumPy aliases deleted in 2.0 and
         # defaults torch.load to CPU when there is no GPU. It edits none of their source; the
         # shims are printed into the log so the compatibility layer is auditable.
-        boot = REPO / "src/pipeline/forecasting/_opencity_boot.py"
+        boot = REPO / "src/traffictwin/forecasting/opencity/_opencity_boot.py"
         mode = "eval" if arm == "fine_tuned" else "test"
         cmd = [sys.executable, str(boot), "-mode", mode, "-model", "OpenCity",
                "-load_pretrain_path", WEIGHTS, "-batch_size", str(batch_size),
@@ -260,7 +260,7 @@ def write_outputs(records: list[dict]) -> None:
 
     L += ["", "Rows marked *seen in pre-training* are reported for completeness and must not be "
               "quoted as evidence of cross-city generalization.\n",
-          "Regenerate: `python src/pipeline/forecasting/opencity_crosscity.py --all-zeroshot`. "
+          "Regenerate: `python -m traffictwin.forecasting.opencity.opencity_crosscity --all-zeroshot`. "
           "Machine-readable: `opencity_crosscity.json`.\n"]
     (OUT / "opencity_crosscity.md").write_text("\n".join(L))
 def main() -> int:

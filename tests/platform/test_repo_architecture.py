@@ -30,7 +30,6 @@ REQUIRED_CONFIG_SUBSYSTEMS = [
     "control", "routing", "live", "deployment",
 ]
 
-FROZEN_LABS = ["00_utd19", "01_sumo_foundation", "02_dhaka_osm"]
 
 WEIGHT_SUFFIXES = {".pt", ".pth", ".ckpt", ".h5", ".onnx", ".safetensors", ".pb"}
 MAX_TRACKED_FILE_BYTES = 10 * 1024 * 1024   # 10 MB
@@ -49,12 +48,12 @@ def test_required_top_level_directory_exists(name):
 
 
 def test_retired_root_directories_are_not_recreated():
-    for name in ("dashboard", "pipeline", "artifacts", "notebooks"):
+    for name in ("dashboard", "pipeline", "artifacts", "notebooks", "legacy", "paper_labs", "exports", "src/pipeline", "src/dashboard", "main.py"):
         assert not (REPO_ROOT / name).exists(), f"use the canonical nested location, not {name}/"
 
 
 @pytest.mark.parametrize("relative", [
-    "src/pipeline", "experiments/notebooks", "results/artifacts",   # the web application lives in backend/ and frontend/ (REQUIRED_TOP_LEVEL), not under src/
+    "src/traffictwin", "experiments/notebooks", "results/artifacts",   # the web application lives in backend/ and frontend/ (REQUIRED_TOP_LEVEL); the library under src/
 ])
 def test_consolidated_directories_exist(relative):
     assert (REPO_ROOT / relative).is_dir()
@@ -67,12 +66,10 @@ def test_config_subsystem_exists_and_is_not_empty(subsystem):
     assert list(d.glob("*.yaml")), f"configs/{subsystem}/ has no YAML — an empty config dir is decoration"
 
 
-def test_no_duplicate_source_tree():
-    """Canonical implementations belong to traffictwin, not copied legacy modules."""
+def test_single_source_tree():
+    """One library (traffictwin); no transitional copies of it remain."""
     assert (REPO_ROOT / "src/traffictwin/__init__.py").is_file()
-    for relative in ("routing/edge_costs.py", "routing/route_optimizer.py", "v2x/channel.py", "v2x/closed_loop.py"):
-        source = (REPO_ROOT / "src/pipeline" / relative).read_text()
-        assert "sys.modules[__name__]" in source, f"expected compatibility import: {relative}"
+    assert not (REPO_ROOT / "src/pipeline").exists() and not (REPO_ROOT / "src/dashboard").exists()
 
 
 # ------------------------------------------------------------------- upstream
@@ -134,22 +131,8 @@ def test_no_large_tracked_files():
 
 
 # --------------------------------------------------------------- frozen labs
-@pytest.mark.parametrize("lab", FROZEN_LABS)
-def test_frozen_labs_have_no_uncommitted_changes(lab):
-    path = f"paper_labs/{lab}"
-    if not (REPO_ROOT / path).exists():
-        pytest.skip(f"{path} not present")
-    diff = subprocess.run(["git", "diff", "HEAD", "--", path],
-                          cwd=REPO_ROOT, capture_output=True, text=True).stdout
-    assert not diff.strip(), f"{lab} is FROZEN but has uncommitted modifications"
-
-
-def test_lab02_freeze_record_present():
-    freeze = REPO_ROOT / "paper_labs" / "02_dhaka_osm" / "FREEZE.md"
-    assert freeze.exists(), "Lab 02 FREEZE.md missing"
-    text = freeze.read_text()
-    for commit in ("6936ea9", "c852e64"):
-        assert commit in text, f"Lab 02 freeze record must name commit {commit}"
+# The frozen paper labs (00_utd19, 01_sumo_foundation, 02_dhaka_osm) are archived outside the repository;
+# the assets the application reads from them live in data/cities/dhaka_r1 (with MANIFEST.json) and results/utd19.
 
 
 # ------------------------------------------------------------- model registry

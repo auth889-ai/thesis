@@ -19,7 +19,7 @@
             "src/traffictwin/forecasting/service.py",
             "src/traffictwin/forecasting/evaluation/benchmark_floors.py",
             "src/traffictwin/protocols/learned_gate.py",
-            "src/pipeline/v2x/closed_loop.py"
+            "traffictwin.orchestration.closed_loop"
           ],
           "code": "nnzhan/Graph-WaveNet (pinned in upstream/UPSTREAM_PINS.yaml); trained through BasicTS"
         },
@@ -33,7 +33,7 @@
           "url": "https://arxiv.org/abs/1707.01926",
           "used_for": "Source of the METR-LA and PEMS-BAY releases, the Gaussian-kernel sensor graph, the chronological 70/10/20 split and the published Historical-Average floors.",
           "files": [
-            "src/pipeline/adapters/twin/sensor_graph.py",
+            "traffictwin.digital_twin.sensor_graph",
             "src/traffictwin/data/datasets.py",
             "src/traffictwin/forecasting/evaluation/benchmark_floors.py"
           ],
@@ -49,7 +49,7 @@
           "url": "https://arxiv.org/abs/2310.06119",
           "used_for": "BasicTS is the training and evaluation harness for Graph WaveNet, DCRNN, STID and STAEformer; no per-model training loop is written in this repository.",
           "files": [
-            "src/pipeline/adapters/forecasting/basicts_adapter.py",
+            "traffictwin.forecasting.training.basicts_adapter",
             "src/traffictwin/forecasting/training/basicts_train.py",
             "configs/forecasting/benchmark.yaml"
           ],
@@ -238,8 +238,8 @@
           "data_doi": "10.3929/ethz-b-000437802",
           "used_for": "Traffic-science foundation: flow, occupancy, accumulation, production and the macroscopic fundamental diagram carried into the platform's invariants and units.",
           "files": [
-            "src/pipeline/core/evaluation/traffic_science.py",
-            "src/pipeline/core/common/units.py",
+            "traffictwin.protocols.traffic_science",
+            "traffictwin.common.units",
             "paper_labs/00_utd19/"
           ]
         },
@@ -304,7 +304,7 @@
           "files": [
             "src/pipeline/networking/",
             "src/traffictwin/networking/channel.py",
-            "src/pipeline/adapters/networking/v2x_bus.py"
+            "traffictwin.networking.v2x_bus"
           ],
           "code": "eclipse-mosaic/mosaic 25.2 @005fa1f3 (EPL-2.0)"
         },
@@ -332,7 +332,7 @@
           "url": "https://www.etsi.org/deliver/etsi_en/302600_302699/30263702/",
           "used_for": "The periodic vehicle status uplink (VEHICLE_STATUS every 10 s) is the project's simplified analogue of the CAM service.",
           "files": [
-            "src/pipeline/v2x/closed_loop.py"
+            "traffictwin.orchestration.closed_loop"
           ]
         },
         {
@@ -379,7 +379,7 @@
           "used_for": "Eclipse SUMO 1.27.1 is the simulator behind every outcome number; TraCI (setRoute, setMaxSpeed, saveState/loadState with --save-state.rng) is the only actuation path; duarouter, randomTrips, netconvert and sumolib are its tools.",
           "files": [
             "src/traffictwin/digital_twin/",
-            "src/pipeline/v2x/closed_loop.py",
+            "traffictwin.orchestration.closed_loop",
             "src/traffictwin/protocols/oracle_gate.py",
             "backend/app/routing/local_routes.py"
           ],
@@ -409,7 +409,7 @@
           "doi": "10.1016/j.aei.2022.101858",
           "used_for": "Method pattern for synchronising a SUMO twin from measured counts (calibrator-based dynamic demand).",
           "files": [
-            "src/pipeline/adapters/twin/scenario_sync.py"
+            "traffictwin.digital_twin.scenario_sync"
           ],
           "code": "SiLab-group/DigitalTwin_GenevaMotorway @5d2f6c2 (GPL-3.0)"
         },
@@ -436,7 +436,7 @@
           "doi": "10.1016/j.trc.2013.08.014",
           "used_for": "Classical signal-control baseline in the control benchmark.",
           "files": [
-            "src/pipeline/adapters/control/signal_baselines.py"
+            "traffictwin.control.signal_baselines"
           ]
         },
         {

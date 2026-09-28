@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Floors for the Dhaka twin dataset: persistence + historical average at 5/15/30/60 min.
 
-    python src/pipeline/forecasting/baselines_twin.py                       # data/forecasting/dhaka_twin
-    python src/pipeline/forecasting/baselines_twin.py --data data/forecasting/dhaka_twin_smoke --out results/forecasting/twin_floors_smoke
+    python -m traffictwin.forecasting.evaluation.baselines_twin                       # data/forecasting/dhaka_twin
+    python -m traffictwin.forecasting.evaluation.baselines_twin --data data/forecasting/dhaka_twin_smoke --out results/forecasting/twin_floors_smoke
 
 Reuses research/forecasting/baselines.py (persistence_forecast, historical_average_forecast,
 masked_metrics, ChronoSplit) unchanged. Protocol:

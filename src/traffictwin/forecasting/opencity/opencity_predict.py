@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """OpenCity-plus PREDICTIONS for a city of ours — the authors' model, their loader, their weights.
 
-    python src/pipeline/forecasting/opencity_predict.py --source observatory --city dhaka
-    python src/pipeline/forecasting/opencity_predict.py --source csv --csv city.csv --adj city_rn_adj.npy
-    python src/pipeline/forecasting/opencity_predict.py --source metrla-smoke --as-of -288    # scored
+    python -m traffictwin.forecasting.opencity.opencity_predict --source observatory --city dhaka
+    python -m traffictwin.forecasting.opencity.opencity_predict --source csv --csv city.csv --adj city_rn_adj.npy
+    python -m traffictwin.forecasting.opencity.opencity_predict --source metrla-smoke --as-of -288    # scored
 
 `opencity_city_eval.py` runs the authors' `-mode test` and reports their 24-hour average metric.
 This script does what their demo does: takes the last 288 steps of a city's series and returns

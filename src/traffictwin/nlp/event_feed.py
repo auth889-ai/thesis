@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """Text -> routing event: classify, geolocate against the Dhaka gazetteer, map to R1 edges, emit a slowdown.
 
-    python src/pipeline/nlp/event_feed.py --demo                          # 20 example posts -> results/nlp/events.jsonl
-    python src/pipeline/nlp/event_feed.py --text "Bus crash at Karwan Bazar, road blocked"
-    python src/pipeline/nlp/event_feed.py --file posts.txt                # one post per line
-    python src/pipeline/nlp/event_feed.py --to-weights results/nlp/weights_incident.xml \
+    python -m traffictwin.nlp.event_feed --demo                          # 20 example posts -> results/nlp/events.jsonl
+    python -m traffictwin.nlp.event_feed --text "Bus crash at Karwan Bazar, road blocked"
+    python -m traffictwin.nlp.event_feed --file posts.txt                # one post per line
+    python -m traffictwin.nlp.event_feed --to-weights results/nlp/weights_incident.xml \
         --base results/routing/static_s11_h900/edgedata.xml [--events results/nlp/events.jsonl]
 
 Pipeline per post
@@ -20,7 +20,7 @@ Event JSON: {text, label, confidence, place, lat, lon, edges, factor, status, ..
 --to-weights rewrites a SUMO meanData table (the forecast / oracle weights the predictive arm consumes) with
 traveltime multiplied by the event factor on every affected edge in every interval (edges absent from an
 interval, e.g. excluded as empty, are added at free-flow x factor), so
-    python src/pipeline/routing/predictive_routing.py --arm predictive --weights <out.xml> ...
+    python -m traffictwin.digital_twin.runtime --arm predictive --weights <out.xml> ...
 routes around the reported event.
 """
 from __future__ import annotations
@@ -81,7 +81,7 @@ class Classifier:
             import joblib
             p = RESULTS / f"{kind}.joblib"
             if not p.exists():
-                sys.exit(f"missing {p}: run `python src/pipeline/nlp/train_classifier.py --augment-seed` first")
+                sys.exit(f"missing {p}: run `python -m traffictwin.nlp.train_classifier --augment-seed` first")
             self.pipe = joblib.load(p)
             self.classes = list(self.pipe.classes_)
         else:

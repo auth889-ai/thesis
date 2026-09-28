@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Upstream-first ledger: did we actually reproduce each official model's own benchmark?
 
-    python src/pipeline/upstream/reproduction_record.py --show
-    python src/pipeline/upstream/reproduction_record.py --check
+    python -m traffictwin.tools.reproduction_record --show
+    python -m traffictwin.tools.reproduction_record --check
 
 The project rule is that an official implementation is the algorithmic source of truth: clone the
 repo, pin its SHA, use the authors' preprocessing and config unmodified, reproduce the number the
@@ -234,7 +234,7 @@ def main() -> int:
         L.append("## Notes\n")
         for r in notes:
             L.append(f"- **{r['model']} / {r['dataset']}** — {r['note']}")
-    L.append("\nRegenerate: `python src/pipeline/upstream/reproduction_record.py`. "
+    L.append("\nRegenerate: `python -m traffictwin.tools.reproduction_record`. "
              "Pins: `upstream/UPSTREAM_PINS.yaml`. Fetch record: `results/artifacts/upstream_fetch_record.json`.\n")
     OUT_MD.write_text("\n".join(L))
 

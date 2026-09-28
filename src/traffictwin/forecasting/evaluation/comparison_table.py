@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """The Phase-1 verdict: floors, trained models and published values in ONE machine-readable table.
 
-    python src/pipeline/forecasting/comparison_table.py
-    python src/pipeline/forecasting/comparison_table.py --check      # exit 1 if the phase gate is not met
+    python -m traffictwin.forecasting.evaluation.comparison_table
+    python -m traffictwin.forecasting.evaluation.comparison_table --check      # exit 1 if the phase gate is not met
 
 Sources (all produced by other commands, never typed):
     results/forecasting/benchmark_floors.json   persistence / historical average / seasonal / global mean
@@ -203,7 +203,7 @@ def main() -> int:
     for k, v in g["checks"].items():
         d = v["detail"] if isinstance(v["detail"], str) else ", ".join(map(str, v["detail"]))[:150]
         lines.append(f"| {k} | {'yes' if v['ok'] else 'NO'} | {d} |")
-    lines += ["", "Regenerate: `python src/pipeline/forecasting/comparison_table.py`. Machine-readable: "
+    lines += ["", "Regenerate: `python -m traffictwin.forecasting.evaluation.comparison_table`. Machine-readable: "
                   "`phase1_comparison.json` / `.csv`."]
     (RESULTS / "phase1_comparison.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))

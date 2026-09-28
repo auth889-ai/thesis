@@ -100,7 +100,7 @@ def inventory(full):
 
 def secret_pattern():
     values = []
-    for name in (".env", "dhakaflow/.env", "src/pipeline/core/.env"):
+    for name in (".env", "dhakaflow/.env", ".env"):
         path = REPO / name
         if not path.exists():
             continue

@@ -48,7 +48,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
-from pipeline.v2x import closed_loop as cl        # noqa: E402
+from traffictwin.orchestration import closed_loop as cl        # noqa: E402
 
 RULE = {"teleport_rate_max": 0.01, "arrival_share_min": 0.85, "loaded_min_speed_mps": 2.0, "tti_min": 1.30, "jam_teleports_min": 1, "bisection_steps": 2,
         "v1_share_major_ge_0.7_min": 0.10, "v1_loaded_speed_ratio_to_1x_max": 0.70}

@@ -4,8 +4,8 @@
 The link profile comes from Eclipse MOSAIC (an official ITS-G5 simulator), not from radio
 hardware. Every latency, loss and delivery figure here is a simulated communication event.
 
-    python src/pipeline/forecasting/federated_forecast.py --self-test          # no training: verifies the mechanics
-    python src/pipeline/forecasting/federated_forecast.py --dataset METR-LA --clients 8 --rounds 30     # GPU (Colab)
+    python -m traffictwin.forecasting.federated.federated_forecast --self-test          # no training: verifies the mechanics
+    python -m traffictwin.forecasting.federated.federated_forecast --dataset METR-LA --clients 8 --rounds 30     # GPU (Colab)
 
 Why this file is the point where the two halves of the thesis meet.
 
@@ -383,7 +383,7 @@ def run(a) -> int:
               "(Meng et al., KDD 2021) — with their analytic byte count replaced by a link whose loss and "
               "latency were measured in this project's own V2X simulation.", "",
               f"Partition assumption: {rec['partition_assumption']}.",
-              "", f"Regenerate: `python src/pipeline/forecasting/federated_forecast.py --data {a.data} --clients {a.clients} "
+              "", f"Regenerate: `python -m traffictwin.forecasting.federated.federated_forecast --data {a.data} --clients {a.clients} "
               f"--rounds {a.rounds}` (wall {rec['wall_s']}s).",
               "", "The same command runs on any registered city — `src/pipeline/forecasting/city_datasets.py --list`."]
     (RESULTS / f"federated{tag}.md").write_text("\n".join(lines) + "\n")

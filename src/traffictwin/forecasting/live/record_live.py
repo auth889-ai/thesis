@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Record a LIVE Dhaka congestion time series — the head of the live chain.
 
-    python src/pipeline/forecasting/record_live.py --dry-run                 # fixture transport, no API calls, no cost
-    python src/pipeline/forecasting/record_live.py --live --interval 300     # real capture, ~$X/day (printed first)
+    python -m traffictwin.forecasting.live.record_live --dry-run                 # fixture transport, no API calls, no cost
+    python -m traffictwin.forecasting.live.record_live --live --interval 300     # real capture, ~$X/day (printed first)
     touch results/artifacts/live_dhaka/STOP                               # stop a running recorder
 
 Why this exists: an ML forecaster needs HISTORY, and history accrues by wall clock — an hour

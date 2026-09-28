@@ -42,9 +42,10 @@ def test_concentration_uses_the_last_driven_route(tmp_path):
     assert c["top_edge_flow_concentration"] == pytest.approx(2 / 3, abs=1e-4)      # e1/e3/e4 by two of three vehicles
 
 
-@pytest.mark.skipif(not (REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml").exists(), reason="Dhaka net not built here")
+@pytest.mark.skipif(not (REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz").exists(), reason="Dhaka net not built here")
 def test_oracle_table_aggregates_only_the_window_weighted_by_presence(tmp_path):
-    from pipeline.routing import edge_costs as ec, predictive_routing as pr
+    from traffictwin.optimization import edge_costs as ec
+    from traffictwin.digital_twin import runtime as pr
     import sumolib
     net = sumolib.net.readNet(str(pr.DEFAULT_NET))
     e = next(x for x in net.getEdges() if x.allows("passenger")); eid = e.getID(); free = e.getLength() / e.getSpeed()

@@ -52,8 +52,7 @@ def test_mapping_becomes_the_optimizer_corridor_map():
 
 
 def test_speed_units_reach_the_cost_builder_in_metres_per_second():
-    sys.path.insert(0, str(REPO / "src/dashboard/backend"))
-    import route_opt
+    from backend.app.routing import optimizer as route_opt
     v, u = route_opt.to_mps({"a": 72.0, "b": None}, "speed km/h")
     assert u == "speed_mps" and v["a"] == pytest.approx(20.0) and v["b"] is None
     v, u = route_opt.to_mps({"a": 2.5}, "congestion_level_0_3")
@@ -63,7 +62,6 @@ def test_speed_units_reach_the_cost_builder_in_metres_per_second():
 
 
 def test_dataset_run_without_mapping_is_refused_not_guessed():
-    sys.path.insert(0, str(REPO / "src/dashboard/backend"))
-    import route_opt
+    from backend.app.routing import optimizer as route_opt
     with pytest.raises(route_opt.NoStoredForecast, match="NO_SENSOR_MAPPING"):
         route_opt.corridor_map_for({"run_id": "an_x", "city": "user:no_such_dataset"})

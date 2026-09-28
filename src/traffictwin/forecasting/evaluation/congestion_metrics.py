@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Congestion-aware forecasting metrics — what a traffic operator actually needs, not just MAE.
 
-    python src/pipeline/forecasting/congestion_metrics.py --list
-    python src/pipeline/forecasting/congestion_metrics.py --model GWNet --dataset METR-LA
-    python src/pipeline/forecasting/congestion_metrics.py --all
+    python -m traffictwin.forecasting.evaluation.congestion_metrics --list
+    python -m traffictwin.forecasting.evaluation.congestion_metrics --model GWNet --dataset METR-LA
+    python -m traffictwin.forecasting.evaluation.congestion_metrics --all
 
 Average MAE over a whole test set is dominated by free-flow bins, where forecasting is easy and
 nobody needs it. A model can look excellent and still miss every jam. This script scores the
@@ -307,7 +307,7 @@ def write_md(out: dict) -> None:
             L.append(f"| {model} | {lt['events']} | {lt['warned']} | {lt['detection_rate']} | "
                      f"**{lt['mean_lead_minutes']} min** | {lt['median_lead_minutes']} min | "
                      f"{lt['sustained_mean_lead_minutes']} min | {lt['max_possible_lead_minutes']} min |")
-    L.append("\nRegenerate: `python src/pipeline/forecasting/congestion_metrics.py --all`. "
+    L.append("\nRegenerate: `python -m traffictwin.forecasting.evaluation.congestion_metrics --all`. "
              "Machine-readable: `congestion_metrics.json`.\n")
     (RESULTS / "congestion_metrics.md").write_text("\n".join(L))
 

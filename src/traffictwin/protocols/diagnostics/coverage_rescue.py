@@ -12,7 +12,7 @@ development demand, and measure what actually matters:
     TRAFFIC EXPOSURE   % vehicles touching DIRECT, DIRECT+DERIVED; % vehicle-km and % vehicle-time on covered edges
     ROUTING EXPOSURE   equipped decisions whose candidate set contains a priced edge; % candidate routes priced
 
-    python src/pipeline/city/coverage_rescue.py --city la_c1_glendale_110_2 [--city ...] --out results/routing/coverage_rescue
+    python -m traffictwin.protocols.diagnostics.coverage_rescue --city la_c1_glendale_110_2 [--city ...] --out results/routing/coverage_rescue
 """
 from __future__ import annotations
 
@@ -35,9 +35,9 @@ from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 from traffictwin.digital_twin import sensor_map as sm                       # noqa: E402
 from traffictwin.digital_twin.scenario_builder import scenario_dir             # noqa: E402
-from pipeline.routing import edge_costs as ec                    # noqa: E402
-from pipeline.routing import predictive_routing as pr            # noqa: E402
-from pipeline.routing import route_optimizer as ro               # noqa: E402
+from traffictwin.optimization import edge_costs as ec                    # noqa: E402
+from traffictwin.digital_twin import runtime as pr            # noqa: E402
+from traffictwin.optimization import route_optimizer as ro               # noqa: E402
 
 CK207 = REPO / "results/forecasting/checkpoints/GraphWaveNet/METR-LA_50_12_12/d1ffd3d52d3caacf60ebf59214673f7c/GraphWaveNet_best_val_MAE.pt"
 DEV_SEED, DEV_MOMENT_RULE = 101, "test_start + 12 + (101*97) mod (test_len-24)"

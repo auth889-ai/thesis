@@ -137,7 +137,7 @@ def main() -> int:
     a = p.parse_args()
     run_name = a.source_run
     if a.execute:
-        cmd = [sys.executable, "src/pipeline/v2x/stress_experiment.py", "--scenario", "A", "--stage", a.stage,
+        cmd = [sys.executable, "-m", "traffictwin.protocols.stress_experiment", "--scenario", "A", "--stage", a.stage,
                "--city", "la_c4_central_wide", "--od-rule", "arterial", "--seeds", "201,202,203,204,205"]
         subprocess.run(cmd, cwd=REPO, check=True)
         pointer = read(REPO / "results/v2x/stress/la_c4_central_wide" / f"scenarioA_{a.stage}_eval_report_pointer.json")

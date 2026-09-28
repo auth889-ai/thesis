@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Does forecast QUALITY change the routing outcome? The one experiment that answers it.
 
-    python src/pipeline/routing/forecast_quality_ablation.py --seeds 11,12,13,14,15
+    python -m traffictwin.protocols.chains.forecast_quality_ablation --seeds 11,12,13,14,15
 
 Four forecasts go through the SAME chain — same network, demand, seeds, congestion scenario,
 compliance, V2X condition. Only what the prediction arm routes on changes:
@@ -194,7 +194,7 @@ def main() -> int:
         "coverage_hops": hops_list, "route_sensitivity": sens, "route_sensitivity_by_hops": by_hops,
         "reading": reading, "coverage_reading": coverage_reading,
         "runs": runs, "label": "SIMULATED COUNTERFACTUAL on the calibrated Dhaka twin",
-        "command": f"python src/pipeline/routing/forecast_quality_ablation.py --seeds {a.seeds}",
+        "command": f"python -m traffictwin.protocols.chains.forecast_quality_ablation --seeds {a.seeds}",
     }
     a.out.write_text(json.dumps(out, indent=1, default=str))
     md = [f"# Forecast-quality ablation — {a.seeds}, compliance {a.compliance:.0%}, V2X {a.v2x}\n",

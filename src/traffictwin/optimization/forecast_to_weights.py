@@ -14,15 +14,15 @@ Edges not listed in an interval fall back to SUMO's free-flow travel time.
 
 Sources:
   --source oracle       copy a static run's edgedata.xml (truth for the same seed = upper bound)
-        python src/pipeline/forecasting/forecast_to_weights.py --source oracle --edgedata results/routing/static_s11_h900/edgedata.xml --out results/routing/weights/oracle_s11.xml
-        python src/pipeline/forecasting/forecast_to_weights.py --source oracle --seeds 11,12,13 --horizon 3600      # Makefile form:
+        python -m traffictwin.optimization.forecast_to_weights --source oracle --edgedata results/routing/static_s11_h900/edgedata.xml --out results/routing/weights/oracle_s11.xml
+        python -m traffictwin.optimization.forecast_to_weights --source oracle --seeds 11,12,13 --horizon 3600      # Makefile form:
               reads results/routing/static_s{seed}_h{horizon}/edgedata.xml -> results/routing/weights/oracle_s{seed}_h{horizon}.xml
   --source persistence  each interval [b, e) carries the values measured in [b-lag, e-lag)
                         (the no-model forecast; intervals with no predecessor are omitted)
-        python src/pipeline/forecasting/forecast_to_weights.py --source persistence --lag 300 --edgedata ... --out ...
+        python -m traffictwin.optimization.forecast_to_weights --source persistence --lag 300 --edgedata ... --out ...
   --source model        BasicTS prediction array of SPEEDS on the twin sensors -> traveltime =
                         length_m / speed for the sensor edges only (other edges free-flow)
-        python src/pipeline/forecasting/forecast_to_weights.py --source model --pred pred.npz --sensor-nodes data/forecasting/dhaka_twin/sensor_nodes.json \
+        python -m traffictwin.optimization.forecast_to_weights --source model --pred pred.npz --sensor-nodes data/forecasting/dhaka_twin/sensor_nodes.json \
                --horizon-min 15 --t0 3900 --out results/routing/weights/gwnet_h15_s11.xml
         pred.npz: key --pred-key (default 'prediction'; falls back to the first array), shape
         (T, N) = already-selected horizon, or (T, H, N[, 1]) = full multi-horizon output.

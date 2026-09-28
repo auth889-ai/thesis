@@ -6,7 +6,7 @@ congestion bucket, not route durations, geometry, speed intervals, or other
 Google route content. This script keeps that boundary and emits a small summary
 for the thesis results index.
 
-    python src/pipeline/forecasting/summarize_live_reference.py
+    python -m traffictwin.forecasting.live.summarize_live_reference
 """
 from __future__ import annotations
 

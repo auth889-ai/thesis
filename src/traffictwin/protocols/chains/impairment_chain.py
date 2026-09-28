@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Does WORSE COMMUNICATION cause HIGHER NETWORK DELAY? The end-to-end causal chain, measured.
 
-    python src/pipeline/routing/impairment_chain.py --seeds 11,12,13 --levels karwanbazar_to_shahbagh=3
-    python src/pipeline/routing/impairment_chain.py --seeds 11,12,13 --conditions good,degraded,bad
+    python -m traffictwin.protocols.chains.impairment_chain --seeds 11,12,13 --levels karwanbazar_to_shahbagh=3
+    python -m traffictwin.protocols.chains.impairment_chain --seeds 11,12,13 --conditions good,degraded,bad
 
     communication condition -> advisory DELIVERY -> how many vehicles reroute
                             -> SUMO paired counterfactual -> travel time / waiting
@@ -48,7 +48,7 @@ from pathlib import Path
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 
-import pipeline.routing.predictive_routing as pr                      # noqa: E402
+import traffictwin.digital_twin.runtime as pr                      # noqa: E402
 from traffictwin.protocols.chains import live_chain as lc                         # noqa: E402
 from traffictwin.forecasting.live.live_to_edges import write_weights          # noqa: E402
 
@@ -398,7 +398,7 @@ def write_md(rec: dict, a) -> None:
               f"{v['mean_vehicle_hours_pct']} %, {v['seeds_agreeing']} paired seeds agree; "
               f"means monotone in link quality: {v['monotone_in_means']}.\n",
               f"{v['reason']}\n"]
-    L.append(f"Regenerate: `python src/pipeline/routing/impairment_chain.py --seeds {a.seeds}"
+    L.append(f"Regenerate: `python -m traffictwin.protocols.chains.impairment_chain --seeds {a.seeds}"
              + (f" --levels {a.levels}" if a.levels else "") + "`.\n")
     (RESULTS / f"impairment_chain{a.tag}.md").write_text("\n".join(L))
 

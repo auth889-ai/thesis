@@ -27,7 +27,7 @@ import numpy as np
 from gymnasium import spaces
 
 REPO = Path(__file__).resolve().parents[4]
-NET = str(REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml")
+NET = str(REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz")
 DEFAULT_ROUTES = "/tmp/due_routes.rou.xml.gz"
 
 MAX_PHASES = 8

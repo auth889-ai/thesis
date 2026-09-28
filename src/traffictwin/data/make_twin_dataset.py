@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """METR-LA-shaped Dhaka twin sensor dataset on the frozen R1 network.
 
-    python src/pipeline/forecasting/make_twin_dataset.py --seeds 11 --hours 2                 # smoke
-    python src/pipeline/forecasting/make_twin_dataset.py --seeds 11,12,13 --hours 8 --scale 0.15 --place-by-flow
+    python -m traffictwin.data.make_twin_dataset --seeds 11 --hours 2                 # smoke
+    python -m traffictwin.data.make_twin_dataset --seeds 11,12,13 --hours 8 --scale 0.15 --place-by-flow
 
 Wraps the existing (unchanged) sensor-graph pipeline in research/twin/sensor_graph.py:
 250 virtual sensors = SUMO edgeData aggregates at 5-min bins on the frozen network
@@ -66,7 +66,7 @@ from traffictwin.digital_twin.sensor_graph import (CHANNELS, EVIDENCE_DOMAIN,
                                         select_sensor_edges,
                                         write_sensor_additional)
 
-DEFAULT_NET = REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"
+DEFAULT_NET = REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz"
 FROZEN_NET_SHA256 = "06194df039740fa2ceb0bcb2c438444efd755f26e0f863327f0e1d6524775dcb"
 DUE_PULSE = REPO / "results/artifacts/due_dso_stats/v200/DUE/003/trips_003.rou.xml.gz"
 PULSE_PERIOD_S = 600.0            # routes_repeat_1h = this pulse x 8 cycles
@@ -398,7 +398,7 @@ def main() -> int:
         "basicts_clock_convention": "period_steps=bins_per_seed: tod = fraction of the "
                                     "simulated window, day = seed index",
         "files_sha256": {str(p.relative_to(out)): sha256_file(p) for p in files},
-        "generator": "src/pipeline/forecasting/make_twin_dataset.py",
+        "generator": "-m", "traffictwin.data.make_twin_dataset",
         "args": vars(a) | {"net": str(a.net), "pulse": str(a.pulse), "out": str(a.out)},
     })
     (out / "MANIFEST.json").write_text(json.dumps(m, indent=2))

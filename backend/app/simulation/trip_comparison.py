@@ -182,8 +182,8 @@ def oracle_debug_routes(sim_id: str, net: str, demand: Path, baseline_out: Path,
     """ORACLE / PERFECT-FUTURE DEBUG ARM for any scenario: the measured edge travel times of the
     paired baseline run (same demand, same seed) pushed through the production optimizer in the
     same rounds the oracle gate uses. Not a learned model, never labelled as one."""
-    from pipeline.routing import edge_costs as ec, route_optimizer as ro
-    from pipeline.routing import predictive_routing as pr
+    from traffictwin.optimization import edge_costs as ec, route_optimizer as ro
+    from traffictwin.digital_twin import runtime as pr
     cfg = ec.load_config()
     edgedata = baseline_out / "edgedata.xml"
     if not edgedata.exists():

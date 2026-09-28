@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Routing arms on REAL MEASURED demand — the same ladder, with the synthetic layer removed.
 
-    python src/pipeline/routing/real_demand_arms.py --seeds 11,12,13
-    python src/pipeline/routing/real_demand_arms.py --seeds 11,12,13 --compliance 0.05,0.1,0.3
+    python -m traffictwin.protocols.chains.real_demand_arms --seeds 11,12,13
+    python -m traffictwin.protocols.chains.real_demand_arms --seeds 11,12,13 --compliance 0.05,0.1,0.3
 
 Every other routing experiment in this repo runs on SYNTHETIC demand: SUMO-generated trips on the
 real Dhaka network. This one does not. The vehicles here were MEASURED — drone footage of Athens
@@ -42,7 +42,7 @@ from pathlib import Path
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-from pipeline.routing import predictive_routing as pr  # noqa: E402
+from traffictwin.digital_twin import runtime as pr  # noqa: E402
 import xml.etree.ElementTree as ET  # noqa: E402
 
 SITE = REPO / "data/routing/athens_d8"
@@ -250,7 +250,7 @@ def main() -> int:
               "4. **Athens is not Dhaka.** This site removes the synthetic-demand weakness, at the cost of "
               "answering the question on a different city than the one the thesis is about.", "",
               f"Data provenance: `data/routing/athens_d8/MANIFEST.json` — {man['reality']}",
-              "", f"Regenerate: `python src/pipeline/routing/real_demand_arms.py --seeds {a.seeds} --compliance {a.compliance}` "
+              "", f"Regenerate: `python -m traffictwin.protocols.chains.real_demand_arms --seeds {a.seeds} --compliance {a.compliance}` "
               f"(wall {time.time() - t0:.0f}s)."]
     (REPO / "results/routing/real_demand.md").write_text("\n".join(lines) + "\n")
     (REPO / "results/routing/real_demand.json").write_text(json.dumps(

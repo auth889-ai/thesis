@@ -40,7 +40,7 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-import pipeline.routing.predictive_routing as pr                        # noqa: E402
+import traffictwin.digital_twin.runtime as pr                        # noqa: E402
 from traffictwin.protocols.chains import integrated_chain as ic                     # noqa: E402
 from traffictwin.protocols.chains import live_chain as lc                           # noqa: E402
 from traffictwin.optimization.forecast_costs import build_table, fetch_forecast, write_weights  # noqa: E402

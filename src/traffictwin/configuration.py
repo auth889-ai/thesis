@@ -7,7 +7,7 @@ from dotenv import dotenv_values
 from traffictwin.paths import REPO
 
 ENV_FILE = REPO / ".env"
-LEGACY_ENV_FILES = (REPO / "src/pipeline/core/.env", REPO / "dhakaflow/.env")
+LEGACY_ENV_FILES = ()
 
 
 def load_credential(name: str, *, files: tuple[Path, ...] | None = None) -> str:

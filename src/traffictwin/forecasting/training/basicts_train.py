@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """TRAIN ON THIS CITY'S OWN DATA — the pinned BasicTS harness, start to finish, on CPU.
 
-    python src/pipeline/forecasting/basicts_train.py --dataset user:test_town --arch STID --epochs 30
-    python src/pipeline/forecasting/basicts_train.py --list
+    python -m traffictwin.forecasting.training.basicts_train --dataset user:test_town --arch STID --epochs 30
+    python -m traffictwin.forecasting.training.basicts_train --list
 
 The official baselines (STID, GraphWaveNet) are trained the way their authors train them —
 THEIR data-preparation script, THEIR config, THEIR runner (`experiments/train.py`), THEIR

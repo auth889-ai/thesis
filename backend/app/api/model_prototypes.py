@@ -31,7 +31,7 @@ def _opencity_predict(args: list[str]) -> dict:
     import sys as _sys
     import tempfile
     out = Path(tempfile.mkdtemp(prefix="opencity_")) / "prediction.json"
-    cmd = [_sys.executable, str(config.REPO / "src/pipeline/forecasting/opencity_predict.py"), *args,
+    cmd = [_sys.executable, "-m", "traffictwin.forecasting.opencity.opencity_predict", *args,
            "--out", str(out)]
     proc = subprocess.run(cmd, capture_output=True, text=True, timeout=900, cwd=config.REPO)
     if proc.returncode != 0 or not out.exists():

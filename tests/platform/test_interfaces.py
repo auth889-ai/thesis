@@ -89,7 +89,7 @@ def test_lab00_torino_regression_fixture_is_not_a_dhaka_threshold():
 
     Guards that the platform's v* = P*/n* arithmetic still reproduces the frozen
     Lab 00 torino estimate (k*=31.9 veh/km/lane, q*=1104 veh/h/lane → 34.6 km/h,
-    per paper_labs/00_utd19/outputs/metrics/stage1_run_record.json).
+    per results/utd19/stage1_run_record.json).
 
     This is NOT a Dhaka operating threshold, NOT a control target and NOT a
     calibration input. Torino critical values must never be transferred into

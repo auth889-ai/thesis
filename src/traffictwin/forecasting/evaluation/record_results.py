@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Turn training logs into a machine-readable, fully-provenanced result record.
 
-    python src/pipeline/forecasting/record_results.py --logs results/forecasting/aws_logs
-    python src/pipeline/forecasting/record_results.py --logs results/forecasting/aws_logs --csv
+    python -m traffictwin.forecasting.evaluation.record_results --logs results/forecasting/aws_logs
+    python -m traffictwin.forecasting.evaluation.record_results --logs results/forecasting/aws_logs --csv
 
 Markdown is for reading; this file is for checking. Every trained number is written to JSON and CSV
 together with everything needed to re-run it and to judge it:

@@ -149,7 +149,7 @@ def held_out(T: int, meta: dict) -> dict:
 def network(dataset: str, as_of: int | str | None = None, model: str | None = None) -> dict:
     """The forecast state of the network at one moment: sensors, DIRECT/DERIVED edges, coverage."""
     from traffictwin.digital_twin import sensor_map
-    from pipeline.routing import edge_costs as ec
+    from traffictwin.optimization import edge_costs as ec
     from backend.app.routing import optimizer as route_opt
     meta, vals = _series(dataset)
     T, step_s = vals.shape[0], int(meta.get("interval_s", 300))

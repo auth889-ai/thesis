@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """Live corridor congestion -> real R1 edges -> SUMO travel-time weights.
 
-    python src/pipeline/forecasting/live_to_edges.py --map                       # corridor -> edge path (once, cached)
-    python src/pipeline/forecasting/live_to_edges.py --weights results/routing/weights/live_now.xml
-    python src/pipeline/forecasting/live_to_edges.py --weights w.xml --forecast persistence --horizon-min 15
+    python -m traffictwin.forecasting.live.live_to_edges --map                       # corridor -> edge path (once, cached)
+    python -m traffictwin.forecasting.live.live_to_edges --weights results/routing/weights/live_now.xml
+    python -m traffictwin.forecasting.live.live_to_edges --weights w.xml --forecast persistence --horizon-min 15
 
 Boxes 3->4 of the live chain:
 
@@ -47,7 +47,7 @@ from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 from traffictwin.data.live_providers.providers import DHAKA_R1_CORRIDORS  # noqa: E402
 
-NET = REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"
+NET = REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz"
 
 
 def ensure_net(net: Path = NET) -> Path:

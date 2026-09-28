@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """The whole system as ONE command, and the only place a result counts as finished.
 
-    python src/pipeline/routing/integrated_chain.py --seeds 11,12,13
-    python src/pipeline/routing/integrated_chain.py --seeds 11,12,13 --v2x degraded
-    python src/pipeline/routing/integrated_chain.py --seeds 11 --horizon 900 --as-of peak   # smoke
+    python -m traffictwin.protocols.chains.integrated_chain --seeds 11,12,13
+    python -m traffictwin.protocols.chains.integrated_chain --seeds 11,12,13 --v2x degraded
+    python -m traffictwin.protocols.chains.integrated_chain --seeds 11 --horizon 900 --as-of peak   # smoke
 
 or, as a service, POST /api/experiment/chain/run on the backend, which calls the same run_chain().
 
@@ -48,7 +48,7 @@ from pathlib import Path
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 
-import pipeline.routing.predictive_routing as pr                  # noqa: E402
+import traffictwin.digital_twin.runtime as pr                  # noqa: E402
 from traffictwin.protocols.chains import live_chain as lc                     # noqa: E402
 from traffictwin.optimization.forecast_costs import (build_table, fetch_forecast,  # noqa: E402
                                                 write_weights)
@@ -401,7 +401,7 @@ def run_chain(progress=None, **opts) -> dict:
     run_id = cfg.get("run_id") or new_run_id(a.tag)
     run_dir = RUNS / run_id
     run_dir.mkdir(parents=True, exist_ok=True)
-    command = ("python src/pipeline/routing/integrated_chain.py "
+    command = ("python -m traffictwin.protocols.chains.integrated_chain "
                f"--seeds {a.seeds} --horizon {a.horizon} --v2x {a.v2x} --source {a.source} "
                f"--as-of {a.as_of} --levels {a.levels}")
     state = {"run_id": run_id, "status": "running", "stage": "forecast",

@@ -17,8 +17,8 @@ same compliance, same candidate mechanism. It never assigns an optimal path dire
 Everything that defines the experiment is frozen in PROTOCOL and hashed into the report. Metrics
 come from SUMO's own tripinfo / statistic / summary / vehroute outputs of THIS execution.
 
-    python src/pipeline/routing/oracle_gate.py --seeds dev      # tuning seeds
-    python src/pipeline/routing/oracle_gate.py --seeds final    # held-out gate
+    python -m traffictwin.protocols.oracle_gate --seeds dev      # tuning seeds
+    python -m traffictwin.protocols.oracle_gate --seeds final    # held-out gate
 """
 from __future__ import annotations
 
@@ -38,9 +38,9 @@ from pathlib import Path
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 
-from pipeline.routing import edge_costs as ec              # noqa: E402
-from pipeline.routing import predictive_routing as pr     # noqa: E402
-from pipeline.routing import route_optimizer as ro        # noqa: E402
+from traffictwin.optimization import edge_costs as ec              # noqa: E402
+from traffictwin.digital_twin import runtime as pr     # noqa: E402
+from traffictwin.optimization import route_optimizer as ro        # noqa: E402
 from traffictwin.protocols.chains.predeparture_arm import read_routes  # noqa: E402
 
 OUT = REPO / "results/routing/oracle_gate"

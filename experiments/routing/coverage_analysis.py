@@ -14,8 +14,8 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(REPO), str(REPO / "src")]
-from pipeline.v2x import closed_loop as cl
-from pipeline.routing import route_optimizer as ro, edge_costs as ec
+from traffictwin.orchestration import closed_loop as cl
+from traffictwin.optimization import route_optimizer as ro, edge_costs as ec
 from experiments.routing.coverage_diagnostic import REFERENCE, read
 from traffictwin.coverage import intervene
 

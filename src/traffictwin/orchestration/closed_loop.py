@@ -26,8 +26,8 @@ Arms on identical demand, network, seed and caps:
                     rerouteTraveltime) every reactive_period_s — no forecast, no server
     predictive_v2x  the loop above, under a named network profile (src/pipeline/v2x/channel.PROFILES)
 
-    python src/pipeline/v2x/closed_loop.py --city la_c4_central_wide --seeds 101 --arms baseline,predictive_v2x --profile ideal
-    python src/pipeline/v2x/closed_loop.py --city la_c4_central_wide --seeds 101,102,103 --profile lat500 --penetration 0.3
+    python -m traffictwin.orchestration.closed_loop --city la_c4_central_wide --seeds 101 --arms baseline,predictive_v2x --profile ideal
+    python -m traffictwin.orchestration.closed_loop --city la_c4_central_wide --seeds 101,102,103 --profile lat500 --penetration 0.3
 
 Demand is SYNTHETIC WHAT-IF randomTrips on the real OSM network; the observations are real METR-LA
 detector speeds; the communication is SIMULATED. Every output record says so.

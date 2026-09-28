@@ -242,7 +242,7 @@ def test_learned_gate_endpoint_reads_the_newest_report_or_says_it_is_missing(cli
     from traffictwin.protocols import learned_gate as lg
     monkeypatch.setattr(config, "REPO", tmp_path)
     r = client.get("/api/experiment/learned_gate").json()
-    assert r["available"] is False and "learned_gate.py" in r["command"]
+    assert r["available"] is False and "learned_gate" in r["command"]
     def arm(v):
         return {"metrics": {k: v for k in ("total_vehicle_hours_incl_never_inserted", "total_vehicle_hours", "mean_travel_time_all", "mean_travel_time_s", "p95_travel_time_s", "total_waiting_s", "mean_queue_veh", "max_queue_veh")}
                 | {"arrived": 100, "teleports": 0, "top_route_share": 0.1, "top_edge_flow_concentration": 0.1, "teleport_events": [], "teleport_rate_per_1000_inserted": 0.0, "teleport_edges": {}, "probe": {}},

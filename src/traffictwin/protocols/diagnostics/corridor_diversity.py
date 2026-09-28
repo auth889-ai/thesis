@@ -14,7 +14,7 @@ coverage study used), generate diverse alternatives for every trip with the pena
 An OD pair "has real rerouting opportunity" when all of the above hold. A corridor's score is the share
 of its trips with real opportunity, weighted by nothing else. The corridor is chosen by this score alone.
 
-    python src/pipeline/v2x/corridor_diversity.py --city la_c1_glendale_110_2 --city la_c2_hollywood_101_5 --city la_c3_hollywood_hills --city la_c4_central_wide --city los_angeles_metr
+    python -m traffictwin.protocols.diagnostics.corridor_diversity --city la_c1_glendale_110_2 --city la_c2_hollywood_101_5 --city la_c3_hollywood_hills --city la_c4_central_wide --city los_angeles_metr
 """
 from __future__ import annotations
 
@@ -28,8 +28,8 @@ from pathlib import Path
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 from traffictwin.digital_twin.scenario_builder import scenario_dir          # noqa: E402
-from pipeline.routing import edge_costs as ec                 # noqa: E402
-from pipeline.routing import route_optimizer as ro            # noqa: E402
+from traffictwin.optimization import edge_costs as ec                 # noqa: E402
+from traffictwin.optimization import route_optimizer as ro            # noqa: E402
 from traffictwin.optimization import network_assignment as na             # noqa: E402
 
 CAP_LANE_H = 1800.0

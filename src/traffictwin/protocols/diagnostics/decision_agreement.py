@@ -25,7 +25,7 @@ and compared decision by decision with the oracle:
 plus forecast MAE against the oracle on the edges the candidates actually use, split DIRECT / DERIVED,
 by horizon table.
 
-    python src/pipeline/v2x/decision_agreement.py --run results/v2x/closed_loop/<fork run dir>
+    python -m traffictwin.protocols.diagnostics.decision_agreement --run results/v2x/closed_loop/<fork run dir>
 """
 from __future__ import annotations
 
@@ -41,11 +41,11 @@ import numpy as np
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-from pipeline.routing import edge_costs as ec              # noqa: E402
-from pipeline.routing import predictive_routing as pr     # noqa: E402
-from pipeline.routing import route_optimizer as ro        # noqa: E402
-from pipeline.v2x import closed_loop as cl                # noqa: E402
-from pipeline.v2x.state_correction import residual_correction   # noqa: E402
+from traffictwin.optimization import edge_costs as ec              # noqa: E402
+from traffictwin.digital_twin import runtime as pr     # noqa: E402
+from traffictwin.optimization import route_optimizer as ro        # noqa: E402
+from traffictwin.orchestration import closed_loop as cl                # noqa: E402
+from traffictwin.networking.state_correction import residual_correction   # noqa: E402
 
 SOURCES = ("persistence", "gwnet", "corrected")
 

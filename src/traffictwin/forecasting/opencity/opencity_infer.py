@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Load the released OpenCity checkpoint and forecast one unseen window — actual vs predicted.
 
-    python src/pipeline/forecasting/opencity_infer.py --dataset PEMS07M --window 0
+    python -m traffictwin.forecasting.opencity.opencity_infer --dataset PEMS07M --window 0
 
 A metrics table proves an evaluation ran. It does not prove the artefact on disk can be reloaded
 and used, which is what "reproducible" actually requires — and it is the same check this project

@@ -189,7 +189,7 @@ def _fit_research(job_id: str, dataset: str, arch: str):
     from traffictwin.forecasting.training import basicts_train as bt
     _set(job_id, stage="TRAINING", epoch=0, epochs=1, trained_on="this CPU", last_line=f"fitting {arch}")
     code = ("import sys, json; sys.path.insert(0, %r); sys.path.insert(0, %r)\n"
-            "from pipeline.forecasting import research_baselines as rb\n"
+            "from traffictwin.forecasting.training import research_baselines as rb\n"
             "c = rb.fit(%r, %r); print('CARD ' + c['bts_name'] + '__' + c['arch'])") % (str(config.REPO), str(config.REPO / "src/dashboard/backend"), dataset, arch)
     r = subprocess.run([sys.executable, "-c", code], capture_output=True, text=True, timeout=1800, cwd=config.REPO)
     if r.returncode != 0:
@@ -221,7 +221,7 @@ def _train_aws(job_id: str, prep: dict, arch: str, epochs: int):
         raise RuntimeError("no AWS credentials on the server")
     name = f"{at.city_job_name(get(job_id)['dataset'])}-{arch.lower()}"    # one worker per architecture
     _set(job_id, stage="PROVISIONING_GPU", cloud_job=name, epochs=epochs, epoch=0)
-    cmd = [sys.executable, str(config.REPO / "src/pipeline/forecasting/aws_train.py"), "--launch", "--city-dataset", get(job_id)["dataset"],
+    cmd = [sys.executable, "-m", "traffictwin.forecasting.training.aws_train", "--launch", "--city-dataset", get(job_id)["dataset"],
            "--models", arch, "--epochs", str(epochs), "--allow-on-demand", "--max-hours", "1", "--job", name]
     r = subprocess.run(cmd, capture_output=True, text=True, cwd=config.REPO, env=env, timeout=900)
     if r.returncode != 0:

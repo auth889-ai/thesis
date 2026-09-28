@@ -128,7 +128,7 @@ def networks() -> list[dict]:
 
 
 def resolve_network(network: str) -> dict:
-    from pipeline.routing import predictive_routing as pr
+    from traffictwin.digital_twin import runtime as pr
     if network in ("dhaka_r1", "", None):
         return {"id": "dhaka_r1", "net": Path(pr.DEFAULT_NET), "routes": Path(pr.DEFAULT_ROUTES),
                 "demand": "CALIBRATION_ATTEMPTED", "center": DHAKA_CENTER, "live_coupled": True,
@@ -288,7 +288,7 @@ class LiveSim:
         import traci
         import traci.constants as tc
         from traffictwin.protocols.chains import integrated_chain as ic, live_chain as lc
-        from pipeline.routing import predictive_routing as pr
+        from traffictwin.digital_twin import runtime as pr
         from traffictwin.optimization.forecast_costs import (build_table, fetch_forecast,
                                                         recorded_city_data, write_weights)
         out = OUT_ROOT / run_id

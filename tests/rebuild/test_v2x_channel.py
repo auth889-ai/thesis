@@ -8,7 +8,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
-from pipeline.v2x.channel import PROFILES, Channel, connected  # noqa: E402
+from traffictwin.networking.channel import PROFILES, Channel, connected  # noqa: E402
 
 
 def test_latency_delays_delivery_until_the_scheduled_time():

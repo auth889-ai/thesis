@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Train the forecasting baselines on an AWS spot GPU — launched and collected from the terminal.
 
-    python src/pipeline/forecasting/aws_train.py --plan                 # show what would run and what it costs
-    python src/pipeline/forecasting/aws_train.py --launch               # start the spot GPU job
-    python src/pipeline/forecasting/aws_train.py --status               # is it running / done?
-    python src/pipeline/forecasting/aws_train.py --collect              # pull results into results/forecasting/
-    python src/pipeline/forecasting/aws_train.py --terminate            # stop it now
+    python -m traffictwin.forecasting.training.aws_train --plan                 # show what would run and what it costs
+    python -m traffictwin.forecasting.training.aws_train --launch               # start the spot GPU job
+    python -m traffictwin.forecasting.training.aws_train --status               # is it running / done?
+    python -m traffictwin.forecasting.training.aws_train --collect              # pull results into results/forecasting/
+    python -m traffictwin.forecasting.training.aws_train --terminate            # stop it now
 
 Why this exists: project policy is that no model is trained on the laptop, and the Colab path needs
 a human to press Run all. This path needs neither — the job runs on a spot GPU, uploads its results
@@ -301,13 +301,13 @@ def launch(a) -> int:
                        + (["--recursive"] if key.endswith("/") else []), capture_output=True)
     script = OPENCITY_SCRIPT if a.opencity else (FED_SCRIPT if a.federated else JOB_SCRIPT)
     if a.opencity:
-        boot = REPO / "src/pipeline/forecasting/_opencity_boot.py"
+        boot = REPO / "src/traffictwin/forecasting/opencity/_opencity_boot.py"
         subprocess.run(["aws", "s3", "cp", str(boot), f"s3://{BUCKET}/jobs/{JOB}/{boot.name}",
                         "--region", REGION], check=True, capture_output=True)
         print(f"[upload] OpenCity compatibility bootstrap -> s3://{BUCKET}/jobs/{JOB}/")
     if a.federated:
         import shutil as _sh
-        extra = [REPO / "src/pipeline/forecasting/federated_forecast.py"] + \
+        extra = [REPO / "src/traffictwin/forecasting/federated/federated_forecast.py"] + \
                 sorted((REPO / "results/networking").glob("penetration_p*_s*.json"))
         for f in extra:
             subprocess.run(["aws", "s3", "cp", str(f), f"s3://{BUCKET}/jobs/{JOB}/{f.name}",
@@ -331,7 +331,7 @@ def launch(a) -> int:
     a.instance_type = chosen[0]
     print(f"[launch] {iid} ({chosen[0]} {chosen[2]} in {chosen[1]}) after {len(attempts)} unavailable option(s). "
           f"It installs, trains, uploads and terminates itself.")
-    print(f"[launch] watch:  python src/pipeline/forecasting/aws_train.py --status")
+    print(f"[launch] watch:  python -m traffictwin.forecasting.training.aws_train --status")
     # Append to a history so each dataset's run keeps ITS OWN hardware provenance; overwriting a
     # single file stamped the METR-LA results with the PEMS-BAY instance id.
     (RESULTS / "aws_job.json").parent.mkdir(parents=True, exist_ok=True)
@@ -578,7 +578,7 @@ def collect(_a) -> int:
                      f"{diff} | {r['rmse']:.3f} | {r['mape']:.2f} | {pmape} |")
     lines += ["", "Compare against `results/forecasting/benchmark_floors.md` (the floors these must beat) and the "
                   "published numbers cited there.", "",
-              f"Regenerate: `python src/pipeline/forecasting/aws_train.py --launch` then `--collect`."]
+              f"Regenerate: `python -m traffictwin.forecasting.training.aws_train --launch` then `--collect`."]
     (RESULTS / "benchmark.md").write_text("\n".join(lines) + "\n")
     (RESULTS / "benchmark.json").write_text(json.dumps(rows, indent=1))
     print("\n".join(lines))

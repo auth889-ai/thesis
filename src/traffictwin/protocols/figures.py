@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """The figures. Every plot reads one evidence JSON and draws it; nothing is computed here.
 
-    python src/pipeline/results/make_figures.py            # all four -> results/figures/
+    python -m traffictwin.protocols.figures            # all four -> results/figures/
 
     F1  penetration curve      results/routing/sweep_compliance.json
     F2  forecast-quality ablation  results/routing/ablation_forecast_quality.json

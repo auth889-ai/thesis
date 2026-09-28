@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Obtain the labelled traffic-incident TEXT corpus and freeze train/val/test splits.
 
-    python src/pipeline/nlp/get_data.py               # download real corpus, write data/nlp/{train,val,test}.csv + MANIFEST.json
-    python src/pipeline/nlp/get_data.py --seed-only   # (fallback) build splits from the 150-post hand-written Dhaka seed set
+    python -m traffictwin.nlp.get_data               # download real corpus, write data/nlp/{train,val,test}.csv + MANIFEST.json
+    python -m traffictwin.nlp.get_data --seed-only   # (fallback) build splits from the 150-post hand-written Dhaka seed set
 
 Primary source (REAL data, used by default)
 -------------------------------------------
@@ -358,7 +358,7 @@ def main() -> int:
         manifest = build_seed_fallback("--seed-only")
     manifest["labels"] = LABELS
     manifest["dhaka_seed"] = seed_info
-    manifest["created_by"] = "src/pipeline/nlp/get_data.py"
+    manifest["created_by"] = "-m", "traffictwin.nlp.get_data"
     (DATA / "MANIFEST.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False))
     print(f"[get_data] source = {manifest['source']}")
     for k, v in manifest["splits"].items():

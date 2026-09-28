@@ -22,7 +22,7 @@ and computes per vehicle-round:
     real_alternative              an alternative with overlap ≤ max_overlap AND oracle saving ≥ min_saving_s
                                   AND its bottleneck not shared with the current route
 
-    python src/pipeline/v2x/route_headroom.py --run results/v2x/closed_loop/<fork run dir>
+    python -m traffictwin.protocols.diagnostics.route_headroom --run results/v2x/closed_loop/<fork run dir>
 """
 from __future__ import annotations
 
@@ -35,8 +35,8 @@ from pathlib import Path
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 
-from pipeline.routing import predictive_routing as pr     # noqa: E402
-from pipeline.routing import route_optimizer as ro        # noqa: E402
+from traffictwin.digital_twin import runtime as pr     # noqa: E402
+from traffictwin.optimization import route_optimizer as ro        # noqa: E402
 
 CAP_LANE_H = 1800.0
 

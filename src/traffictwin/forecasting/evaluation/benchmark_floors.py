@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Forecasting floors on REAL city data, under the protocol the papers use.
 
-    python src/pipeline/forecasting/benchmark_floors.py --cities METR-LA,PEMS-BAY
-    python src/pipeline/forecasting/benchmark_floors.py --cities METR-LA --horizons 3,6,12
+    python -m traffictwin.forecasting.evaluation.benchmark_floors --cities METR-LA,PEMS-BAY
+    python -m traffictwin.forecasting.evaluation.benchmark_floors --cities METR-LA --horizons 3,6,12
 
 STAGE 1 of the system, and the part that must exist before any model result can be believed.
 
@@ -190,7 +190,7 @@ def main() -> int:
                          f"**{best:.2f}**. That gap is what the deep model has to earn.")
         lines.append("")
     lines += [f"Computed in {time.time() - t0:.1f} s, no GPU, no training — arithmetic over real data.",
-              "", "Regenerate: `python src/pipeline/forecasting/benchmark_floors.py --cities " + a.cities + "`."]
+              "", "Regenerate: `python -m traffictwin.forecasting.evaluation.benchmark_floors --cities " + a.cities + "`."]
     RESULTS.mkdir(parents=True, exist_ok=True)
     (RESULTS / "benchmark_floors.md").write_text("\n".join(lines) + "\n")
     (RESULTS / "benchmark_floors.json").write_text(json.dumps(recs, indent=1, default=str))

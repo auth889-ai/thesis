@@ -48,10 +48,10 @@ Definitions (also written into every JSON):
   travel time         SUMO tripinfo of finished trips (duration, timeLoss, waitingTime), split equipped/unequipped
 
 Usage
-  python src/pipeline/networking/penetration_sweep.py --p 0.25 --seed 11 --duration 600      # one point
-  python src/pipeline/networking/penetration_sweep.py --all --seeds 11 22 33 --duration 600   # full sweep, sequential
-  python src/pipeline/networking/penetration_sweep.py --parse-only <mosaic log dir> --p 0.25 --seed 11
-  python src/pipeline/networking/penetration_sweep.py --aggregate                              # rebuild csv/md only
+  python -m traffictwin.networking.mosaic.penetration_sweep --p 0.25 --seed 11 --duration 600      # one point
+  python -m traffictwin.networking.mosaic.penetration_sweep --all --seeds 11 22 33 --duration 600   # full sweep, sequential
+  python -m traffictwin.networking.mosaic.penetration_sweep --parse-only <mosaic log dir> --p 0.25 --seed 11
+  python -m traffictwin.networking.mosaic.penetration_sweep --aggregate                              # rebuild csv/md only
 """
 from __future__ import annotations
 
@@ -73,7 +73,7 @@ from pathlib import Path
 from traffictwin.paths import REPO
 NET_DIR = REPO / "src/pipeline/networking"
 SRC_SCENARIO = REPO / "results/artifacts/mosaic_dhaka/dhaka_r1"
-FALLBACK_NET = REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"
+FALLBACK_NET = REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz"
 MOSAIC_HOME = Path(os.environ.get("MOSAIC_HOME", Path.home() / ".dhakaflow/upstream/mosaic"))
 LOGBACK = NET_DIR / "logback_sweep.xml"
 RESULTS = REPO / "results/networking"
@@ -665,7 +665,7 @@ def aggregate():
                   f"{m('lat_mean_ms', rs)} | {m('lat_p95_ms', rs)} | {m('route_switches', rs, 0)} | {m('tt_mean_s', rs, 1)} | "
                   f"{m('tt_p95_s', rs, 1)} | {m('timeLoss_mean_s', rs, 1)} |")
     md += ["", f"Source JSONs: `results/networking/penetration_p{{P}}_s{{SEED}}.json`; regenerate with "
-               "`python src/pipeline/networking/penetration_sweep.py --aggregate`."]
+               "`python -m traffictwin.networking.mosaic.penetration_sweep --aggregate`."]
     (RESULTS / "penetration.md").write_text("\n".join(md) + "\n")
     print(f"[aggregate] {len(rows)} points -> {csv_path}, {RESULTS / 'penetration.md'}")
 

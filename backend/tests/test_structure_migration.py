@@ -46,39 +46,10 @@ def test_extracted_routers_have_no_unresolved_global_dependencies():
         check(symtable.symtable(path.read_text(), str(path), "exec"), set(vars(module)) | set(vars(builtins)), path)
 
 
-@pytest.mark.parametrize("name,target", [
-    ("config", "backend.app.config"),
-    ("schemas", "backend.app.api.schemas"),
-    ("live", "backend.app.live.google_routes"),
-    ("forecast_log", "backend.app.evidence.forecast_ledger"),
-    ("provenance", "traffictwin.data.provenance"),
-    ("scientific_jobs", "traffictwin.orchestration.jobs"),
-])
-def test_old_backend_imports_share_the_canonical_module(name, target, monkeypatch):
-    monkeypatch.syspath_prepend(str(ROOT / "src/dashboard/backend"))
-    old = importlib.import_module(name)
-    canonical = importlib.import_module(target)
-    assert old is canonical
-
-
-def test_legacy_entry_point_has_the_same_application(app):
-    assert importlib.import_module("dashboard.backend.main").app is app
-
-
 def test_network_job_state_moved_with_its_handlers(client):
     assert client.get("/api/twin/network/nonexistent-migration-test").json() == {
         "job": "nonexistent-migration-test", "status": "unknown"
     }
-
-
-def test_backend_modules_use_explicit_package_imports():
-    local = {p.stem for p in (ROOT / "src/dashboard/backend").glob("*.py")}
-    for path in (ROOT / "backend/app").rglob("*.py"):
-        for node in ast.walk(ast.parse(path.read_text())):
-            if isinstance(node, ast.Import):
-                assert not any(alias.name in local for alias in node.names), (path, node.lineno)
-            elif isinstance(node, ast.ImportFrom) and node.level == 0:
-                assert node.module not in local, (path, node.lineno)
 
 
 def test_packager_includes_both_web_directories():
@@ -141,7 +112,7 @@ def test_runtime_paths_use_consolidated_artifacts_and_source():
 
 def test_relocated_recorder_cli_starts_without_requesting_live_data():
     result = subprocess.run(
-        [sys.executable, "src/pipeline/forecasting/record_live.py", "--help"],
+        [sys.executable, "-m", "traffictwin.forecasting.live.record_live", "--help"],
         cwd=ROOT, capture_output=True, text=True, timeout=30,
     )
     assert result.returncode == 0, result.stderr
@@ -152,4 +123,4 @@ def test_source_packaging_does_not_repeat_nested_roots_or_include_credentials():
     from experiments.package_evaluation import SOURCE_ROOTS, permitted
     roots = [Path(value) for value in SOURCE_ROOTS]
     assert not any(a != b and a.is_relative_to(b) for a in roots for b in roots)
-    assert not permitted(ROOT / "src/pipeline/core/.env")
+    assert not permitted(ROOT / ".env")

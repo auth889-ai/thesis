@@ -2,7 +2,7 @@
 """Assemble results/v2x/STRESS_REPORT.md from the stress-scenario run files — sweep tables, the scenario
 gate, the oracle-headroom gate and the arm tables of every stage that ran. Nothing is typed in.
 
-    python src/pipeline/v2x/stress_report.py
+    python -m traffictwin.protocols.stress_report
 """
 from __future__ import annotations
 
@@ -36,7 +36,7 @@ def lead_times(rep: dict) -> list[str]:
 def main() -> int:
     L = ["# Congested-traffic experiment — report", "", f"Generated {datetime.now(timezone.utc).isoformat()} from run files.", "",
          "Demand is SYNTHETIC_WHAT_IF (randomTrips on the real OSM network); METR-LA carries no flow counts, so no detector-based calibration was possible (`src/pipeline/v2x/METR_LA_FLOW_NOTE.md`).", ""]
-    from pipeline.v2x import stress_sweep as ss
+    from experiments.networking import traffic_stress_sweep as ss
     doc = ss.__doc__ or ""
     L += ["## Scenario-quality rule (frozen before any policy arm; revision log)", "", "```", doc[doc.find("Selection rule"):].strip(), "```", ""]
     gates = []

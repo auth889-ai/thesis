@@ -6,7 +6,7 @@ CSV/Markdown benchmark summaries back into the repo.
 
 Example after Drive is mounted locally:
 
-    python src/pipeline/forecasting/pull_colab_results.py --drive /Volumes/GoogleDrive/MyDrive/dhakaflow/predict
+    python -m traffictwin.forecasting.training.pull_colab_results --drive /Volumes/GoogleDrive/MyDrive/dhakaflow/predict
 """
 from __future__ import annotations
 

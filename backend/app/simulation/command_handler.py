@@ -4,7 +4,7 @@ Two backends, and the reply always says which one answered:
 
   * Claude (claude-opus-5, Anthropic SDK) with four tools — start / pause / resume / stop the live
     simulation, plus status — when an API key is configured (ANTHROPIC_API_KEY in the
-    environment or src/pipeline/core/.env). Claude decides which tool to call; this module executes
+    environment or .env). Claude decides which tool to call; this module executes
     it against the SAME LiveSim the buttons use, so nothing the agent does is outside what a
     person can do by hand.
   * A rule parser when no key is present: verbs and numbers are matched with regular

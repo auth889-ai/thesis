@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 """One harness, every routing arm, on the real Dhaka R1 network.
 
-    python src/pipeline/routing/predictive_routing.py --arm static     --seed 11 --horizon 900
-    python src/pipeline/routing/predictive_routing.py --arm reactive   --seed 11 --horizon 900 --compliance 0.3
-    python src/pipeline/routing/predictive_routing.py --arm predictive --seed 11 --horizon 900 --compliance 0.3 \
+    python -m traffictwin.digital_twin.runtime --arm static     --seed 11 --horizon 900
+    python -m traffictwin.digital_twin.runtime --arm reactive   --seed 11 --horizon 900 --compliance 0.3
+    python -m traffictwin.digital_twin.runtime --arm predictive --seed 11 --horizon 900 --compliance 0.3 \
         --weights results/routing/static_s11_h900/edgedata.xml      # oracle forecast = truth from the static run
 
 Arms (identical network, demand, seed and horizon; only the routing rule differs):
@@ -39,7 +39,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 from traffictwin.paths import REPO
-DEFAULT_NET = REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"
+DEFAULT_NET = REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz"
 if not DEFAULT_NET.exists() and DEFAULT_NET.with_suffix(".xml.gz").exists():
     # the repo tracks a 2 MB .gz of the 16 MB network so a fresh clone can run
     import gzip as _gz, shutil as _sh

@@ -18,7 +18,7 @@ def experiment_v2x_closed_loop(run: str | None = None):
     root = config.REPO / "results/v2x/closed_loop"
     dirs = sorted((d for d in root.glob("*/report.json")), key=lambda f: f.stat().st_mtime) if root.exists() else []
     if not dirs:
-        return {"available": False, "command": "python src/pipeline/v2x/closed_loop.py --city la_c4_central_wide --seeds 101 --profile ideal"}
+        return {"available": False, "command": "python -m traffictwin.orchestration.closed_loop --city la_c4_central_wide --seeds 101 --profile ideal"}
     def summary(f):
         rep = json.loads(f.read_text()); P = rep["protocol"]
         key = "total_vehicle_hours_incl_never_inserted"

@@ -13,10 +13,10 @@ Policy enforced here (see docs/INTEGRATED_BUILD_PLAN.md §OFFICIAL_REPOS):
   reproducible.
 
 Usage:
-    python src/pipeline/upstream/fetch_upstream.py --list
-    python src/pipeline/upstream/fetch_upstream.py --name RT-DETR
-    python src/pipeline/upstream/fetch_upstream.py --subsystem forecasting
-    python src/pipeline/upstream/fetch_upstream.py --verify-only
+    python -m traffictwin.tools.fetch_upstream --list
+    python -m traffictwin.tools.fetch_upstream --name RT-DETR
+    python -m traffictwin.tools.fetch_upstream --subsystem forecasting
+    python -m traffictwin.tools.fetch_upstream --verify-only
 """
 from __future__ import annotations
 

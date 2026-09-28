@@ -23,8 +23,8 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
-NET_CANDIDATES = [REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
-                  REPO / "paper_labs/02_dhaka_osm/outputs/lab02_full/network/dhaka.net.xml"]
+NET_CANDIDATES = [REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz",
+                  REPO / "data/cities/dhaka_full/dhaka.net.xml.gz"]
 PENALTY = 1.6
 K_ALTERNATIVES = 3
 SNAP_RADIUS_M = 400.0

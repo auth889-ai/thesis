@@ -12,7 +12,7 @@ import shutil
 from pathlib import Path
 
 from traffictwin.paths import REPO
-DHAKA_R1 = REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"
+DHAKA_R1 = REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz"
 
 
 def ensure_net(net: Path = DHAKA_R1) -> Path:

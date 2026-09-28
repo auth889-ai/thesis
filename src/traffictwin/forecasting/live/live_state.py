@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Live Dhaka congestion stream -> forecastable time series + honest floors.
 
-    python src/pipeline/forecasting/live_state.py                      # build from results/artifacts/live_dhaka
-    python src/pipeline/forecasting/live_state.py --report             # + floors table (needs >= --min-bins bins)
+    python -m traffictwin.forecasting.live.live_state                      # build from results/artifacts/live_dhaka
+    python -m traffictwin.forecasting.live.live_state --report             # + floors table (needs >= --min-bins bins)
 
 Second box of the live chain:
 
@@ -117,7 +117,7 @@ def main() -> int:
     a = p.parse_args()
     src = Path(a.src)
     if not src.exists():
-        print(f"[live_state] no live series yet at {src} — start `python src/pipeline/forecasting/record_live.py --live --yes`")
+        print(f"[live_state] no live series yet at {src} — start `python -m traffictwin.forecasting.live.record_live --live --yes`")
         return 1
     rows = load_rows(src)
     vals, mask, corridors, bins = build(rows)
@@ -202,7 +202,7 @@ def main() -> int:
               "learned model has few congestion events to learn from yet. Recording through more rush "
               "hours is what makes this dataset worth training on."]
     lines += ["", "A learned forecaster must beat these on the same masked test region to be worth reporting.",
-              "Regenerate: `python src/pipeline/forecasting/live_state.py --report`."]
+              "Regenerate: `python -m traffictwin.forecasting.live.live_state --report`."]
     (OUT_RES / "live_floors.md").write_text("\n".join(lines) + "\n")
     print("\n".join(lines))
     return 0

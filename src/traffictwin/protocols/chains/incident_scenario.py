@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """Text -> reroute -> measured delay: the NLP incident experiment on the Dhaka R1 twin.
 
-    python src/pipeline/routing/incident_scenario.py --seeds 11,12,13                 # 3 arms x 3 paired seeds
-    python src/pipeline/routing/incident_scenario.py --seeds 11 --report-delays 60,300,900   # value of early detection
+    python -m traffictwin.protocols.chains.incident_scenario --seeds 11,12,13                 # 3 arms x 3 paired seeds
+    python -m traffictwin.protocols.chains.incident_scenario --seeds 11 --report-delays 60,300,900   # value of early detection
 
 The incident REALLY happens in every arm: at --t-inc the edges named by the NLP event
 (results/nlp/events_karwan_bazar.jsonl: "Bus and CNG collision at Karwan Bazar ...") get
@@ -43,7 +43,7 @@ from pathlib import Path
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-from pipeline.routing import predictive_routing as pr  # noqa: E402
+from traffictwin.digital_twin import runtime as pr  # noqa: E402
 
 RESULTS = REPO / "results/routing"
 DEFAULT_EVENT = REPO / "results/nlp/events_karwan_bazar.jsonl"
@@ -199,7 +199,7 @@ def write_tables(a, recs: list[dict]):
             summary[arm][c] = {"mean_pct": statistics.fmean(d), "ci95": [lo, hi], "per_seed": d}
         lines.append(f"| {arm} | " + " | ".join(cells) + " |")
     lines += ["", "`affected_*` = vehicles whose initial route ran through an incident edge. `arrived`: higher is better; all other columns: lower is better.",
-              "Regenerate: `python src/pipeline/routing/incident_scenario.py --seeds " + a.seeds + "`."]
+              "Regenerate: `python -m traffictwin.protocols.chains.incident_scenario --seeds " + a.seeds + "`."]
     (RESULTS / "incident.md").write_text("\n".join(lines) + "\n")
     (RESULTS / "incident.json").write_text(json.dumps({"config": {k: v for k, v in vars(a).items() if k not in ("known_edges",)}, "runs": recs, "summary": summary}, indent=1, default=str))
     print("\n".join(lines))

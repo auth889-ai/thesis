@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 """One protocol, every model, on datasets where the future is actually known.
 
-    python src/pipeline/forecasting/evaluate_models.py --dataset METR-LA --windows 300
-    python src/pipeline/forecasting/evaluate_models.py --all
+    python -m traffictwin.forecasting.evaluation.evaluate_models --dataset METR-LA --windows 300
+    python -m traffictwin.forecasting.evaluation.evaluate_models --all
 
 Chronos produces real numbers for Dhaka, but a number is not evidence. This is where the models
 are made comparable: the SAME test windows, the SAME context length, the SAME horizons, scored
@@ -405,7 +405,7 @@ def write(records: list[dict]) -> None:
                      f"{h15.get('mape_pct','–')} | **{h15.get('congestion_mae','–')}** | "
                      f"{h15.get('congestion_f1','–')} | {h60.get('mae','–')} | "
                      f"{ol.get('detection_rate','–')} | {ol.get('mean_lead_min','–')} min |")
-    L.append("\nRegenerate: `python src/pipeline/forecasting/evaluate_models.py --all`. "
+    L.append("\nRegenerate: `python -m traffictwin.forecasting.evaluation.evaluate_models --all`. "
              "Machine-readable: `model_comparison.json`.\n")
     (OUT / "model_comparison.md").write_text("\n".join(L))
 

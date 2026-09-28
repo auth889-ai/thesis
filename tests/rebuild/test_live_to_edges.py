@@ -10,9 +10,9 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 from traffictwin.forecasting.live.live_to_edges import BAND_MID, MAP_FILE, multiplier, write_weights  # noqa: E402
-from pipeline.routing.predictive_routing import load_weights  # noqa: E402
+from traffictwin.digital_twin.runtime import load_weights  # noqa: E402
 
-pytestmark = pytest.mark.skipif(not MAP_FILE.exists(), reason="run: python src/pipeline/forecasting/live_to_edges.py --map")
+pytestmark = pytest.mark.skipif(not MAP_FILE.exists(), reason="run: python -m traffictwin.forecasting.live.live_to_edges --map")
 
 
 def cmap():
@@ -30,7 +30,7 @@ def test_multiplier_is_monotonic_and_hits_band_midpoints():
 
 def test_every_corridor_maps_to_a_contiguous_path_on_the_real_network():
     import sumolib
-    net = sumolib.net.readNet(str(REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"))
+    net = sumolib.net.readNet(str(REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz"))
     m = cmap()
     assert len(m) == 6 and all(r["status"] == "MAPPED" for r in m.values())
     for cid, r in m.items():

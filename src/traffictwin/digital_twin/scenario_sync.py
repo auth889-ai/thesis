@@ -18,7 +18,7 @@ import math
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[4]
-NET = str(REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml")
+NET = str(REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz")
 ROUTES_SRC = REPO / "results/artifacts/due_dso_stats/v200/DUE/003/trips_003.rou.xml.gz"
 WARM_S = 3600.0   # 12x300s: forecast history is FULL before control t0
 SETTLE_S = 60.0
