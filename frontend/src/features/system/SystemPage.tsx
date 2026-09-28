@@ -3,6 +3,7 @@ import {Link} from "react-router-dom";
 
 import {Card, Loading} from "@/components/ui";
 import {api} from "@/lib/api";
+import {AssistantLab} from "./AssistantLab";
 import "./system.css";
 
 const FLOW = ["REAL DATA", "GRAPH WAVENET", "FUTURE STATE", "OPTIMIZER", "SIMULATED V2X EMULATOR", "SUMO ACTION", "OUTCOME"];
@@ -31,6 +32,7 @@ export function SystemPage() {
           <span>Assistant</span><b>Plans with real tools only; asks before anything irreversible or external; every decision is in a hash-chained audit log.</b>
         </div>
       </Card>
+      <AssistantLab />
     </div>
   );
 }

@@ -33,7 +33,6 @@ sys.path.insert(0, str(config.REPO))
 HORIZONS = (15, 30, 60)
 HISTORY_STEPS = 36                      # three hours of 5-minute readings before the moment
 _LOCK = threading.Lock()
-_PRED: dict[tuple, tuple] = {}          # (dataset, as_of, model) -> (now, pred, info)
 
 
 def _clock(first_utc: str | None, idx: int, step_s: int) -> str | None:
@@ -50,26 +49,16 @@ def _to_kmh(v: float | None, quantity: str) -> float | None:
 
 
 def _predict(dataset: str, as_of: int, model: str | None):
-    """The product's inference path, cached per (dataset, moment, model)."""
+    """The product's inference path: a fresh forward pass on every request, never a stored answer."""
     if dataset in scientific_prediction.DATASETS:
         return scientific_prediction.forecast(as_of, model)
     from app.data import forecast_inputs as dataset_ops
     from app.forecasting.operations import model_registry
     entry = model_registry.resolve(dataset, model)
-    key = (dataset, int(as_of), entry.get("model"))
-    with _LOCK:
-        hit = _PRED.get(key)
-    if hit:
-        return hit[0], hit[1], {**hit[2], "prediction_cache_hit": True,
-                               "inference_recomputed": False, "result_source": "CACHED_INFERENCE"}
     now, pred, info = dataset_ops.forecast_all(dataset, entry, int(as_of))
     info = {**info, "resolved_model": entry.get("model"), "checkpoint_path": entry.get("checkpoint_path"), "trust": entry.get("trust"),
             "validation_MAE": entry.get("validation_MAE"), "test_skill": entry.get("test_skill"), "cache_key": entry.get("cache_key"),
             "prediction_cache_hit": False, "inference_recomputed": True, "result_source": "FRESH_INFERENCE"}
-    with _LOCK:
-        _PRED[key] = (now, pred, info)
-        while len(_PRED) > 24:
-            _PRED.pop(next(iter(_PRED)))
     return now, pred, info
 
 

@@ -2,11 +2,16 @@ import {useState} from "react";
 
 import {Button, ErrorNote} from "@/components/ui";
 
-const EXAMPLES = [
-  "I must be at Shahbagh by 09:00 tomorrow from Farmgate. Remind me 30 minutes before I should leave.",
-  "How bad will traffic be on my way from Mirpur 10 to Motijheel in the next hour?",
-  "Add a task: submit the thesis draft on Friday 17:00, and save my daily commute Farmgate → Shahbagh arriving 08:30.",
-];
+const remembered = (k: string, d: string) => { try { return localStorage.getItem(`tt.${k}`) || d; } catch { return d; } };
+/** Examples use the places this person last planned with, so they read naturally in any city. */
+const examples = () => {
+  const from = remembered("origin", "Farmgate"), to = remembered("destination", "Shahbagh");
+  return [
+    `I must be at ${to} by 09:00 tomorrow from ${from}. Remind me 30 minutes before I should leave.`,
+    `How bad will traffic be on my way from ${from} to ${to} in the next hour?`,
+    `Add a task: submit the report on Friday 17:00, and save my daily commute ${from} → ${to} arriving 08:30.`,
+  ];
+};
 
 /** The goal box: one sentence in plain language, sent as-is. Examples are just suggestions to click. */
 export function GoalComposer({onSubmit, busy, error}: {onSubmit: (text: string) => void; busy: boolean; error: unknown}) {
@@ -17,7 +22,7 @@ export function GoalComposer({onSubmit, busy, error}: {onSubmit: (text: string) 
       <textarea value={text} onChange={(e) => setText(e.target.value)} rows={3} placeholder="What do you need done today?" aria-label="Goal"
         onKeyDown={(e) => { if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) send(); }} />
       <div className="row composer-foot">
-        <div className="row examples">{EXAMPLES.map((x) => <button key={x} type="button" className="chip" onClick={() => setText(x)}>{x.slice(0, 48)}…</button>)}</div>
+        <div className="row examples">{examples().map((x) => <button key={x} type="button" className="chip" onClick={() => setText(x)}>{x.slice(0, 48)}…</button>)}</div>
         <Button onClick={send} disabled={busy || text.trim().length < 3}>{busy ? "Working…" : "Do it"}</Button>
       </div>
       {error ? <ErrorNote error={error} /> : null}

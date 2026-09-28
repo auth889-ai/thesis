@@ -1,9 +1,10 @@
 import {Pill} from "@/components/ui";
 import type {Step, ToolCall} from "./types";
+import {callSentence, decisionWords} from "./words";
 
 const TONE: Record<string, "ok" | "warn" | "bad" | "neutral"> = {allow: "ok", ask: "warn", refuse: "bad"};
 
-/** The plan, in order: what the model intended, which tool it called, what came back. Nothing is hidden. */
+/** The plan, in order, in plain words: what the assistant meant to do, what it did, what came back. */
 export function StepList({steps}: {steps: Step[]}) {
   if (!steps.length) return <p className="muted small">No steps yet.</p>;
   return (
@@ -20,18 +21,11 @@ export function StepList({steps}: {steps: Step[]}) {
 }
 
 function CallLine({call}: {call: ToolCall}) {
-  const result = call.error ? null : summarise(call.result);
   return (
     <div className="step-call">
-      <code>{call.tool.replace(/__/g, ".")}</code> <Pill tone={TONE[call.decision ?? ""] ?? "neutral"}>{call.decision ?? "pending"}</Pill> <span className="muted small">{call.risk.replace(/_/g, " ")}</span>
+      {callSentence(call)} <Pill tone={TONE[call.decision ?? ""] ?? "neutral"}>{decisionWords(call.decision)}</Pill>
       {call.error && <div className="bad small">✕ {call.error}</div>}
-      {result && <details className="why"><summary>result</summary><pre className="mono args">{result}</pre></details>}
+      {call.decision_reason && call.decision === "refuse" && <div className="muted small">{call.decision_reason}</div>}
     </div>
   );
-}
-
-function summarise(v: unknown): string | null {
-  if (v == null) return null;
-  const s = JSON.stringify(v, null, 1);
-  return s.length > 1200 ? s.slice(0, 1200) + "\n…" : s;
 }

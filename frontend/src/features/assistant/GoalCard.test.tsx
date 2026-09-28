@@ -18,6 +18,7 @@ describe("GoalCard", () => {
     render(<GoalCard goal={goal()} onApprove={onApprove} onAnswer={() => {}} busy={false} />);
     expect(screen.getByText("Approve this action?")).toBeInTheDocument();
     expect(screen.getByText(/cannot be undone/)).toBeInTheDocument();
+    expect(screen.queryByText(/commutes__delete|\{/)).toBeNull();
     fireEvent.click(screen.getByText("Decline"));
     expect(onApprove).toHaveBeenCalledWith("call_2", false);
   });
@@ -31,7 +32,7 @@ describe("GoalCard", () => {
   });
   it("lists every step with its tool and decision", () => {
     render(<GoalCard goal={goal({status: "done", summary: "Planned and saved."})} onApprove={() => {}} onAnswer={() => {}} busy={false} />);
-    expect(screen.getByText("mobility.plan_commute", {selector: "code"})).toBeInTheDocument();
+    expect(screen.getByText(/Planned when to leave/)).toBeInTheDocument();
     expect(screen.getByText("Planned and saved.")).toBeInTheDocument();
     expect(screen.queryByText("Approve this action?")).toBeNull();
   });

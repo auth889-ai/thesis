@@ -1,5 +1,6 @@
 import {useCallback, useState} from "react";
 
+import {PhotoCard} from "@/components/PhotoCard";
 import {Steps} from "@/components/Steps";
 import {Card, ErrorNote} from "@/components/ui";
 import {CommutePlanner} from "./CommutePlanner";
@@ -32,6 +33,10 @@ export function MobilityPage() {
         </div>
       </div>
       {fields && <CommutePlanner trip={{city: fields.city, origin: fields.origin, destination: fields.destination}} />}
+      <div className="phototiles">
+        <PhotoCard photo="crossing" title="Ask the assistant" text={'"Be there by nine, remind me when to leave."'} to="/today" />
+        <PhotoCard photo="metroCar" title="The city an hour ahead" text="Where congestion forms next, on the map." to="/city" />
+      </div>
     </div>
   );
 }

@@ -108,11 +108,11 @@ def test_partial_future_is_not_filled_or_indexed_past_end(service, monkeypatch):
     assert road["models"]["GWNet"]["abs_error_by_h"] == {}
 
 
-def test_legacy_prediction_cache_is_explicit(monkeypatch):
+def test_prediction_is_recomputed_on_every_request(monkeypatch):
+    """No stored answers: two identical requests are two forward passes, each labelled FRESH_INFERENCE."""
     from app.data import forecast_inputs
     from app.forecasting.operations import model_registry
     monkeypatch.setattr(model_registry, "resolve", lambda *_: {"model": "persistence"})
-    monkeypatch.setattr(road_forecasts, "_PRED", {})
     calls = []
     def compute(*args):
         calls.append(args)
@@ -120,10 +120,10 @@ def test_legacy_prediction_cache_is_explicit(monkeypatch):
     monkeypatch.setattr(forecast_inputs, "forecast_all", compute)
     first = road_forecasts._predict("user:example", 25, "persistence")[2]
     second = road_forecasts._predict("user:example", 25, "persistence")[2]
-    assert len(calls) == 1
-    assert first["prediction_cache_hit"] is False
-    assert second["prediction_cache_hit"] is True and second["inference_recomputed"] is False
-    assert second["result_source"] == "CACHED_INFERENCE"
+    assert len(calls) == 2
+    assert first["result_source"] == second["result_source"] == "FRESH_INFERENCE"
+    assert not first["prediction_cache_hit"] and second["inference_recomputed"]
+    assert not hasattr(road_forecasts, "_PRED")
 
 
 def test_prediction_job_uses_canonical_adapter_not_legacy_series(service, tmp_path, monkeypatch):
