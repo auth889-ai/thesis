@@ -4,7 +4,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from app.paths import REPO
-FRONTEND = REPO / "frontend"
+FRONTEND = (REPO / "frontend/dist") if (REPO / "frontend/dist/index.html").exists() else REPO / "frontend"   # built app when `npm run build` ran, else the sources
 
 # (file, command that produces it). A panel with no file renders its recipe, never an empty chart.
 EVIDENCE: dict[str, tuple[str, str]] = {

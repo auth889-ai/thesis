@@ -20,3 +20,10 @@ jobs:
       # rclone fetches datasets from Drive; without it those tests skip rather than fail
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq rclone || true
       - run: python -m pytest -q -m "not slow"
+  web:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: {node-version: "22", cache: npm, cache-dependency-path: frontend/package-lock.json}
+      - run: cd frontend && npm ci && npm test && npm run build

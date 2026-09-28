@@ -46,7 +46,7 @@ def test_retired_root_directories_are_not_recreated():
         assert not (REPO_ROOT / name).exists(), f"use the canonical nested location, not {name}/"
 
 
-@pytest.mark.parametrize("relative", ["backend/app/data", "backend/app/forecasting/routers", "backend/app/routing", "backend/app/twin", "backend/app/networking", "backend/app/protocols/routers", "backend/tests", "frontend/pages", "research/reports", "research/notebooks", "results/artifacts"])
+@pytest.mark.parametrize("relative", ["backend/app/data", "backend/app/forecasting/routers", "backend/app/routing", "backend/app/twin", "backend/app/networking", "backend/app/protocols/routers", "backend/tests", "frontend/src/pages", "research/reports", "research/notebooks", "results/artifacts"])
 def test_consolidated_directories_exist(relative):
     assert (REPO_ROOT / relative).is_dir()
 

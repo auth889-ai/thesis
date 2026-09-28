@@ -30,7 +30,7 @@ scripts/  docs/  data/  results/  tests/platform/  upstream/
 
 ## Migration status
 
-Done (2026-09-28): steps 1–7. Remaining: retire or promote the ten `frontend/pages/legacy/*` pages; give the web app a `package.json` with Vite and Vitest and move it to TypeScript page by page; split `twin/live/runtime.py` (664 lines) and `routing/trip_analysis.py` (593 lines).
+Done (2026-09-28): steps 1–7. Remaining: retire or promote the ten `frontend/src/pages/legacy/*` pages; give the web app a `package.json` with Vite and Vitest and move it to TypeScript page by page; split `twin/live/runtime.py` (664 lines) and `routing/trip_analysis.py` (593 lines).
 
 ## Rules the test enforces
 

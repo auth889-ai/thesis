@@ -34,13 +34,15 @@ def _startup() -> None:
 
 
 if config.FRONTEND.exists():
-    app.mount("/static", StaticFiles(directory=config.FRONTEND), name="static")
     if config.MEDIA.exists():
         app.mount("/media", StaticFiles(directory=config.MEDIA), name="media")
+    app.mount("/static", StaticFiles(directory=config.FRONTEND), name="static")          # kept for older links
 
     @app.get("/", include_in_schema=False)
     def index():
         return FileResponse(config.FRONTEND / "index.html")
+
+    app.mount("/", StaticFiles(directory=config.FRONTEND), name="web")                    # the app's own relative assets (last: API routes win)
 
 
 if __name__ == "__main__":

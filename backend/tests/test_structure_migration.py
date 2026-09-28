@@ -23,10 +23,12 @@ def test_existing_api_paths_are_preserved(app):
 def test_frontend_is_served_from_its_canonical_directory(client):
     response = client.get("/")
     assert response.status_code == 200
-    assert response.content == (ROOT / "frontend/index.html").read_bytes()
-    for path in sorted((ROOT / "frontend").rglob("*")):
-        if path.is_file() and path.suffix in {".js", ".css"}:
-            response = client.get("/static/" + path.relative_to(ROOT / "frontend").as_posix())
+    from app import config
+    served = config.FRONTEND                                     # frontend/dist when built, else the sources
+    assert response.content == (served / "index.html").read_bytes()
+    for path in sorted(served.rglob("*")):
+        if path.is_file() and path.suffix in {".js", ".css"} and "node_modules" not in path.parts:
+            response = client.get("/" + path.relative_to(served).as_posix())
             assert response.status_code == 200, path
             assert response.content == path.read_bytes()
 
@@ -62,14 +64,14 @@ def test_backend_root_contains_only_application_assembly_and_configuration():
 
 
 def test_primary_pages_are_separate_from_legacy_and_shared_components():
-    assert {p.name for p in (ROOT / "frontend/pages").glob("*.js")} == {
+    assert {p.name for p in (ROOT / "frontend/src/pages").glob("*.js")} == {
         "system.js", "prediction.js", "control_room.js", "results.js", "references.js"
     }
-    assert not list((ROOT / "frontend/components").glob("*-page.js"))
+    assert not list((ROOT / "frontend/src/components").glob("*-page.js"))
 
 
 def test_browser_relative_module_imports_resolve_inside_frontend():
-    frontend = (ROOT / "frontend").resolve()
+    frontend = (ROOT / "frontend/src").resolve()
     imports = re.compile(r"^import\s+(?:.*?\s+from\s+)?[\"'](\.[^\"']+)[\"']", re.MULTILINE)
     for path in frontend.rglob("*.js"):
         for specifier in imports.findall(path.read_text()):

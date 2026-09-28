@@ -1,0 +1,5344 @@
+{
+ "openapi": "3.1.0",
+ "info": {
+  "title": "TrafficTwin",
+  "description": "Traffic prediction (ML/DL), route optimization, SUMO simulation and V2X networking \u2014 for any city.",
+  "version": "1.0.0"
+ },
+ "paths": {
+  "/api/config/map": {
+   "get": {
+    "tags": [
+     "meta"
+    ],
+    "summary": "Map Config",
+    "description": "Which basemap the browser should use. A Mapbox public token is meant for the browser;\nwithout one the Esri street tiles are used. Never a secret key.",
+    "operationId": "map_config_api_config_map_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/networking/conditions": {
+   "get": {
+    "tags": [
+     "network"
+    ],
+    "summary": "Networking Conditions",
+    "description": "Measured V2X delivery per (latency, loss), beside the federated forecast error.\n\nBoth halves are read from evidence files. The delivery table comes from the Eclipse MOSAIC\nITS-G5 sweep; the forecast errors come from the federated runs on AWS. They are SIMULATED\ncommunication events, not radio-hardware measurements, and the payload says so.",
+    "operationId": "networking_conditions_api_networking_conditions_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/health": {
+   "get": {
+    "tags": [
+     "meta"
+    ],
+    "summary": "Health",
+    "description": "Liveness plus data freshness \u2014 a dashboard must say when its data is stale.",
+    "operationId": "health_api_health_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/stream": {
+   "get": {
+    "tags": [
+     "realtime"
+    ],
+    "summary": "Stream",
+    "description": "SSE. Emits on change, heartbeats otherwise, and tells the client how long to back off.",
+    "operationId": "stream_api_stream_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/cities": {
+   "get": {
+    "tags": [
+     "city"
+    ],
+    "summary": "Cities",
+    "description": "Every city known to the system, with what each is ALLOWED to claim.",
+    "operationId": "cities_api_cities_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/city/{city_id}": {
+   "get": {
+    "tags": [
+     "city"
+    ],
+    "summary": "City",
+    "operationId": "city_api_city__city_id__get",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "City Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/city": {
+   "post": {
+    "tags": [
+     "city"
+    ],
+    "summary": "Create City",
+    "description": "Create a city from a NAME (geocoded via OSM) or a BBOX drawn on the map.\n\nThis is what makes the system city-agnostic in practice rather than in prose: the user names a\nplace and the system finds it, instead of an engineer adding a constant.",
+    "operationId": "create_city_api_city_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "additionalProperties": true,
+        "type": "object",
+        "title": "Payload"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/city/{city_id}/graph": {
+   "post": {
+    "tags": [
+     "city"
+    ],
+    "summary": "Build City Graph",
+    "description": "Build the road graph and select STABLE OBSERVATION NODES (major road edges).",
+    "operationId": "build_city_graph_api_city__city_id__graph_post",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "City Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "type": "object",
+          "additionalProperties": true
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Payload"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/city/{city_id}/nodes": {
+   "get": {
+    "tags": [
+     "city"
+    ],
+    "summary": "City Nodes",
+    "operationId": "city_nodes_api_city__city_id__nodes_get",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "City Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/datasets": {
+   "get": {
+    "tags": [
+     "research"
+    ],
+    "summary": "Datasets",
+    "description": "The research datasets, their scale and what each licenses us to claim.\n\nArrays stay on Drive/S3 and are never vendored into git; their existence and scale are visible\nhere so a reader can see the evidence base rather than infer it.",
+    "operationId": "datasets_api_datasets_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/city/{city_id}/observe": {
+   "post": {
+    "tags": [
+     "city"
+    ],
+    "summary": "City Observe",
+    "description": "Start learning a city: derive its observation corridors from its road graph, sample them\nlive every five minutes (persisted), and serve forecasts as soon as the history allows.\nAccepts a registered city id or a free city name (created and geocoded on the spot).",
+    "operationId": "city_observe_api_city__city_id__observe_post",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "City Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "type": "object",
+          "additionalProperties": true
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Payload"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "city"
+    ],
+    "summary": "City Observe Status",
+    "operationId": "city_observe_status_api_city__city_id__observe_get",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "City Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/models": {
+   "get": {
+    "tags": [
+     "research"
+    ],
+    "summary": "Models",
+    "description": "Every forecasting model and whether it can honestly serve this city right now.",
+    "operationId": "models_api_models_get",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "dhaka",
+       "title": "City Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/forecast/{city_id}": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "City Forecast",
+    "description": "The real forecast path: whichever model can honestly serve this city, or a LABELLED baseline.\n\n`source` says which observations the model is given. `observatory` is the rolling in-memory\nbuffer (derived speeds; empty after a restart). `recorded` is the REAL_LIVE series the\nrecorder wrote to disk over days (derived congestion classes). `auto` uses the buffer when it\nholds enough steps for a model to serve and the recorded window otherwise \u2014 and the response\nsays which, so a click after a restart gets a real model over real history, never a floor\ndressed as the system's forecast.",
+    "operationId": "city_forecast_api_forecast__city_id__get",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "City Id"
+      }
+     },
+     {
+      "name": "horizons",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "5,15,30,60",
+       "title": "Horizons"
+      }
+     },
+     {
+      "name": "source",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "auto",
+       "title": "Source"
+      }
+     },
+     {
+      "name": "model",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Model"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/forecast/{city_id}/scoreboard": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "City Forecast Scoreboard",
+    "description": "The system's own track record: forecasts it issued, graded against what was recorded next.\n\nUnlike the backtest (a replay), these were written down BEFORE their target time and cannot\nbe revised. The scheduler issues one every five minutes while the server runs.",
+    "operationId": "city_forecast_scoreboard_api_forecast__city_id__scoreboard_get",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "City Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/forecast/{city_id}/accuracy": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "City Forecast Accuracy",
+    "description": "How accurate the forecast is on THIS city's own recorded data \u2014 a rolling-origin backtest.\n\nEvery model is cut at each origin bin, forecasts from that history only, and is scored on\nwhat the recorder later wrote. Read from the evidence file; the command regenerates it.",
+    "operationId": "city_forecast_accuracy_api_forecast__city_id__accuracy_get",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "City Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/history/{city_id}": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "History",
+    "description": "Observed history AND the forecast, in one payload, so a chart can draw both.\n\nThe history is what the observatory actually recorded; the forecast is the same call the rest\nof the system uses. Nothing here is generated to make a curve look continuous \u2014 a gap in the\nrecord stays a gap.",
+    "operationId": "history_api_history__city_id__get",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "City Id"
+      }
+     },
+     {
+      "name": "horizons",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "5,15,30,60",
+       "title": "Horizons"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/forecast-map/{dataset}": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Forecast Map Network",
+    "description": "The future state of the road network at one dataset moment: every sensor's prediction, the\nDIRECT/DERIVED edges the router prices, the unforecast backdrop, and the coverage counts.",
+    "operationId": "forecast_map_network_api_forecast_map__dataset__get",
+    "parameters": [
+     {
+      "name": "dataset",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Dataset"
+      }
+     },
+     {
+      "name": "as_of",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "As Of"
+      }
+     },
+     {
+      "name": "model",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Model"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/forecast-map/{dataset}/road": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Forecast Map Road",
+    "description": "One sensor: history, each model's prediction, the measured future when inside the data.",
+    "operationId": "forecast_map_road_api_forecast_map__dataset__road_get",
+    "parameters": [
+     {
+      "name": "dataset",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Dataset"
+      }
+     },
+     {
+      "name": "node",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Node"
+      }
+     },
+     {
+      "name": "as_of",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "As Of"
+      }
+     },
+     {
+      "name": "models",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "GWNet,persistence",
+       "title": "Models"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/predict-lab/datasets": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Predict Lab Datasets",
+    "description": "Real datasets present locally and the models that can serve each.",
+    "operationId": "predict_lab_datasets_api_predict_lab_datasets_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/predict-lab/upload": {
+   "post": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Predict Lab Upload",
+    "description": "Any city, your data: a CSV (wide `time,<road>...` or long `time,road,value`), optionally a\ncoordinates CSV or an adjacency `.npy`, becomes a dataset every model on the page can serve.",
+    "operationId": "predict_lab_upload_api_predict_lab_upload_post",
+    "requestBody": {
+     "content": {
+      "multipart/form-data": {
+       "schema": {
+        "$ref": "#/components/schemas/Body_predict_lab_upload_api_predict_lab_upload_post"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/predict-lab/run": {
+   "post": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Predict Lab Run",
+    "description": "A real forward pass: dataset, region, moment, model -> prediction, scored where possible.",
+    "operationId": "predict_lab_run_api_predict_lab_run_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "additionalProperties": true,
+        "type": "object",
+        "title": "Payload"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/predict-lab/train": {
+   "post": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Predict Lab Train",
+    "description": "Train an official BasicTS baseline (STID / GWNet) on THIS dataset \u2014 their data preparation,\nconfig, runner and metrics, on CPU. Returns a job to poll; the model then appears in the menu.",
+    "operationId": "predict_lab_train_api_predict_lab_train_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "additionalProperties": true,
+        "type": "object",
+        "title": "Payload"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/predict-lab/train/{job}": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Predict Lab Train Status",
+    "operationId": "predict_lab_train_status_api_predict_lab_train__job__get",
+    "parameters": [
+     {
+      "name": "job",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/train": {
+   "get": {
+    "tags": [
+     "train"
+    ],
+    "summary": "Train List",
+    "operationId": "train_list_api_train_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "train"
+    ],
+    "summary": "Train Create",
+    "description": "Create a training job. Policy: small jobs run here, larger ones on an AWS single-GPU worker\n(unless `where` pins it). Returns the job id to poll.",
+    "operationId": "train_create_api_train_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "additionalProperties": true,
+        "type": "object",
+        "title": "Payload"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/train/{job_id}": {
+   "get": {
+    "tags": [
+     "train"
+    ],
+    "summary": "Train Status",
+    "description": "Stage (QUEUED \u2026 COMPLETE | FAILED), epoch and validation metrics while training, then the\nvalidation / test tables, checkpoint verification and the trust gate.",
+    "operationId": "train_status_api_train__job_id__get",
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/train/{job_id}/cancel": {
+   "post": {
+    "tags": [
+     "train"
+    ],
+    "summary": "Train Cancel",
+    "description": "Stop a job; a cloud worker is terminated immediately.",
+    "operationId": "train_cancel_api_train__job_id__cancel_post",
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/predict-lab/cloud": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Predict Lab Cloud",
+    "description": "Whether the GPU path is configured (AWS keys on the server, aws CLI present). Never a key value.",
+    "operationId": "predict_lab_cloud_api_predict_lab_cloud_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/predict-lab/trained": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Predict Lab Trained",
+    "description": "Models trained here, with their test metrics beside persistence on the same split.",
+    "operationId": "predict_lab_trained_api_predict_lab_trained_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/predict-lab/{job}": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Predict Lab Status",
+    "operationId": "predict_lab_status_api_predict_lab__job__get",
+    "parameters": [
+     {
+      "name": "job",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/opencity/{city_id}": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Opencity Status",
+    "description": "Where the foundation model stands for this city, in the model's own terms.\n\nOpenCity runs through the authors' harness as a batch job. This reports how much of the\nhistory it needs has accumulated (the persisted observatory window), whether the CPU path has\nbeen verified, and the result once the run exists \u2014 never a fabricated number in between.",
+    "operationId": "opencity_status_api_opencity__city_id__get",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "City Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/opencity/{city_id}/predict": {
+   "post": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Opencity Predict City",
+    "description": "OpenCity-plus forward pass on this city's own window (persisted observatory speeds by\ndefault, or the recorded classes), through the authors' unmodified stack. Refuses, with the\nmodel's own reason, when the window is too short or the graph too small.",
+    "operationId": "opencity_predict_city_api_opencity__city_id__predict_post",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "City Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "type": "object",
+          "additionalProperties": true
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Payload"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/opencity/upload": {
+   "post": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Opencity Predict Upload",
+    "description": "Their demo's contract: a CSV (`time` + one column per region) and an `_rn_adj.npy`.",
+    "operationId": "opencity_predict_upload_api_opencity_upload_post",
+    "requestBody": {
+     "content": {
+      "multipart/form-data": {
+       "schema": {
+        "$ref": "#/components/schemas/Body_opencity_predict_upload_api_opencity_upload_post"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/operate/cities": {
+   "get": {
+    "tags": [
+     "operate"
+    ],
+    "summary": "Operate Cities",
+    "description": "Cities the operations screen offers: Dhaka (observed, forecastable) plus any registered\ncity \u2014 and any other name typed in is geocoded on the spot.",
+    "operationId": "operate_cities_api_operate_cities_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/places": {
+   "get": {
+    "tags": [
+     "operate"
+    ],
+    "summary": "Places List",
+    "description": "Place suggestions for the origin / destination inputs, INSIDE the named city (known Dhaka\nplaces, then OpenStreetMap bounded to the city). Free text and 'lat, lng' also work.",
+    "operationId": "places_list_api_places_get",
+    "parameters": [
+     {
+      "name": "city",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "dhaka",
+       "title": "City"
+      }
+     },
+     {
+      "name": "q",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "",
+       "title": "Q"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/operate/models": {
+   "get": {
+    "tags": [
+     "operate"
+    ],
+    "summary": "Operate Models",
+    "description": "Forecast models that can serve this city right now, with the registry's reasons (flat).",
+    "operationId": "operate_models_api_operate_models_get",
+    "parameters": [
+     {
+      "name": "city",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "dhaka",
+       "title": "City"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/registry": {
+   "get": {
+    "tags": [
+     "operate"
+    ],
+    "summary": "Models Registry",
+    "description": "THE MODEL REGISTRY for a scope (an uploaded dataset `user:<id>` or a city): grouped\nRecommended / Trained on your city / Pretrained / Research, every entry with the gates it\npassed, and what Automatic resolves to. Read fresh from disk \u2014 a finished training job\nappears without a restart.",
+    "operationId": "models_registry_api_registry_get",
+    "parameters": [
+     {
+      "name": "scope",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "dhaka",
+       "title": "Scope"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/runs": {
+   "get": {
+    "tags": [
+     "operate"
+    ],
+    "summary": "Runs Recent",
+    "description": "The most recent prediction runs with their provenance (what computed each result).",
+    "operationId": "runs_recent_api_runs_get",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "default": 20,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/runs/{run_id}": {
+   "get": {
+    "tags": [
+     "operate"
+    ],
+    "summary": "Run Provenance",
+    "description": "Technical details of one run: requested vs resolved model, checkpoint path + sha256, dataset /\ngraph / input-window / raw-prediction / post-processed hashes, measured stage timings, result_source.",
+    "operationId": "run_provenance_api_runs__run_id__get",
+    "parameters": [
+     {
+      "name": "run_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Run Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/analyze/{job}/provenance": {
+   "get": {
+    "tags": [
+     "operate"
+    ],
+    "summary": "Analyze Provenance",
+    "operationId": "analyze_provenance_api_analyze__job__provenance_get",
+    "parameters": [
+     {
+      "name": "job",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/analyze": {
+   "post": {
+    "tags": [
+     "operate"
+    ],
+    "summary": "Analyze Start",
+    "description": "ANALYZE TRAFFIC: origin, destination, departure, horizon -> current, forecast, decision.\nRuns in the background so the page can show each stage as it really happens.",
+    "operationId": "analyze_start_api_analyze_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "additionalProperties": true,
+        "type": "object",
+        "title": "Payload"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/analyze/{job}": {
+   "get": {
+    "tags": [
+     "operate"
+    ],
+    "summary": "Analyze Status",
+    "operationId": "analyze_status_api_analyze__job__get",
+    "parameters": [
+     {
+      "name": "job",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/route/optimize": {
+   "post": {
+    "tags": [
+     "routing"
+    ],
+    "summary": "Route Optimize",
+    "description": "ROUTE OPTIMIZATION for one AnalysisRun: its stored forecast -> continuous future edge costs ->\nduarouter candidates -> threshold + capacity admission. Returns the RoutingRun with every\ncandidate's cost terms. 404 ANALYSIS_RUN_NOT_FOUND; 422 when the run holds no forecast.",
+    "operationId": "route_optimize_api_route_optimize_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Payload"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/route/optimize/{routing_run_id}": {
+   "get": {
+    "tags": [
+     "routing"
+    ],
+    "summary": "Route Optimize Get",
+    "operationId": "route_optimize_get_api_route_optimize__routing_run_id__get",
+    "parameters": [
+     {
+      "name": "routing_run_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Routing Run Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sim/live/start": {
+   "post": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Sim Live Start",
+    "description": "Start a live SUMO run: scale, duration_s, seed, compliance, arm, step_delay_ms.",
+    "operationId": "sim_live_start_api_sim_live_start_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Payload"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sim/live/screenshot": {
+   "post": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Sim Live Screenshot",
+    "description": "sumo-gui writes its own view to a PNG (TraCI gui.screenshot).",
+    "operationId": "sim_live_screenshot_api_sim_live_screenshot_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Payload"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sim/live/follow": {
+   "post": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Sim Live Follow",
+    "description": "Follow one simulated vehicle in the sumo-gui window.",
+    "operationId": "sim_live_follow_api_sim_live_follow_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Payload"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sim/live/pause": {
+   "post": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Sim Live Pause",
+    "operationId": "sim_live_pause_api_sim_live_pause_post",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sim/live/resume": {
+   "post": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Sim Live Resume",
+    "operationId": "sim_live_resume_api_sim_live_resume_post",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sim/live/stop": {
+   "post": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Sim Live Stop",
+    "operationId": "sim_live_stop_api_sim_live_stop_post",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sim/live/state": {
+   "get": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Sim Live State",
+    "description": "KPIs and every vehicle's position, as SUMO computed them this step.",
+    "operationId": "sim_live_state_api_sim_live_state_get",
+    "parameters": [
+     {
+      "name": "vehicles",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": true,
+       "title": "Vehicles"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sim/live/history": {
+   "get": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Sim Live History",
+    "operationId": "sim_live_history_api_sim_live_history_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/sim/agent": {
+   "post": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Sim Agent Chat",
+    "description": "Natural language -> the same start/pause/resume/stop the buttons call.",
+    "operationId": "sim_agent_chat_api_sim_agent_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "additionalProperties": true,
+        "type": "object",
+        "title": "Payload"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/twin/test": {
+   "post": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Twin Test Start",
+    "description": "TEST IN DIGITAL TWIN for one AnalysisRun: the run's own city, resolved O/D, model and\nforecast become the SUMO scenario (probe vehicle for that exact trip in every arm).\n404 ANALYSIS_RUN_NOT_FOUND when the run id is unknown; SUMO_OD_MAPPING_FAILED when the\ntrip cannot be snapped to drivable edges \u2014 never a stored or fixed scenario.",
+    "operationId": "twin_test_start_api_twin_test_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Payload"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/twin/test/{simulation_run_id}": {
+   "get": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Twin Test Status",
+    "operationId": "twin_test_status_api_twin_test__simulation_run_id__get",
+    "parameters": [
+     {
+      "name": "simulation_run_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Simulation Run Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/twin/compare": {
+   "post": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Twin Compare Start",
+    "description": "Baseline vs reactive on any generated network, paired seeds, CI verdict. Background job.",
+    "operationId": "twin_compare_start_api_twin_compare_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "additionalProperties": true,
+        "type": "object",
+        "title": "Payload"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/twin/compare/{job}": {
+   "get": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Twin Compare Status",
+    "operationId": "twin_compare_status_api_twin_compare__job__get",
+    "parameters": [
+     {
+      "name": "job",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/twin/networks": {
+   "get": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Twin Networks",
+    "description": "Every network the twin can run \u2014 the calibrated one, then cities generated from OSM.",
+    "operationId": "twin_networks_api_twin_networks_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/twin/network": {
+   "post": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Twin Generate Network",
+    "description": "Any area on Earth -> a runnable SUMO scenario: OSM extract -> netconvert -> trips -> duarouter.\n\nBody: {\"city_id\": ...} for a registered city, or {\"name\": ..., \"bbox\": [south, west, north, east]}\nfrom the map view. The network is REAL (OSM geometry, SUMO's own converter); the demand is\nGENERATED and every artefact says so. Runs in the background; poll the job.",
+    "operationId": "twin_generate_network_api_twin_network_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "additionalProperties": true,
+        "type": "object",
+        "title": "Payload"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/twin/network/{job}": {
+   "get": {
+    "tags": [
+     "twin"
+    ],
+    "summary": "Twin Network Job",
+    "operationId": "twin_network_job_api_twin_network__job__get",
+    "parameters": [
+     {
+      "name": "job",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiment/v2x_closed_loop": {
+   "get": {
+    "tags": [
+     "experiment"
+    ],
+    "summary": "Experiment V2X Closed Loop",
+    "description": "The V2X closed-loop runs (src/pipeline/v2x/closed_loop.py): every run directory with its protocol,\npaired traffic metrics, network metrics and reroute counts \u2014 read as-is, never recomputed.",
+    "operationId": "experiment_v2x_closed_loop_api_experiment_v2x_closed_loop_get",
+    "parameters": [
+     {
+      "name": "run",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Run"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiment/v2x_closed_loop/vehicle_trace": {
+   "get": {
+    "tags": [
+     "experiment"
+    ],
+    "summary": "Experiment V2X Vehicle Trace",
+    "description": "Return persisted causal evidence; never run inference or simulation here.",
+    "operationId": "experiment_v2x_vehicle_trace_api_experiment_v2x_closed_loop_vehicle_trace_get",
+    "parameters": [
+     {
+      "name": "run",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Run"
+      }
+     },
+     {
+      "name": "seed",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Seed"
+      }
+     },
+     {
+      "name": "arm",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Arm"
+      }
+     },
+     {
+      "name": "vehicle",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Vehicle"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiment/v2x_closed_loop/timeline": {
+   "get": {
+    "tags": [
+     "experiment"
+    ],
+    "summary": "Experiment V2X Timeline",
+    "description": "The control-room replay of one closed-loop arm: rounds, incidents, every delivered recommendation with\nits old/new route geometry, the incident edge, the corridor backdrop, and the arm comparison \u2014 all read\nfrom the run's own files.",
+    "operationId": "experiment_v2x_timeline_api_experiment_v2x_closed_loop_timeline_get",
+    "parameters": [
+     {
+      "name": "run",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Run"
+      }
+     },
+     {
+      "name": "seed",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "integer",
+       "title": "Seed"
+      }
+     },
+     {
+      "name": "arm",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "predictive_v2x",
+       "title": "Arm"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiment/sweep": {
+   "get": {
+    "tags": [
+     "experiment"
+    ],
+    "summary": "Experiment Sweep",
+    "description": "E4: the penetration curve, every point a full three-arm paired-seed run.",
+    "operationId": "experiment_sweep_api_experiment_sweep_get",
+    "parameters": [
+     {
+      "name": "grid",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "compliance",
+       "title": "Grid"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiment/ablation": {
+   "get": {
+    "tags": [
+     "experiment"
+    ],
+    "summary": "Experiment Ablation",
+    "description": "E3: oracle / model / persistence / random through the same chain.",
+    "operationId": "experiment_ablation_api_experiment_ablation_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiment/oracle_gate": {
+   "get": {
+    "tags": [
+     "experiment"
+    ],
+    "summary": "Experiment Oracle Gate",
+    "description": "The frozen oracle outcome gate (Blocker #3): the newest report of the named seed set, read as-is.",
+    "operationId": "experiment_oracle_gate_api_experiment_oracle_gate_get",
+    "parameters": [
+     {
+      "name": "seed_set",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "final",
+       "title": "Seed Set"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiment/learned_gate": {
+   "get": {
+    "tags": [
+     "experiment"
+    ],
+    "summary": "Experiment Learned Gate",
+    "description": "The frozen learned-model outcome gate (Blocker #6): the newest report of the named seed set, read as-is.\nHeadline pairs: Graph WaveNet vs baseline, vs reactive, vs persistence-predictive; persistence vs baseline.\nThe oracle arm, when present, is research-only and never the headline.",
+    "operationId": "experiment_learned_gate_api_experiment_learned_gate_get",
+    "parameters": [
+     {
+      "name": "seed_set",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "final",
+       "title": "Seed Set"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiment/chain": {
+   "get": {
+    "tags": [
+     "experiment"
+    ],
+    "summary": "Experiment Chain",
+    "description": "A chain experiment that HAS run \u2014 the newest of `tag`, or the run you name.\n\nThis endpoint only reads; POST /api/experiment/chain/run executes a new one.",
+    "operationId": "experiment_chain_api_experiment_chain_get",
+    "parameters": [
+     {
+      "name": "tag",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "_ideal",
+       "title": "Tag"
+      }
+     },
+     {
+      "name": "run_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Run Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiment/chain/run": {
+   "post": {
+    "tags": [
+     "experiment"
+    ],
+    "summary": "Experiment Chain Run",
+    "description": "Execute the whole chain now: forecast -> future edge costs -> routing -> SUMO -> metrics.\n\nBody (all optional): seeds, horizon, horizon_min, compliance, v2x, source, as_of, levels, tag.\nReturns a run_id straight away \u2014 SUMO takes minutes, so the run is done on a worker thread and\npolled through /api/experiment/chain/run/{run_id}.",
+    "operationId": "experiment_chain_run_api_experiment_chain_run_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Payload"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiment/chain/runs": {
+   "get": {
+    "tags": [
+     "experiment"
+    ],
+    "summary": "Experiment Chain Runs",
+    "description": "Every chain execution this repository holds, newest first.",
+    "operationId": "experiment_chain_runs_api_experiment_chain_runs_get",
+    "parameters": [
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "default": 20,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiment/chain/run/{run_id}": {
+   "get": {
+    "tags": [
+     "experiment"
+    ],
+    "summary": "Experiment Chain Status",
+    "description": "What THIS execution measured. While it runs, the stage and the arms already finished.",
+    "operationId": "experiment_chain_status_api_experiment_chain_run__run_id__get",
+    "parameters": [
+     {
+      "name": "run_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Run Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/experiment/stress": {
+   "get": {
+    "tags": [
+     "experiment"
+    ],
+    "summary": "Experiment Stress",
+    "description": "Calibration sweep, scenario-quality gate, oracle-headroom gates and the 7-arm comparison on the\ndevelopment and the evaluation seeds, for both research scenarios.",
+    "operationId": "experiment_stress_api_experiment_stress_get",
+    "parameters": [
+     {
+      "name": "city",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "la_c4_central_wide",
+       "title": "City"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/research/status": {
+   "get": {
+    "tags": [
+     "research"
+    ],
+    "summary": "Research Status",
+    "description": "Computed research gates and the evidence files that produced them.\n\nThis is the canonical project status used by SYSTEM and documentation. It never converts a\nmissing/negative result into a presentational success state.",
+    "operationId": "research_status_api_research_status_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/research/executions": {
+   "get": {
+    "tags": [
+     "research"
+    ],
+    "summary": "Scientific Executions",
+    "operationId": "scientific_executions_api_research_executions_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   },
+   "post": {
+    "tags": [
+     "research"
+    ],
+    "summary": "Scientific Execution Start",
+    "operationId": "scientific_execution_start_api_research_executions_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "additionalProperties": true,
+        "type": "object",
+        "title": "Payload"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/research/executions/{job_id}": {
+   "get": {
+    "tags": [
+     "research"
+    ],
+    "summary": "Scientific Execution Status",
+    "operationId": "scientific_execution_status_api_research_executions__job_id__get",
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/research/executions/{job_id}/cancel": {
+   "post": {
+    "tags": [
+     "research"
+    ],
+    "summary": "Scientific Execution Cancel",
+    "operationId": "scientific_execution_cancel_api_research_executions__job_id__cancel_post",
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/research/executions/{job_id}/controls": {
+   "post": {
+    "tags": [
+     "research"
+    ],
+    "summary": "Scientific Execution Control",
+    "operationId": "scientific_execution_control_api_research_executions__job_id__controls_post",
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "type": "object",
+        "additionalProperties": true,
+        "title": "Payload"
+       }
+      }
+     }
+    },
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/research/executions/{job_id}/trace": {
+   "get": {
+    "tags": [
+     "research"
+    ],
+    "summary": "Scientific Execution Trace",
+    "operationId": "scientific_execution_trace_api_research_executions__job_id__trace_get",
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job Id"
+      }
+     },
+     {
+      "name": "arm",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "predictive_v2x",
+       "title": "Arm"
+      }
+     },
+     {
+      "name": "vehicle",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "",
+       "title": "Vehicle"
+      }
+     },
+     {
+      "name": "after",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "default": 0,
+       "title": "After"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/traffic": {
+   "get": {
+    "tags": [
+     "traffic"
+    ],
+    "summary": "Traffic",
+    "description": "Live corridor congestion, with recorder freshness.",
+    "operationId": "traffic_api_traffic_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/TrafficResponse"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/forecast": {
+   "get": {
+    "tags": [
+     "forecast"
+    ],
+    "summary": "Forecast",
+    "description": "Trained models, the published comparison and checkpoint verification.",
+    "operationId": "forecast_api_forecast_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/ForecastResponse"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/routing": {
+   "get": {
+    "tags": [
+     "routing"
+    ],
+    "summary": "Routing",
+    "description": "Routing arms on paired seeds and the ACT / NO_ACTION decision.",
+    "operationId": "routing_api_routing_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/RoutingResponse"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/simulation": {
+   "get": {
+    "tags": [
+     "simulation"
+    ],
+    "summary": "Simulation",
+    "description": "SUMO before / after and the network-wide decision guard.",
+    "operationId": "simulation_api_simulation_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/SimulationResponse"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/network": {
+   "get": {
+    "tags": [
+     "network"
+    ],
+    "summary": "Network",
+    "description": "V2X delivery ratio, latency and loss from the MOSAIC sweep.",
+    "operationId": "network_api_network_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/NetworkResponse"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/evidence": {
+   "get": {
+    "tags": [
+     "evidence"
+    ],
+    "summary": "Evidence",
+    "description": "The phase gate and the evidence index.",
+    "operationId": "evidence_api_evidence_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/EvidenceResponse"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/live/corridors": {
+   "get": {
+    "tags": [
+     "live"
+    ],
+    "summary": "Live Corridors",
+    "description": "Every monitored Dhaka corridor, live. `force=true` bypasses the short in-memory cache.",
+    "operationId": "live_corridors_api_live_corridors_get",
+    "parameters": [
+     {
+      "name": "force",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": false,
+       "title": "Force"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/live/corridor/{corridor_id}": {
+   "get": {
+    "tags": [
+     "live"
+    ],
+    "summary": "Live Corridor",
+    "description": "One corridor: traffic-aware ETA, static ETA, penalty, geometry and speed intervals.",
+    "operationId": "live_corridor_api_live_corridor__corridor_id__get",
+    "parameters": [
+     {
+      "name": "corridor_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Corridor Id"
+      }
+     },
+     {
+      "name": "force",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": false,
+       "title": "Force"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/live/routes": {
+   "get": {
+    "tags": [
+     "live"
+    ],
+    "summary": "Live Routes",
+    "description": "Alternative routes between two points, traffic-aware, from the live API.",
+    "operationId": "live_routes_api_live_routes_get",
+    "parameters": [
+     {
+      "name": "origin_lat",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "number",
+       "title": "Origin Lat"
+      }
+     },
+     {
+      "name": "origin_lng",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "number",
+       "title": "Origin Lng"
+      }
+     },
+     {
+      "name": "dest_lat",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "number",
+       "title": "Dest Lat"
+      }
+     },
+     {
+      "name": "dest_lng",
+      "in": "query",
+      "required": true,
+      "schema": {
+       "type": "number",
+       "title": "Dest Lng"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/live/health": {
+   "get": {
+    "tags": [
+     "live"
+    ],
+    "summary": "Live Health",
+    "description": "API health and credential presence. Reports a key fingerprint, never a key.",
+    "operationId": "live_health_api_live_health_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/predict/{corridor_id}": {
+   "get": {
+    "tags": [
+     "predict"
+    ],
+    "summary": "Predict",
+    "description": "Live state, then 5 / 15 / 30 / 60 min ahead.\n\nThe response separates LIVE DHAKA INPUT from MODEL VALIDATED ON REAL BENCHMARK DATA and sets\n`dhaka_accuracy_claimed: false` \u2014 there is not yet enough lawful Dhaka ground truth to state\nan accuracy figure, so none is given.",
+    "operationId": "predict_api_predict__corridor_id__get",
+    "parameters": [
+     {
+      "name": "corridor_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Corridor Id"
+      }
+     },
+     {
+      "name": "force",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "boolean",
+       "default": false,
+       "title": "Force"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/simulate": {
+   "post": {
+    "tags": [
+     "simulate"
+    ],
+    "summary": "Simulate Start",
+    "description": "Start a SUMO counterfactual from the selected live state. Returns a job to poll.\n\nResults are a SIMULATED COUNTERFACTUAL on the calibrated twin, never a live-road outcome.",
+    "operationId": "simulate_start_api_simulate_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "additionalProperties": true,
+        "type": "object",
+        "title": "Payload"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/simulate/{job_id}": {
+   "get": {
+    "tags": [
+     "simulate"
+    ],
+    "summary": "Simulate Status",
+    "operationId": "simulate_status_api_simulate__job_id__get",
+    "parameters": [
+     {
+      "name": "job_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Job Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/corridors": {
+   "get": {
+    "tags": [
+     "live"
+    ],
+    "summary": "Corridor List",
+    "description": "The monitored corridors and which of them a counterfactual can honestly be run on.",
+    "operationId": "corridor_list_api_corridors_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/observatory": {
+   "get": {
+    "tags": [
+     "live"
+    ],
+    "summary": "Observatory Status",
+    "operationId": "observatory_status_api_observatory_get",
+    "parameters": [
+     {
+      "name": "city_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "dhaka",
+       "title": "City Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/observatory/start": {
+   "post": {
+    "tags": [
+     "live"
+    ],
+    "summary": "Observatory Start",
+    "operationId": "observatory_start_api_observatory_start_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Payload"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/observatory/sample": {
+   "post": {
+    "tags": [
+     "live"
+    ],
+    "summary": "Observatory Sample",
+    "operationId": "observatory_sample_api_observatory_sample_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "anyOf": [
+         {
+          "additionalProperties": true,
+          "type": "object"
+         },
+         {
+          "type": "null"
+         }
+        ],
+        "title": "Payload"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/references": {
+   "get": {
+    "tags": [
+     "references"
+    ],
+    "summary": "References",
+    "operationId": "references_api_references_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  }
+ },
+ "components": {
+  "schemas": {
+   "Body_opencity_predict_upload_api_opencity_upload_post": {
+    "properties": {
+     "csv": {
+      "type": "string",
+      "contentMediaType": "application/octet-stream",
+      "title": "Csv"
+     },
+     "adj": {
+      "type": "string",
+      "contentMediaType": "application/octet-stream",
+      "title": "Adj"
+     },
+     "horizons": {
+      "type": "string",
+      "title": "Horizons",
+      "default": "15,30,60"
+     },
+     "as_of": {
+      "type": "string",
+      "title": "As Of",
+      "default": ""
+     }
+    },
+    "type": "object",
+    "required": [
+     "csv",
+     "adj"
+    ],
+    "title": "Body_opencity_predict_upload_api_opencity_upload_post"
+   },
+   "Body_predict_lab_upload_api_predict_lab_upload_post": {
+    "properties": {
+     "csv": {
+      "type": "string",
+      "contentMediaType": "application/octet-stream",
+      "title": "Csv"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name",
+      "default": "my city"
+     },
+     "quantity": {
+      "type": "string",
+      "title": "Quantity",
+      "default": "speed_kmh"
+     },
+     "adj": {
+      "anyOf": [
+       {
+        "type": "string",
+        "contentMediaType": "application/octet-stream"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Adj"
+     },
+     "coords": {
+      "anyOf": [
+       {
+        "type": "string",
+        "contentMediaType": "application/octet-stream"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Coords"
+     }
+    },
+    "type": "object",
+    "required": [
+     "csv"
+    ],
+    "title": "Body_predict_lab_upload_api_predict_lab_upload_post"
+   },
+   "Corridor": {
+    "properties": {
+     "id": {
+      "type": "string",
+      "title": "Id"
+     },
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "level": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Level"
+     },
+     "state": {
+      "type": "string",
+      "enum": [
+       "FREE_FLOW",
+       "SLOW",
+       "CONGESTED",
+       "SEVERE",
+       "NO DATA"
+      ],
+      "title": "State"
+     },
+     "edges": {
+      "type": "integer",
+      "title": "Edges",
+      "default": 0
+     },
+     "path_km": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Path Km"
+     },
+     "origin": {
+      "anyOf": [
+       {
+        "prefixItems": [
+         {
+          "type": "number"
+         },
+         {
+          "type": "number"
+         }
+        ],
+        "type": "array",
+        "maxItems": 2,
+        "minItems": 2
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Origin"
+     },
+     "dest": {
+      "anyOf": [
+       {
+        "prefixItems": [
+         {
+          "type": "number"
+         },
+         {
+          "type": "number"
+         }
+        ],
+        "type": "array",
+        "maxItems": 2,
+        "minItems": 2
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Dest"
+     }
+    },
+    "type": "object",
+    "required": [
+     "id",
+     "name",
+     "level",
+     "state"
+    ],
+    "title": "Corridor"
+   },
+   "CorridorSeries": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "points": {
+      "items": {
+       "$ref": "#/components/schemas/SeriesPoint"
+      },
+      "type": "array",
+      "title": "Points"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "points"
+    ],
+    "title": "CorridorSeries"
+   },
+   "Decision": {
+    "properties": {
+     "decision": {
+      "type": "string",
+      "title": "Decision"
+     },
+     "reason": {
+      "type": "string",
+      "title": "Reason"
+     },
+     "rule": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Rule"
+     },
+     "per_seed_pct": {
+      "items": {
+       "type": "number"
+      },
+      "type": "array",
+      "title": "Per Seed Pct",
+      "default": []
+     },
+     "reality": {
+      "type": "string",
+      "enum": [
+       "REAL_LIVE",
+       "REAL",
+       "SIMULATED",
+       "SYNTHETIC_WHAT_IF",
+       "UNKNOWN"
+      ],
+      "title": "Reality",
+      "default": "UNKNOWN"
+     }
+    },
+    "type": "object",
+    "required": [
+     "decision",
+     "reason"
+    ],
+    "title": "Decision"
+   },
+   "EvidenceResponse": {
+    "properties": {
+     "available": {
+      "type": "boolean",
+      "title": "Available"
+     },
+     "provenance": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Provenance"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "missing": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Missing"
+     },
+     "command": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Command"
+     },
+     "git": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Git"
+     },
+     "sections": {
+      "type": "integer",
+      "title": "Sections",
+      "default": 0
+     },
+     "unproduced": {
+      "type": "integer",
+      "title": "Unproduced",
+      "default": 0
+     },
+     "titles": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Titles",
+      "default": []
+     },
+     "gate_passed": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Gate Passed"
+     },
+     "checks": {
+      "items": {
+       "$ref": "#/components/schemas/GateCheck"
+      },
+      "type": "array",
+      "title": "Checks",
+      "default": []
+     },
+     "generated_utc": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Generated Utc"
+     }
+    },
+    "type": "object",
+    "required": [
+     "available"
+    ],
+    "title": "EvidenceResponse"
+   },
+   "FieldPosition": {
+    "properties": {
+     "key": {
+      "type": "string",
+      "title": "Key"
+     },
+     "band": {
+      "type": "string",
+      "title": "Band"
+     },
+     "gap_to_sota_pct": {
+      "type": "number",
+      "title": "Gap To Sota Pct"
+     },
+     "beats": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Beats"
+     }
+    },
+    "type": "object",
+    "required": [
+     "key",
+     "band",
+     "gap_to_sota_pct",
+     "beats"
+    ],
+    "title": "FieldPosition"
+   },
+   "ForecastResponse": {
+    "properties": {
+     "available": {
+      "type": "boolean",
+      "title": "Available"
+     },
+     "provenance": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Provenance"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "missing": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Missing"
+     },
+     "command": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Command"
+     },
+     "models": {
+      "items": {
+       "$ref": "#/components/schemas/TrainedModel"
+      },
+      "type": "array",
+      "title": "Models",
+      "default": []
+     },
+     "inference": {
+      "items": {
+       "$ref": "#/components/schemas/InferenceRun"
+      },
+      "type": "array",
+      "title": "Inference",
+      "default": []
+     },
+     "floors": {
+      "additionalProperties": {
+       "additionalProperties": {
+        "additionalProperties": {
+         "type": "number"
+        },
+        "type": "object"
+       },
+       "type": "object"
+      },
+      "type": "object",
+      "title": "Floors",
+      "default": {}
+     },
+     "field_position": {
+      "items": {
+       "$ref": "#/components/schemas/FieldPosition"
+      },
+      "type": "array",
+      "title": "Field Position",
+      "default": []
+     },
+     "gate_passed": {
+      "anyOf": [
+       {
+        "type": "boolean"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Gate Passed"
+     }
+    },
+    "type": "object",
+    "required": [
+     "available"
+    ],
+    "title": "ForecastResponse"
+   },
+   "GateCheck": {
+    "properties": {
+     "name": {
+      "type": "string",
+      "title": "Name"
+     },
+     "ok": {
+      "type": "boolean",
+      "title": "Ok"
+     },
+     "detail": {
+      "type": "string",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "required": [
+     "name",
+     "ok",
+     "detail"
+    ],
+    "title": "GateCheck"
+   },
+   "HTTPValidationError": {
+    "properties": {
+     "detail": {
+      "items": {
+       "$ref": "#/components/schemas/ValidationError"
+      },
+      "type": "array",
+      "title": "Detail"
+     }
+    },
+    "type": "object",
+    "title": "HTTPValidationError"
+   },
+   "HorizonMetric": {
+    "properties": {
+     "minutes": {
+      "type": "integer",
+      "title": "Minutes"
+     },
+     "mae": {
+      "type": "number",
+      "title": "Mae"
+     },
+     "rmse": {
+      "type": "number",
+      "title": "Rmse"
+     },
+     "mape_pct": {
+      "type": "number",
+      "title": "Mape Pct"
+     },
+     "published_mae": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Published Mae"
+     },
+     "diff_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Diff Pct"
+     }
+    },
+    "type": "object",
+    "required": [
+     "minutes",
+     "mae",
+     "rmse",
+     "mape_pct"
+    ],
+    "title": "HorizonMetric"
+   },
+   "IncidentArm": {
+    "properties": {
+     "arm": {
+      "type": "string",
+      "title": "Arm"
+     },
+     "vehicle_hours_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Vehicle Hours Pct"
+     },
+     "affected_travel_time_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Affected Travel Time Pct"
+     },
+     "seeds_improved": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Seeds Improved"
+     }
+    },
+    "type": "object",
+    "required": [
+     "arm"
+    ],
+    "title": "IncidentArm"
+   },
+   "InferenceRun": {
+    "properties": {
+     "model": {
+      "type": "string",
+      "title": "Model"
+     },
+     "dataset": {
+      "type": "string",
+      "title": "Dataset"
+     },
+     "checkpoint": {
+      "type": "string",
+      "title": "Checkpoint"
+     },
+     "verification": {
+      "items": {
+       "$ref": "#/components/schemas/Verification"
+      },
+      "type": "array",
+      "title": "Verification",
+      "default": []
+     },
+     "samples": {
+      "items": {
+       "$ref": "#/components/schemas/InferenceSample"
+      },
+      "type": "array",
+      "title": "Samples",
+      "default": []
+     }
+    },
+    "type": "object",
+    "required": [
+     "model",
+     "dataset",
+     "checkpoint"
+    ],
+    "title": "InferenceRun"
+   },
+   "InferenceSample": {
+    "properties": {
+     "horizon_min": {
+      "type": "integer",
+      "title": "Horizon Min"
+     },
+     "sensor_index": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "string"
+       }
+      ],
+      "title": "Sensor Index"
+     },
+     "actual_mph": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Actual Mph"
+     },
+     "predicted_mph": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Predicted Mph"
+     },
+     "abs_error_mph": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Abs Error Mph"
+     }
+    },
+    "type": "object",
+    "required": [
+     "horizon_min",
+     "sensor_index",
+     "actual_mph",
+     "predicted_mph",
+     "abs_error_mph"
+    ],
+    "title": "InferenceSample"
+   },
+   "NetworkResponse": {
+    "properties": {
+     "available": {
+      "type": "boolean",
+      "title": "Available"
+     },
+     "provenance": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Provenance"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "missing": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Missing"
+     },
+     "command": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Command"
+     },
+     "stack": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Stack"
+     },
+     "penetration": {
+      "items": {
+       "$ref": "#/components/schemas/PenetrationPoint"
+      },
+      "type": "array",
+      "title": "Penetration",
+      "default": []
+     },
+     "latency_loss": {
+      "items": {
+       "additionalProperties": true,
+       "type": "object"
+      },
+      "type": "array",
+      "title": "Latency Loss",
+      "default": []
+     }
+    },
+    "type": "object",
+    "required": [
+     "available"
+    ],
+    "title": "NetworkResponse"
+   },
+   "PenetrationPoint": {
+    "properties": {
+     "penetration": {
+      "type": "number",
+      "title": "Penetration"
+     },
+     "seeds": {
+      "type": "integer",
+      "title": "Seeds"
+     },
+     "delivery_ratio": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Delivery Ratio"
+     },
+     "latency_ms": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Latency Ms"
+     },
+     "route_switches": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Route Switches"
+     },
+     "travel_time_s": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Travel Time S"
+     }
+    },
+    "type": "object",
+    "required": [
+     "penetration",
+     "seeds",
+     "delivery_ratio",
+     "latency_ms",
+     "route_switches",
+     "travel_time_s"
+    ],
+    "title": "PenetrationPoint"
+   },
+   "Provenance": {
+    "properties": {
+     "source_file": {
+      "type": "string",
+      "title": "Source File",
+      "description": "repo-relative file this was read from"
+     },
+     "command": {
+      "type": "string",
+      "title": "Command",
+      "description": "the command that regenerates it"
+     },
+     "reality": {
+      "type": "string",
+      "enum": [
+       "REAL_LIVE",
+       "REAL",
+       "SIMULATED",
+       "SYNTHETIC_WHAT_IF",
+       "UNKNOWN"
+      ],
+      "title": "Reality",
+      "default": "UNKNOWN"
+     },
+     "note": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Note"
+     }
+    },
+    "type": "object",
+    "required": [
+     "source_file",
+     "command"
+    ],
+    "title": "Provenance",
+    "description": "Attached to every payload so the UI can never imply more than the evidence supports."
+   },
+   "RecorderHealth": {
+    "properties": {
+     "ticks": {
+      "type": "integer",
+      "title": "Ticks",
+      "default": 0
+     },
+     "rows_ok": {
+      "type": "integer",
+      "title": "Rows Ok",
+      "default": 0
+     },
+     "rows_failed": {
+      "type": "integer",
+      "title": "Rows Failed",
+      "default": 0
+     },
+     "last_tick_utc": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Last Tick Utc"
+     },
+     "interval_s": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Interval S"
+     },
+     "age_minutes": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Age Minutes"
+     },
+     "healthy": {
+      "type": "boolean",
+      "title": "Healthy",
+      "default": false
+     }
+    },
+    "type": "object",
+    "title": "RecorderHealth",
+    "description": "Freshness is part of the data. A dashboard showing stale numbers as live is worse than a blank one."
+   },
+   "RoutingArm": {
+    "properties": {
+     "arm": {
+      "type": "string",
+      "title": "Arm"
+     },
+     "vehicle_hours": {
+      "type": "number",
+      "title": "Vehicle Hours"
+     },
+     "sd": {
+      "type": "number",
+      "title": "Sd",
+      "default": 0.0
+     },
+     "seeds": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Seeds"
+     },
+     "arrived": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Arrived"
+     },
+     "teleports": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Teleports"
+     },
+     "change_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Change Pct"
+     }
+    },
+    "type": "object",
+    "required": [
+     "arm",
+     "vehicle_hours"
+    ],
+    "title": "RoutingArm"
+   },
+   "RoutingResponse": {
+    "properties": {
+     "available": {
+      "type": "boolean",
+      "title": "Available"
+     },
+     "provenance": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Provenance"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "missing": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Missing"
+     },
+     "command": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Command"
+     },
+     "arms": {
+      "items": {
+       "$ref": "#/components/schemas/RoutingArm"
+      },
+      "type": "array",
+      "title": "Arms",
+      "default": []
+     },
+     "baseline": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Baseline"
+     },
+     "horizon_s": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Horizon S"
+     },
+     "decision": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Decision"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "sweep": {
+      "items": {
+       "$ref": "#/components/schemas/SweepPoint"
+      },
+      "type": "array",
+      "title": "Sweep",
+      "default": []
+     },
+     "demand_label": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Demand Label"
+     }
+    },
+    "type": "object",
+    "required": [
+     "available"
+    ],
+    "title": "RoutingResponse"
+   },
+   "SeriesPoint": {
+    "properties": {
+     "t": {
+      "type": "integer",
+      "title": "T"
+     },
+     "v": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "V"
+     }
+    },
+    "type": "object",
+    "required": [
+     "t",
+     "v"
+    ],
+    "title": "SeriesPoint"
+   },
+   "SimulationResponse": {
+    "properties": {
+     "available": {
+      "type": "boolean",
+      "title": "Available"
+     },
+     "provenance": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Provenance"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "missing": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Missing"
+     },
+     "command": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Command"
+     },
+     "verdict": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Verdict"
+     },
+     "event": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Event"
+     },
+     "arms": {
+      "items": {
+       "$ref": "#/components/schemas/IncidentArm"
+      },
+      "type": "array",
+      "title": "Arms",
+      "default": []
+     },
+     "media": {
+      "items": {
+       "type": "string"
+      },
+      "type": "array",
+      "title": "Media",
+      "default": []
+     }
+    },
+    "type": "object",
+    "required": [
+     "available"
+    ],
+    "title": "SimulationResponse"
+   },
+   "SweepPoint": {
+    "properties": {
+     "compliance": {
+      "type": "number",
+      "title": "Compliance"
+     },
+     "decision": {
+      "type": "string",
+      "title": "Decision"
+     },
+     "mean_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Mean Pct"
+     }
+    },
+    "type": "object",
+    "required": [
+     "compliance",
+     "decision",
+     "mean_pct"
+    ],
+    "title": "SweepPoint"
+   },
+   "TrafficResponse": {
+    "properties": {
+     "available": {
+      "type": "boolean",
+      "title": "Available"
+     },
+     "provenance": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/Provenance"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     },
+     "missing": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Missing"
+     },
+     "command": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Command"
+     },
+     "corridors": {
+      "items": {
+       "$ref": "#/components/schemas/Corridor"
+      },
+      "type": "array",
+      "title": "Corridors",
+      "default": []
+     },
+     "series": {
+      "items": {
+       "$ref": "#/components/schemas/CorridorSeries"
+      },
+      "type": "array",
+      "title": "Series",
+      "default": []
+     },
+     "level_counts": {
+      "additionalProperties": {
+       "type": "integer"
+      },
+      "type": "object",
+      "title": "Level Counts",
+      "default": {}
+     },
+     "bins": {
+      "type": "integer",
+      "title": "Bins",
+      "default": 0
+     },
+     "coverage": {
+      "type": "number",
+      "title": "Coverage",
+      "default": 0.0
+     },
+     "span_hours": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Span Hours"
+     },
+     "recorder": {
+      "anyOf": [
+       {
+        "$ref": "#/components/schemas/RecorderHealth"
+       },
+       {
+        "type": "null"
+       }
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "available"
+    ],
+    "title": "TrafficResponse"
+   },
+   "TrainedModel": {
+    "properties": {
+     "model": {
+      "type": "string",
+      "title": "Model"
+     },
+     "dataset": {
+      "type": "string",
+      "title": "Dataset"
+     },
+     "paper": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Paper"
+     },
+     "epochs": {
+      "anyOf": [
+       {
+        "type": "integer"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Epochs"
+     },
+     "gpu": {
+      "anyOf": [
+       {
+        "type": "string"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Gpu"
+     },
+     "horizons": {
+      "items": {
+       "$ref": "#/components/schemas/HorizonMetric"
+      },
+      "type": "array",
+      "title": "Horizons"
+     }
+    },
+    "type": "object",
+    "required": [
+     "model",
+     "dataset",
+     "horizons"
+    ],
+    "title": "TrainedModel"
+   },
+   "ValidationError": {
+    "properties": {
+     "loc": {
+      "items": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "integer"
+        }
+       ]
+      },
+      "type": "array",
+      "title": "Location"
+     },
+     "msg": {
+      "type": "string",
+      "title": "Message"
+     },
+     "type": {
+      "type": "string",
+      "title": "Error Type"
+     },
+     "input": {
+      "title": "Input"
+     },
+     "ctx": {
+      "type": "object",
+      "title": "Context"
+     }
+    },
+    "type": "object",
+    "required": [
+     "loc",
+     "msg",
+     "type"
+    ],
+    "title": "ValidationError"
+   },
+   "Verification": {
+    "properties": {
+     "minutes": {
+      "type": "integer",
+      "title": "Minutes"
+     },
+     "reloaded_mae": {
+      "type": "number",
+      "title": "Reloaded Mae"
+     },
+     "reported_mae": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Reported Mae"
+     },
+     "diff_pct": {
+      "anyOf": [
+       {
+        "type": "number"
+       },
+       {
+        "type": "null"
+       }
+      ],
+      "title": "Diff Pct"
+     },
+     "windows": {
+      "type": "integer",
+      "title": "Windows"
+     }
+    },
+    "type": "object",
+    "required": [
+     "minutes",
+     "reloaded_mae",
+     "reported_mae",
+     "diff_pct",
+     "windows"
+    ],
+    "title": "Verification",
+    "description": "Proof the saved checkpoint IS the model that was scored."
+   }
+  }
+ }
+}

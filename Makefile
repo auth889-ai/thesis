@@ -8,7 +8,7 @@ SEEDS ?= 11,12,13,14,15
 H     ?= 1800
 
 .DEFAULT_GOAL := help
-.PHONY: help status test app canonical canonical-package backtest chain ablation coverage sweep sweep-v2x opencity-smoke opencity figures results all clean-runs
+.PHONY: help status test web-install web-dev web-build web-test app canonical canonical-package backtest chain ablation coverage sweep sweep-v2x opencity-smoke opencity figures results all clean-runs
 
 help:            ## list targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-12s %s\n", $$1, $$2}'
@@ -19,7 +19,19 @@ status:          ## what exists, what is real, what is missing
 test:            ## the test suite: pipeline + backend API (~1 min, no SUMO, no live API)
 	$(PY) -m pytest -q
 
-app:             ## the dashboard on http://127.0.0.1:8000
+web-install:     ## install the web toolchain (Vite, Vitest, TypeScript, OpenAPI client generator)
+	cd frontend && npm install --no-audit --no-fund
+
+web-dev:         ## web app with live reload on http://127.0.0.1:5173 (proxies the API on :8000)
+	cd frontend && npm run dev
+
+web-build:       ## production bundle -> frontend/dist (served by the API)
+	cd frontend && npm run build
+
+web-test:        ## web unit tests (Vitest) and type check
+	cd frontend && npm test && npm run typecheck
+
+app:             ## the API + web app on http://127.0.0.1:8000 (serves frontend/dist when built, else the sources)
 	$(PY) -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port $(or $(PORT),8000)
 
 canonical:       ## oracle-first canonical closed-loop evaluation, then package log-derived evidence

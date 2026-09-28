@@ -22,10 +22,10 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from app.paths import REPO
-MC = "frontend/pages/legacy/mission-control.js"
-PP = "frontend/pages/prediction.js"
-LT = "frontend/pages/legacy/live-twin-page.js"
-RP = "frontend/pages/results.js"
+MC = "frontend/src/pages/legacy/mission-control.js"
+PP = "frontend/src/pages/prediction.js"
+LT = "frontend/src/pages/legacy/live-twin-page.js"
+RP = "frontend/src/pages/results.js"
 
 
 def field(name, component, endpoint, backend, source, note=""):

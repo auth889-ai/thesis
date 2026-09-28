@@ -1,21 +1,16 @@
-# Frontend
+# TrafficTwin web app
 
-The existing browser application uses HTML, CSS and JavaScript ES modules.
-No framework rewrite or new build step was introduced by the directory migration.
+Plain ES modules (no framework), built and tested with Vite, Vitest and TypeScript. The API client types are
+generated from the backend's OpenAPI document.
 
-- `index.html`: document and navigation shell.
-- `app.js`: page registration and navigation.
-- `pages/`: the four primary scientific screens.
-- `pages/legacy/`: earlier prototype/research screens, preserved with working routes.
-- `components/`: shared controls and evidence panels, not full pages.
-- `services/`: API requests, event stream, formatting and basemap access.
-- `styles/`: design tokens and application styles.
+```
+npm install            # toolchain
+npm run dev            # http://127.0.0.1:5173 with live reload; /api and /media are proxied to the API on :8000
+npm run build          # production bundle -> dist/ (the API serves it when present)
+npm test               # unit tests (Vitest)
+npm run typecheck      # TypeScript over the JS sources (allowJs)
+npm run api:types      # regenerate src/services/api.types.d.ts from openapi.json
+```
 
-Start `make app` from the repository root. FastAPI serves this directory at `/static`
-and `index.html` at `/`. Relative module imports follow the grouped layout. External CDN assets
-and basemaps can still require internet access.
-
-The primary surfaces are System, Prediction, Control Room and Results. Legacy
-pages remain available during migration; moving files does not make their claims
-validated. Control Room has separate Fresh execution and Recorded replay modes.
-Only Fresh execution launches the scientific worker; replay reads persisted logs.
+Layout: `index.html`, `src/app.js` (hash router), `src/pages/` (one file per page; `legacy/` holds the older pages),
+`src/components/`, `src/services/` (api client, basemap, formatting, streaming), `src/styles/`.
