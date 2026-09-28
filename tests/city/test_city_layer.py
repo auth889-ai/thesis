@@ -10,9 +10,9 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
-from pipeline.city.datasets import catalog                       # noqa: E402
-from pipeline.city.registry import CityRegistry, slug            # noqa: E402
-from pipeline.city.spec import Capability, CityCapabilities, CitySpec  # noqa: E402
+from traffictwin.data.datasets import catalog                       # noqa: E402
+from traffictwin.data.cities import CityRegistry, slug            # noqa: E402
+from traffictwin.data.city_spec import Capability, CityCapabilities, CitySpec  # noqa: E402
 
 
 def test_a_city_with_only_a_live_feed_cannot_claim_a_forecast():
@@ -88,7 +88,7 @@ def test_generated_scenarios_are_labelled_synthetic():
     """A generated scenario has a REAL network and INVENTED demand. Conflating the two is how a
     mechanism demo gets quoted as a measurement of a city's traffic."""
     import json
-    from pipeline.city.sumo_scenario import scenario_dir
+    from traffictwin.digital_twin.scenario_builder import scenario_dir
     m = scenario_dir("nairobi_kenya") / "MANIFEST.json"
     if not m.exists():
         pytest.skip("no generated scenario on this machine")
@@ -101,5 +101,5 @@ def test_generated_scenarios_are_labelled_synthetic():
 
 def test_calibrated_cases_are_not_produced_by_the_generic_path():
     """Dhaka R1 and Athens pNEUMA are separate evidence and must not be regenerated as synthetic."""
-    from pipeline.city.sumo_scenario import CALIBRATED
+    from traffictwin.digital_twin.scenario_builder import CALIBRATED
     assert "dhaka_r1" in CALIBRATED and "athens_pneuma" in CALIBRATED

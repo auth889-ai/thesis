@@ -46,7 +46,7 @@ def test_dotenv_is_not_expanded_or_written_to_environment(private_config):
 
 
 def test_all_adapters_use_same_google_key(private_config):
-    from pipeline.live.route_advisor import load_key as route_key
+    from traffictwin.optimization.route_advisor import load_key as route_key
     from pipeline.forecasting.run_live_capture import load_key as capture_key
     assert route_key() == capture_key() == credentials.google_key()
 

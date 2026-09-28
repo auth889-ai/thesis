@@ -51,8 +51,8 @@ from pipeline.routing import edge_costs as ec              # noqa: E402
 from pipeline.routing import predictive_routing as pr     # noqa: E402
 from pipeline.routing import route_optimizer as ro        # noqa: E402
 from traffictwin.protocols.oracle_gate import TCRIT, concentration, never_inserted_charge, paired, probe_tripinfo, sha_file, sumo_version  # noqa: E402
-from pipeline.city import sensor_map                      # noqa: E402
-from pipeline.city.sumo_scenario import scenario_dir, sumo_tools_dir  # noqa: E402
+from traffictwin.digital_twin import sensor_map                      # noqa: E402
+from traffictwin.digital_twin.scenario_builder import scenario_dir, sumo_tools_dir  # noqa: E402
 
 OUT = REPO / "results/routing/learned_gate"
 FROZEN_JOB, FROZEN_SHA = "train_7bf79d6c81", "566b97d97943"     # Graph WaveNet, 120 epochs, AWS g5.xlarge, validated 2026-09-05

@@ -86,7 +86,7 @@ def city_id_for(city: str) -> str | None:
     """The registry id of a typed city name, if it is registered (no geocoding here)."""
     if is_dhaka(city):
         return "dhaka"
-    from pipeline.city.registry import registry, slug
+    from traffictwin.data.cities import registry, slug
     key = re.sub(r"[^a-z0-9]", "", (city or "").lower())
     hits = []
     for cid in registry.list_ids():

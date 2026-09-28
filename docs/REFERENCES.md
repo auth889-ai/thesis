@@ -7,12 +7,12 @@ Every external research artifact the TrafficTwin code uses, with the files that 
 1. **Graph WaveNet for Deep Spatial-Temporal Graph Modeling** — Wu, Z., Pan, S., Long, G., Jiang, J., Zhang, C.. *IJCAI 2019*, 2019. DOI 10.24963/ijcai.2019/264 · https://arxiv.org/abs/1906.00121
    Used for: The canonical forecaster: 207-node METR-LA checkpoint, verified against the published MAE, drives every predictive arm of the closed loop.
    Code: nnzhan/Graph-WaveNet (pinned in upstream/UPSTREAM_PINS.yaml); trained through BasicTS
-   Files: `src/traffictwin/forecasting/service.py`, `src/pipeline/forecasting/benchmark_floors.py`, `src/pipeline/routing/learned_gate.py`, `src/pipeline/v2x/closed_loop.py`
+   Files: `src/traffictwin/forecasting/service.py`, `src/pipeline/forecasting/benchmark_floors.py`, `src/traffictwin/protocols/learned_gate.py`, `src/pipeline/v2x/closed_loop.py`
 
 2. **Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting** — Li, Y., Yu, R., Shahabi, C., Liu, Y.. *ICLR 2018*, 2018. https://arxiv.org/abs/1707.01926
    Used for: Source of the METR-LA and PEMS-BAY releases, the Gaussian-kernel sensor graph, the chronological 70/10/20 split and the published Historical-Average floors.
    Code: liyaguang/DCRNN (pinned)
-   Files: `src/pipeline/adapters/twin/sensor_graph.py`, `src/pipeline/city/datasets.py`, `src/pipeline/forecasting/benchmark_floors.py`
+   Files: `src/pipeline/adapters/twin/sensor_graph.py`, `src/traffictwin/data/datasets.py`, `src/pipeline/forecasting/benchmark_floors.py`
 
 3. **Exploring Progress in Multivariate Time Series Forecasting: Comprehensive Benchmarking and Heterogeneity Analysis** — Shao, Z., Wang, F., Xu, Y., et al.. *IEEE TKDE 2024*, 2024. https://arxiv.org/abs/2310.06119
    Used for: BasicTS is the training and evaluation harness for Graph WaveNet, DCRNN, STID and STAEformer; no per-model training loop is written in this repository.
@@ -65,11 +65,11 @@ Every external research artifact the TrafficTwin code uses, with the files that 
 
 1. **METR-LA — 207 loop detectors, Los Angeles, 5-minute speeds, March–June 2012** — released with DCRNN (Li et al., ICLR 2018). *github.com/liyaguang/DCRNN*, 2018. https://github.com/liyaguang/DCRNN
    Used for: The only dataset the headline forecast claim rests on; the 207-node checkpoint is validated on its held-out split. Speed-only: no flow counts, so SUMO demand cannot be calibrated from it (src/pipeline/v2x/METR_LA_FLOW_NOTE.md).
-   Files: `data/forecasting/cities/METR-LA/`, `src/pipeline/city/datasets.py`, `src/pipeline/city/sensor_map.py`
+   Files: `data/forecasting/cities/METR-LA/`, `src/traffictwin/data/datasets.py`, `src/traffictwin/digital_twin/sensor_map.py`
 
 2. **PEMS-BAY — 325 detectors, Bay Area, 5-minute speeds** — released with DCRNN (Li et al., ICLR 2018). *github.com/liyaguang/DCRNN*, 2018. https://github.com/liyaguang/DCRNN
    Used for: Second benchmark city for the forecasting gate.
-   Files: `src/pipeline/city/datasets.py`, `src/pipeline/forecasting/benchmark_floors.py`
+   Files: `src/traffictwin/data/datasets.py`, `src/pipeline/forecasting/benchmark_floors.py`
 
 3. **UTD19 — Understanding traffic capacity of urban networks** — Loder, A., Ambühl, L., Menendez, M., Axhausen, K. W.. *Scientific Reports 9, 16283 (paper); ETH Research Collection (data)*, 2019. DOI 10.1038/s41598-019-51539-5 · data DOI 10.3929/ethz-b-000437802
    Used for: Traffic-science foundation: flow, occupancy, accumulation, production and the macroscopic fundamental diagram carried into the platform's invariants and units.
@@ -77,7 +77,7 @@ Every external research artifact the TrafficTwin code uses, with the files that 
 
 4. **OpenStreetMap, queried through the Overpass API** — OpenStreetMap contributors. *ODbL 1.0*, 2026. https://www.openstreetmap.org/copyright
    Used for: Road network of every simulated city (Dhaka R1, the four Los Angeles corridors): netconvert with the OSM typemap, left-hand traffic for Dhaka.
-   Files: `src/pipeline/city/sumo_scenario.py`, `backend/app/datasets/city_corridors.py`, `paper_labs/02_dhaka_osm/`
+   Files: `src/traffictwin/digital_twin/scenario_builder.py`, `backend/app/datasets/city_corridors.py`, `paper_labs/02_dhaka_osm/`
 
 5. **Nominatim geocoder (OpenStreetMap)** — OpenStreetMap contributors. *https://nominatim.org — usage policy: 1 request/s, attribution required*, 2026. https://operations.osmfoundation.org/policies/nominatim/
    Used for: Free-text origin and destination → coordinates for the trip analysis; falls back to the built-in place list.
@@ -85,7 +85,7 @@ Every external research artifact the TrafficTwin code uses, with the files that 
 
 6. **Traffic-related tweets dataset (with Dabiri & Heaslip, 'Developing a Twitter-based traffic event detection model using deep learning architectures', ESWA 2019)** — Dabiri, S., Heaslip, K.. *Mendeley Data, CC BY 4.0*, 2018. DOI 10.17632/c3xvj5snvv.1
    Used for: Training data for the incident / congestion text classifier (off the canonical closed-loop path).
-   Files: `src/pipeline/nlp/get_data.py`, `src/pipeline/nlp/train_classifier.py`
+   Files: `src/traffictwin/nlp/get_data.py`, `src/traffictwin/nlp/train_classifier.py`
 
 ## B · Networking and V2X
 
@@ -104,7 +104,7 @@ Every external research artifact the TrafficTwin code uses, with the files that 
 
 4. **ETSI EN 302 637-3 — ITS; Vehicular Communications; Basic Set of Applications; Part 3: Specifications of Decentralized Environmental Notification Basic Service (DENM)** — ETSI. *ETSI standard*, 2019. https://www.etsi.org/deliver/etsi_en/302600_302699/30263703/
    Used for: The hazard broadcast (DENM, 1 Hz re-broadcast, geocast radius) in the MOSAIC penetration sweep; ROUTE_RECOMMENDATION with a TTL follows the same expiry idea.
-   Files: `src/pipeline/networking/penetration_sweep.py`, `src/pipeline/networking/latency_injection.py`
+   Files: `src/traffictwin/networking/mosaic/penetration_sweep.py`, `src/traffictwin/networking/mosaic/latency_injection.py`
 
 5. **Simulated V2X channel (this project)** — TrafficTwin. *deterministic emulator: latency, jitter, loss, TTL, penetration by seeded hash*, 2026. 
    Used for: Explicitly a SIMULATED V2X EMULATOR, not radio hardware and not a 5G / DSRC stack; profiles ideal, mosaic, lat100…lat5000, loss05…loss20, degraded.
@@ -115,7 +115,7 @@ Every external research artifact the TrafficTwin code uses, with the files that 
 1. **Microscopic Traffic Simulation using SUMO** — Alvarez Lopez, P., Behrisch, M., Bieker-Walz, L., Erdmann, J., Flötteröd, Y.-P., Hilbrich, R., Lücken, L., Rummel, J., Wagner, P., Wießner, E.. *IEEE ITSC 2018*, 2018. DOI 10.1109/ITSC.2018.8569938
    Used for: Eclipse SUMO 1.27.1 is the simulator behind every outcome number; TraCI (setRoute, setMaxSpeed, saveState/loadState with --save-state.rng) is the only actuation path; duarouter, randomTrips, netconvert and sumolib are its tools.
    Code: eclipse-sumo/sumo v1_27_1 (pip eclipse-sumo==1.27.1, EPL-2.0)
-   Files: `src/traffictwin/digital_twin/`, `src/pipeline/v2x/closed_loop.py`, `src/pipeline/routing/oracle_gate.py`, `backend/app/routing/local_routes.py`
+   Files: `src/traffictwin/digital_twin/`, `src/pipeline/v2x/closed_loop.py`, `src/traffictwin/protocols/oracle_gate.py`, `backend/app/routing/local_routes.py`
 
 2. **Traffic Simulation for All: A Real World Traffic Scenario from the City of Bologna** — Bieker, L., Krajzewicz, D., Morra, A., Michelacci, C., Cartolano, F.. *Modeling Mobility with Open Data, Springer*, 2015. DOI 10.1007/978-3-319-15024-6_4
    Used for: Official SUMO scenario run unmodified as the Lab-01 baseline; source of the warm-up lesson in the control benchmark config.
@@ -136,7 +136,7 @@ Every external research artifact the TrafficTwin code uses, with the files that 
 
 6. **Traffic Assignment Manual** — Bureau of Public Roads, U.S. Department of Commerce. *Washington, D.C.*, 1964. 
    Used for: The BPR volume-delay function whose alpha/beta coefficients price background load in the generalized route cost.
-   Files: `src/traffictwin/optimization/route_optimizer.py`, `src/pipeline/v2x/network_assignment.py`
+   Files: `src/traffictwin/optimization/route_optimizer.py`, `src/traffictwin/optimization/network_assignment.py`
 
 7. **The Surprising Effectiveness of PPO in Cooperative Multi-Agent Games** — Yu, C., Velu, A., Vinitsky, E., Gao, J., Wang, Y., Bayen, A., Wu, Y.. *NeurIPS 2022 Datasets and Benchmarks*, 2022. https://arxiv.org/abs/2103.01955
    Used for: MAPPO signal-control arms of the control benchmark (pinned official code).
@@ -152,19 +152,19 @@ Every external research artifact the TrafficTwin code uses, with the files that 
 
 1. **The Probable Error of a Mean** — Student (W. S. Gosset). *Biometrika 6(1):1–25*, 1908. DOI 10.1093/biomet/6.1.1
    Used for: The paired-seed 95 % confidence interval on percentage change in vehicle-hours uses the t critical value for n−1 degrees of freedom (table hard-coded for n = 2…13).
-   Files: `src/pipeline/routing/oracle_gate.py`
+   Files: `src/traffictwin/protocols/oracle_gate.py`
 
 2. **An Introduction to the Bootstrap** — Efron, B., Tibshirani, R. J.. *Chapman & Hall/CRC*, 1993. DOI 10.1201/9780429246593
    Used for: Percentile bootstrap (10 000 resamples over seeds) as the alternate interval on the mean per-arm change.
-   Files: `src/pipeline/routing/stats.py`
+   Files: `src/traffictwin/protocols/statistics.py`
 
 3. **Individual Comparisons by Ranking Methods** — Wilcoxon, F.. *Biometrics Bulletin 1(6):80–83*, 1945. DOI 10.2307/3001968
    Used for: Two-sided signed-rank test on paired seeds (with the honest note that n = 3 gives a minimum p of 0.25, so the interval is the informative statistic).
-   Files: `src/pipeline/routing/stats.py`
+   Files: `src/traffictwin/protocols/statistics.py`
 
 4. **SciPy 1.0: fundamental algorithms for scientific computing in Python** — Virtanen, P., et al.. *Nature Methods 17:261–272*, 2020. DOI 10.1038/s41592-019-0686-2
    Used for: scipy.stats implementation of the signed-rank test.
-   Files: `src/pipeline/routing/stats.py`
+   Files: `src/traffictwin/protocols/statistics.py`
 
 5. **Array programming with NumPy** — Harris, C. R., et al.. *Nature 585:357–362*, 2020. DOI 10.1038/s41586-020-2649-2
    Used for: All numerics.

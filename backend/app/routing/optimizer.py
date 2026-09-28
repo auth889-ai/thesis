@@ -91,7 +91,7 @@ def corridor_map_for(rec: dict) -> tuple[dict, dict | None, dict]:
     (src/pipeline/city/sensor_map.py). Never a guess."""
     scope = rec.get("dataset_scope") or (rec.get("city") if str(rec.get("city", "")).startswith("user:") else None)
     if scope:
-        from pipeline.city import sensor_map
+        from traffictwin.digital_twin import sensor_map
         mapping = sensor_map.find_for_dataset(scope)
         if not mapping:
             raise NoStoredForecast(f"NO_SENSOR_MAPPING: no genuine detector -> SUMO edge mapping exists for {scope}; build the scenario and run src/pipeline/city/sensor_map.py")

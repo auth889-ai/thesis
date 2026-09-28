@@ -117,7 +117,7 @@ def test_moved_adapters_resolve_the_original_repository_and_data_paths():
 
 
 def test_relocated_research_dependencies_resolve_the_workspace():
-    for name in ("pipeline.city.registry", "pipeline.forecasting.basicts_train",
+    for name in ("traffictwin.data.cities", "pipeline.forecasting.basicts_train",
                  "traffictwin.protocols.oracle_gate", "traffictwin.protocols.stress_experiment",
                  "pipeline.core.network_file"):
         module = importlib.import_module(name)

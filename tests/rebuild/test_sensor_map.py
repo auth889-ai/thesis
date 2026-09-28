@@ -9,7 +9,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
-from pipeline.city import sensor_map as sm  # noqa: E402
+from traffictwin.digital_twin import sensor_map as sm  # noqa: E402
 
 MAPPING = REPO / "data/cities/los_angeles_metr/sumo/sensor_to_edge.json"
 needs_la = pytest.mark.skipif(not (MAPPING.exists() and sm.LOCATIONS.exists()), reason="LA scenario or pinned DCRNN metadata not present here")

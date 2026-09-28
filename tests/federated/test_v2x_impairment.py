@@ -57,7 +57,7 @@ def _exchange(ClientSocket, ServerSocket, port, payloads):
 
 
 def test_ideal_profile_delivers_payloads_unchanged(monkeypatch, tmp_path):
-    from pipeline.federated import v2x_impairment
+    from traffictwin.forecasting.federated import v2x_impairment
     C, S = _fresh_socket_classes(monkeypatch)
     meter = v2x_impairment.install("ideal", role="test", seed=0, repo_on_path=UPSTREAM)
     payloads = [{"w": [1.0, 2.0]}, {"w": [3.0, 4.0]}, {"w": [5.0, 6.0]}]
@@ -70,7 +70,7 @@ def test_ideal_profile_delivers_payloads_unchanged(monkeypatch, tmp_path):
 
 
 def test_fixed_latency_actually_delays_the_link(monkeypatch):
-    from pipeline.federated import v2x_impairment
+    from traffictwin.forecasting.federated import v2x_impairment
     C, S = _fresh_socket_classes(monkeypatch)
     meter = v2x_impairment.install("latency_200", role="test", seed=0, repo_on_path=UPSTREAM)
     t0 = time.time()
@@ -85,7 +85,7 @@ def test_fixed_latency_actually_delays_the_link(monkeypatch):
 def test_loss_resends_the_previous_payload_and_counts_the_drop(monkeypatch):
     """A missed deadline must degrade learning by making the aggregator use a STALE update --
     not by corrupting bytes and not by deadlocking the upstream protocol."""
-    from pipeline.federated import v2x_impairment
+    from traffictwin.forecasting.federated import v2x_impairment
     C, S = _fresh_socket_classes(monkeypatch)
     meter = v2x_impairment.install("loss_50", role="test", seed=7, repo_on_path=UPSTREAM)
     payloads = [{"round": i} for i in range(12)]
@@ -100,7 +100,7 @@ def test_loss_resends_the_previous_payload_and_counts_the_drop(monkeypatch):
 
 
 def test_meter_dump_is_machine_readable_and_labels_the_profile(monkeypatch, tmp_path):
-    from pipeline.federated import v2x_impairment
+    from traffictwin.forecasting.federated import v2x_impairment
     _fresh_socket_classes(monkeypatch)
     meter = v2x_impairment.install("mosaic_v2x", role="client", seed=3, repo_on_path=UPSTREAM)
     out = tmp_path / "meter.json"
@@ -112,6 +112,6 @@ def test_meter_dump_is_machine_readable_and_labels_the_profile(monkeypatch, tmp_
 
 
 def test_unknown_profile_is_refused():
-    from pipeline.federated import v2x_impairment
+    from traffictwin.forecasting.federated import v2x_impairment
     with pytest.raises(SystemExit):
         v2x_impairment.install("no_such_profile", role="test")

@@ -33,7 +33,7 @@ class OpenCityAdapter(ForecastAdapter):
     name = "OpenCity-plus"
 
     def __init__(self, pretraining_corpus: set[str] | None = None):
-        from pipeline.city.datasets import OPENCITY_PRETRAINING
+        from traffictwin.data.datasets import OPENCITY_PRETRAINING
         self.corpus = pretraining_corpus or OPENCITY_PRETRAINING
 
     def check(self, city_data: CityData) -> dict:

@@ -111,8 +111,8 @@ def twin_generate_network(payload: dict):
     import sys as _sys
     import uuid as _uuid
     _sys.path.insert(0, str(config.REPO))
-    from pipeline.city import sumo_scenario
-    from pipeline.city.registry import registry
+    from traffictwin.digital_twin import scenario_builder
+    from traffictwin.data.cities import registry
     job = "net_" + _uuid.uuid4().hex[:8]
     _NET_JOBS[job] = {"job": job, "status": "running", "stage": "creating city"}
 

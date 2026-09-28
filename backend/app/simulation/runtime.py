@@ -103,7 +103,7 @@ DHAKA_CENTER = (90.395, 23.755)
 
 def networks() -> list[dict]:
     """Every network the twin can run: Dhaka R1 plus any city generated from OSM."""
-    from pipeline.city.registry import CITY_DIR
+    from traffictwin.data.cities import CITY_DIR
     validation = dhaka_validation()
     label = "Dhaka R1 (locally validated)" if validation["passed"] else "Dhaka R1 (simulation; validation pending)"
     out = [{"id": "dhaka_r1", "name": label, "demand": "CALIBRATION_ATTEMPTED",
@@ -133,7 +133,7 @@ def resolve_network(network: str) -> dict:
         return {"id": "dhaka_r1", "net": Path(pr.DEFAULT_NET), "routes": Path(pr.DEFAULT_ROUTES),
                 "demand": "CALIBRATION_ATTEMPTED", "center": DHAKA_CENTER, "live_coupled": True,
                 "validation": dhaka_validation()}
-    from pipeline.city.sumo_scenario import scenario_dir
+    from traffictwin.digital_twin.scenario_builder import scenario_dir
     m = scenario_dir(network) / "MANIFEST.json"
     if not m.exists():
         raise ValueError(f"no generated network for {network!r}; generate it first")

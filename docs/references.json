@@ -18,7 +18,7 @@
           "files": [
             "src/traffictwin/forecasting/service.py",
             "src/pipeline/forecasting/benchmark_floors.py",
-            "src/pipeline/routing/learned_gate.py",
+            "src/traffictwin/protocols/learned_gate.py",
             "src/pipeline/v2x/closed_loop.py"
           ],
           "code": "nnzhan/Graph-WaveNet (pinned in upstream/UPSTREAM_PINS.yaml); trained through BasicTS"
@@ -34,7 +34,7 @@
           "used_for": "Source of the METR-LA and PEMS-BAY releases, the Gaussian-kernel sensor graph, the chronological 70/10/20 split and the published Historical-Average floors.",
           "files": [
             "src/pipeline/adapters/twin/sensor_graph.py",
-            "src/pipeline/city/datasets.py",
+            "src/traffictwin/data/datasets.py",
             "src/pipeline/forecasting/benchmark_floors.py"
           ],
           "code": "liyaguang/DCRNN (pinned)"
@@ -209,8 +209,8 @@
           "used_for": "The only dataset the headline forecast claim rests on; the 207-node checkpoint is validated on its held-out split. Speed-only: no flow counts, so SUMO demand cannot be calibrated from it (src/pipeline/v2x/METR_LA_FLOW_NOTE.md).",
           "files": [
             "data/forecasting/cities/METR-LA/",
-            "src/pipeline/city/datasets.py",
-            "src/pipeline/city/sensor_map.py"
+            "src/traffictwin/data/datasets.py",
+            "src/traffictwin/digital_twin/sensor_map.py"
           ]
         },
         {
@@ -223,7 +223,7 @@
           "url": "https://github.com/liyaguang/DCRNN",
           "used_for": "Second benchmark city for the forecasting gate.",
           "files": [
-            "src/pipeline/city/datasets.py",
+            "src/traffictwin/data/datasets.py",
             "src/pipeline/forecasting/benchmark_floors.py"
           ]
         },
@@ -253,7 +253,7 @@
           "url": "https://www.openstreetmap.org/copyright",
           "used_for": "Road network of every simulated city (Dhaka R1, the four Los Angeles corridors): netconvert with the OSM typemap, left-hand traffic for Dhaka.",
           "files": [
-            "src/pipeline/city/sumo_scenario.py",
+            "src/traffictwin/digital_twin/scenario_builder.py",
             "backend/app/datasets/city_corridors.py",
             "paper_labs/02_dhaka_osm/"
           ]
@@ -282,8 +282,8 @@
           "paper_doi": "10.1016/j.eswa.2018.10.017",
           "used_for": "Training data for the incident / congestion text classifier (off the canonical closed-loop path).",
           "files": [
-            "src/pipeline/nlp/get_data.py",
-            "src/pipeline/nlp/train_classifier.py"
+            "src/traffictwin/nlp/get_data.py",
+            "src/traffictwin/nlp/train_classifier.py"
           ]
         }
       ]
@@ -345,8 +345,8 @@
           "url": "https://www.etsi.org/deliver/etsi_en/302600_302699/30263703/",
           "used_for": "The hazard broadcast (DENM, 1 Hz re-broadcast, geocast radius) in the MOSAIC penetration sweep; ROUTE_RECOMMENDATION with a TTL follows the same expiry idea.",
           "files": [
-            "src/pipeline/networking/penetration_sweep.py",
-            "src/pipeline/networking/latency_injection.py"
+            "src/traffictwin/networking/mosaic/penetration_sweep.py",
+            "src/traffictwin/networking/mosaic/latency_injection.py"
           ]
         },
         {
@@ -380,7 +380,7 @@
           "files": [
             "src/traffictwin/digital_twin/",
             "src/pipeline/v2x/closed_loop.py",
-            "src/pipeline/routing/oracle_gate.py",
+            "src/traffictwin/protocols/oracle_gate.py",
             "backend/app/routing/local_routes.py"
           ],
           "code": "eclipse-sumo/sumo v1_27_1 (pip eclipse-sumo==1.27.1, EPL-2.0)"
@@ -449,7 +449,7 @@
           "used_for": "The BPR volume-delay function whose alpha/beta coefficients price background load in the generalized route cost.",
           "files": [
             "src/traffictwin/optimization/route_optimizer.py",
-            "src/pipeline/v2x/network_assignment.py"
+            "src/traffictwin/optimization/network_assignment.py"
           ]
         },
         {
@@ -496,7 +496,7 @@
           "doi": "10.1093/biomet/6.1.1",
           "used_for": "The paired-seed 95 % confidence interval on percentage change in vehicle-hours uses the t critical value for n−1 degrees of freedom (table hard-coded for n = 2…13).",
           "files": [
-            "src/pipeline/routing/oracle_gate.py"
+            "src/traffictwin/protocols/oracle_gate.py"
           ]
         },
         {
@@ -509,7 +509,7 @@
           "doi": "10.1201/9780429246593",
           "used_for": "Percentile bootstrap (10 000 resamples over seeds) as the alternate interval on the mean per-arm change.",
           "files": [
-            "src/pipeline/routing/stats.py"
+            "src/traffictwin/protocols/statistics.py"
           ]
         },
         {
@@ -522,7 +522,7 @@
           "doi": "10.2307/3001968",
           "used_for": "Two-sided signed-rank test on paired seeds (with the honest note that n = 3 gives a minimum p of 0.25, so the interval is the informative statistic).",
           "files": [
-            "src/pipeline/routing/stats.py"
+            "src/traffictwin/protocols/statistics.py"
           ]
         },
         {
@@ -535,7 +535,7 @@
           "doi": "10.1038/s41592-019-0686-2",
           "used_for": "scipy.stats implementation of the signed-rank test.",
           "files": [
-            "src/pipeline/routing/stats.py"
+            "src/traffictwin/protocols/statistics.py"
           ]
         },
         {

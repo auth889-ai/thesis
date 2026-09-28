@@ -29,7 +29,7 @@ from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "src/dashboard/backend"))
 
-from pipeline.city.sumo_scenario import scenario_dir          # noqa: E402
+from traffictwin.digital_twin.scenario_builder import scenario_dir          # noqa: E402
 from pipeline.routing import edge_costs as ec                 # noqa: E402
 from pipeline.routing import route_optimizer as ro            # noqa: E402
 from traffictwin.optimization import network_assignment as na             # noqa: E402

@@ -84,7 +84,7 @@ def scenario_for(rec: dict, emit) -> dict:
         return {**n, **resolve_network("dhaka_r1"), "demand_reality": n.get("demand"), "forecast_capable": True}
     scope = rec.get("dataset_scope") or (rec.get("city") if str(rec.get("city", "")).startswith("user:") else None)
     if scope:                                          # an uploaded dataset with a genuine detector -> edge mapping on a built scenario
-        from pipeline.city import sensor_map
+        from traffictwin.digital_twin import sensor_map
         mapping = sensor_map.find_for_dataset(scope)
         if mapping:
             n = next((x for x in networks() if x["id"] == mapping["city_id"]), None)
@@ -97,8 +97,8 @@ def scenario_for(rec: dict, emit) -> dict:
     bbox = (round(s, 4), round(w, 4), round(n_, 4), round(e, 4))
     key = hashlib.sha256(json.dumps(bbox).encode()).hexdigest()[:8]
     city_id = re.sub(r"[^a-z0-9]+", "_", str(rec.get("city", "city")).lower()).strip("_")[:24] + f"_{key}"
-    from pipeline.city.registry import registry
-    from pipeline.city import sumo_scenario
+    from traffictwin.data.cities import registry
+    from traffictwin.digital_twin import scenario_builder
     if not registry.get(city_id):
         registry.create_from_bbox(f"{rec.get('city', 'city')} — {o.get('label', '')} → {d.get('label', '')}", bbox, city_id=city_id)
     man_f = sumo_scenario.scenario_dir(city_id) / "MANIFEST.json"

@@ -76,7 +76,7 @@ def _predict(dataset: str, as_of: int, model: str | None):
 @lru_cache(maxsize=4)
 def _net(city_id: str):
     import sumolib
-    from pipeline.city.sumo_scenario import scenario_dir
+    from traffictwin.digital_twin.scenario_builder import scenario_dir
     man = json.loads((scenario_dir(city_id) / "MANIFEST.json").read_text())
     net_path = config.REPO / man["files"]["net"]
     net = sumolib.net.readNet(str(net_path))
@@ -90,7 +90,7 @@ def _shape(net, e) -> list[list[float]]:
 @lru_cache(maxsize=4)
 def _background(city_id: str) -> dict:
     """Major roads of the scenario as plain geometry — the backdrop that is NOT forecast."""
-    from pipeline.city.sensor_map import MAJOR
+    from traffictwin.digital_twin.sensor_map import MAJOR
     net, net_path, man = _net(city_id)
     feats = []
     for e in net.getEdges():
@@ -119,7 +119,7 @@ def _series(dataset: str):
 
 
 def _mapping(dataset):
-    from pipeline.city import sensor_map
+    from traffictwin.digital_twin import sensor_map
     return scientific_prediction.mapping() if dataset in scientific_prediction.DATASETS else sensor_map.find_for_dataset(dataset)
 
 
@@ -148,7 +148,7 @@ def held_out(T: int, meta: dict) -> dict:
 
 def network(dataset: str, as_of: int | str | None = None, model: str | None = None) -> dict:
     """The forecast state of the network at one moment: sensors, DIRECT/DERIVED edges, coverage."""
-    from pipeline.city import sensor_map
+    from traffictwin.digital_twin import sensor_map
     from pipeline.routing import edge_costs as ec
     from backend.app.routing import optimizer as route_opt
     meta, vals = _series(dataset)
@@ -246,7 +246,7 @@ def road(dataset: str, node: str | int, as_of: int | str | None = None, models: 
     pm = out_models.get("persistence", {}).get("MAE_kmh")
     for m, rec in out_models.items():
         rec["skill_vs_persistence"] = round(1 - rec["MAE_kmh"] / pm, 4) if rec.get("MAE_kmh") is not None and pm else None
-    from pipeline.city import sensor_map
+    from traffictwin.digital_twin import sensor_map
     mapping = _mapping(dataset)
     r = next((x for x in (mapping or {}).get("records", []) if x["node"] == nodes[j]), {})
     return {"dataset": dataset, "node": nodes[j], "index": j, "sensor_id": r.get("sensor_id"), "mapped_edge": r.get("edge"), "mapping_quality": r.get("quality"), "edge_type": (r.get("edge_type") or "").replace("highway.", ""),

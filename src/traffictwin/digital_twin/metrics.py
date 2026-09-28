@@ -9,7 +9,7 @@ def congestion_metrics(out: Path, net_path: Path, t0: float, H: float) -> dict:
     occupancy, standing queue (summary `halting`), mean speed, spillback proxy (share of major edges with
     occupancy ≥ 80 % in any interval). Read from SUMO's own edgeData and summary outputs."""
     import xml.etree.ElementTree as ET
-    from pipeline.city.sensor_map import MAJOR
+    from traffictwin.digital_twin.sensor_map import MAJOR
     net = sumolib.net.readNet(str(net_path))
     lanes = {e.getID(): e.getLaneNumber() for e in net.getEdges()}
     major = {e.getID() for e in net.getEdges() if (e.getType() or "") in MAJOR}

@@ -50,7 +50,7 @@ import numpy as np
 
 from traffictwin.paths import REPO
 
-from pipeline.city.sumo_scenario import scenario_dir, sumo_tools_dir      # noqa: E402
+from traffictwin.digital_twin.scenario_builder import scenario_dir, sumo_tools_dir      # noqa: E402
 from traffictwin.optimization import edge_costs as ec
 from traffictwin.digital_twin import runtime as pr
 from traffictwin.optimization import route_optimizer as ro
@@ -135,7 +135,7 @@ OD_RULES = {                                            # automatic OD screening
 
 def od_weights(P: dict, out: Path) -> Path:
     """randomTrips --weights-prefix files for the `arterial` rule (edgeData format): weight = lanes × length on MAJOR edges, 0 elsewhere."""
-    from pipeline.city.sensor_map import MAJOR
+    from traffictwin.digital_twin.sensor_map import MAJOR
     net = net_for(REPO / P["network"]); prefix = out / "od_arterial"
     rows = "\n".join(f'    <edge id="{e.getID()}" value="{e.getLaneNumber() * e.getLength():.1f}"/>' for e in net.getEdges() if (e.getType() or "") in MAJOR and e.allows("passenger"))
     body = f'<edgedata>\n  <interval begin="0" end="100000">\n{rows}\n  </interval>\n</edgedata>\n'

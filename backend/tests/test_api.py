@@ -223,7 +223,7 @@ def test_observe_endpoint_refuses_an_unknown_city_honestly(client, monkeypatch):
     derived (registered here, corridors fail), and a name that cannot be created at all."""
     from backend.app.datasets import city_corridors
     from types import SimpleNamespace
-    from pipeline.city.registry import registry
+    from traffictwin.data.cities import registry
     monkeypatch.setattr(city_corridors, "ensure", lambda cid, k=12: (_ for _ in ()).throw(RuntimeError("no graph")))
     # the city is registered on this machine or not (CI has no data/cities): make it registered either way
     real_get = registry.get
