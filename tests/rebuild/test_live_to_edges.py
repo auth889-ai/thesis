@@ -9,7 +9,7 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-from pipeline.forecasting.live_to_edges import BAND_MID, MAP_FILE, multiplier, write_weights  # noqa: E402
+from traffictwin.forecasting.live.live_to_edges import BAND_MID, MAP_FILE, multiplier, write_weights  # noqa: E402
 from pipeline.routing.predictive_routing import load_weights  # noqa: E402
 
 pytestmark = pytest.mark.skipif(not MAP_FILE.exists(), reason="run: python src/pipeline/forecasting/live_to_edges.py --map")

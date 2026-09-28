@@ -23,7 +23,7 @@ def _card(arch, dataset, val_mae, per_val, skill, verified=True, quality=True, f
 @pytest.fixture
 def cards(monkeypatch):
     from backend.app.forecasting import model_registry as mr
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     store = []
     monkeypatch.setattr(bt, "cards", lambda: store)
     return store

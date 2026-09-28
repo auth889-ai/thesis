@@ -84,7 +84,7 @@ class ForecastService:
 
     def __init__(self, spec: ModelSpec):
         self.spec = spec
-        from pipeline.forecasting import basicts_train as bt
+        from traffictwin.forecasting.training import basicts_train as bt
 
         self._bt = bt
         self.raw, _ = bt._prepared(spec.dataset)

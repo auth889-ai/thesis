@@ -60,7 +60,7 @@ TRAINED_SUFFIX = " · trained here"
 
 def _with_trained(ds: list[dict]) -> list[dict]:
     """Models the pinned BasicTS harness has trained on THIS dataset (basicts_train.py cards)."""
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     by = {}
     for c in bt.cards():
         by.setdefault(c["dataset"], []).append(c["arch"])
@@ -73,7 +73,7 @@ def _with_trained(ds: list[dict]) -> list[dict]:
 
 
 def datasets() -> list[dict]:
-    from pipeline.forecasting import opencity_predict as op
+    from traffictwin.forecasting.opencity import opencity_predict as op
     out = op.local_datasets()
     live = _live_datasets()
     for d in out:
@@ -106,7 +106,7 @@ def _series(dataset: str, region: int, n_nodes: int):
         return vals[:, order], [cd.node_ids[i] for i in order], np.eye(len(order), dtype="float32"), {
             "quantity": "corridor mean speed, m/s (derived by us)", "reality": "REAL_LIVE",
             "first_utc": rows[0]["utc"] if rows else None, "region_index": region, "subgraph": order}
-    from pipeline.forecasting import opencity_predict as op
+    from traffictwin.forecasting.opencity import opencity_predict as op
     return op.from_dataset(dataset, region, n_nodes)
 
 
@@ -174,7 +174,7 @@ def _run(job: str, p: dict) -> None:
             base["model_card"] = {"upstream": "HKUDS/OpenCity @ eca64c9 (pinned)", "weights": r["weights"],
                                   "stack": r["stack"], "claim": r["claim"], "input_steps": 288, "output_steps": 288}
         elif model.endswith(TRAINED_SUFFIX):             # trained on this very dataset by their harness
-            from pipeline.forecasting import basicts_train as bt
+            from traffictwin.forecasting.training import basicts_train as bt
             arch = model[: -len(TRAINED_SUFFIX)]
             card = bt.card_for(dataset, arch)
             if not card:
@@ -220,8 +220,8 @@ def _run(job: str, p: dict) -> None:
                                     "claim": "a city-specific model: it does not transfer to another graph"})
         else:                                             # Chronos-Bolt / persistence via the registry
             emit(stage=f"Running the model ({model})", step=3)
-            from pipeline.forecasting.adapters.base import CityData
-            from pipeline.forecasting.adapters.registry import forecast as run_forecast
+            from traffictwin.forecasting.adapters.base import CityData
+            from traffictwin.forecasting.adapters.registry import forecast as run_forecast
             cd = CityData(city_id=dataset, node_ids=nodes, values=hist.astype("float32"), interval_s=step_s,
                           target=meta["quantity"], unit=meta["quantity"], reality=meta["reality"])
             r = run_forecast(cd, hz, model)
@@ -241,7 +241,7 @@ def _run(job: str, p: dict) -> None:
         rec = pv.Run(job, city=dataset, origin=None, destination=None, requested_model=model, resolved_model=model,
                      region=region, dataset_hash=pv.sha_array(vals[:end, :1]) if dataset.startswith(("user:", "live:")) else dataset,
                      graph_hash=pv.sha_array(A) if A is not None else None, checkpoint_path=card_ck,
-                     checkpoint_sha256=pv.sha_file(next((c["checkpoint"] for c in __import__("pipeline.forecasting.basicts_train", fromlist=["cards"]).cards()
+                     checkpoint_sha256=pv.sha_file(next((c["checkpoint"] for c in __import__("traffictwin.forecasting.training.basicts_train", fromlist=["cards"]).cards()
                                                           if c["dataset"] == dataset and c["arch"] == model.replace(TRAINED_SUFFIX, "")), None)) if model.endswith(TRAINED_SUFFIX) else None,
                      input_window_hash=pv.sha_array(hist[-72:, 0]), raw_prediction_hash=pv.sha_array([x if x is not None else float("nan") for x in pred12]),
                      raw_prediction_first10=[None if x is None else round(float(x), 3) for x in pred12[:10]],
@@ -282,7 +282,7 @@ _TRAIN: dict[str, dict] = {}
 
 
 def _train_run(job: str, p: dict) -> None:
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
 
     def emit(**kw):
         with _LOCK:
@@ -312,7 +312,7 @@ def train_status(job: str) -> dict:
 
 
 def trained() -> list[dict]:
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     return [{k: c[k] for k in ("dataset", "arch", "epochs", "test_metrics", "persistence_test", "trained_utc", "steps", "nodes")} for c in bt.cards()]
 
 
@@ -349,8 +349,8 @@ def cloud() -> dict:
 def _train_cloud_run(job: str, p: dict) -> None:
     import re
     import time
-    from pipeline.forecasting import aws_train as at
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import aws_train as at
+    from traffictwin.forecasting.training import basicts_train as bt
 
     def emit(**kw):
         with _LOCK:

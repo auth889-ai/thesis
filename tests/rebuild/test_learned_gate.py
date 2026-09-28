@@ -20,7 +20,7 @@ needs_la = pytest.mark.skipif(not (MAPPING.exists() and CKPT.exists()), reason="
 
 def test_moment_is_inside_the_held_out_split_with_room_for_input_and_future():
     T = 4032
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import train_eval as te
     lo = te.splits(T)["test"][0]
     seen = set()
     for seed in list(range(301, 321)) + [101, 102, 103]:

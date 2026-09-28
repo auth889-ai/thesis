@@ -10,8 +10,8 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-from pipeline.forecasting.comparison_table import FLOOR_NAMES, build, gate  # noqa: E402
-from pipeline.forecasting.record_results import MAPE_IS_FRACTION, PUBLISHED, UPSTREAM, parse_log  # noqa: E402
+from traffictwin.forecasting.evaluation.comparison_table import FLOOR_NAMES, build, gate  # noqa: E402
+from traffictwin.forecasting.evaluation.record_results import MAPE_IS_FRACTION, PUBLISHED, UPSTREAM, parse_log  # noqa: E402
 
 RES = REPO / "results/forecasting"
 PY = sys.executable
@@ -160,6 +160,6 @@ def test_every_checkpoint_reproduces_its_reported_error():
 def test_checkpoint_selection_requires_a_matching_dataset():
     """Matching on architecture alone once loaded METR-LA weights for a PEMS-BAY request."""
     import inspect
-    from pipeline.forecasting import infer_from_checkpoint as ifc
+    from traffictwin.forecasting import infer_from_checkpoint as ifc
     src = inspect.getsource(ifc.main)
     assert 'c["dataset_dir"] == a.dataset' in src, "checkpoint choice must filter on dataset"

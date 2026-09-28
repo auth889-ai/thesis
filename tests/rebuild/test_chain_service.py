@@ -181,7 +181,7 @@ def test_route_sensitivity_counts_vehicles_routed_differently(tmp_path, monkeypa
 # ------------------------------------------------------------------ the live backtest
 
 def test_backtest_scores_every_model_on_identical_pairs_and_persistence_has_zero_skill():
-    from pipeline.forecasting import live_backtest as bt
+    from traffictwin.forecasting.live import live_backtest as bt
     rng = np.random.default_rng(0)
     T, N = 60, 3
     vals = np.clip(np.rint(rng.uniform(0, 3, (T, N))), 0, 3).astype(float)

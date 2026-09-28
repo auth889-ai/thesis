@@ -64,7 +64,7 @@ def forecast_values(label: str, model: str | None, a) -> tuple[dict | None, dict
             reason = str((res.get("decision") or {}).get("reason"))
             if "not a registered model" in reason:          # ask the registry's own gates why the graph models refuse this data
                 try:
-                    from pipeline.forecasting.adapters.registry import available_for
+                    from traffictwin.forecasting.adapters.registry import available_for
                     from traffictwin.optimization.forecast_costs import recorded_city_data
                     cd, _obs = recorded_city_data(a.city, a.as_of)
                     gates = [m for m in available_for(cd) if m["model"].split("/")[0] == model]

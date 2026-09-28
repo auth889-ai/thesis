@@ -40,7 +40,7 @@ from pathlib import Path
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-from pipeline.forecasting.live_to_edges import MAP_FILE, latest_levels, multiplier, write_weights  # noqa: E402
+from traffictwin.forecasting.live.live_to_edges import MAP_FILE, latest_levels, multiplier, write_weights  # noqa: E402
 from pipeline.routing import predictive_routing as pr  # noqa: E402
 from traffictwin.protocols.chains.predeparture_arm import VEH_RE, read_routes  # noqa: E402
 

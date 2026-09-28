@@ -44,7 +44,7 @@ def city(tmp_path, monkeypatch):
     whose geometry depends on the origin/destination (so the network 'permits' a change)."""
     from backend.app.datasets import uploads as user_datasets, forecast_inputs as dataset_ops
     from traffictwin.data import provenance
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     if not bt.BTS.exists():
         pytest.skip("pinned BasicTS-legacy checkout missing")
     # Run the unmodified preparation script in an isolated workspace. A prior test's
@@ -94,7 +94,7 @@ def test_gate3B_modified_csv_changes_raw_forecast(city):
     user_datasets.save("Gate City", _wide(), coords_bytes=COORDS.encode())
     r1, _ = _analyze(dataset_ops, "user:gate_city", "23.700, 90.400", "23.716, 90.416", run_id="b1")
     user_datasets.save("Gate City", _wide(bump=12.0), coords_bytes=COORDS.encode())
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     bt.prepare("user:gate_city")                                # the new upload replaces the prepared data
     r2, _ = _analyze(dataset_ops, "user:gate_city", "23.700, 90.400", "23.716, 90.416", run_id="b2")
     assert r1["provenance"]["dataset_hash"] != r2["provenance"]["dataset_hash"]
@@ -105,7 +105,7 @@ def test_gate3B_modified_csv_changes_raw_forecast(city):
 
 def test_gate3C_stid_vs_gwnet_resolve_to_different_checkpoints(monkeypatch):
     from backend.app.forecasting import model_registry as mr
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     def card(arch):
         return {"dataset": "user:x", "bts_name": "DF_x", "arch": arch, "checkpoint": f"/ck/{arch}_best_val_MAE.pt", "trained_utc": "2026-09-05T00:00:00+00:00",
                 "quality": {"passed": True}, "verification": {"passed": True},

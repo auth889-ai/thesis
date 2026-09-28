@@ -17,7 +17,7 @@
           "used_for": "The canonical forecaster: 207-node METR-LA checkpoint, verified against the published MAE, drives every predictive arm of the closed loop.",
           "files": [
             "src/traffictwin/forecasting/service.py",
-            "src/pipeline/forecasting/benchmark_floors.py",
+            "src/traffictwin/forecasting/evaluation/benchmark_floors.py",
             "src/traffictwin/protocols/learned_gate.py",
             "src/pipeline/v2x/closed_loop.py"
           ],
@@ -35,7 +35,7 @@
           "files": [
             "src/pipeline/adapters/twin/sensor_graph.py",
             "src/traffictwin/data/datasets.py",
-            "src/pipeline/forecasting/benchmark_floors.py"
+            "src/traffictwin/forecasting/evaluation/benchmark_floors.py"
           ],
           "code": "liyaguang/DCRNN (pinned)"
         },
@@ -50,7 +50,7 @@
           "used_for": "BasicTS is the training and evaluation harness for Graph WaveNet, DCRNN, STID and STAEformer; no per-model training loop is written in this repository.",
           "files": [
             "src/pipeline/adapters/forecasting/basicts_adapter.py",
-            "src/pipeline/forecasting/basicts_train.py",
+            "src/traffictwin/forecasting/training/basicts_train.py",
             "configs/forecasting/benchmark.yaml"
           ],
           "code": "GestaltCogTeam/BasicTS (two pins)"
@@ -65,8 +65,8 @@
           "url": "https://arxiv.org/abs/2208.05233",
           "used_for": "Benchmark model run under the same protocol (Phase-1 gate G3).",
           "files": [
-            "src/pipeline/forecasting/basicts_train.py",
-            "src/pipeline/forecasting/comparison_table.py"
+            "src/traffictwin/forecasting/training/basicts_train.py",
+            "src/traffictwin/forecasting/evaluation/comparison_table.py"
           ]
         },
         {
@@ -79,7 +79,7 @@
           "url": "https://arxiv.org/abs/2308.10425",
           "used_for": "Benchmark model, and the source of the one-protocol leaderboard the comparison table is checked against.",
           "files": [
-            "src/pipeline/forecasting/comparison_table.py"
+            "src/traffictwin/forecasting/evaluation/comparison_table.py"
           ]
         },
         {
@@ -92,8 +92,8 @@
           "url": "https://arxiv.org/abs/2403.07815",
           "used_for": "Pretrained zero-shot univariate forecaster offered for cities with only a short recorded corridor history (Dhaka); kept pretrained, never retrained; its negative result is reported.",
           "files": [
-            "src/pipeline/forecasting/adapters/chronos_adapter.py",
-            "src/pipeline/forecasting/adapters/registry.py"
+            "src/traffictwin/forecasting/adapters/chronos_adapter.py",
+            "src/traffictwin/forecasting/adapters/registry.py"
           ],
           "code": "amazon-science/chronos-forecasting (pinned), weights amazon/chronos-bolt-small"
         },
@@ -107,8 +107,8 @@
           "url": "https://arxiv.org/abs/2408.10269",
           "used_for": "Cross-city foundation-model comparison; its pre-training corpus decides which cities may be called zero-shot.",
           "files": [
-            "src/pipeline/forecasting/opencity_crosscity.py",
-            "src/pipeline/forecasting/adapters/opencity.py"
+            "src/traffictwin/forecasting/opencity/opencity_crosscity.py",
+            "src/traffictwin/forecasting/adapters/opencity.py"
           ],
           "code": "HKUDS/OpenCity (pinned)"
         },
@@ -122,7 +122,7 @@
           "doi": "10.1145/2939672.2939785",
           "used_for": "Classical non-deep baseline on the same chronological split (with scikit-learn RandomForest).",
           "files": [
-            "src/pipeline/forecasting/research_baselines.py"
+            "src/traffictwin/forecasting/training/research_baselines.py"
           ]
         },
         {
@@ -135,7 +135,7 @@
           "url": "https://jmlr.org/papers/v12/pedregosa11a.html",
           "used_for": "RandomForest baseline and metric utilities.",
           "files": [
-            "src/pipeline/forecasting/research_baselines.py"
+            "src/traffictwin/forecasting/training/research_baselines.py"
           ]
         },
         {
@@ -148,7 +148,7 @@
           "doi": "10.1609/aaai.v33i01.3301922",
           "used_for": "Provenance of the PEMS04 / PEMS08 releases used in the cross-city corpus bookkeeping.",
           "files": [
-            "src/pipeline/forecasting/city_datasets.py"
+            "src/traffictwin/data/city_datasets.py"
           ]
         },
         {
@@ -161,7 +161,7 @@
           "url": "https://arxiv.org/abs/2106.05223",
           "used_for": "Reference federated forecaster that the V2X-impairment study degrades.",
           "files": [
-            "src/pipeline/forecasting/federated_forecast.py"
+            "src/traffictwin/forecasting/federated/federated_forecast.py"
           ],
           "context_only": false
         },
@@ -175,7 +175,7 @@
           "url": "https://arxiv.org/abs/1602.05629",
           "used_for": "The FedAvg aggregation rule implemented in the federated forecast.",
           "files": [
-            "src/pipeline/forecasting/federated_forecast.py"
+            "src/traffictwin/forecasting/federated/federated_forecast.py"
           ]
         },
         {
@@ -188,7 +188,7 @@
           "url": "https://arxiv.org/abs/2308.10425",
           "used_for": "Leaderboard context only: their published MAE values appear in the comparison table; none of these models runs here.",
           "files": [
-            "src/pipeline/forecasting/comparison_table.py"
+            "src/traffictwin/forecasting/evaluation/comparison_table.py"
           ],
           "context_only": true
         }
@@ -224,7 +224,7 @@
           "used_for": "Second benchmark city for the forecasting gate.",
           "files": [
             "src/traffictwin/data/datasets.py",
-            "src/pipeline/forecasting/benchmark_floors.py"
+            "src/traffictwin/forecasting/evaluation/benchmark_floors.py"
           ]
         },
         {

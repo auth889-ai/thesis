@@ -7,59 +7,59 @@ Every external research artifact the TrafficTwin code uses, with the files that 
 1. **Graph WaveNet for Deep Spatial-Temporal Graph Modeling** — Wu, Z., Pan, S., Long, G., Jiang, J., Zhang, C.. *IJCAI 2019*, 2019. DOI 10.24963/ijcai.2019/264 · https://arxiv.org/abs/1906.00121
    Used for: The canonical forecaster: 207-node METR-LA checkpoint, verified against the published MAE, drives every predictive arm of the closed loop.
    Code: nnzhan/Graph-WaveNet (pinned in upstream/UPSTREAM_PINS.yaml); trained through BasicTS
-   Files: `src/traffictwin/forecasting/service.py`, `src/pipeline/forecasting/benchmark_floors.py`, `src/traffictwin/protocols/learned_gate.py`, `src/pipeline/v2x/closed_loop.py`
+   Files: `src/traffictwin/forecasting/service.py`, `src/traffictwin/forecasting/evaluation/benchmark_floors.py`, `src/traffictwin/protocols/learned_gate.py`, `src/pipeline/v2x/closed_loop.py`
 
 2. **Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting** — Li, Y., Yu, R., Shahabi, C., Liu, Y.. *ICLR 2018*, 2018. https://arxiv.org/abs/1707.01926
    Used for: Source of the METR-LA and PEMS-BAY releases, the Gaussian-kernel sensor graph, the chronological 70/10/20 split and the published Historical-Average floors.
    Code: liyaguang/DCRNN (pinned)
-   Files: `src/pipeline/adapters/twin/sensor_graph.py`, `src/traffictwin/data/datasets.py`, `src/pipeline/forecasting/benchmark_floors.py`
+   Files: `src/pipeline/adapters/twin/sensor_graph.py`, `src/traffictwin/data/datasets.py`, `src/traffictwin/forecasting/evaluation/benchmark_floors.py`
 
 3. **Exploring Progress in Multivariate Time Series Forecasting: Comprehensive Benchmarking and Heterogeneity Analysis** — Shao, Z., Wang, F., Xu, Y., et al.. *IEEE TKDE 2024*, 2024. https://arxiv.org/abs/2310.06119
    Used for: BasicTS is the training and evaluation harness for Graph WaveNet, DCRNN, STID and STAEformer; no per-model training loop is written in this repository.
    Code: GestaltCogTeam/BasicTS (two pins)
-   Files: `src/pipeline/adapters/forecasting/basicts_adapter.py`, `src/pipeline/forecasting/basicts_train.py`, `configs/forecasting/benchmark.yaml`
+   Files: `src/pipeline/adapters/forecasting/basicts_adapter.py`, `src/traffictwin/forecasting/training/basicts_train.py`, `configs/forecasting/benchmark.yaml`
 
 4. **Spatial-Temporal Identity: A Simple yet Effective Baseline for Multivariate Time Series Forecasting** — Shao, Z., Zhang, Z., Wang, F., Wei, W., Xu, Y.. *CIKM 2022*, 2022. https://arxiv.org/abs/2208.05233
    Used for: Benchmark model run under the same protocol (Phase-1 gate G3).
-   Files: `src/pipeline/forecasting/basicts_train.py`, `src/pipeline/forecasting/comparison_table.py`
+   Files: `src/traffictwin/forecasting/training/basicts_train.py`, `src/traffictwin/forecasting/evaluation/comparison_table.py`
 
 5. **STAEformer: Spatio-Temporal Adaptive Embedding Makes Vanilla Transformer SOTA for Traffic Forecasting** — Liu, H., Dong, Z., Jiang, R., et al.. *CIKM 2023*, 2023. https://arxiv.org/abs/2308.10425
    Used for: Benchmark model, and the source of the one-protocol leaderboard the comparison table is checked against.
-   Files: `src/pipeline/forecasting/comparison_table.py`
+   Files: `src/traffictwin/forecasting/evaluation/comparison_table.py`
 
 6. **Chronos: Learning the Language of Time Series** — Ansari, A. F., Stella, L., Turkmen, C., et al.. *Transactions on Machine Learning Research 2024*, 2024. https://arxiv.org/abs/2403.07815
    Used for: Pretrained zero-shot univariate forecaster offered for cities with only a short recorded corridor history (Dhaka); kept pretrained, never retrained; its negative result is reported.
    Code: amazon-science/chronos-forecasting (pinned), weights amazon/chronos-bolt-small
-   Files: `src/pipeline/forecasting/adapters/chronos_adapter.py`, `src/pipeline/forecasting/adapters/registry.py`
+   Files: `src/traffictwin/forecasting/adapters/chronos_adapter.py`, `src/traffictwin/forecasting/adapters/registry.py`
 
 7. **OpenCity: Open Spatio-Temporal Foundation Models for Traffic Prediction** — Li, Z., Xia, L., Shao, Z., et al.. *arXiv 2024*, 2024. https://arxiv.org/abs/2408.10269
    Used for: Cross-city foundation-model comparison; its pre-training corpus decides which cities may be called zero-shot.
    Code: HKUDS/OpenCity (pinned)
-   Files: `src/pipeline/forecasting/opencity_crosscity.py`, `src/pipeline/forecasting/adapters/opencity.py`
+   Files: `src/traffictwin/forecasting/opencity/opencity_crosscity.py`, `src/traffictwin/forecasting/adapters/opencity.py`
 
 8. **XGBoost: A Scalable Tree Boosting System** — Chen, T., Guestrin, C.. *KDD 2016*, 2016. DOI 10.1145/2939672.2939785
    Used for: Classical non-deep baseline on the same chronological split (with scikit-learn RandomForest).
-   Files: `src/pipeline/forecasting/research_baselines.py`
+   Files: `src/traffictwin/forecasting/training/research_baselines.py`
 
 9. **Scikit-learn: Machine Learning in Python** — Pedregosa, F., et al.. *JMLR 12:2825–2830*, 2011. https://jmlr.org/papers/v12/pedregosa11a.html
    Used for: RandomForest baseline and metric utilities.
-   Files: `src/pipeline/forecasting/research_baselines.py`
+   Files: `src/traffictwin/forecasting/training/research_baselines.py`
 
 10. **Attention Based Spatial-Temporal Graph Convolutional Networks for Traffic Flow Forecasting** — Guo, S., Lin, Y., Feng, N., Song, C., Wan, H.. *AAAI 2019*, 2019. DOI 10.1609/aaai.v33i01.3301922
    Used for: Provenance of the PEMS04 / PEMS08 releases used in the cross-city corpus bookkeeping.
-   Files: `src/pipeline/forecasting/city_datasets.py`
+   Files: `src/traffictwin/data/city_datasets.py`
 
 11. **Cross-Node Federated Graph Neural Network for Spatio-Temporal Data Modeling** — Meng, C., Rambhatla, S., Liu, Y.. *KDD 2021*, 2021. https://arxiv.org/abs/2106.05223
    Used for: Reference federated forecaster that the V2X-impairment study degrades.
-   Files: `src/pipeline/forecasting/federated_forecast.py`
+   Files: `src/traffictwin/forecasting/federated/federated_forecast.py`
 
 12. **Communication-Efficient Learning of Deep Networks from Decentralized Data** — McMahan, H. B., Moore, E., Ramage, D., Hampson, S., Agüera y Arcas, B.. *AISTATS 2017*, 2017. https://arxiv.org/abs/1602.05629
    Used for: The FedAvg aggregation rule implemented in the federated forecast.
-   Files: `src/pipeline/forecasting/federated_forecast.py`
+   Files: `src/traffictwin/forecasting/federated/federated_forecast.py`
 
 13. **STGCN, MTGNN, GTS, GMAN, STNorm, PDFormer, AGCRN, HI (published METR-LA / PEMS-BAY numbers)** — various. *as re-run under one protocol by STAEformer (Liu et al., CIKM 2023, Table 1)*, 2023. https://arxiv.org/abs/2308.10425
    Used for: Leaderboard context only: their published MAE values appear in the comparison table; none of these models runs here. *(context only — quoted numbers, no code runs here)*
-   Files: `src/pipeline/forecasting/comparison_table.py`
+   Files: `src/traffictwin/forecasting/evaluation/comparison_table.py`
 
 ## Datasets and road data
 
@@ -69,7 +69,7 @@ Every external research artifact the TrafficTwin code uses, with the files that 
 
 2. **PEMS-BAY — 325 detectors, Bay Area, 5-minute speeds** — released with DCRNN (Li et al., ICLR 2018). *github.com/liyaguang/DCRNN*, 2018. https://github.com/liyaguang/DCRNN
    Used for: Second benchmark city for the forecasting gate.
-   Files: `src/traffictwin/data/datasets.py`, `src/pipeline/forecasting/benchmark_floors.py`
+   Files: `src/traffictwin/data/datasets.py`, `src/traffictwin/forecasting/evaluation/benchmark_floors.py`
 
 3. **UTD19 — Understanding traffic capacity of urban networks** — Loder, A., Ambühl, L., Menendez, M., Axhausen, K. W.. *Scientific Reports 9, 16283 (paper); ETH Research Collection (data)*, 2019. DOI 10.1038/s41598-019-51539-5 · data DOI 10.3929/ethz-b-000437802
    Used for: Traffic-science foundation: flow, occupancy, accumulation, production and the macroscopic fundamental diagram carried into the platform's invariants and units.

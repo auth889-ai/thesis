@@ -28,7 +28,7 @@ def mapping() -> dict:
 
 
 def series():
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     spec = ModelRegistry.metr_la_gwnet()
     raw, _ = bt._prepared(spec.dataset)
     if raw.shape[1] != spec.graph_size:

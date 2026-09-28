@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from pipeline.forecasting.summarize_live_reference import main
+from traffictwin.forecasting.live.summarize_live_reference import main
 
 
 def test_live_reference_summary_uses_latest_unique_corridors(tmp_path: Path, monkeypatch):

@@ -93,8 +93,8 @@ def protocol(a, cfg: dict) -> dict:
         raise SystemExit(f"no 207-detector mapping for {a.city}; run src/pipeline/city/coverage_rescue.py --city {a.city}")
     mapping = json.loads(mapping_file.read_text())
     man = json.loads((scenario_dir(a.city) / "MANIFEST.json").read_text())
-    from pipeline.forecasting import basicts_train as bt
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import basicts_train as bt
+    from traffictwin.forecasting.training import train_eval as te
     from traffictwin.forecasting import ModelRegistry
     forecast_contract = ModelRegistry.metr_la_gwnet().public()
     if te.sha256_file(CK207, 12) != CK207_SHA:

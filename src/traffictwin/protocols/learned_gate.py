@@ -63,7 +63,7 @@ def frozen_card(ident: dict) -> dict:
     """The model card of the frozen checkpoint. The product keeps one card per dataset and model,
     so a later training job overwrites it; the gate therefore keeps its own copy, rebuilt from the
     frozen job's identity (paths, hashes, epochs) and the shared architecture/data fields."""
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     if FROZEN_CARD.exists():
         c = json.loads(FROZEN_CARD.read_text())
         if c.get("checkpoint") == ident["checkpoint_path"]:
@@ -100,8 +100,8 @@ def protocol(cfg: dict | None = None, with_oracle: bool = False) -> dict:
     if not ident or not ident.get("checkpoint_path"):
         raise SystemExit(f"the frozen training job {FROZEN_JOB} has no checkpoint identity")
     ck = Path(ident["checkpoint_path"])
-    from pipeline.forecasting import basicts_train as bt
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import basicts_train as bt
+    from traffictwin.forecasting.training import train_eval as te
     if not ck.exists() or te.sha256_file(ck, 12) != FROZEN_SHA:
         raise SystemExit(f"the frozen checkpoint {FROZEN_SHA} is not on disk at {ck}")
     if not ident.get("routing_eligible"):
@@ -164,7 +164,7 @@ def demand_for_seed(P: dict, seed: int, out: Path) -> tuple[Path, dict]:
 
 
 def moment_for_seed(P: dict, seed: int, T: int) -> int:
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import train_eval as te
     sp = te.splits(T)
     test_lo = sp["test"][0]
     test_len = T - test_lo
@@ -175,8 +175,8 @@ def forecast_for_seed(P: dict, seed: int, mapping: dict) -> dict:
     """A FRESH forward pass of the frozen checkpoint at this seed's moment, plus persistence and
     the measured future, all on the dataset's own arrays. Returns everything the arms need."""
     import provenance as pv
-    from pipeline.forecasting import basicts_train as bt
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import basicts_train as bt
+    from traffictwin.forecasting.training import train_eval as te
     dataset = P["dataset"]
     name = bt.bts_name(dataset)
     raw, _ = bt._prepared(name)

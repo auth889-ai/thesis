@@ -72,7 +72,7 @@ def _fail(job_id: str, why: str) -> None:
     j = get(job_id)
     if j.get("cloud_job") and not already:
         try:
-            from pipeline.forecasting import aws_train as at
+            from traffictwin.forecasting.training import aws_train as at
             _aws_environ()
             ids = at.city_terminate(j["cloud_job"])
             _set(job_id, terminated_instances=ids)
@@ -91,7 +91,7 @@ def _aws_environ() -> dict | None:
 # ----------------------------------------------------------------------------- policy
 def plan(dataset: str, arch: str, epochs: int, where: str | None) -> dict:
     from backend.app.forecasting import prediction_jobs as predict_lab
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     ds = next((d for d in predict_lab.datasets() if d["id"] == dataset), None)
     if not ds:
         raise ValueError(f"unknown dataset {dataset}")
@@ -111,8 +111,8 @@ def plan(dataset: str, arch: str, epochs: int, where: str | None) -> dict:
 
 # ----------------------------------------------------------------------------- the runner
 def _run(job_id: str) -> None:
-    from pipeline.forecasting import basicts_train as bt
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import basicts_train as bt
+    from traffictwin.forecasting.training import train_eval as te
     j = get(job_id)
     dataset, arch, epochs = j["dataset"], j["arch"], int(j["epochs"])
     try:
@@ -120,7 +120,7 @@ def _run(job_id: str) -> None:
         prep = bt.prepare(dataset)                        # their data preparation script, locally
         cfg = bt.write_config(arch, prep["name"], prep["nodes"], epochs, prep["steps_per_day"], gpu=False)
         import hashlib
-        from pipeline.forecasting.aws_train import BASICTS_SHA
+        from traffictwin.forecasting.training.aws_train import BASICTS_SHA
         key = te.cache_key(prep["dataset_hash"], prep["graph_hash"], arch, hashlib.sha256(cfg.read_bytes()).hexdigest()[:8], BASICTS_SHA)
         _set(job_id, cache_key=key, dataset_hash=prep["dataset_hash"], graph_hash=prep["graph_hash"], quality=prep["quality"],
              split="chronological 70/10/20, never shuffled")
@@ -186,7 +186,7 @@ RESEARCH_ARCHS = ("XGBoost", "RandomForest")
 def _fit_research(job_id: str, dataset: str, arch: str):
     """XGBoost / Random Forest, fitted in a child process (their OpenMP runtime must not share the
     server's process with torch), evaluated and verified by the same rules as the deep models."""
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     _set(job_id, stage="TRAINING", epoch=0, epochs=1, trained_on="this CPU", last_line=f"fitting {arch}")
     code = ("import sys, json; sys.path.insert(0, %r); sys.path.insert(0, %r)\n"
             "from pipeline.forecasting import research_baselines as rb\n"
@@ -202,7 +202,7 @@ def _fit_research(job_id: str, dataset: str, arch: str):
 
 
 def _train_local(job_id: str, dataset: str, arch: str, epochs: int):
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     _set(job_id, stage="TRAINING", epoch=0, epochs=epochs, trained_on="this CPU")
 
     def progress(**k):
@@ -214,8 +214,8 @@ def _train_local(job_id: str, dataset: str, arch: str, epochs: int):
 
 def _train_aws(job_id: str, prep: dict, arch: str, epochs: int):
     """Bundle -> S3 -> GPU worker -> pinned harness -> metrics + checkpoint back -> worker terminates."""
-    from pipeline.forecasting import aws_train as at
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import aws_train as at
+    from traffictwin.forecasting.training import basicts_train as bt
     env = _aws_environ()
     if not env:
         raise RuntimeError("no AWS credentials on the server")
@@ -289,7 +289,7 @@ def identity_for(job_id: str) -> dict | None:
         return None
     if j.get("identity"):
         return j["identity"]
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     card = next((c for c in bt.cards() if c.get("cache_key") == j.get("cache_key")), None) or {"cache_key": j.get("cache_key"), "dataset": j.get("dataset"), "epochs": j.get("epochs")}
     ev = {"test": j.get("test") or {}}
     ident = _identity(job_id, card, ev, j.get("arch"), j.get("trust") or {})
@@ -335,7 +335,7 @@ def list_jobs(limit: int = 20) -> list[dict]:
 def _identity(job_id: str, card: dict, ev: dict, arch: str, tr: dict) -> dict:
     """The record a training job leaves behind for the causal chain: what was trained, on what,
     with which upstream code, where, and how it scored against persistence on the held-out test."""
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import train_eval as te
     j = get(job_id)
     detail = str(j.get("instance_detail") or "")
     t = (ev.get("test") or {}).get(arch) or {}
@@ -372,9 +372,9 @@ def reattach_on_startup() -> None:
 
 def _resume_aws(job_id: str) -> None:
     """Continue polling a cloud job after a restart; on DONE, collect and finish like a fresh run."""
-    from pipeline.forecasting import aws_train as at
-    from pipeline.forecasting import basicts_train as bt
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import aws_train as at
+    from traffictwin.forecasting.training import basicts_train as bt
+    from traffictwin.forecasting.training import train_eval as te
     j = get(job_id)
     try:
         _aws_environ()

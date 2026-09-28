@@ -225,7 +225,7 @@ class Observatory:
         import sys
         from pathlib import Path
         sys.path.insert(0, str(REPO))
-        from pipeline.forecasting.adapters.base import CityData
+        from traffictwin.forecasting.adapters.base import CityData
         rows, nodes = self.series(city_id)
         values = np.array([r["v"] for r in rows], dtype="float32") if rows else \
             np.zeros((0, len(nodes)), dtype="float32")

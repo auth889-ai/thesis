@@ -11,11 +11,11 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
-from pipeline.forecasting.adapters.base import CityData, NotAvailable      # noqa: E402
-from pipeline.forecasting.adapters.baselines import PersistenceAdapter     # noqa: E402
-from pipeline.forecasting.adapters.checkpoint_models import GraphWaveNetAdapter  # noqa: E402
-from pipeline.forecasting.adapters.opencity import OpenCityAdapter          # noqa: E402
-from pipeline.forecasting.adapters.registry import available_for, forecast  # noqa: E402
+from traffictwin.forecasting.adapters.base import CityData, NotAvailable      # noqa: E402
+from traffictwin.forecasting.adapters.baselines import PersistenceAdapter     # noqa: E402
+from traffictwin.forecasting.adapters.checkpoint_models import GraphWaveNetAdapter  # noqa: E402
+from traffictwin.forecasting.adapters.opencity import OpenCityAdapter          # noqa: E402
+from traffictwin.forecasting.adapters.registry import available_for, forecast  # noqa: E402
 
 
 def city(T=30, N=250, city_id="dhaka"):
@@ -109,7 +109,7 @@ def test_not_available_carries_reasons():
 
 def _chronos():
     pytest.importorskip("chronos", reason="chronos-forecasting not installed")
-    from pipeline.forecasting.adapters.chronos_adapter import ChronosAdapter
+    from traffictwin.forecasting.adapters.chronos_adapter import ChronosAdapter
     return ChronosAdapter()
 
 
@@ -149,7 +149,7 @@ def test_chronos_returns_uncertainty_and_declares_its_blind_spot():
 # --------------------------------------------------------------------------
 
 def test_selection_states_which_model_and_why():
-    from pipeline.forecasting.adapters.registry import select
+    from traffictwin.forecasting.adapters.registry import select
     d = select(city(T=40, N=12))
     assert d["selected_model"], "something must be selected"
     assert d["reason"], "the choice must be explained"
@@ -159,7 +159,7 @@ def test_selection_states_which_model_and_why():
 def test_a_requested_model_that_cannot_serve_is_refused_not_swapped():
     """The failure this prevents: asking for OpenCity and being handed persistence's answer
     under OpenCity's name."""
-    from pipeline.forecasting.adapters.registry import select
+    from traffictwin.forecasting.adapters.registry import select
     d = select(city(T=40, N=12), requested="OpenCity-plus")
     assert d["selected_model"] is None
     assert "cannot serve" in d["reason"]
@@ -167,7 +167,7 @@ def test_a_requested_model_that_cannot_serve_is_refused_not_swapped():
 
 
 def test_fallback_is_declared_and_names_what_was_skipped():
-    from pipeline.forecasting.adapters.registry import select
+    from traffictwin.forecasting.adapters.registry import select
     pytest.importorskip("chronos", reason="chronos-forecasting not installed")
     d = select(city(T=40, N=12))
     assert d["fallback"] is True
@@ -176,6 +176,6 @@ def test_fallback_is_declared_and_names_what_was_skipped():
 
 def test_a_graph_capable_city_is_not_sent_to_the_univariate_model():
     """Ordering matters: where a spatio-temporal model can run, it should win."""
-    from pipeline.forecasting.adapters.registry import select
+    from traffictwin.forecasting.adapters.registry import select
     d = select(city(T=40, N=12))
     assert d["selected_model"] != "persistence", "a real model must beat the floor when available"

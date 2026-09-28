@@ -36,7 +36,7 @@ class Forecaster:
     """
 
     def __init__(self, P: dict, seed: int):
-        from pipeline.forecasting import train_eval as te
+        from traffictwin.forecasting.training import train_eval as te
         from traffictwin.forecasting import ForecastService
         self.service = ForecastService.metr_la_gwnet()
         self.raw, self.vals = self.service.raw, self.service.values

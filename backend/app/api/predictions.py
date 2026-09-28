@@ -17,7 +17,7 @@ def models(city_id: str = "dhaka"):
     """Every forecasting model and whether it can honestly serve this city right now."""
     import sys
     sys.path.insert(0, str(config.REPO))
-    from pipeline.forecasting.adapters.registry import available_for
+    from traffictwin.forecasting.adapters.registry import available_for
     cd = observatory_mod.observatory.city_data(city_id)
     return {"city_id": city_id, "input": cd.describe(),
             "models": available_for(cd)}
@@ -29,7 +29,7 @@ def _recorded_len(city_id: str) -> int:
         return 0
     import sys
     sys.path.insert(0, str(config.REPO))
-    from pipeline.forecasting import live_state
+    from traffictwin.forecasting.live import live_state
     if not live_state.SRC.exists():
         return 0
     rows = live_state.load_rows(live_state.SRC)
@@ -56,7 +56,7 @@ def city_forecast(city_id: str, horizons: str = "5,15,30,60", source: str = "aut
     """
     import sys
     sys.path.insert(0, str(config.REPO))
-    from pipeline.forecasting.adapters.registry import forecast as run_forecast
+    from traffictwin.forecasting.adapters.registry import forecast as run_forecast
     hs = [int(h) for h in horizons.split(",") if h.strip().isdigit()]
     cd = observatory_mod.observatory.city_data(city_id)
     use_recorded = source == "recorded" or (source == "auto" and _recorded_is_longer(city_id, cd))
@@ -111,7 +111,7 @@ def history(city_id: str, horizons: str = "5,15,30,60"):
     """
     import sys
     sys.path.insert(0, str(config.REPO))
-    from pipeline.forecasting.adapters.registry import forecast as run_forecast
+    from traffictwin.forecasting.adapters.registry import forecast as run_forecast
     rows, nodes = observatory_mod.observatory.series(city_id)
     hs = [int(h) for h in horizons.split(",") if h.strip().isdigit()]
     cd = observatory_mod.observatory.city_data(city_id)

@@ -21,7 +21,7 @@ def opencity_status(city_id: str):
     """
     import sys
     sys.path.insert(0, str(config.REPO))
-    from pipeline.forecasting import opencity_city_eval as oce
+    from traffictwin.forecasting.opencity import opencity_city_eval as oce
     return oce.readiness(city_id)
 
 

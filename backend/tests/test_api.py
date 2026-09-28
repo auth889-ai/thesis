@@ -209,7 +209,7 @@ def test_city_id_resolution_and_level_conversion():
     from backend.app.routing import trip_analysis as analyze
     assert analyze.city_id_for("Dhaka") == "dhaka"
     assert analyze.city_id_for("Nairobi") in ("nairobi_kenya", None)
-    from pipeline.forecasting.adapters.base import CityData
+    from traffictwin.forecasting.adapters.base import CityData
     import numpy as np
     cd = CityData(city_id="x", node_ids=["a", "b"], values=np.array([[10.0, 5.0]], dtype="float32"))
     live = {"corridors": [{"id": "a", "distance_m": 1000, "static_duration_s": 100},     # free-flow 10 m/s

@@ -10,7 +10,7 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-from pipeline.forecasting import basicts_train as bt  # noqa: E402
+from traffictwin.forecasting.training import basicts_train as bt  # noqa: E402
 
 needs_bts = pytest.mark.skipif(not bt.BTS.exists(), reason="pinned BasicTS-legacy checkout missing")
 
@@ -60,7 +60,7 @@ def test_end_to_end_on_an_upload(tmp_path, monkeypatch):
 
 # ------------------------------------------------------------------ the GPU path, without touching AWS
 def test_city_job_script_has_no_unsubstituted_placeholders():
-    from pipeline.forecasting import aws_train as at
+    from traffictwin.forecasting.training import aws_train as at
     assert at.city_job_name("user:Los Angeles two weeks") == "city-user-los-angeles-two-weeks"
     script = at.CITY_SCRIPT
     for k, v in (("@NAME@", "city-x"), ("@BUCKET@", "b"), ("@SHA@", "abc"), ("@MODELS@", "STID GWNet"), ("@DSNAME@", "DF_x"), ("@MAXH@", "1")):
@@ -117,7 +117,7 @@ def test_cloud_status_never_exposes_a_key(monkeypatch):
 
 # ------------------------------------------------------------------ evaluation rules and the trust gate
 def test_splits_are_chronological_and_windows_stay_inside():
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import train_eval as te
     sp = te.splits(1000)
     assert sp == {"train": (0, 700), "val": (700, 800), "test": (800, 1000)}
     w = te.windows(*sp["test"])
@@ -125,7 +125,7 @@ def test_splits_are_chronological_and_windows_stay_inside():
 
 
 def test_trust_gate_labels():
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import train_eval as te
     q = {"passed": True}; ver = {"passed": True}
     good = {"overall": {"MAE": 5.0, "skill_vs_persistence": 0.25}}
     bad = {"overall": {"MAE": 8.0, "skill_vs_persistence": -0.4}}
@@ -137,7 +137,7 @@ def test_trust_gate_labels():
 
 
 def test_metrics_mask_zeros_and_f1_uses_freeflow():
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import train_eval as te
     y = np.array([[60.0, 0.0, 20.0], [50.0, 40.0, 10.0]]); p = np.array([[58.0, 5.0, 25.0], [52.0, 41.0, 30.0]])
     m = te.metrics_at(p, y, freeflow=np.array([60.0, 60.0, 60.0]))
     assert m["n"] == 5 and abs(m["MAE"] - (2 + 5 + 2 + 1 + 20) / 5) < 1e-9
@@ -147,7 +147,7 @@ def test_metrics_mask_zeros_and_f1_uses_freeflow():
 
 
 def test_cache_key_changes_with_every_ingredient():
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import train_eval as te
     base = te.cache_key("d", "g", "STID", "c", "4c3e2d373c")
     assert base == "d-g-STID-c-4c3e2d3"
     assert len({base, te.cache_key("d2", "g", "STID", "c", "4c3e2d373c"), te.cache_key("d", "g", "GWNet", "c", "4c3e2d373c"),

@@ -371,7 +371,7 @@ def _run(job: str, p: dict) -> None:
         elif cid and observe["steps_have"] >= 1:
             # a city sir asked us to observe: its own corridors, its own live history, the same
             # forecast interface — persistence from the first sample, Chronos from the eighth
-            from pipeline.forecasting.adapters.registry import forecast as run_forecast
+            from traffictwin.forecasting.adapters.registry import forecast as run_forecast
             cd_city = obs_mod.observatory.city_data(cid)
             corr = service.corridors_for(cid)
             fc = run_forecast(cd_city, HORIZONS, model_req)
@@ -393,7 +393,7 @@ def _run(job: str, p: dict) -> None:
             if not dhaka:
                 raise LookupError("no observatory for this city")
             from backend.app.live import observatory as obs_mod
-            from pipeline.forecasting.adapters.registry import forecast as run_forecast
+            from traffictwin.forecasting.adapters.registry import forecast as run_forecast
             cd = obs_mod.observatory.city_data(city)
             if cd.shape[0] >= 8:
                 import numpy as np
@@ -555,7 +555,7 @@ def status(job: str) -> dict:
 def models_for_city(city: str) -> list[dict]:
     """Which forecast models can serve THIS city's corridor history right now, with reasons —
     the registry's own gates, so the menu never offers a model that would refuse."""
-    from pipeline.forecasting.adapters.registry import available_for
+    from traffictwin.forecasting.adapters.registry import available_for
     from backend.app.live import observatory as obs_mod
     cid = city_id_for(city)
     out = [{"model": "auto", "label": "Automatic (best available)", "available": True, "reasons": []}]

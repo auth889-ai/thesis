@@ -37,7 +37,7 @@ LABEL = {"STID": "STID", "GWNet": "Graph WaveNet", "STAEformer": "STAEformer", "
 
 
 def _cards_for(scope: str) -> dict[str, dict]:
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     out: dict[str, dict] = {}
     for c in bt.cards():
         if c["dataset"] == scope:
@@ -63,8 +63,8 @@ def _latest_eval(cards: dict[str, dict]) -> dict | None:
 
 def current_dataset_hash(scope: str) -> str | None:
     """The hash of the data the harness would serve NOW for this scope (prepared on demand)."""
-    from pipeline.forecasting import basicts_train as bt
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import basicts_train as bt
+    from traffictwin.forecasting.training import train_eval as te
     name = bt.bts_name(scope)
     f = bt.BTS / "datasets" / name / "data.dat"
     if not f.exists():
@@ -98,7 +98,7 @@ def registry(scope: str) -> dict:
     from backend.app.forecasting import scientific_prediction
     if scope in scientific_prediction.DATASETS:
         return scientific_prediction.registry(scope)
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import train_eval as te
     is_dataset = scope.startswith("user:")
     cards = _cards_for(scope) if is_dataset else {}
     cur = current_dataset_hash(scope) if (is_dataset and cards) else None
@@ -114,7 +114,7 @@ def registry(scope: str) -> dict:
             entries.append(_entry(m, "trained", g, trained=True, reason=None if g["compatible"] else "trained on an earlier version of this data — train again", checkpoint=c["checkpoint"].split("/")[-1], checkpoint_path=c["checkpoint"],
                                   cache_key=c.get("cache_key"), trained_utc=c.get("trained_utc"), trained_on=c.get("trained_on"),
                                   epochs=c.get("epochs"), validation_MAE=val_mae, trust=tr.get("label"), trust_message=tr.get("message"),
-                                  test_skill=tr.get("skill"), paper=__import__("pipeline.forecasting.basicts_train", fromlist=["ARCH_PAPER"]).ARCH_PAPER.get(m)))
+                                  test_skill=tr.get("skill"), paper=__import__("traffictwin.forecasting.training.basicts_train", fromlist=["ARCH_PAPER"]).ARCH_PAPER.get(m)))
         else:
             entries.append(_entry(m, "trained", {"compatible": is_dataset, "data_quality": False, "verified": False, "beats_val": False, "trust": False},
                                   trained=False, reason="not trained on this data yet" if is_dataset else "trains on uploaded datasets only"))

@@ -28,7 +28,7 @@ import numpy as np
 
 from traffictwin.paths import REPO
 
-from pipeline.forecasting.live_to_edges import BAND_MID, multiplier as level_ratio  # noqa: E402
+from traffictwin.forecasting.live.live_to_edges import BAND_MID, multiplier as level_ratio  # noqa: E402
 
 CONFIG_FILE = REPO / "src/traffictwin/optimization/routing_config.json"
 

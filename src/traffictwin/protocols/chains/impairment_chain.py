@@ -50,7 +50,7 @@ sys.path.insert(0, str(REPO))
 
 import pipeline.routing.predictive_routing as pr                      # noqa: E402
 from traffictwin.protocols.chains import live_chain as lc                         # noqa: E402
-from pipeline.forecasting.live_to_edges import write_weights          # noqa: E402
+from traffictwin.forecasting.live.live_to_edges import write_weights          # noqa: E402
 
 RESULTS = REPO / "results/routing"
 NET_RESULTS = REPO / "results/networking/latency.csv"

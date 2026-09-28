@@ -105,7 +105,7 @@ def _background(city_id: str) -> dict:
 def _series(dataset: str):
     if dataset in scientific_prediction.DATASETS:
         return scientific_prediction.series()
-    from pipeline.forecasting import basicts_train as bt
+    from traffictwin.forecasting.training import basicts_train as bt
     from backend.app.datasets import uploads as user_datasets
     meta = user_datasets.load_meta(dataset.split(":", 1)[1])
     if not meta:
@@ -136,7 +136,7 @@ def _index(as_of, length):
 
 def held_out(T: int, meta: dict) -> dict:
     """The chronological held-out window (last 20 %) and a handful of moments inside it."""
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import train_eval as te
     sp = te.splits(T)
     lo, hi = sp["test"][0] + 12, T - 12
     step_s = int(meta.get("interval_s", 300))

@@ -47,7 +47,7 @@ def recent():
 
 
 def observation_window():
-    from pipeline.forecasting.basicts_train import _prepared
+    from traffictwin.forecasting.training.basicts_train import _prepared
     raw, _ = _prepared("METR-LA")
     return {"minimum": 12, "maximum": int(raw.shape[0]) - 28, "default": int(raw.shape[0]) - 28,
             "history_steps": 12, "interval_s": 300, "dataset": "METR-LA", "origin": "RECORDED_OBSERVATIONS"}

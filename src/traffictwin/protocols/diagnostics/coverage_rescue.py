@@ -100,8 +100,8 @@ def map_207(city_id: str) -> dict:
 # ---------------------------------------------------------------------------
 
 def forecast_207(as_of: int | None = None) -> dict:
-    from pipeline.forecasting import basicts_train as bt
-    from pipeline.forecasting import train_eval as te
+    from traffictwin.forecasting.training import basicts_train as bt
+    from traffictwin.forecasting.training import train_eval as te
     import torch
     raw, _ = bt._prepared("METR-LA")
     T = raw.shape[0]; sp = te.splits(T); lo = sp["test"][0]
