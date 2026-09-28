@@ -150,7 +150,8 @@ def test_runs_along_needs_coverage_not_just_a_touch():
 
 def test_analyze_job_reports_real_stages_and_refuses_honestly(client, monkeypatch):
     from app.routing import trip_analysis as analyze
-    monkeypatch.setattr(analyze, "resolve_place", lambda t, city="dhaka": (_ for _ in ()).throw(ValueError(f"could not find '{t}'")))
+    from app.routing.trip import places
+    monkeypatch.setattr(places, "resolve_place", lambda t, city="dhaka": (_ for _ in ()).throw(ValueError(f"could not find '{t}'")))
     j = client.post("/api/analyze", json={"origin": "nowhere-xyz", "destination": "shahbagh"}).json()
     for _ in range(100):
         s = client.get(f"/api/analyze/{j['job']}").json()

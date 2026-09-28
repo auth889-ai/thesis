@@ -69,7 +69,8 @@ def city(tmp_path, monkeypatch):
                             "segments": seg([[olat, olng], list(mid), [dlat, dlng]])}]}
     monkeypatch.setattr(live.service, "routes", routes)
     from app.routing import trip_analysis as analyze
-    monkeypatch.setattr(analyze, "resolve_place", lambda text, city="": {"lat": float(text.split(",")[0]), "lng": float(text.split(",")[1]), "label": text, "source": "coordinates"})
+    from app.routing.trip import places
+    monkeypatch.setattr(places, "resolve_place", lambda text, city="": {"lat": float(text.split(",")[0]), "lng": float(text.split(",")[1]), "label": text, "source": "coordinates"})
     return user_datasets, dataset_ops, provenance
 
 
