@@ -1,3 +1,4 @@
+import {Prose} from "@/components/Prose";
 import {Pill} from "@/components/ui";
 import type {Step, ToolCall} from "./types";
 import {callSentence, decisionWords} from "./words";
@@ -11,7 +12,7 @@ export function StepList({steps}: {steps: Step[]}) {
     <ol className="stepslist">
       {steps.map((s, i) => (
         <li key={s.id}>
-          <div className="step-thought"><span className="step-n">{i + 1}</span>{s.thought}</div>
+          <div className="step-thought"><span className="step-n">{i + 1}</span><Prose text={s.thought} /></div>
           {s.call && <CallLine call={s.call} />}
           {s.question && <div className="step-q">❓ {s.question}{s.answer != null && <span className="muted"> → {s.answer}</span>}</div>}
         </li>

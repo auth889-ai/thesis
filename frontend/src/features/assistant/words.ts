@@ -33,7 +33,7 @@ export function auditSentence(e: AuditEntry): string | null {
     case "approval": return `${d.approved ? "You approved" : "You declined"}: ${toolWords(d.tool)}`;
     case "question": return `Asked you: ${d.question}`;
     case "answer": return `You answered: ${d.answer}`;
-    case "summary": return `Finished: ${d.text}`;
+    case "summary": return `Finished: ${String(d.text).replace(/\*\*/g, "").split(/[\n✓]/)[0].trim()}`;
     case "error": return `Stopped: ${d.reason}`;
     case "refusal": return `Refused: ${d.reason}`;
     case "mcp_call": return `${toolWords(d.tool)} (from a connected assistant)`;

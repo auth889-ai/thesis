@@ -2,6 +2,7 @@ import {useState} from "react";
 
 import {Button, Pill} from "@/components/ui";
 import {ago} from "@/lib/format";
+import {Prose} from "@/components/Prose";
 import {StepList} from "./StepList";
 import {STATUS_TONE, STATUS_WORDS, type Goal, type Step} from "./types";
 import {argsWords, riskWords, toolWords} from "./words";
@@ -16,7 +17,7 @@ export function GoalCard({goal, onApprove, onAnswer, busy}: {goal: Goal; onAppro
         <div><h3>{goal.text}</h3><p className="muted">{ago(goal.updated_utc)} · {goal.steps.length} steps</p></div>
         <Pill tone={STATUS_TONE[goal.status]}>{STATUS_WORDS[goal.status]}</Pill>
       </div>
-      {goal.summary && <div className={`note ${goal.status === "failed" ? "bad" : "ok"}`}>{goal.summary}</div>}
+      {goal.summary && <div className={`note ${goal.status === "failed" ? "bad" : "ok"}`}><Prose text={goal.summary} /></div>}
       {pending?.call && <ApprovalCard step={pending} busy={busy} onDecide={(ok) => onApprove(pending.call!.id, ok)} />}
       {question && <QuestionCard step={question} busy={busy} onAnswer={(t) => onAnswer(question.id, t)} />}
       <StepList steps={goal.steps} />

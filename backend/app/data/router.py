@@ -112,6 +112,13 @@ def city_observe(city_id: str, payload: dict | None = None):
                      "OpenCity-plus": "after 288 samples (24 h) with >= 9 corridors"}}
 
 
+@router.get("/api/city/{city_id}/map", tags=["city"])
+def city_map(city_id: str):
+    """The commuter's city map: every observed corridor with its state now and the forecast level at +15/+30/+60, computed fresh."""
+    from app.data import city_map as cm
+    return cm.build(analyze.city_id_for(city_id) or city_id)
+
+
 @router.get("/api/city/{city_id}/observe", tags=["city"])
 def city_observe_status(city_id: str):
     city_id = analyze.city_id_for(city_id) or city_id

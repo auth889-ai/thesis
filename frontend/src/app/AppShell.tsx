@@ -2,6 +2,7 @@ import {useQuery} from "@tanstack/react-query";
 import {Link, NavLink, Outlet, useLocation} from "react-router-dom";
 
 import {api} from "@/lib/api";
+import {photoUrl} from "./photos";
 import {ErrorBoundary} from "./ErrorBoundary";
 import {Hero} from "./Hero";
 import {APP_NAV} from "./routes";
@@ -14,6 +15,7 @@ export function AppShell() {
   return (
     <div className="shell">
       <div className="sheet">
+        <div className="sheet-photo" style={{backgroundImage: `url(${photoUrl(current.photo)})`}} aria-hidden="true" />
         <header className="topbar">
           <Link to="/today" className="brand"><span className="brand-mark">TT</span><div><div className="brand-name">TrafficTwin</div><div className="brand-sub">leave on time, every day</div></div></Link>
           <nav>{APP_NAV.map((n) => <NavLink key={n.path} to={n.path} className={({isActive}) => (isActive ? "on" : "")}>{n.label}</NavLink>)}</nav>
