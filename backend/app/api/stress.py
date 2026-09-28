@@ -43,7 +43,7 @@ def experiment_stress(city: str = "la_c4_central_wide"):
     root = config.REPO / "results/v2x/stress" / city
     if not root.is_dir():
         return {"available": False, "city": city}
-    cc = _read(config.REPO / "src/pipeline/v2x/controller_config.json") or {}
+    cc = _read(config.REPO / "src/traffictwin/protocols/controller_config.json") or {}
     stress = cc.get("stress_scenario") or {}
     sweeps = {}
     for sj in sorted(root.glob("summary_*.json")):

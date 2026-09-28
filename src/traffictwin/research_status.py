@@ -25,7 +25,7 @@ def compute_research_status() -> dict:
     skills = {h: v.get("skill") for h, v in (verify.get("held_out") or {}).items()}
     forecast_ok = bool(skills) and all(isinstance(v, (int, float)) and v > 0 for v in skills.values())
 
-    cfg_path = REPO / "src/pipeline/v2x/controller_config.json"
+    cfg_path = REPO / "src/traffictwin/protocols/controller_config.json"
     cfg = _read(cfg_path) or {}
     stress = ((cfg.get("stress_scenario") or {}).get("la_c4_central_wide:uniform:arterial") or {})
     stress_ok = stress.get("gate") == "VALID_TRAFFIC_STRESS_CASE"

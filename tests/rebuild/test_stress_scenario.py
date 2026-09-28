@@ -74,13 +74,13 @@ def test_oracle_gate_needs_a_helped_label_not_a_negative_mean():
 
 def test_learned_stage_is_refused_without_a_passed_development_gate(tmp_path, monkeypatch, capsys):
     monkeypatch.setattr(se, "REPO", tmp_path)
-    (tmp_path / "src/pipeline/v2x").mkdir(parents=True)
-    (tmp_path / "src/pipeline/v2x/controller_config.json").write_text(json.dumps({"stress_scenario": {"c:uniform:arterial": {"chosen_scale": 4.0, "gate": "VALID_TRAFFIC_STRESS_CASE"}}}))
+    (tmp_path / "src/traffictwin/protocols").mkdir(parents=True)
+    (tmp_path / "src/traffictwin/protocols/controller_config.json").write_text(json.dumps({"stress_scenario": {"c:uniform:arterial": {"chosen_scale": 4.0, "gate": "VALID_TRAFFIC_STRESS_CASE"}}}))
     monkeypatch.setattr(sys, "argv", ["x", "--scenario", "A", "--stage", "learned", "--city", "c", "--od-rule", "arterial"])
     with pytest.raises(SystemExit) as e:
         se.main()
     assert "refused" in str(e.value)
-    (tmp_path / "src/pipeline/v2x/controller_config.json").write_text(json.dumps({"stress_scenario": {"c:uniform:arterial": {"chosen_scale": 2.0, "gate": "STRESS_GATE_FAILED"}}}))
+    (tmp_path / "src/traffictwin/protocols/controller_config.json").write_text(json.dumps({"stress_scenario": {"c:uniform:arterial": {"chosen_scale": 2.0, "gate": "STRESS_GATE_FAILED"}}}))
     monkeypatch.setattr(sys, "argv", ["x", "--scenario", "A", "--stage", "oracle", "--city", "c", "--od-rule", "arterial"])
     with pytest.raises(SystemExit) as e:
         se.main()

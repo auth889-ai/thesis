@@ -1,7 +1,7 @@
 """NETWORK-LEVEL ROUTE ASSIGNMENT — the routing layer that asks "which set of route assignments
 minimises total network cost?" instead of "what is cheapest for this vehicle?".
 
-Four pieces, each switchable from src/pipeline/v2x/controller_config.json so the ORACLE ROUTING CAPACITY
+Four pieces, each switchable from src/traffictwin/protocols/controller_config.json so the ORACLE ROUTING CAPACITY
 test can isolate them:
 
   1. DIVERSE CANDIDATES (`candidates.diverse`)

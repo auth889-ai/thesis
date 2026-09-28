@@ -10,7 +10,7 @@ from pathlib import Path
 import pytest
 
 REPO = Path(__file__).resolve().parents[2]
-SCRIPT = REPO / "src/pipeline/federated/summarise_impairment.py"
+SCRIPT = REPO / "src/traffictwin/forecasting/federated/summarise_impairment.py"
 
 
 def _run(tmp_out: Path):

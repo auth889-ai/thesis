@@ -135,8 +135,8 @@ def test_runtime_paths_use_consolidated_artifacts_and_source():
     assert live_reference.HISTORY.is_relative_to(ROOT / "results/artifacts")
     assert runtime.DEFAULT_ROUTES.is_relative_to(ROOT / "results/artifacts")
     assert credentials.ENV_FILE == ROOT / ".env"
-    assert edge_costs.CONFIG_FILE == ROOT / "src/pipeline/routing/routing_config.json"
-    assert closed_loop.CONTROLLER_CFG == ROOT / "src/pipeline/v2x/controller_config.json"
+    assert edge_costs.CONFIG_FILE == ROOT / "src/traffictwin/optimization/routing_config.json"
+    assert closed_loop.CONTROLLER_CFG == ROOT / "src/traffictwin/protocols/controller_config.json"
 
 
 def test_relocated_recorder_cli_starts_without_requesting_live_data():

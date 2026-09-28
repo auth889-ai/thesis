@@ -16,7 +16,7 @@ EVALUATES and ADMITS among those routes:
 A vehicle is advised to change only when the predicted saving clears the configured thresholds,
 and it is admitted only when the alternative's edges stay under the load ratio and the alternative
 has not already absorbed the configured share of this round. Every term, every threshold and every
-decision is in the returned record. All coefficients: src/pipeline/routing/routing_config.json.
+decision is in the returned record. All coefficients: src/traffictwin/optimization/routing_config.json.
 """
 from __future__ import annotations
 

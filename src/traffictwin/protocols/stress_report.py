@@ -75,7 +75,7 @@ def main() -> int:
                     if lt:
                         L += ["First reroute applied per arm (lead time of predictive vs reactive advice): " + "; ".join(lt), ""]
     # ---- the 15-item final report, every line derived from files (missing file → "not run")
-    cc = json.loads((REPO / "src/pipeline/v2x/controller_config.json").read_text()); stress = cc.get("stress_scenario") or {}
+    cc = json.loads((REPO / "src/traffictwin/protocols/controller_config.json").read_text()); stress = cc.get("stress_scenario") or {}
     valid = {k: v for k, v in stress.items() if v.get("gate") == "VALID_TRAFFIC_STRESS_CASE"}
     def gate_line(city, sc, seedset):
         f = ST / city / f"scenario{sc}_oracle_gate_{seedset}.json"

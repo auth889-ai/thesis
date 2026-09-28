@@ -58,7 +58,7 @@ from traffictwin.protocols.oracle_gate import never_inserted_charge, paired, sha
 from traffictwin.networking.channel import PROFILES, Channel, connected
 
 OUT = REPO / "results/v2x/closed_loop"
-CONTROLLER_CFG = REPO / "src/pipeline/v2x/controller_config.json"
+CONTROLLER_CFG = REPO / "src/traffictwin/protocols/controller_config.json"
 
 
 def controller_config() -> dict:

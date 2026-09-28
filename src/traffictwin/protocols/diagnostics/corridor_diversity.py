@@ -76,7 +76,7 @@ def main() -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--city", action="append", required=True); p.add_argument("--max-trips", type=int, default=400)
     a = p.parse_args()
-    cc = json.loads((REPO / "src/pipeline/v2x/controller_config.json").read_text()); cfg = ec.load_config()
+    cc = json.loads((REPO / "src/traffictwin/protocols/controller_config.json").read_text()); cfg = ec.load_config()
     out_root = REPO / "results/v2x/corridor_diversity"; out_root.mkdir(parents=True, exist_ok=True)
     rows = []
     for c in a.city:

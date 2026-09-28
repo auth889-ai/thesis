@@ -14,7 +14,7 @@ connections of a covered edge are DERIVED: their ratio is decayed towards free f
 configured weight, and each carries its graph distance, decay weight and source corridor. Nothing
 else is priced; unpriced edges keep their free-flow time in SUMO and are reported as such.
 
-Every number comes from src/pipeline/routing/routing_config.json, which is copied into the output.
+Every number comes from src/traffictwin/optimization/routing_config.json, which is copied into the output.
 The output feeds `duarouter --weight-files` / `traci.edge.adaptTraveltime`; SUMO does the routing.
 """
 from __future__ import annotations
@@ -30,7 +30,7 @@ from traffictwin.paths import REPO
 
 from pipeline.forecasting.live_to_edges import BAND_MID, multiplier as level_ratio  # noqa: E402
 
-CONFIG_FILE = REPO / "src/pipeline/routing/routing_config.json"
+CONFIG_FILE = REPO / "src/traffictwin/optimization/routing_config.json"
 
 
 def load_config(path: Path = CONFIG_FILE) -> dict:

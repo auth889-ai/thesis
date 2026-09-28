@@ -9,3 +9,4 @@ for _path in (str(_REPO), str(_REPO / "src")):
 from traffictwin.optimization import edge_costs as _implementation
 
 sys.modules[__name__] = _implementation
+globals().update({_k: _v for _k, _v in vars(_implementation).items() if not _k.startswith("__")})   # loaders that bypass sys.modules still see the implementation

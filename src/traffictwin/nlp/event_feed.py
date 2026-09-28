@@ -10,7 +10,7 @@
 Pipeline per post
   1. label, confidence   = results/nlp/tfidf_lr_dhaka_aug.joblib if present else tfidf_lr.joblib (predict_proba)
                            [--model distilbert uses results/nlp/distilbert/model]
-  2. place, lat, lon     = longest gazetteer alias found on a word boundary (src/pipeline/nlp/gazetteer.json)
+  2. place, lat, lon     = longest gazetteer alias found on a word boundary (src/traffictwin/nlp/gazetteer.json)
   3. edges               = sumolib net.getNeighboringEdges(x, y, r=150 m) after net.convertLonLat2XY;
                            OUT_OF_NETWORK if the place is outside the R1 bounding box, NO_EDGE_IN_RADIUS
                            if inside but no edge within 150 m, NO_LOCATION if no gazetteer hit

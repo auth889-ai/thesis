@@ -98,7 +98,7 @@ def scenario_for(rec: dict, emit) -> dict:
     key = hashlib.sha256(json.dumps(bbox).encode()).hexdigest()[:8]
     city_id = re.sub(r"[^a-z0-9]+", "_", str(rec.get("city", "city")).lower()).strip("_")[:24] + f"_{key}"
     from traffictwin.data.cities import registry
-    from traffictwin.digital_twin import scenario_builder
+    from traffictwin.digital_twin import scenario_builder as sumo_scenario
     if not registry.get(city_id):
         registry.create_from_bbox(f"{rec.get('city', 'city')} — {o.get('label', '')} → {d.get('label', '')}", bbox, city_id=city_id)
     man_f = sumo_scenario.scenario_dir(city_id) / "MANIFEST.json"

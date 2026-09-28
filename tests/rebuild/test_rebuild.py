@@ -88,7 +88,7 @@ def test_event_feed_maps_karwan_bazar_to_r1_edges(tmp_path):
 
 
 def test_gazetteer_all_inside_or_labelled():
-    g = json.loads((REPO / "src/pipeline/nlp/gazetteer.json").read_text())
+    g = json.loads((REPO / "src/traffictwin/nlp/gazetteer.json").read_text())
     places = g if isinstance(g, list) else g.get("places", list(g.values()))
     assert len(places) >= 25
     for p in places:

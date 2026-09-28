@@ -27,7 +27,7 @@ KEY = "total_vehicle_hours_incl_never_inserted"
 
 
 def gate(report: dict, arm: str, tests_passed: bool = True) -> dict:
-    cfg = json.loads((REPO / "src/pipeline/v2x/controller_config.json").read_text())
+    cfg = json.loads((REPO / "src/traffictwin/protocols/controller_config.json").read_text())
     eval_seeds = set(cfg["seeds"]["evaluation"]); seeds = set(report.get("seeds", []))
     on_eval = bool(seeds) and seeds <= eval_seeds
     reroutes = (report.get("reroutes_by_arm") or {}).get(arm, 0)

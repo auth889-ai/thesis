@@ -13,7 +13,7 @@ Scenario B  UNEXPECTED INCIDENT in the stress scenario: uniform demand at the ca
             cap on the corridor's busiest DIRECT detector edge at incident_t, fork before the incident.
 
 Frozen protocol
-    stress level      src/pipeline/v2x/controller_config.json → stress_scenario[<city>:uniform:<od_rule>] written by
+    stress level      src/traffictwin/protocols/controller_config.json → stress_scenario[<city>:uniform:<od_rule>] written by
                       stress_sweep.py on DEVELOPMENT seeds; the experiment refuses to run if its gate is not
                       VALID_TRAFFIC_STRESS_CASE (a rejected scenario is a result, not something to tune away)
     stage oracle      arms baseline, reactive, oracle_v2x. ORACLE_HEADROOM passes only when oracle_v2x beats
@@ -47,7 +47,7 @@ SCENARIOS = {"A": {"profile": "peak", "fork_t0": 1200, "duration_s": 4800, "inci
 
 
 def stress_level(city: str, od_rule: str) -> dict:
-    cc = json.loads((REPO / "src/pipeline/v2x/controller_config.json").read_text())
+    cc = json.loads((REPO / "src/traffictwin/protocols/controller_config.json").read_text())
     key = f"{city}:uniform:{od_rule}"
     lvl = (cc.get("stress_scenario") or {}).get(key)
     if not lvl:

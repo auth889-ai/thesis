@@ -21,7 +21,7 @@ For every (P, seed) point the script
      iff rng.nextDouble() < w -- "will not be equipped due to a weight condition".)
   3. sets randomSeed / duration in scenario_config.json (+ SUMO --seed via sumo_config.json
      additionalSumoParameters, tripinfo/summary outputs, absolute paths);
-  4. runs `mosaic.sh -c <scenario_config.json> -l src/pipeline/networking/logback_sweep.xml -w 0`
+  4. runs `mosaic.sh -c <scenario_config.json> -l src/traffictwin/networking/mosaic/logback_sweep.xml -w 0`
      (logback_sweep.xml == etc/logback.xml with the per-vehicle app-log delegate at WARN:
       the 1000 s reference run wrote 37 GB of per-vehicle DENM reception lines);
   5. parses the MOSAIC log directory (logs/log-<ts>-dhaka_r1 under the MOSAIC install):

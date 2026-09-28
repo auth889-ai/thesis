@@ -9,3 +9,4 @@ from traffictwin.digital_twin import runtime as _implementation
 if __name__ == "__main__":
     raise SystemExit(_implementation.main())
 sys.modules[__name__] = _implementation
+globals().update({_k: _v for _k, _v in vars(_implementation).items() if not _k.startswith("__")})   # loaders that bypass sys.modules still see the implementation
