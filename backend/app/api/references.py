@@ -7,7 +7,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 
-from backend.app import config
+from traffictwin.common import evidence_paths as config
 
 router = APIRouter()
 SRC = config.REPO / "docs/references.json"

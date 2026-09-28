@@ -17,8 +17,8 @@ from statistics import fmean
 import csv
 import subprocess
 
-from backend.app import config
-from backend.app.config import LEVELS
+from traffictwin.common import evidence_paths as config
+from traffictwin.common.evidence_paths import LEVELS
 from backend.app.api.schemas import *  # noqa: F403
 
 

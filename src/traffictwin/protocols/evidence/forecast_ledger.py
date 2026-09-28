@@ -22,7 +22,7 @@ import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from backend.app import config
+from traffictwin.common import evidence_paths as config
 
 DB = config.REPO / "results/forecasting/forecast_log.sqlite"
 TICK_S = 300

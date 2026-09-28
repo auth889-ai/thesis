@@ -86,14 +86,14 @@ PRED_ARMS = {"persistence_predictive": "persistence", "learned_predictive": "GWN
 # ---------------------------------------------------------------------------
 
 def protocol(cfg: dict | None = None, with_oracle: bool = False) -> dict:
-    from backend.app.forecasting import model_registry as model_registry
+    from traffictwin.forecasting.operations import model_registry as model_registry
     cfg = cfg or ec.load_config()
     city_id, dataset = "los_angeles_metr", "user:los_angeles"
     man = json.loads((scenario_dir(city_id) / "MANIFEST.json").read_text())
     mapping = sensor_map.find_for_dataset(dataset)
     if not mapping:
         raise SystemExit(f"no detector -> edge mapping for {dataset}")
-    from backend.app.forecasting import training_jobs as train_jobs
+    from traffictwin.forecasting.operations import training_jobs as train_jobs
     ident = train_jobs.identity_for(FROZEN_JOB)
     if not ident or not ident.get("checkpoint_path"):
         raise SystemExit(f"the frozen training job {FROZEN_JOB} has no checkpoint identity")
@@ -246,7 +246,7 @@ def speed_schedule(F: dict, mapping: dict, P: dict) -> dict:
 
 def predictive_routes(arm: str, seed: int, demand: Path, F: dict, mapping: dict, out: Path, P: dict, cfg: dict) -> tuple[Path, list[str] | None, dict]:
     from traffictwin.data import provenance as pv
-    from backend.app.simulation.trip_comparison import read_any_routes, rewrite_routes
+    from traffictwin.digital_twin.live.trip_comparison import read_any_routes, rewrite_routes
     cmap, free, facts = sensor_map.corridor_map(mapping)
     k_ms = 1 / 3.6 if "km/h" in (F["unit"] or "") else 0.44704 if "mph" in (F["unit"] or "") else 1.0
     veh = read_any_routes(demand)
@@ -387,7 +387,7 @@ def run_seed(seed: int, P: dict, cfg: dict, mapping: dict, root: Path) -> dict:
         if arm in PRED_ARMS:
             routes, probe_route, routing = predictive_routes(arm, seed, demand, F, mapping, sdir / "routing", P, cfg)
         elif arm == "oracle":
-            from backend.app.simulation.trip_comparison import oracle_debug_routes      # research-only arm: measured future of the paired baseline
+            from traffictwin.digital_twin.live.trip_comparison import oracle_debug_routes      # research-only arm: measured future of the paired baseline
             routes, probe_route, routing = oracle_debug_routes(f"sim_lg_s{seed}_oracle", str(REPO / P["network"]), demand, base_out, sdir / "oracle_routing", seed, P["simulation_duration_s"], P["compliance"],
                                                                 {"id": "probe", "from_edge": P["probe"]["from"], "to_edge": P["probe"]["to"], "depart_s": P["probe"]["depart_s"]})
         m = run_sumo(arm, seed, routes, out, P, probe_route, sched)
@@ -416,7 +416,7 @@ def run_seed(seed: int, P: dict, cfg: dict, mapping: dict, root: Path) -> dict:
                                  "reroutes_learned": lp["routing"]["routes_changed"], "reroutes_persistence": pp["routing"]["routes_changed"],
                                  "realized_saving_pct_learned_vs_baseline": round(100 * (b - lp["metrics"]["total_vehicle_hours_incl_never_inserted"]) / b, 3) if b else None,
                                  "realized_saving_pct_persistence_vs_baseline": round(100 * (b - pp["metrics"]["total_vehicle_hours_incl_never_inserted"]) / b, 3) if b else None}
-    from backend.app.simulation.trip_comparison import read_any_routes
+    from traffictwin.digital_twin.live.trip_comparison import read_any_routes
     pops = {a: hashlib.sha256(json.dumps([(v, d) for v, d, _ in read_any_routes(REPO / x["routes_file"])]).encode()).hexdigest()[:12] for a, x in rec["arms"].items()}
     rec["population_hash_by_arm"] = pops
     rec["same_population"] = len(set(pops.values())) == 1          # identical vehicles and departures in every arm; only routes differ

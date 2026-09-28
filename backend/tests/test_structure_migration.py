@@ -58,9 +58,7 @@ def test_packager_includes_both_web_directories():
 
 
 def test_backend_root_contains_only_application_assembly_and_configuration():
-    assert {p.name for p in (ROOT / "backend/app").glob("*.py")} == {
-        "__init__.py", "main.py", "config.py", "credentials.py"
-    }
+    assert {p.name for p in (ROOT / "backend/app").glob("*.py")} == {"__init__.py", "main.py"}
 
 
 def test_primary_pages_are_separate_from_legacy_and_shared_components():
@@ -80,9 +78,9 @@ def test_browser_relative_module_imports_resolve_inside_frontend():
 
 
 def test_moved_adapters_resolve_the_original_repository_and_data_paths():
-    from backend.app.live import observatory
-    from backend.app.forecasting import live_reference
-    from backend.app.simulation import counterfactual_jobs
+    from traffictwin.data.live_providers import observatory
+    from traffictwin.forecasting.operations import live_reference
+    from traffictwin.digital_twin.live import counterfactual_jobs
     assert live_reference.REPO == counterfactual_jobs.REPO == ROOT
     assert observatory.DB == ROOT / "results/live/observatory.sqlite"
 
@@ -97,8 +95,8 @@ def test_relocated_research_dependencies_resolve_the_workspace():
 
 
 def test_runtime_paths_use_consolidated_artifacts_and_source():
-    from backend.app import config, credentials
-    from backend.app.forecasting import live_reference
+    from traffictwin.common import evidence_paths as config, credentials
+    from traffictwin.forecasting.operations import live_reference
     from traffictwin.digital_twin import runtime
     from traffictwin.optimization import edge_costs
     from traffictwin.orchestration import closed_loop

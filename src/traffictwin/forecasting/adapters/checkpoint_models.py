@@ -21,7 +21,7 @@ import numpy as np
 
 from traffictwin.forecasting.adapters.base import CityData, Forecast, ForecastAdapter, NotAvailable
 
-REPO = Path(__file__).resolve().parents[4]
+from traffictwin.paths import REPO
 CKPT_DIR = REPO / "results/forecasting/checkpoints"
 ARCH_DIR = {"GWNet": "GraphWaveNet", "STID": "STID", "STAEformer": "STAEformer", "DCRNN": "DCRNN"}
 

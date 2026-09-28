@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import threading
-from backend.app import config
-from backend.app.simulation import runtime as live_sim_mod
-from backend.app.simulation import command_handler as sim_agent
-from backend.app.simulation import network_comparison as twin_compare
+from traffictwin.common import evidence_paths as config
+from traffictwin.digital_twin.live import runtime as live_sim_mod
+from traffictwin.digital_twin.live import command_handler as sim_agent
+from traffictwin.digital_twin.live import network_comparison as twin_compare
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -68,7 +68,7 @@ def twin_test_start(payload: dict | None = None):
     forecast become the SUMO scenario (probe vehicle for that exact trip in every arm).
     404 ANALYSIS_RUN_NOT_FOUND when the run id is unknown; SUMO_OD_MAPPING_FAILED when the
     trip cannot be snapped to drivable edges — never a stored or fixed scenario."""
-    from backend.app.simulation import trip_comparison as twin_test
+    from traffictwin.digital_twin.live import trip_comparison as twin_test
     r = twin_test.start(payload or {})
     if not r.get("started") and r.get("http") == 404:
         from fastapi.responses import JSONResponse
@@ -78,7 +78,7 @@ def twin_test_start(payload: dict | None = None):
 
 @router.get("/api/twin/test/{simulation_run_id}", tags=["twin"])
 def twin_test_status(simulation_run_id: str):
-    from backend.app.simulation import trip_comparison as twin_test
+    from traffictwin.digital_twin.live import trip_comparison as twin_test
     return twin_test.status(simulation_run_id)
 
 

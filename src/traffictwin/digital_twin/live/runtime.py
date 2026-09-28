@@ -23,7 +23,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from backend.app import config
+from traffictwin.common import evidence_paths as config
 
 sys.path.insert(0, str(config.REPO))
 
@@ -446,7 +446,7 @@ class LiveSim:
             def apply_live() -> None:
                 """Corridor speeds from the live provider, on the corridor edges, right now."""
                 nonlocal live_applied_utc, live_mult
-                from backend.app.live.google_routes import service
+                from traffictwin.data.live_providers.google_routes import service
                 snap = service.corridors()
                 mult = {}
                 for c in snap.get("corridors", []):

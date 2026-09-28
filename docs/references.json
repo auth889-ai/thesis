@@ -254,7 +254,7 @@
           "used_for": "Road network of every simulated city (Dhaka R1, the four Los Angeles corridors): netconvert with the OSM typemap, left-hand traffic for Dhaka.",
           "files": [
             "src/traffictwin/digital_twin/scenario_builder.py",
-            "backend/app/datasets/city_corridors.py",
+            "src/traffictwin/data/city_corridors.py",
             "paper_labs/02_dhaka_osm/"
           ]
         },
@@ -268,7 +268,7 @@
           "url": "https://operations.osmfoundation.org/policies/nominatim/",
           "used_for": "Free-text origin and destination → coordinates for the trip analysis; falls back to the built-in place list.",
           "files": [
-            "backend/app/routing/trip_analysis.py"
+            "src/traffictwin/optimization/trip_analysis.py"
           ]
         },
         {
@@ -381,7 +381,7 @@
             "src/traffictwin/digital_twin/",
             "traffictwin.orchestration.closed_loop",
             "src/traffictwin/protocols/oracle_gate.py",
-            "backend/app/routing/local_routes.py"
+            "src/traffictwin/optimization/local_router.py"
           ],
           "code": "eclipse-sumo/sumo v1_27_1 (pip eclipse-sumo==1.27.1, EPL-2.0)"
         },
@@ -581,8 +581,8 @@
           "url": "https://developers.google.com/maps/documentation/routes",
           "used_for": "External LIVE reference travel time for the trip analysis when a key is configured. Never ground truth, never a training or validation target; recorded corridor states are replayed (labelled RECORDED) when the key is absent or denied.",
           "files": [
-            "backend/app/live/google_routes.py",
-            "backend/app/routing/trip_analysis.py"
+            "src/traffictwin/data/live_providers/google_routes.py",
+            "src/traffictwin/optimization/trip_analysis.py"
           ]
         },
         {

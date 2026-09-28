@@ -7,7 +7,7 @@ from pathlib import Path
 
 from fastapi import APIRouter
 
-from backend.app import config
+from traffictwin.common import evidence_paths as config
 
 router = APIRouter()
 KEY = "total_vehicle_hours_incl_never_inserted"

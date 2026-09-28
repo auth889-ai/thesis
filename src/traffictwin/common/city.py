@@ -78,7 +78,7 @@ class CityProfile:
 # Reference profile: the frozen Lab 02 Dhaka R1 network.
 # ---------------------------------------------------------------------------
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
+from traffictwin.paths import REPO as _REPO_ROOT
 
 DHAKA_R1 = CityProfile(
     city_id="dhaka_r1",

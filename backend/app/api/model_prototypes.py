@@ -5,7 +5,7 @@ import json
 import sys
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from pathlib import Path
-from backend.app import config
+from traffictwin.common import evidence_paths as config
 from fastapi import APIRouter
 
 router = APIRouter()

@@ -6,8 +6,8 @@ from pathlib import Path
 import pytest
 
 from traffictwin import configuration
-from backend.app import credentials
-from backend.app.evidence.vehicle_trace import vehicle_trace
+from traffictwin.common import credentials
+from traffictwin.protocols.evidence.vehicle_trace import vehicle_trace
 
 
 @pytest.fixture
@@ -101,7 +101,7 @@ def test_trace_reader_streams_logs_without_an_http_dependency(tmp_path, monkeypa
 def test_extracted_reader_does_not_import_http_or_simulation_engines():
     import inspect
     import importlib
-    module = importlib.import_module("backend.app.evidence.vehicle_trace")
+    module = importlib.import_module("traffictwin.protocols.evidence.vehicle_trace")
     tree = ast.parse(inspect.getsource(module))
     imports = []
     for node in ast.walk(tree):

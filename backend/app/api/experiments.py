@@ -4,8 +4,8 @@ from __future__ import annotations
 import json
 import sys
 import threading
-from backend.app import config
-from backend.app.evidence.json_reader import _read_json
+from traffictwin.common import evidence_paths as config
+from traffictwin.protocols.evidence.json_reader import _read_json
 from fastapi import APIRouter
 
 router = APIRouter()

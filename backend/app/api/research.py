@@ -22,8 +22,8 @@ def research_status():
 def scientific_executions():
     from traffictwin.orchestration import jobs as scientific_jobs
     from traffictwin.orchestration.scenario import REFERENCE, read
-    from backend.app import config
-    from backend.app.forecasting.road_forecasts import _background
+    from traffictwin.common import evidence_paths as config
+    from traffictwin.forecasting.operations.road_forecasts import _background
     result = {"jobs": scientific_jobs.recent(),
               "arms": list(scientific_jobs.ARMS), "reference_run": REFERENCE}
     try:

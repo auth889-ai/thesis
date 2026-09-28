@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
-from backend.app.forecasting import prediction_jobs as predict_lab
+from traffictwin.forecasting.operations import prediction_jobs as predict_lab
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -19,7 +19,7 @@ async def predict_lab_upload(csv: UploadFile = File(...), name: str = Form("my c
                              adj: UploadFile | None = File(None), coords: UploadFile | None = File(None)):
     """Any city, your data: a CSV (wide `time,<road>...` or long `time,road,value`), optionally a
     coordinates CSV or an adjacency `.npy`, becomes a dataset every model on the page can serve."""
-    from backend.app.datasets import uploads as user_datasets
+    from traffictwin.data import uploads as user_datasets
     try:
         meta = user_datasets.save(name, await csv.read(), quantity,
                                   adj_bytes=(await adj.read()) if adj and adj.filename else None,
@@ -51,7 +51,7 @@ def predict_lab_train_status(job: str):
 def train_create(payload: dict):
     """Create a training job. Policy: small jobs run here, larger ones on an AWS single-GPU worker
     (unless `where` pins it). Returns the job id to poll."""
-    from backend.app.forecasting import training_jobs as train_jobs
+    from traffictwin.forecasting.operations import training_jobs as train_jobs
     try:
         return train_jobs.start(payload or {})
     except ValueError as exc:
@@ -60,7 +60,7 @@ def train_create(payload: dict):
 
 @router.get("/api/train", tags=["train"])
 def train_list():
-    from backend.app.forecasting import training_jobs as train_jobs
+    from traffictwin.forecasting.operations import training_jobs as train_jobs
     return {"jobs": train_jobs.list_jobs()}
 
 
@@ -68,7 +68,7 @@ def train_list():
 def train_status(job_id: str):
     """Stage (QUEUED … COMPLETE | FAILED), epoch and validation metrics while training, then the
     validation / test tables, checkpoint verification and the trust gate."""
-    from backend.app.forecasting import training_jobs as train_jobs
+    from traffictwin.forecasting.operations import training_jobs as train_jobs
     j = train_jobs.get(job_id)
     if j.get("status") == "done" and not j.get("identity"):
         j["identity"] = train_jobs.identity_for(job_id)          # the causal-chain record of a finished job
@@ -78,7 +78,7 @@ def train_status(job_id: str):
 @router.post("/api/train/{job_id}/cancel", tags=["train"])
 def train_cancel(job_id: str):
     """Stop a job; a cloud worker is terminated immediately."""
-    from backend.app.forecasting import training_jobs as train_jobs
+    from traffictwin.forecasting.operations import training_jobs as train_jobs
     return train_jobs.cancel(job_id)
 
 

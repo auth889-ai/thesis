@@ -22,7 +22,7 @@ def _card(arch, dataset, val_mae, per_val, skill, verified=True, quality=True, f
 
 @pytest.fixture
 def cards(monkeypatch):
-    from backend.app.forecasting import model_registry as mr
+    from traffictwin.forecasting.operations import model_registry as mr
     from traffictwin.forecasting.training import basicts_train as bt
     store = []
     monkeypatch.setattr(bt, "cards", lambda: store)
@@ -30,7 +30,7 @@ def cards(monkeypatch):
 
 
 def test_groups_and_automatic_pick_by_validation_among_fully_gated(cards):
-    from backend.app.forecasting import model_registry as mr
+    from traffictwin.forecasting.operations import model_registry as mr
     cards += [_card("GWNet", "user:x", 3.5, 6.4, 0.27),          # famous, lowest val MAE, passes everything
               _card("STID", "user:x", 3.9, 6.4, 0.26),
               _card("DCRNN", "user:x", 3.2, 6.4, 0.30, verified=False)]   # best val MAE but its checkpoint did not reproduce
@@ -45,7 +45,7 @@ def test_groups_and_automatic_pick_by_validation_among_fully_gated(cards):
 
 
 def test_automatic_falls_back_when_nothing_passes(cards):
-    from backend.app.forecasting import model_registry as mr
+    from traffictwin.forecasting.operations import model_registry as mr
     c = _card("STID", "user:y", 8.0, 6.4, -0.4)               # trained, but worse than persistence
     cards.append(c)
     r = mr.registry("user:y")
@@ -63,7 +63,7 @@ def test_automatic_falls_back_when_nothing_passes(cards):
     assert by["STID"]["status"] == "AVAILABLE" and by["STID"]["can_forecast"] is True     # still selectable manually, forecast-only
 
 def test_resolve_maps_auto_and_names(cards):
-    from backend.app.forecasting import model_registry as mr
+    from traffictwin.forecasting.operations import model_registry as mr
     cards += [_card("STID", "user:z", 3.9, 6.4, 0.2)]
     assert mr.resolve("user:z", "auto")["model"] == "STID"
     assert mr.resolve("user:z", "STID")["checkpoint"] == "STID_best.pt"
@@ -71,7 +71,7 @@ def test_resolve_maps_auto_and_names(cards):
 
 
 def test_live_city_scope_offers_no_trained_models(cards):
-    from backend.app.forecasting import model_registry as mr
+    from traffictwin.forecasting.operations import model_registry as mr
     r = mr.registry("dhaka")
     by = {e["model"]: e for g in r["groups"] for e in g["items"]}
     assert all(by[m]["trained"] is False for m in ("STID", "GWNet", "STAEformer", "DCRNN"))
@@ -89,7 +89,7 @@ def test_live_city_forecast_is_chronos_not_persistence(cards, monkeypatch):
     """A city with corridor history but no permitted local validation set: the AI forecast is the
     pretrained model (forecast-only), persistence is never presented as the AI forecast, and
     routing stays reactive."""
-    from backend.app.forecasting import model_registry as mr
+    from traffictwin.forecasting.operations import model_registry as mr
     monkeypatch.setattr(mr, "_live_availability", lambda scope: {"Chronos-Bolt": (True, []), "OpenCity-plus": (False, ["graph has 6 nodes; needs 9"])})
     r = mr.registry("dhaka")
     assert r["forecast"]["model"] == "Chronos-Bolt" and r["forecast"]["status"] == "FORECAST_ONLY" and r["forecast"]["local_validation"] == "UNAVAILABLE"
@@ -101,7 +101,7 @@ def test_live_city_forecast_is_chronos_not_persistence(cards, monkeypatch):
 
 def test_validated_upload_flips_automatic_without_restart(cards):
     """Registry reads the cards on every call: once a validated card exists, Automatic changes."""
-    from backend.app.forecasting import model_registry as mr
+    from traffictwin.forecasting.operations import model_registry as mr
     r0 = mr.registry("user:flip")
     assert r0["routing"]["policy"] == "REACTIVE_FALLBACK"
     cards.append(_card("GWNet", "user:flip", 3.5, 6.4, 0.27))
@@ -110,7 +110,7 @@ def test_validated_upload_flips_automatic_without_restart(cards):
 
 
 def test_dataset_moment_matches_weekday_and_time():
-    from backend.app.datasets import forecast_inputs as dataset_ops
+    from traffictwin.data import forecast_inputs as dataset_ops
     meta = {"steps": 288 * 14, "interval_s": 300, "first_utc": "2012-03-01T00:00:00+00:00"}   # Thu 1 Mar 2012
     idx, when = dataset_ops.moment_for(meta, "2026-09-05T17:30:00+00:00")                   # a Saturday 17:30
     from datetime import datetime

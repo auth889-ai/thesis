@@ -25,8 +25,8 @@ from pathlib import Path
 
 import numpy as np
 
-from backend.app import config
-from backend.app.forecasting import scientific_prediction
+from traffictwin.common import evidence_paths as config
+from traffictwin.forecasting.operations import scientific_prediction
 
 sys.path.insert(0, str(config.REPO))
 
@@ -53,8 +53,8 @@ def _predict(dataset: str, as_of: int, model: str | None):
     """The product's inference path, cached per (dataset, moment, model)."""
     if dataset in scientific_prediction.DATASETS:
         return scientific_prediction.forecast(as_of, model)
-    from backend.app.datasets import forecast_inputs as dataset_ops
-    from backend.app.forecasting import model_registry
+    from traffictwin.data import forecast_inputs as dataset_ops
+    from traffictwin.forecasting.operations import model_registry
     entry = model_registry.resolve(dataset, model)
     key = (dataset, int(as_of), entry.get("model"))
     with _LOCK:
@@ -106,7 +106,7 @@ def _series(dataset: str):
     if dataset in scientific_prediction.DATASETS:
         return scientific_prediction.series()
     from traffictwin.forecasting.training import basicts_train as bt
-    from backend.app.datasets import uploads as user_datasets
+    from traffictwin.data import uploads as user_datasets
     meta = user_datasets.load_meta(dataset.split(":", 1)[1])
     if not meta:
         raise KeyError(f"unknown dataset {dataset}")
@@ -150,7 +150,7 @@ def network(dataset: str, as_of: int | str | None = None, model: str | None = No
     """The forecast state of the network at one moment: sensors, DIRECT/DERIVED edges, coverage."""
     from traffictwin.digital_twin import sensor_map
     from traffictwin.optimization import edge_costs as ec
-    from backend.app.routing import optimizer as route_opt
+    from traffictwin.optimization import analysis_routing as route_opt
     meta, vals = _series(dataset)
     T, step_s = vals.shape[0], int(meta.get("interval_s", 300))
     step_min = step_s // 60

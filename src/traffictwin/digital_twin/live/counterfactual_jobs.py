@@ -35,7 +35,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from backend.app.config import REPO
+from traffictwin.common.evidence_paths import REPO
 RESULTS = REPO / "results/routing"
 SCRIPT_MODULE = "traffictwin.protocols.chains.live_chain"
 
@@ -59,7 +59,7 @@ class Runner:
 
     def start(self, corridor_id: str, category: str, seeds: list[int] | None = None,
               horizon: int = 1800, compliance: float = 0.3) -> dict:
-        from backend.app.datasets import reference_corridors as _corridors
+        from traffictwin.data import reference_corridors as _corridors
         c = _corridors.BY_ID.get(corridor_id)
         if not c:
             return {"error": "unknown_corridor", "corridor_id": corridor_id}

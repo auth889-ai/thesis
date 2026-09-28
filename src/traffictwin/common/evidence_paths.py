@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+from traffictwin.paths import REPO
 FRONTEND = REPO / "frontend"
 
 # (file, command that produces it). A panel with no file renders its recipe, never an empty chart.

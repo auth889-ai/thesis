@@ -16,7 +16,7 @@ def test_unknown_analysis_is_404(client):
 
 def test_run_without_stored_forecast_is_refused(tmp_path, monkeypatch):
     from traffictwin.data import provenance
-    from backend.app.routing import optimizer as route_opt
+    from traffictwin.optimization import analysis_routing as route_opt
     monkeypatch.setattr(provenance, "DIR", tmp_path)
     rec = {"run_id": "an_old", "horizon_min": 15, "resolved_model": "Chronos-Bolt"}
     with pytest.raises(route_opt.NoStoredForecast, match="NO_STORED_FORECAST"):
@@ -25,7 +25,7 @@ def test_run_without_stored_forecast_is_refused(tmp_path, monkeypatch):
 
 def test_stored_forecast_hash_must_match():
     from traffictwin.data import provenance as pv
-    from backend.app.routing import optimizer as route_opt
+    from traffictwin.optimization import analysis_routing as route_opt
     raw = {"15": {"c1": 2.5, "c2": 1.0}}
     rec = {"run_id": "an_x", "raw_prediction": raw, "raw_prediction_hash": pv.sha_json(raw), "forecast_unit": "congestion_level_0_3"}
     vals, unit = route_opt._forecast_from_analysis(rec, 15)

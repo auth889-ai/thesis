@@ -1,10 +1,10 @@
 """Cities HTTP endpoints."""
 from __future__ import annotations
 
-from backend.app.live import observatory as observatory_mod
-from backend.app.live import google_routes as live_service
-from backend.app.routing import trip_analysis as analyze
-from backend.app.datasets import city_corridors
+from traffictwin.data.live_providers import observatory as observatory_mod
+from traffictwin.data.live_providers import google_routes as live_service
+from traffictwin.optimization import trip_analysis as analyze
+from traffictwin.data import city_corridors
 from backend.app.api.dependencies import _city_bits
 from fastapi import APIRouter
 

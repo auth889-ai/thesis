@@ -11,7 +11,7 @@ import tempfile
 import time
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[4]
+from traffictwin.paths import REPO
 WEIGHTS = REPO / "results/artifacts/p1_winner/rtdetr_r50_poribohon_best.pth"
 RTDETR_PY = str(Path.home() / "miniconda3/envs/rtdetr/bin/python")
 STRIDE = 5

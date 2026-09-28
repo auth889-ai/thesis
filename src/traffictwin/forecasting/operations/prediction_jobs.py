@@ -20,7 +20,7 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-from backend.app import config
+from traffictwin.common import evidence_paths as config
 
 sys.path.insert(0, str(config.REPO))
 HORIZONS = [5, 15, 30, 60]
@@ -31,7 +31,7 @@ CHECKPOINT_MODELS = {"GWNet": ("GWNet", {"METR_LA": "METR-LA", "PEMS_BAY": "PEMS
 
 
 def _live_datasets() -> list[dict]:
-    from backend.app.live import observatory as obs_mod
+    from traffictwin.data.live_providers import observatory as obs_mod
     out = []
     for cid in obs_mod.observatory.cities():
         r = obs_mod.observatory.readiness(cid)
@@ -40,10 +40,10 @@ def _live_datasets() -> list[dict]:
         rows, nodes = obs_mod.observatory.series(cid)
         names = list(nodes)
         if cid == "dhaka":
-            from backend.app.datasets import reference_corridors as cz
+            from traffictwin.data import reference_corridors as cz
             names = [cz.BY_ID.get(n, {}).get("name", n) for n in nodes]
         else:
-            from backend.app.datasets import city_corridors
+            from traffictwin.data import city_corridors
             byid = {c["id"]: c for c in city_corridors.load(cid)}
             names = [byid.get(n, {}).get("name", n) for n in nodes]
         out.append({"id": f"live:{cid}", "name": f"{cid.replace('_', ' ').title()} — live corridors ({len(nodes)}), sampled every 5 min",
@@ -81,8 +81,8 @@ def datasets() -> list[dict]:
                       [m for m, (_, ds) in CHECKPOINT_MODELS.items() if d["id"] in ds]
         d["name"] = {"METR_LA": "Los Angeles — METR-LA (207 loop detectors)", "PEMS_BAY": "Bay Area — PEMS-BAY (325 detectors)",
                      "PEMS07M": "California D7 — PEMS07M (228 detectors)", "TrafficSH": "Shanghai — TrafficSH (896 regions)"}.get(d["id"], d["id"])
-    from backend.app.datasets import uploads as user_datasets
-    from backend.app.forecasting import scientific_prediction
+    from traffictwin.data import uploads as user_datasets
+    from traffictwin.forecasting.operations import scientific_prediction
     meta, values = scientific_prediction.series()
     canonical = {"id": "METR_LA", "name": "METR-LA - frozen scientific model", "nodes": values.shape[1],
                  "steps": len(values), "interval_min": 5, "quantity": "speed mph",
@@ -93,11 +93,11 @@ def datasets() -> list[dict]:
 
 def _series(dataset: str, region: int, n_nodes: int):
     if dataset.startswith("user:"):
-        from backend.app.datasets import uploads as user_datasets
+        from traffictwin.data import uploads as user_datasets
         return user_datasets.series(dataset.split(":", 1)[1], region)
     if dataset.startswith("live:"):
         import numpy as np
-        from backend.app.live import observatory as obs_mod
+        from traffictwin.data.live_providers import observatory as obs_mod
         cid = dataset.split(":", 1)[1]
         cd = obs_mod.observatory.city_data(cid)
         vals = np.asarray(cd.values, dtype="float64")
@@ -124,7 +124,7 @@ def _run(job: str, p: dict) -> None:
             _JOBS[job].update(kw)
     try:
         dataset, model = p.get("dataset", "METR_LA"), p.get("model", "OpenCity-plus")
-        from backend.app.forecasting import scientific_prediction
+        from traffictwin.forecasting.operations import scientific_prediction
         if dataset in scientific_prediction.DATASETS:
             emit(stage="Fresh canonical inference", step=3)
             result = scientific_prediction.sensor_result(p, job)
@@ -153,7 +153,7 @@ def _run(job: str, p: dict) -> None:
             emit(stage="Running the model (OpenCity, 26M parameters)", step=3)
             out = Path(tempfile.mkdtemp(prefix="oc_")) / "p.json"
             if dataset.startswith("user:"):               # their CSV contract, the whole uploaded graph
-                from backend.app.datasets import uploads as user_datasets
+                from traffictwin.data import uploads as user_datasets
                 pp = user_datasets.paths(dataset.split(":", 1)[1])
                 cmd = [sys.executable, "-m", "traffictwin.forecasting.opencity.opencity_predict",
                        "--source", "csv", "--csv", str(pp["csv"]), "--adj", str(pp["adj"]),
@@ -324,7 +324,7 @@ def _aws_env() -> dict | None:
     """The AWS credentials from .env, for the aws CLI the launcher shells out to.
     Server-side only: no endpoint ever returns a value from here."""
     import os
-    from backend.app.credentials import load
+    from traffictwin.common.credentials import load
     env = dict(os.environ)
     for v in AWS_VARS:
         val = env.get(v) or load(v)

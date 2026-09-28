@@ -35,7 +35,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from backend.app import config
+from traffictwin.common import evidence_paths as config
 from traffictwin.data import provenance as pv
 
 sys.path.insert(0, str(config.REPO))
@@ -78,7 +78,7 @@ def is_dhaka_run(rec: dict) -> bool:
 def scenario_for(rec: dict, emit) -> dict:
     """The SUMO network this analysis runs on. Dhaka: the frozen twin with recorded validation state. Elsewhere: an OSM scenario
     built around the analysed trip (its own bbox), cached by that bbox."""
-    from backend.app.simulation.runtime import networks, resolve_network
+    from traffictwin.digital_twin.live.runtime import networks, resolve_network
     if is_dhaka_run(rec):
         n = next(x for x in networks() if x["id"] == "dhaka_r1")
         return {**n, **resolve_network("dhaka_r1"), "demand_reality": n.get("demand"), "forecast_capable": True}
@@ -136,7 +136,7 @@ def optimized_route_for_probe(rec: dict, net: str, origin_edge: str, destination
     """Prediction-aware arm: the RoutingRun for THIS analysis (its stored forecast -> continuous
     edge costs -> duarouter candidates -> admission). Returns the selected route and the public
     routing record; a run without a stored forecast yields no route and a visible reason."""
-    from backend.app.routing import optimizer as route_opt
+    from traffictwin.optimization import analysis_routing as route_opt
     rt = route_opt.find_existing(rec, origin_edge, destination_edge, seed)
     reused = rt is not None
     if rt is None:
@@ -233,7 +233,7 @@ def _wait_twin(live_sim, poll_s: float = 0.5, max_s: float = 7200.0):
 
 
 def _run(job: str, analysis_run_id: str, opts: dict) -> None:
-    from backend.app.simulation.runtime import live_sim
+    from traffictwin.digital_twin.live.runtime import live_sim
     from traffictwin.protocols.chains import integrated_chain as ic
     sim_id = job
     gui = bool(opts.get("gui"))
@@ -249,7 +249,7 @@ def _run(job: str, analysis_run_id: str, opts: dict) -> None:
         _set(job, stage="Preparing network")
         scen = scenario_for(rec, lambda **k: _set(job, **k))
         net_path = scen["net"]
-        from backend.app.simulation.runtime import scenario_label
+        from traffictwin.digital_twin.live.runtime import scenario_label
         _set(job, stage="Loading demand", network_id=scen["id"], network_edges=scen.get("edges"), network_hash=pv.sha_file(net_path, 12),
              demand_reality=scen.get("demand_reality"), scenario=scenario_label(scen))
         _set(job, stage="Mapping your trip")
@@ -373,7 +373,7 @@ def _run(job: str, analysis_run_id: str, opts: dict) -> None:
 def _validated(rec: dict) -> bool:
     """Whether the analysis's resolved model passed the registry's held-out trust gate on this scope."""
     try:
-        from backend.app.forecasting import model_registry
+        from traffictwin.forecasting.operations import model_registry
         scope = rec.get("dataset_scope") or rec.get("city") or "dhaka"
         e = model_registry.resolve(scope, rec.get("resolved_model"))
         return bool(e.get("trust") == "ROUTING_ELIGIBLE" or e.get("status") == "VALIDATED")

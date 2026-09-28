@@ -24,7 +24,7 @@ import json
 import random
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[4]
+from traffictwin.paths import REPO
 LATENCY_FILE = REPO / "results/artifacts/gates/mosaic_barnim/latencies.json"
 
 

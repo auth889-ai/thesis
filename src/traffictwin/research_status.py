@@ -9,9 +9,7 @@ import json
 import math
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
-
-
+from traffictwin.paths import REPO
 def _read(path: Path) -> dict | None:
     try:
         return json.loads(path.read_text())

@@ -28,7 +28,7 @@ import sys
 from dataclasses import dataclass
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[3]
+from traffictwin.paths import REPO as REPO_ROOT
 PINS_FILE = REPO_ROOT / "upstream" / "UPSTREAM_PINS.yaml"
 DEFAULT_WORKSPACE = Path.home() / ".dhakaflow" / "upstream"
 

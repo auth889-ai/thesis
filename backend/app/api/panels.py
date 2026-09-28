@@ -1,7 +1,7 @@
 """Panels HTTP endpoints."""
 from __future__ import annotations
 
-from backend.app.evidence import panel_readers as readers
+from traffictwin.protocols.evidence import panel_readers as readers
 from backend.app.api import schemas
 from fastapi import APIRouter
 

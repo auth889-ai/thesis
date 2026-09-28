@@ -22,7 +22,7 @@ import time
 from datetime import datetime, timezone
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[3]
+from traffictwin.paths import REPO
 NET_CANDIDATES = [REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz",
                   REPO / "data/cities/dhaka_full/dhaka.net.xml.gz"]
 PENALTY = 1.6
@@ -135,7 +135,7 @@ class LocalRouter:
 
     def corridors(self, defs: list[dict], observed: dict, as_of_utc: str | None) -> dict:
         """The same shape LiveService.corridors() returns, priced with the recorded corridor states."""
-        from backend.app.routing.trip_analysis import multiplier
+        from traffictwin.optimization.trip_analysis import multiplier
         items = []
         for c in defs:
             o, d = (c["origin"]["lat"], c["origin"]["lng"]), (c["destination"]["lat"], c["destination"]["lng"])
@@ -165,7 +165,7 @@ class LocalRouter:
         """K candidate routes in the shape LiveService.routes() returns. `corridor_state` maps corridor
         id → {"edges": set of edge ids, "level": recorded level}; a route's category is that of the
         worst corridor it shares edges with, its ETA the free-flow time scaled by that band."""
-        from backend.app.routing.trip_analysis import multiplier
+        from traffictwin.optimization.trip_analysis import multiplier
         t0 = time.monotonic()
         try:
             a, b = self._nearest_edge(*origin), self._nearest_edge(*dest)

@@ -1,12 +1,12 @@
 """Live reference HTTP endpoints."""
 from __future__ import annotations
 
-from backend.app.datasets import reference_corridors as corridor_registry
-from backend.app.live import observatory as observatory_mod
-from backend.app.live import google_routes as live_service
-from backend.app.forecasting import live_reference as predict_live
-from backend.app import credentials as key_store
-from backend.app.simulation import counterfactual_jobs as simulate
+from traffictwin.data import reference_corridors as corridor_registry
+from traffictwin.data.live_providers import observatory as observatory_mod
+from traffictwin.data.live_providers import google_routes as live_service
+from traffictwin.forecasting.operations import live_reference as predict_live
+from traffictwin.common import credentials as key_store
+from traffictwin.digital_twin.live import counterfactual_jobs as simulate
 from fastapi import APIRouter
 
 router = APIRouter()

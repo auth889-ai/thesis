@@ -1,1 +1,0 @@
-"""Forecasting application adapters."""

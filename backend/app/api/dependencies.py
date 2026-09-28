@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import sys
-from backend.app import config
+from traffictwin.common import evidence_paths as config
 
 
 def _city_bits():

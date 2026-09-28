@@ -16,7 +16,7 @@ from pathlib import Path
 
 import numpy as np
 
-REPO = Path(__file__).resolve().parents[4]
+from traffictwin.paths import REPO
 WS = Path("/workspace") if Path("/workspace").exists() else REPO
 BTS = WS / "BasicTS_legacy"
 CKPT_GLOB = "checkpoints/GraphWaveNet/**/GraphWaveNet_best_val_MAE.pt"

@@ -24,8 +24,8 @@ from collections import deque
 from datetime import datetime, timezone
 from pathlib import Path
 
-from backend.app.datasets import reference_corridors as _corridors
-from backend.app.config import REPO
+from traffictwin.data import reference_corridors as _corridors
+from traffictwin.common.evidence_paths import REPO
 
 # The derived speeds are OUR numbers (distance / duration, computed here), so they may be kept.
 # Keeping them is what lets the 288-step window ever be reached: a buffer that dies with the
@@ -146,7 +146,7 @@ class Observatory:
     # ------------------------------------------------------------- sampling
     def sample(self, city_id: str = "dhaka") -> dict:
         """Take one live reading and append DERIVED speeds. Gaps stay NaN, never interpolated."""
-        from backend.app.live.google_routes import service
+        from traffictwin.data.live_providers.google_routes import service
         snap = service.corridors_for(city_id)
         ids = [c["id"] for c in snap.get("corridors", [])] if city_id != "dhaka" else [c["id"] for c in _corridors.CORRIDORS]
         if not ids:

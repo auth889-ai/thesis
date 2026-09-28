@@ -23,8 +23,8 @@ import threading
 import uuid
 from datetime import datetime, timezone
 
-from backend.app import config
-from backend.app.datasets import reference_corridors as cz
+from traffictwin.common import evidence_paths as config
+from traffictwin.data import reference_corridors as cz
 
 sys.path.insert(0, str(config.REPO))
 
@@ -97,7 +97,7 @@ def city_id_for(city: str) -> str | None:
     if not hits:
         return None
     try:                                    # the one already being observed wins
-        from backend.app.live import observatory as obs_mod
+        from traffictwin.data.live_providers import observatory as obs_mod
         watched = set(obs_mod.observatory.cities())
         hits.sort(key=lambda c: (c not in watched, len(c)))
     except Exception:                       # noqa: BLE001
@@ -109,7 +109,7 @@ def levels_from_speeds(cd, forecast: dict | None, live: dict) -> tuple[dict, dic
     """Observatory speeds (m/s) -> congestion levels per corridor, now and per horizon, using
     each corridor's own free-flow speed from the live snapshot. Same bands as the recorder."""
     import numpy as np
-    from backend.app.live.google_routes import classify
+    from traffictwin.data.live_providers.google_routes import classify
     LV = {"NORMAL": 0.0, "SLOW": 1.0, "TRAFFIC_JAM": 2.5}
     free = {}
     for c in live.get("corridors", []):
@@ -291,7 +291,7 @@ def _run(job: str, p: dict) -> None:
             _JOBS[job].update(kw)
     try:
         city = p.get("city") or "dhaka"
-        from backend.app.datasets import forecast_inputs as dataset_ops
+        from traffictwin.data import forecast_inputs as dataset_ops
         scope = dataset_ops.scope_for(city)
         if scope:                                       # an uploaded city dataset: the chosen checkpoint runs
             res = dataset_ops.analyze_dataset(p, scope, emit, run_id=job)
@@ -314,7 +314,7 @@ def _run(job: str, p: dict) -> None:
         h = min([x for x in HORIZONS if x >= lead] or [60])
 
         model_req = (p.get("model") or "").strip() or None      # a specific model, or the registry's forecast decision
-        from backend.app.forecasting import model_registry
+        from traffictwin.forecasting.operations import model_registry
         product = model_registry.state(city_id_for(city) or city)
         if not model_req or model_req.lower() in ("auto", "best"):
             model_req = product["forecast"]["model"] if product["forecast"]["model"] not in ("persistence",) else None
@@ -323,20 +323,20 @@ def _run(job: str, p: dict) -> None:
         d = resolve_place(p.get("destination") or "shahbagh", city)
         run.set(origin_resolved=o, destination_resolved=d)
         run.stage("Validating traffic data", emit)
-        from backend.app.live.google_routes import service
+        from traffictwin.data.live_providers.google_routes import service
         routes = service.routes((o["lat"], o["lng"]), (d["lat"], d["lng"])) if service.configured else {"is_live": False, "routes": [], "request_status": "NOT_CONFIGURED", "source": "google_routes"}
         corr = service.corridors() if routes.get("is_live") else {"is_live": False, "corridors": [], "request_status": routes.get("request_status")}
         traffic_basis = "LIVE"
         if not routes.get("is_live") or not routes.get("routes"):
             # NO KEY / DENIED / OVER QUOTA: the application keeps working on its own road network and its
             # own recorded corridor states. Everything downstream is labelled RECORDED, never live.
-            from backend.app.routing import local_routes
+            from traffictwin.optimization import local_router as local_routes
             live_status = routes.get("request_status")
             if not local_routes.router.available:
                 run.finish("failed", f"live routing unavailable: {live_status}; no local road network either")
                 raise RuntimeError(f"live routing unavailable: {live_status}; no local road network either")
             levels, as_of_utc = local_routes.recorded_state("dhaka") if is_dhaka(city) else ({}, None)
-            from backend.app.datasets import reference_corridors as _rc
+            from traffictwin.data import reference_corridors as _rc
             defs = [_rc.describe(c) for c in _rc.CORRIDORS] if is_dhaka(city) else []
             corr = local_routes.router.corridors(defs, levels, as_of_utc)
             state = {c["id"]: {"edges": set(e.getID() for e in local_routes.router.corridor_route(c["id"], (c["origin"]["lat"], c["origin"]["lng"]), (c["destination"]["lat"], c["destination"]["lng"]))), "level": c.get("level")}
@@ -358,7 +358,7 @@ def _run(job: str, p: dict) -> None:
         run.stage("Loading checkpoint", emit)
         dhaka = is_dhaka(city)
         cid = city_id_for(city)
-        from backend.app.live import observatory as obs_mod
+        from traffictwin.data.live_providers import observatory as obs_mod
         observe = {"city_id": cid, "watched": bool(cid) and cid in obs_mod.observatory.cities(),
                    "steps_have": obs_mod.observatory.readiness(cid)["steps_have"] if cid else 0}
         if dhaka:
@@ -392,12 +392,12 @@ def _run(job: str, p: dict) -> None:
         try:
             if not dhaka:
                 raise LookupError("no observatory for this city")
-            from backend.app.live import observatory as obs_mod
+            from traffictwin.data.live_providers import observatory as obs_mod
             from traffictwin.forecasting.adapters.registry import forecast as run_forecast
             cd = obs_mod.observatory.city_data(city)
             if cd.shape[0] >= 8:
                 import numpy as np
-                from backend.app.live.google_routes import classify
+                from traffictwin.data.live_providers.google_routes import classify
                 fo = (run_forecast(cd, HORIZONS) or {}).get("forecast")
                 if fo:
                     last = np.asarray(cd.values)[-1]
@@ -556,12 +556,12 @@ def models_for_city(city: str) -> list[dict]:
     """Which forecast models can serve THIS city's corridor history right now, with reasons —
     the registry's own gates, so the menu never offers a model that would refuse."""
     from traffictwin.forecasting.adapters.registry import available_for
-    from backend.app.live import observatory as obs_mod
+    from traffictwin.data.live_providers import observatory as obs_mod
     cid = city_id_for(city)
     out = [{"model": "auto", "label": "Automatic (best available)", "available": True, "reasons": []}]
     scope = city if str(city).startswith("user:") else cid if str(cid or "").startswith("user:") else None
     if scope:                                          # an uploaded dataset: the registry's own list for that data (trained, pretrained, baselines)
-        from backend.app.forecasting import model_registry
+        from traffictwin.forecasting.operations import model_registry
         try:
             reg = model_registry.registry(scope)
         except (Exception, SystemExit) as exc:         # noqa: BLE001

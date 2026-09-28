@@ -6,7 +6,7 @@ import numpy as np
 import pytest
 
 from traffictwin.forecasting import ForecastService, ModelSpec
-from backend.app.forecasting import road_forecasts, scientific_prediction
+from traffictwin.forecasting.operations import road_forecasts, scientific_prediction
 
 
 @pytest.fixture
@@ -109,8 +109,8 @@ def test_partial_future_is_not_filled_or_indexed_past_end(service, monkeypatch):
 
 
 def test_legacy_prediction_cache_is_explicit(monkeypatch):
-    from backend.app.datasets import forecast_inputs
-    from backend.app.forecasting import model_registry
+    from traffictwin.data import forecast_inputs
+    from traffictwin.forecasting.operations import model_registry
     monkeypatch.setattr(model_registry, "resolve", lambda *_: {"model": "persistence"})
     monkeypatch.setattr(road_forecasts, "_PRED", {})
     calls = []
@@ -127,7 +127,7 @@ def test_legacy_prediction_cache_is_explicit(monkeypatch):
 
 
 def test_prediction_job_uses_canonical_adapter_not_legacy_series(service, tmp_path, monkeypatch):
-    from backend.app.forecasting import prediction_jobs
+    from traffictwin.forecasting.operations import prediction_jobs
     from traffictwin.data import provenance
     instance, calls = service
     monkeypatch.setattr(scientific_prediction, "series", lambda: ({"first_utc": "2012-03-01T00:00:00"}, instance.values))
@@ -143,8 +143,8 @@ def test_prediction_job_uses_canonical_adapter_not_legacy_series(service, tmp_pa
 
 
 def test_cloud_configuration_check_uses_public_credential_loader(monkeypatch):
-    from backend.app import credentials
-    from backend.app.forecasting import prediction_jobs
+    from traffictwin.common import credentials
+    from traffictwin.forecasting.operations import prediction_jobs
     for name in prediction_jobs.AWS_VARS:
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setattr(credentials, "load", lambda _: "")

@@ -6,9 +6,9 @@ import json
 from datetime import datetime, timezone
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, StreamingResponse
-from backend.app import config
-from backend.app.evidence import panel_readers as readers
-from backend.app import credentials as key_store
+from traffictwin.common import evidence_paths as config
+from traffictwin.protocols.evidence import panel_readers as readers
+from traffictwin.common import credentials as key_store
 from fastapi import APIRouter
 
 router = APIRouter()

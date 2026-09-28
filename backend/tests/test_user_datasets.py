@@ -8,7 +8,7 @@ import pytest
 
 @pytest.fixture
 def isolated_root(tmp_path, monkeypatch):
-    from backend.app.datasets import uploads as user_datasets
+    from traffictwin.data import uploads as user_datasets
     monkeypatch.setattr(user_datasets, "ROOT", tmp_path / "user_datasets")
     return user_datasets
 

@@ -45,7 +45,7 @@ def test_recorded_classes_are_recoded_so_zero_means_missing():
 
 
 def test_geo_adjacency_leaves_no_node_isolated():
-    from backend.app.datasets import reference_corridors as cz
+    from traffictwin.data import reference_corridors as cz
     A = oce.geo_adjacency([c["id"] for c in cz.CORRIDORS])
     assert A.shape == (12, 12) and np.allclose(A, A.T)
     assert ((A > 0).sum(axis=1) >= 2).all()          # self plus at least one neighbour

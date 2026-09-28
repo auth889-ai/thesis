@@ -24,7 +24,7 @@ from __future__ import annotations
 
 import sys
 
-from backend.app import config
+from traffictwin.common import evidence_paths as config
 
 sys.path.insert(0, str(config.REPO))
 
@@ -95,7 +95,7 @@ def _entry(model: str, family: str, gates: dict, **extra) -> dict:
 
 def registry(scope: str) -> dict:
     """The grouped menu for a scope, with Automatic's choice."""
-    from backend.app.forecasting import scientific_prediction
+    from traffictwin.forecasting.operations import scientific_prediction
     if scope in scientific_prediction.DATASETS:
         return scientific_prediction.registry(scope)
     from traffictwin.forecasting.training import train_eval as te
@@ -242,7 +242,7 @@ def _live_availability(scope: str) -> dict[str, tuple[bool, list[str]]]:
     """For a live city: which pretrained adapters can serve its corridor history right now."""
     out: dict[str, tuple[bool, list[str]]] = {}
     try:
-        from backend.app.routing import trip_analysis as analyze
+        from traffictwin.optimization import trip_analysis as analyze
         for m in analyze.models_for_city(scope):
             if m["model"] in PRETRAINED:
                 out[m["model"]] = (bool(m.get("available")), list(m.get("reasons") or []))

@@ -25,7 +25,7 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 
 HERE = Path(__file__).resolve()
-REPO = HERE.parents[2]
+from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO / "paper_labs" / "01_sumo_foundation" / "src"))
 
 NET = REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz"

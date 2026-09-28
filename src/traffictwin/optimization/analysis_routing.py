@@ -13,7 +13,7 @@ import sys
 import uuid
 from pathlib import Path
 
-from backend.app import config
+from traffictwin.common import evidence_paths as config
 from traffictwin.data import provenance as pv
 
 sys.path.insert(0, str(config.REPO))

@@ -36,7 +36,7 @@ CAP_LANE_H = 1800.0
 
 
 def score_city(city: str, cc: dict, cfg: dict, out_root: Path, max_trips: int = 400) -> dict:
-    from backend.app.simulation.trip_comparison import read_any_routes
+    from traffictwin.digital_twin.live.trip_comparison import read_any_routes
     man = json.loads((scenario_dir(city) / "MANIFEST.json").read_text())
     net = REPO / man["files"]["net"]; routes = REPO / man["files"]["routes"]
     info = ro.NetInfo(net)

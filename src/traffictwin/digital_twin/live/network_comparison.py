@@ -14,8 +14,8 @@ import time
 import uuid
 from datetime import datetime, timezone
 
-from backend.app import config
-from backend.app.simulation.runtime import live_sim
+from traffictwin.common import evidence_paths as config
+from traffictwin.digital_twin.live.runtime import live_sim
 
 sys.path.insert(0, str(config.REPO))
 _JOBS: dict[str, dict] = {}

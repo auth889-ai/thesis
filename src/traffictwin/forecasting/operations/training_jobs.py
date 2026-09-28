@@ -34,7 +34,7 @@ import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
-from backend.app import config
+from traffictwin.common import evidence_paths as config
 
 sys.path.insert(0, str(config.REPO))
 JOBS_DIR = config.REPO / "results/forecasting/train_jobs"
@@ -81,7 +81,7 @@ def _fail(job_id: str, why: str) -> None:
 
 
 def _aws_environ() -> dict | None:
-    from backend.app.forecasting import prediction_jobs as predict_lab
+    from traffictwin.forecasting.operations import prediction_jobs as predict_lab
     env = predict_lab._aws_env()
     if env:
         os.environ.update({k: env[k] for k in predict_lab.AWS_VARS if k in env})
@@ -90,7 +90,7 @@ def _aws_environ() -> dict | None:
 
 # ----------------------------------------------------------------------------- policy
 def plan(dataset: str, arch: str, epochs: int, where: str | None) -> dict:
-    from backend.app.forecasting import prediction_jobs as predict_lab
+    from traffictwin.forecasting.operations import prediction_jobs as predict_lab
     from traffictwin.forecasting.training import basicts_train as bt
     ds = next((d for d in predict_lab.datasets() if d["id"] == dataset), None)
     if not ds:

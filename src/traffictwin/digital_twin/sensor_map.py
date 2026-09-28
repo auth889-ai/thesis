@@ -81,7 +81,7 @@ def snap(net, lat: float, lon: float):
 
 def build(dataset: str, city_id: str, out: Path | None = None) -> dict:
     import sumolib
-    from backend.app.datasets import uploads as user_datasets
+    from traffictwin.data import uploads as user_datasets
     from traffictwin.digital_twin.scenario_builder import scenario_dir
     meta = user_datasets.load_meta(dataset.split(":", 1)[1])
     if not meta or not meta.get("coords"):

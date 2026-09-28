@@ -46,8 +46,8 @@ import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 
-from backend.app.datasets import reference_corridors as _corridors
-from backend.app import credentials as _secrets
+from traffictwin.data import reference_corridors as _corridors
+from traffictwin.common import credentials as _secrets
 
 ROUTES_ENDPOINT = "https://routes.googleapis.com/directions/v2:computeRoutes"
 QUOTA_BACKOFF_S = 900.0          # after a 429 the key is exhausted: stop calling for 15 minutes instead of burning quota
@@ -357,7 +357,7 @@ class LiveService:
         or the list derived from the city's road graph."""
         if city_id in ("dhaka", "", None):
             return self.corridors(force=force)
-        from backend.app.datasets import city_corridors
+        from traffictwin.data import city_corridors
         defs = city_corridors.load(city_id)
         items = [self.corridor_from(c, force=force) for c in defs]
         live = [i for i in items if i.get("is_live")]

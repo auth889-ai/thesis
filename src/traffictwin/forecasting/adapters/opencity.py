@@ -20,7 +20,7 @@ import numpy as np
 
 from traffictwin.forecasting.adapters.base import CityData, Forecast, ForecastAdapter, NotAvailable
 
-REPO = Path(__file__).resolve().parents[4]
+from traffictwin.paths import REPO
 WORKSPACE = Path(os.environ.get("DHAKAFLOW_WORKSPACE", Path.home() / ".dhakaflow/upstream"))
 CKPT = WORKSPACE / "OpenCity/model_weights/OpenCity/OpenCity-plus.pth"
 CKPT_SHA = "ae4235615a914c831543275642152409075e1a3f07d564a27fab28364d59af7b"

@@ -4,8 +4,8 @@ from __future__ import annotations
 import json
 import re
 from fastapi import HTTPException
-from backend.app.evidence.vehicle_trace import vehicle_trace
-from backend.app import config
+from traffictwin.protocols.evidence.vehicle_trace import vehicle_trace
+from traffictwin.common import evidence_paths as config
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -57,8 +57,8 @@ def experiment_v2x_timeline(run: str, seed: int, arm: str = "predictive_v2x"):
     """The control-room replay of one closed-loop arm: rounds, incidents, every delivered recommendation with
     its old/new route geometry, the incident edge, the corridor backdrop, and the arm comparison — all read
     from the run's own files."""
-    from backend.app.forecasting import road_forecasts as forecast_map
-    from backend.app.evidence.replay_verification import verify
+    from traffictwin.forecasting.operations import road_forecasts as forecast_map
+    from traffictwin.protocols.evidence.replay_verification import verify
     if any(not re.fullmatch(r"[A-Za-z0-9_-][A-Za-z0-9_.-]*", value) for value in (run, arm)):
         raise HTTPException(422, "Run and arm must be identifiers, not paths")
     root = config.REPO / "results/v2x/closed_loop" / run

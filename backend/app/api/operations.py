@@ -1,9 +1,9 @@
 """Operations HTTP endpoints."""
 from __future__ import annotations
 
-from backend.app import config
-from backend.app.live import observatory as observatory_mod
-from backend.app.routing import trip_analysis as analyze
+from traffictwin.common import evidence_paths as config
+from traffictwin.data.live_providers import observatory as observatory_mod
+from traffictwin.optimization import trip_analysis as analyze
 from backend.app.api.dependencies import _city_bits
 from backend.app.api.cities import city
 from fastapi import APIRouter
@@ -23,7 +23,7 @@ def operate_cities():
         if sp and sp.display_name and not analyze.is_dhaka(sp.display_name) and cid in watched:   # only cities with history
             out.append({"id": cid, "label": sp.display_name, "forecast": cid in watched,
                         "steps": observatory_mod.observatory.readiness(cid)["steps_have"] if cid in watched else 0})
-    from backend.app.datasets import uploads as user_datasets
+    from traffictwin.data import uploads as user_datasets
     for d in user_datasets.datasets():                  # uploaded datasets with road coordinates are operable cities
         if d.get("has_coords"):
             out.append({"id": d["id"], "label": f"{d['name'].split(' —')[0]} (your upload)", "forecast": True, "dataset": True, "steps": d["steps"]})
@@ -51,7 +51,7 @@ def models_registry(scope: str = "dhaka"):
     Recommended / Trained on your city / Pretrained / Research, every entry with the gates it
     passed, and what Automatic resolves to. Read fresh from disk — a finished training job
     appears without a restart."""
-    from backend.app.forecasting import model_registry
+    from traffictwin.forecasting.operations import model_registry
     return model_registry.registry(scope)
 
 
@@ -95,8 +95,8 @@ def route_optimize(payload: dict | None = None):
     """ROUTE OPTIMIZATION for one AnalysisRun: its stored forecast -> continuous future edge costs ->
     duarouter candidates -> threshold + capacity admission. Returns the RoutingRun with every
     candidate's cost terms. 404 ANALYSIS_RUN_NOT_FOUND; 422 when the run holds no forecast."""
-    from backend.app.routing import optimizer as route_opt
-    from backend.app.simulation import trip_comparison as twin_test
+    from traffictwin.optimization import analysis_routing as route_opt
+    from traffictwin.digital_twin.live import trip_comparison as twin_test
     from fastapi.responses import JSONResponse
     payload = payload or {}
     try:
@@ -122,7 +122,7 @@ def route_optimize(payload: dict | None = None):
 @router.get("/api/route/optimize/{routing_run_id}", tags=["routing"])
 def route_optimize_get(routing_run_id: str):
     from traffictwin.data import provenance as pv
-    from backend.app.routing import optimizer as route_opt
+    from traffictwin.optimization import analysis_routing as route_opt
     from fastapi.responses import JSONResponse
     rec = pv.load(routing_run_id)
     if not rec:

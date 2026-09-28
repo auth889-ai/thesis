@@ -29,7 +29,7 @@ def test_health(client):
 
 @pytest.mark.parametrize("path,rel", list(REPO_FILES.items()))
 def test_evidence_endpoints_are_honest_in_both_states(client, path, rel):
-    from backend.app import config
+    from traffictwin.common import evidence_paths as config
     d = client.get(path).json()
     exists = (config.REPO / rel).exists()
     assert d["available"] is exists
@@ -133,14 +133,14 @@ def test_chain_run_rejects_unknown_options_and_paths(client, tmp_path, monkeypat
 def test_places_and_place_resolution(client):
     p = client.get("/api/places").json()["places"]
     assert any(x["id"] == "farmgate" for x in p)
-    from backend.app.routing import trip_analysis as analyze
+    from traffictwin.optimization import trip_analysis as analyze
     assert analyze.resolve_place("23.75, 90.39")["source"] == "coordinates"
     assert analyze.resolve_place("Farmgate")["source"] == "known place"
     assert analyze.resolve_place("karwan bazar")["label"] == "karwanbazar"
 
 
 def test_runs_along_needs_coverage_not_just_a_touch():
-    from backend.app.routing import trip_analysis as analyze
+    from traffictwin.optimization import trip_analysis as analyze
     a, b = (23.7573, 90.3854), (23.7389, 90.3958)              # farmgate -> shahbagh
     poly = [(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t) for t in (0, .25, .5, .75, 1)]
     along = [(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t) for t in (0.1, 0.3, 0.5, 0.7, 0.9)]
@@ -149,7 +149,7 @@ def test_runs_along_needs_coverage_not_just_a_touch():
 
 
 def test_analyze_job_reports_real_stages_and_refuses_honestly(client, monkeypatch):
-    from backend.app.routing import trip_analysis as analyze
+    from traffictwin.optimization import trip_analysis as analyze
     monkeypatch.setattr(analyze, "resolve_place", lambda t, city="dhaka": (_ for _ in ()).throw(ValueError(f"could not find '{t}'")))
     j = client.post("/api/analyze", json={"origin": "nowhere-xyz", "destination": "shahbagh"}).json()
     for _ in range(100):
@@ -206,7 +206,7 @@ def test_prediction_lab_lists_real_datasets_and_runs_the_floor(client):
 
 
 def test_city_id_resolution_and_level_conversion():
-    from backend.app.routing import trip_analysis as analyze
+    from traffictwin.optimization import trip_analysis as analyze
     assert analyze.city_id_for("Dhaka") == "dhaka"
     assert analyze.city_id_for("Nairobi") in ("nairobi_kenya", None)
     from traffictwin.forecasting.adapters.base import CityData
@@ -221,7 +221,7 @@ def test_city_id_resolution_and_level_conversion():
 def test_observe_endpoint_refuses_an_unknown_city_honestly(client, monkeypatch):
     """Two honest refusals, both environment-independent: a city whose road graph cannot be
     derived (registered here, corridors fail), and a name that cannot be created at all."""
-    from backend.app.datasets import city_corridors
+    from traffictwin.data import city_corridors
     from types import SimpleNamespace
     from traffictwin.data.cities import registry
     monkeypatch.setattr(city_corridors, "ensure", lambda cid, k=12: (_ for _ in ()).throw(RuntimeError("no graph")))
@@ -238,7 +238,7 @@ def test_observe_endpoint_refuses_an_unknown_city_honestly(client, monkeypatch):
 def test_learned_gate_endpoint_reads_the_newest_report_or_says_it_is_missing(client, tmp_path, monkeypatch):
     """Blocker #6: the learned-model outcome is read as-is from the frozen protocol's report; the oracle arm stays research-only."""
     import json
-    from backend.app import config
+    from traffictwin.common import evidence_paths as config
     from traffictwin.protocols import learned_gate as lg
     monkeypatch.setattr(config, "REPO", tmp_path)
     r = client.get("/api/experiment/learned_gate").json()
@@ -261,7 +261,7 @@ def test_learned_gate_endpoint_reads_the_newest_report_or_says_it_is_missing(cli
 def test_v2x_closed_loop_endpoint_lists_runs_and_reroute_examples(client, tmp_path, monkeypatch):
     """The V2X closed-loop results are read as-is; the reroute examples come from the run's own log."""
     import json
-    from backend.app import config
+    from traffictwin.common import evidence_paths as config
     monkeypatch.setattr(config, "REPO", tmp_path)
     assert client.get("/api/experiment/v2x_closed_loop").json()["available"] is False
     d = tmp_path / "results/v2x/closed_loop/la_x_peak_ideal_p30_cfgz"; (d / "s101/predictive_v2x").mkdir(parents=True)

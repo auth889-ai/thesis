@@ -173,7 +173,7 @@ def exposure(vehroutes: Path, net_path: Path, direct: set[str], derived: set[str
 
 
 def routing_exposure(city_id: str, routes: Path, table: dict, out: Path, cfg: dict) -> dict:
-    from backend.app.simulation.trip_comparison import read_any_routes
+    from traffictwin.digital_twin.live.trip_comparison import read_any_routes
     man = json.loads((scenario_dir(city_id) / "MANIFEST.json").read_text())
     net = REPO / man["files"]["net"]
     veh = read_any_routes(routes)

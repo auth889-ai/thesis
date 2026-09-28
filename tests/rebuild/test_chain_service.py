@@ -202,7 +202,7 @@ def test_backtest_scores_every_model_on_identical_pairs_and_persistence_has_zero
 
 def test_forecast_ledger_logs_then_grades_only_reached_targets(tmp_path, monkeypatch):
     import sys
-    from backend.app.evidence import forecast_ledger as fl
+    from traffictwin.protocols.evidence import forecast_ledger as fl
     monkeypatch.setattr(fl, "DB", tmp_path / "ledger.sqlite")
     # three corridors, a forecast issued at bin 2 for +15 min (= bin 5) and +60 min (= bin 14)
     bins = np.arange(10) * 300.0 + 1_700_000_000

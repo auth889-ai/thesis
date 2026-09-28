@@ -15,8 +15,8 @@ from __future__ import annotations
 import json
 import re
 
-from backend.app import credentials
-from backend.app.simulation.runtime import ARMS, live_sim
+from traffictwin.common import credentials
+from traffictwin.digital_twin.live.runtime import ARMS, live_sim
 
 MODEL = "claude-opus-5"
 SYSTEM = (
@@ -83,7 +83,7 @@ def execute(name: str, args: dict) -> dict:
     if name == "get_status":
         return live_sim.state(with_vehicles=False)
     if name == "list_networks":
-        from backend.app.simulation.runtime import networks
+        from traffictwin.digital_twin.live.runtime import networks
         return {"networks": networks()}
     return {"error": f"unknown tool {name}"}
 
@@ -138,7 +138,7 @@ def parse(message: str) -> tuple[str, dict]:
         v = float(x.group(1)); p["compliance"] = v / 100 if v > 1 else v
     if re.search(r"continuous|forever|keep running|non-?stop|indefinite|until (i )?stop|live[- ]coupled", m):
         p["continuous"] = True
-    from backend.app.simulation.runtime import networks
+    from traffictwin.digital_twin.live.runtime import networks
     for n in networks():                                   # "in nairobi", "on the gulshan network"
         key = n["id"].split("_")[0]
         if n["id"] != "dhaka_r1" and re.search(rf"\b{re.escape(key)}", m):

@@ -10,7 +10,7 @@ needs_recorded = pytest.mark.skipif(not (Path(__file__).resolve().parents[2] / "
 
 
 def test_agent_rules_parse_the_reference_phrases():
-    from backend.app.simulation import command_handler as sa
+    from traffictwin.digital_twin.live import command_handler as sa
     tool, p = sa.parse("Run another simulation with a higher volume, say 60 % demand for 20 minutes")
     assert tool == "start_simulation" and p["scale"] == 0.6 and p["duration_s"] == 1200
     assert sa.parse("stop the simulation")[0] == "stop_simulation"
@@ -23,7 +23,7 @@ def test_agent_rules_parse_the_reference_phrases():
 
 
 def test_agent_clamps_parameters_into_the_twins_range():
-    from backend.app.simulation import command_handler as sa
+    from traffictwin.digital_twin.live import command_handler as sa
     q = sa._clamp({"scale": 9, "duration_s": 5, "compliance": 3, "arm": "nope", "step_delay_ms": -4})
     assert q == {"scale": 1.0, "duration_s": 60, "compliance": 1.0, "step_delay_ms": 0}
 
@@ -56,7 +56,7 @@ def test_live_run_streams_positions_and_scores_like_the_chain(client):
 
 
 def test_agent_endpoint_answers_without_a_key(client, monkeypatch):
-    from backend.app import credentials
+    from traffictwin.common import credentials
     monkeypatch.setattr(credentials, "anthropic_key", lambda: "")
     d = client.post("/api/sim/agent", json={"message": "status"}).json()
     assert d["backend"] == "rules" and d["actions"][0]["tool"] == "get_status"
@@ -103,7 +103,7 @@ def test_start_refuses_an_unknown_network(client):
 
 @pytest.mark.slow
 def test_generated_city_runs_in_the_twin(client):
-    from backend.app.simulation import runtime as live_sim
+    from traffictwin.digital_twin.live import runtime as live_sim
     gen = sorted([n for n in live_sim.networks() if n["id"] != "dhaka_r1" and n.get("edges", 0) >= 100],
                  key=lambda n: -n["edges"])
     if not gen:

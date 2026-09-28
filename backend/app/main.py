@@ -4,9 +4,9 @@ from __future__ import annotations
 from fastapi import FastAPI, Request
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from backend.app import config
-from backend.app.live import observatory as observatory_mod
-from backend.app.evidence import forecast_ledger as forecast_log
+from traffictwin.common import evidence_paths as config
+from traffictwin.data.live_providers import observatory as observatory_mod
+from traffictwin.protocols.evidence import forecast_ledger as forecast_log
 from backend.app.api import research, panels, live_reference, cities, predictions, model_prototypes, experiments, v2x, simulation, training, operations, system, stress, references
 
 
@@ -37,7 +37,7 @@ def _start_observatory() -> None:
     the 288-step window fills in about a day. Sampling is off by default in tests, where a live
     API call per tick would be both slow and pointless.
     """
-    from backend.app.forecasting import training_jobs as train_jobs
+    from traffictwin.forecasting.operations import training_jobs as train_jobs
     try:
         train_jobs.reattach_on_startup()
     except Exception as exc:                            # noqa: BLE001
