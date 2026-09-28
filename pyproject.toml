@@ -1,0 +1,22 @@
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "traffictwin"
+version = "0.1.0"
+description = "Evidence-first traffic forecasting, V2X simulation, and routing research"
+requires-python = ">=3.10"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+include-package-data = false
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["traffictwin*", "pipeline*", "dashboard*"]
+exclude = ["*.tests*", "*.cache*", "*.__pycache__*"]
+namespaces = true
+
+[tool.setuptools.package-data]
+pipeline = ["v2x/controller_config.json", "routing/routing_config.json", "nlp/gazetteer.json", "networking/logback_sweep.xml"]

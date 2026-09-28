@@ -14,17 +14,15 @@ import yaml
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-# The active tree (see README "Project structure"). The 2026-09 rebuild retired
-# scripts/, dashboard/, deployment/ and model_registry/ into legacy/ and replaced them with the
-# stage-oriented folders below; this list is the contract for the CURRENT layout.
+# Runtime packages share src/; web applications and experiment entry points are separate.
 REQUIRED_TOP_LEVEL = [
-    # 2026-09 restructure: research CODE, its RESULTS and its DATA are separated, and the
-    # dashboard that reads the results is its own application.
-    "pipeline",      # the experiments (forecasting / routing / networking / nlp / core / adapters)
     "results",       # the evidence they produce
     "data",          # the datasets they consume
-    "dashboard",     # the app that reads results
-    "tests", "docs", "notebooks", "configs", "artifacts", "upstream",
+    "backend",       # FastAPI application adapters
+    "frontend",      # browser application, served by FastAPI
+    "src",           # shared scientific implementation
+    "experiments",   # executable research protocols and sweeps
+    "tests", "docs", "configs", "upstream",
 ]
 
 REQUIRED_CONFIG_SUBSYSTEMS = [
@@ -50,6 +48,18 @@ def test_required_top_level_directory_exists(name):
     assert (REPO_ROOT / name).is_dir(), f"missing required top-level directory: {name}/"
 
 
+def test_retired_root_directories_are_not_recreated():
+    for name in ("dashboard", "pipeline", "artifacts", "notebooks"):
+        assert not (REPO_ROOT / name).exists(), f"use the canonical nested location, not {name}/"
+
+
+@pytest.mark.parametrize("relative", [
+    "src/pipeline", "experiments/notebooks", "results/artifacts",   # the web application lives in backend/ and frontend/ (REQUIRED_TOP_LEVEL), not under src/
+])
+def test_consolidated_directories_exist(relative):
+    assert (REPO_ROOT / relative).is_dir()
+
+
 @pytest.mark.parametrize("subsystem", REQUIRED_CONFIG_SUBSYSTEMS)
 def test_config_subsystem_exists_and_is_not_empty(subsystem):
     d = REPO_ROOT / "configs" / subsystem
@@ -58,9 +68,11 @@ def test_config_subsystem_exists_and_is_not_empty(subsystem):
 
 
 def test_no_duplicate_source_tree():
-    """`dhakaflow/` is THE source tree; a top-level `src/` would be a second one."""
-    assert not (REPO_ROOT / "src").exists(), (
-        "top-level src/ duplicates dhakaflow/ — the package IS the source tree")
+    """Canonical implementations belong to traffictwin, not copied legacy modules."""
+    assert (REPO_ROOT / "src/traffictwin/__init__.py").is_file()
+    for relative in ("routing/edge_costs.py", "routing/route_optimizer.py", "v2x/channel.py", "v2x/closed_loop.py"):
+        source = (REPO_ROOT / "src/pipeline" / relative).read_text()
+        assert "sys.modules[__name__]" in source, f"expected compatibility import: {relative}"
 
 
 # ------------------------------------------------------------------- upstream

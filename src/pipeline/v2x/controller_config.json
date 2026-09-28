@@ -1,0 +1,148 @@
+{
+  "_doc": "Predictive-controller parameters (online correction, admission budget, time-dependent costing). Chosen on DEVELOPMENT seeds only, then frozen; the hash of this file is recorded in every run. Never selected by looking at evaluation seeds.",
+  "time_dependent_costing": true,
+  "horizons_min": [
+    0,
+    15,
+    30,
+    60
+  ],
+  "correction": {
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "min_rel_residual": 0.15,
+    "observation_window_s": 60,
+    "only_priced": true
+  },
+  "detector": {
+    "window_s": 60,
+    "min_vehicles": 3,
+    "min_messages": 5,
+    "ratio": 0.5,
+    "scope": "edges with a base-forecast expectation only (DIRECT / DERIVED)"
+  },
+  "admission": {
+    "max_reroute_fraction_per_round": 0.1,
+    "min_reroutes_per_round": 2,
+    "stagger_s": 5
+  },
+  "status": "FROZEN 2026-09-08 (network-optimizer parameters added on development seeds before any evaluation-seed run of those arms)",
+  "seeds": {
+    "development": [
+      101,
+      102,
+      103
+    ],
+    "evaluation": [
+      201,
+      202,
+      203,
+      204,
+      205
+    ],
+    "rule": "parameters may be chosen only on development seeds; evaluation seeds are never inspected while choosing"
+  },
+  "optimizer": "vehicle",
+  "candidates": {
+    "diverse": true,
+    "max_overlap": 0.6,
+    "penalty_factor": 1.5,
+    "penalty_rounds": 4,
+    "_doc": "penalty-method diverse alternatives; used only by the network optimizer"
+  },
+  "assignment": {
+    "background_load": true,
+    "route_capacity": true,
+    "max_route_utilisation": 0.9,
+    "_doc": "network optimizer: background load from every vehicle on the road, greedy assignment in descending opportunity with load updates, per-route bottleneck admission"
+  },
+  "optimizer_variants": {
+    "vehicle": "the production route_optimizer (independent vehicles, K duarouter variants, share/capacity gates)",
+    "div": "network optimizer with diverse candidates only (no background load, no route capacity)",
+    "cap": "network optimizer with background load + route capacity but duarouter candidates",
+    "net": "network optimizer: diverse candidates + background load + route capacity + marginal cost"
+  },
+  "stress_scenario": {
+    "la_c2_hollywood_101_5:uniform:arterial": {
+      "chosen_scale": 7.5,
+      "gate": "STRESS_GATE_FAILED",
+      "rule": {
+        "teleport_rate_max": 0.01,
+        "arrival_share_min": 0.85,
+        "loaded_min_speed_mps": 2.0,
+        "tti_min": 1.3,
+        "jam_teleports_min": 1,
+        "bisection_steps": 2,
+        "v1_share_major_ge_0.7_min": 0.1,
+        "v1_loaded_speed_ratio_to_1x_max": 0.7
+      },
+      "chosen_utc": "2026-09-09T03:57:55.622694+00:00",
+      "seeds_used": [
+        101,
+        102,
+        103
+      ]
+    },
+    "la_c2_hollywood_101_5:uniform:any": {
+      "chosen_scale": 7.5,
+      "gate": "STRESS_GATE_FAILED",
+      "rule": {
+        "teleport_rate_max": 0.01,
+        "arrival_share_min": 0.85,
+        "loaded_min_speed_mps": 2.0,
+        "tti_min": 1.3,
+        "jam_teleports_min": 1,
+        "bisection_steps": 2,
+        "v1_share_major_ge_0.7_min": 0.1,
+        "v1_loaded_speed_ratio_to_1x_max": 0.7
+      },
+      "chosen_utc": "2026-09-09T04:03:04.927676+00:00",
+      "seeds_used": [
+        101,
+        102,
+        103
+      ]
+    },
+    "la_c4_central_wide:uniform:arterial": {
+      "chosen_scale": 8.0,
+      "gate": "VALID_TRAFFIC_STRESS_CASE",
+      "rule": {
+        "teleport_rate_max": 0.01,
+        "arrival_share_min": 0.85,
+        "loaded_min_speed_mps": 2.0,
+        "tti_min": 1.3,
+        "jam_teleports_min": 1,
+        "bisection_steps": 2,
+        "v1_share_major_ge_0.7_min": 0.1,
+        "v1_loaded_speed_ratio_to_1x_max": 0.7
+      },
+      "chosen_utc": "2026-09-09T04:52:04.721705+00:00",
+      "seeds_used": [
+        101,
+        102,
+        103
+      ]
+    },
+    "la_c4_central_wide:uniform:any": {
+      "chosen_scale": 10.0,
+      "gate": "VALID_TRAFFIC_STRESS_CASE",
+      "rule": {
+        "teleport_rate_max": 0.01,
+        "arrival_share_min": 0.85,
+        "loaded_min_speed_mps": 2.0,
+        "tti_min": 1.3,
+        "jam_teleports_min": 1,
+        "bisection_steps": 2,
+        "v1_share_major_ge_0.7_min": 0.1,
+        "v1_loaded_speed_ratio_to_1x_max": 0.7
+      },
+      "chosen_utc": "2026-09-09T05:19:41.834019+00:00",
+      "seeds_used": [
+        101,
+        102,
+        103
+      ]
+    }
+  }
+}

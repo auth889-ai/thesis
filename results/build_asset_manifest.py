@@ -19,7 +19,7 @@ DEFAULT_OUT = REPO / "docs/ASSET_MANIFEST.json"
 
 EXACT_FILES = [
     "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
-    "artifacts/due_dso_stats/v200/DUE/003/trips_003.rou.xml.gz",
+    "results/artifacts/due_dso_stats/v200/DUE/003/trips_003.rou.xml.gz",
     "data/forecasting/dhaka_twin/MANIFEST.json",
     "data/forecasting/dhaka_twin/data.npz",
     "data/forecasting/dhaka_twin/sensor_graph_data.npz",
@@ -50,9 +50,9 @@ EXACT_FILES = [
     "results/nlp/classifier.json",
     "results/nlp/classifier.md",
     "results/nlp/events.jsonl",
-    "artifacts/p_live/live_reference_summary.json",
-    "artifacts/p_live/live_reference_summary.md",
-    "artifacts/p_live/normalized/google_routes_runtime_reference.jsonl",
+    "results/artifacts/p_live/live_reference_summary.json",
+    "results/artifacts/p_live/live_reference_summary.md",
+    "results/artifacts/p_live/normalized/google_routes_runtime_reference.jsonl",
 ]
 
 GLOB_FILES = [
@@ -71,7 +71,7 @@ def sha256_file(path: Path) -> str:
 def category(rel: str) -> str:
     if rel.startswith("paper_labs/"):
         return "frozen-network"
-    if rel.startswith("artifacts/due_dso_stats/"):
+    if rel.startswith("results/artifacts/due_dso_stats/"):
         return "demand"
     if rel.startswith("data/forecasting/"):
         return "prediction-data"
@@ -83,7 +83,7 @@ def category(rel: str) -> str:
         return "networking-results"
     if rel.startswith("results/nlp/"):
         return "nlp-results"
-    if rel.startswith("artifacts/p_live/"):
+    if rel.startswith("results/artifacts/p_live/"):
         return "live-reference"
     if rel.startswith("results/"):
         return "evidence-index"

@@ -1,6 +1,6 @@
 # RESULTS — DhakaFlow rebuild
 
-Generated 2026-09-06T03:40 @ `153c318` by `python results/build_results.py`.
+Generated 2026-09-28T21:08 @ `cf2e1c4c` by `python results/build_results.py`.
 
 Every table below is read from a file written by the pipeline named next to it. Nothing here is typed by hand.
 
@@ -47,7 +47,7 @@ _NOT YET PRODUCED_
 
 ## Prediction — LIVE Dhaka congestion floors (real Google-derived stream)
 
-`python pipeline/forecasting/record_live.py --live --yes  (recorder) && python pipeline/forecasting/live_state.py --report` → `results/forecasting/live_floors.md`
+`python src/pipeline/forecasting/record_live.py --live --yes  (recorder) && python src/pipeline/forecasting/live_state.py --report` → `results/forecasting/live_floors.md`
 
 # Live Dhaka congestion — arithmetic floors (REAL_LIVE, no model)
 
@@ -72,7 +72,7 @@ Regenerate: `python pipeline/forecasting/live_state.py --report`.
 
 ## Prediction — twin floors (persistence / historical average)
 
-`make data && python pipeline/forecasting/baselines_twin.py` → `results/forecasting/twin_floors.md`
+`make data && python src/pipeline/forecasting/baselines_twin.py` → `results/forecasting/twin_floors.md`
 
 # Dhaka twin floors (DHAKA_SIMULATED_SENSOR_GRAPH)
 
@@ -88,7 +88,7 @@ target = speed_ms (m/s), test region only, masked
 
 ## Prediction — BasicTS benchmark (METR-LA / PEMS-BAY / PEMS08)
 
-`notebooks/Predict_BasicTS_Colab.ipynb (Colab Pro) -> results/forecasting/benchmark.csv` → `results/forecasting/benchmark.md`
+`experiments/notebooks/Predict_BasicTS_Colab.ipynb (Colab Pro) -> results/forecasting/benchmark.csv` → `results/forecasting/benchmark.md`
 
 # Trained baselines on real cities (AWS GPU, official BasicTS configs, unmodified)
 
@@ -118,7 +118,7 @@ Regenerate: `python pipeline/forecasting/aws_train.py --launch` then `--collect`
 
 ## Prediction — PHASE 1 verdict: floors vs trained vs published, with gate
 
-`python pipeline/forecasting/comparison_table.py` → `results/forecasting/phase1_comparison.md`
+`python src/pipeline/forecasting/comparison_table.py` → `results/forecasting/phase1_comparison.md`
 
 # Phase 1 — traffic prediction: floors vs trained models vs published
 
@@ -168,12 +168,12 @@ Published 15-min MAE from STAEformer (CIKM 2023) Table 1, which retrained every 
 | G5_gwnet_reproduces_published | yes | METR-LA@15min +1.1 %, METR-LA@30min +1.3 %, METR-LA@60min +1.8 %, PEMS-BAY@15min +0.6 %, PEMS-BAY@30min +0.5 %, PEMS-BAY@60min -0.2 % |
 | G6_checkpoint_inference | yes | STID/PEMS-BAY, GWNet/PEMS-BAY, GWNet/METR-LA, STID/METR-LA |
 
-Regenerate: `python pipeline/forecasting/comparison_table.py`. Machine-readable: `phase1_comparison.json` / `.csv`.
+Regenerate: `python src/pipeline/forecasting/comparison_table.py`. Machine-readable: `phase1_comparison.json` / `.csv`.
 
 
 ## Prediction — forecasting floors on real cities + protocol validation vs published
 
-`python pipeline/forecasting/benchmark_floors.py --cities METR-LA,PEMS-BAY` → `results/forecasting/benchmark_floors.md`
+`python src/pipeline/forecasting/benchmark_floors.py --cities METR-LA,PEMS-BAY` → `results/forecasting/benchmark_floors.md`
 
 # Forecasting floors on real city data
 
@@ -228,7 +228,7 @@ Regenerate: `python pipeline/forecasting/benchmark_floors.py --cities METR-LA,PE
 
 ## Prediction — city dataset registry (any city, one interface)
 
-`python pipeline/forecasting/city_datasets.py --list` → `results/forecasting/cities.md`
+`python src/pipeline/forecasting/city_datasets.py --list` → `results/forecasting/cities.md`
 
 # City dataset registry — the forecasting stack is not Dhaka-specific
 
@@ -250,7 +250,7 @@ Regenerate: `python pipeline/forecasting/city_datasets.py --list`.
 
 ## Prediction × Networking — federated forecasting under a SIMULATED V2X link
 
-`notebooks/Federated_V2X_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results results/forecasting --include federated*` → `results/forecasting/federated.md`
+`experiments/notebooks/Federated_V2X_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results results/forecasting --include federated*` → `results/forecasting/federated.md`
 
 # Federated forecasting under a SIMULATED V2X link
 
@@ -344,7 +344,7 @@ Footer: n = 10 paired seeds. The two-sided paired Wilcoxon signed-rank test cann
 
 ## Routing — network-wide decision guard
 
-`python pipeline/routing/decision_guard.py --horizon 7200 --reference reactive` → `results/routing/decision_guard.md`
+`python src/pipeline/routing/decision_guard.py --horizon 7200 --reference reactive` → `results/routing/decision_guard.md`
 
 # Routing Decision Guard, Horizon 7200 s
 
@@ -376,7 +376,7 @@ Honesty label: `DHAKA_SIMULATED_SENSOR_GRAPH`.
 
 ## Live reference — Google Routes derived congestion states
 
-`python pipeline/forecasting/run_live_capture.py && python pipeline/forecasting/summarize_live_reference.py` → `artifacts/p_live/live_reference_summary.md`
+`python src/pipeline/forecasting/run_live_capture.py && python src/pipeline/forecasting/summarize_live_reference.py` → `results/artifacts/p_live/live_reference_summary.md`
 
 # Live Reference Summary
 
@@ -437,7 +437,7 @@ Regenerate: `DHAKAFLOW_SUMO_EXTRA="--ignore-junction-blocker 60" python pipeline
 
 ## Routing — arms × 10 paired seeds at scale 0.20 (sensitivity appendix)
 
-`python pipeline/routing/run_arms.py --scale 0.2 --seeds 11,…,20 --results results/routing/scale0.2 && python pipeline/routing/stats.py --results results/routing/scale0.2` → `results/routing/scale0.2/stats.md`
+`python src/pipeline/routing/run_arms.py --scale 0.2 --seeds 11,…,20 --results results/routing/scale0.2 && python src/pipeline/routing/stats.py --results results/routing/scale0.2` → `results/routing/scale0.2/stats.md`
 
 # Routing arms, horizon 7200 s, paired seeds
 
@@ -485,7 +485,7 @@ Footer: n = 10 paired seeds. The two-sided paired Wilcoxon signed-rank test cann
 
 ## Routing — NLP incident scenario at scale 0.20 incl. pre-departure arms
 
-`python pipeline/routing/incident_scenario.py --scale 0.2 --results results/routing/scale0.2` → `results/routing/scale0.2/incident.md`
+`python src/pipeline/routing/incident_scenario.py --scale 0.2 --results results/routing/scale0.2` → `results/routing/scale0.2/incident.md`
 
 # NLP incident scenario — Dhaka R1, 3 paired seeds
 
@@ -516,7 +516,7 @@ Regenerate: `python pipeline/routing/incident_scenario.py --seeds 11,12,13`.
 
 ## Prediction — Dhaka twin models (official BasicTS-legacy baselines; Colab results replace the local file)
 
-`notebooks/Predict_Twin_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results/twin_models results/forecasting/twin_models` → `results/forecasting/twin_models.md`
+`experiments/notebooks/Predict_Twin_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results/twin_models results/forecasting/twin_models` → `results/forecasting/twin_models.md`
 
 # Dhaka twin forecasting — official BasicTS baselines trained locally on CPU
 
@@ -532,14 +532,14 @@ Regenerate: `python pipeline/forecasting/train_twin_local.py --models STID`.
 
 ## Routing — forecast model in the loop (pre-departure route choice on the twin test window)
 
-`python pipeline/routing/model_in_loop.py --model STID --horizons 15,60 --compliance 0.1,0.3` → `results/routing/model_in_loop_STID.md`
+`python src/pipeline/routing/model_in_loop.py --model STID --horizons 15,60 --compliance 0.1,0.3` → `results/routing/model_in_loop_STID.md`
 
 _NOT YET PRODUCED_
 
 
 ## Live chain — Dhaka live congestion to an ACT / NO_ACTION routing decision
 
-`python pipeline/routing/live_chain.py --seeds 11,12,13` → `results/routing/live_chain.md`
+`python src/pipeline/routing/live_chain.py --seeds 11,12,13` → `results/routing/live_chain.md`
 
 # Live chain — Dhaka live congestion to a routing decision
 
@@ -573,7 +573,7 @@ Regenerate: `python pipeline/routing/live_chain.py --seeds 11,12,13`.
 
 ## Live chain — advised-share sweep under a labelled congested what-if
 
-`python pipeline/routing/live_chain.py --compliance 0.05 --tag _c0.05 --levels ...` → `results/routing/live_chain_c0.05.md`
+`python src/pipeline/routing/live_chain.py --compliance 0.05 --tag _c0.05 --levels ...` → `results/routing/live_chain_c0.05.md`
 
 # Live chain — Dhaka live congestion to a routing decision
 
@@ -607,7 +607,7 @@ Regenerate: `python pipeline/routing/live_chain.py --seeds 11,12,13`.
 
 ## Routing — REAL MEASURED demand (Athens pNEUMA d8, 697 drone-observed vehicles)
 
-`python pipeline/routing/real_demand_arms.py --seeds 11,12,13 --compliance 0.05,0.1,0.3` → `results/routing/real_demand.md`
+`python src/pipeline/routing/real_demand_arms.py --seeds 11,12,13 --compliance 0.05,0.1,0.3` → `results/routing/real_demand.md`
 
 # Routing arms on REAL MEASURED demand (Athens pNEUMA d8)
 
@@ -653,7 +653,7 @@ Regenerate: `python pipeline/routing/real_demand_arms.py --seeds 11,12,13 --comp
 
 ## Routing — NLP incident scenario (text → reroute → measured delay)
 
-`python pipeline/routing/incident_scenario.py --seeds 11,12,13` → `results/routing/incident.md`
+`python src/pipeline/routing/incident_scenario.py --seeds 11,12,13` → `results/routing/incident.md`
 
 # NLP incident scenario — Dhaka R1, 3 paired seeds
 
@@ -680,7 +680,7 @@ Regenerate: `python pipeline/routing/incident_scenario.py --seeds 11,12,13`.
 
 ## Routing — value of early incident detection (report-delay sweep)
 
-`python pipeline/routing/incident_scenario.py --seeds 11 --report-delays 60,300,900` → `results/routing/incident_delay_sweep.md`
+`python src/pipeline/routing/incident_scenario.py --seeds 11 --report-delays 60,300,900` → `results/routing/incident_delay_sweep.md`
 
 # Value of early detection — nlp_informed arm, seed 11
 
@@ -738,7 +738,7 @@ Source JSONs: `results/networking/penetration_p{P}_s{SEED}.json`; regenerate wit
 
 ## Networking — V2X advisory from our NLP / predicted event (Eclipse MOSAIC)
 
-`python pipeline/networking/event_sweep.py --source nlp_event --p 0.25` → `results/networking/event_sweep.md`
+`python src/pipeline/networking/event_sweep.py --source nlp_event --p 0.25` → `results/networking/event_sweep.md`
 
 # V2X advisory from OUR event (NLP report / forecast) — Eclipse MOSAIC 25.2, Dhaka R1
 
@@ -759,7 +759,7 @@ Regenerate: `python pipeline/networking/event_sweep.py --source nlp_event --p <P
 
 ## Networking — latency / loss vs advisory delivery
 
-`python pipeline/networking/latency_injection.py` → `results/networking/latency.md`
+`python src/pipeline/networking/latency_injection.py` → `results/networking/latency.md`
 
 # Latency / loss injection - fraction of route advisories delivered before the decision point
 

@@ -1,0 +1,192 @@
+{
+  "seed": 204,
+  "round": 6,
+  "sim_time_s": 3300,
+  "network": {
+    "routable_edges": 15661,
+    "oracle_priced": 5321,
+    "gwnet_direct": 74,
+    "gwnet_derived": 134,
+    "unpriced": 15453,
+    "network_priced_pct": 1.3281399655194432,
+    "bottleneck_edges": 3090,
+    "bottlenecks_priced": 49,
+    "bottleneck_priced_pct": 1.5857605177993528
+  },
+  "route_coverage": {
+    "all_candidate_paths": {
+      "routes": 7940,
+      "edge_occurrences": 542005,
+      "priced_occurrences": 30471,
+      "priced_edge_pct": 5.621903856975489,
+      "unique_edges": 7795,
+      "unique_priced_edges": 193,
+      "fully_priced_paths": 24,
+      "zero_coverage_paths": 3186,
+      "partially_priced_paths": 4730
+    },
+    "gwnet_selected_paths": {
+      "routes": 1185,
+      "edge_occurrences": 73696,
+      "priced_occurrences": 4627,
+      "priced_edge_pct": 6.2784954407294835,
+      "unique_edges": 4407,
+      "unique_priced_edges": 190,
+      "fully_priced_paths": 6,
+      "zero_coverage_paths": 444,
+      "partially_priced_paths": 735
+    },
+    "oracle_beneficial_paths": {
+      "routes": 119,
+      "edge_occurrences": 12572,
+      "priced_occurrences": 706,
+      "priced_edge_pct": 5.61565383391664,
+      "unique_edges": 2022,
+      "unique_priced_edges": 125,
+      "fully_priced_paths": 0,
+      "zero_coverage_paths": 28,
+      "partially_priced_paths": 91
+    }
+  },
+  "edge_time_error_s": {
+    "gwnet": {
+      "DIRECT": {
+        "n": 66,
+        "MAE": 8.803030303030305,
+        "RMSE": 36.12787074553468,
+        "signed_bias": -3.8391818181818156
+      },
+      "DERIVED": {
+        "n": 126,
+        "MAE": 3.110976190476191,
+        "RMSE": 13.117844183546678,
+        "signed_bias": -0.6198015873015873
+      },
+      "UNPRICED": {
+        "n": 4360,
+        "MAE": 15.753781012474038,
+        "RMSE": 229.17409571868944,
+        "signed_bias": -15.753775934201272
+      }
+    },
+    "persistence": {
+      "DIRECT": {
+        "n": 59,
+        "MAE": 8.416305084745764,
+        "RMSE": 36.879705501783846,
+        "signed_bias": -7.704915254237289
+      },
+      "DERIVED": {
+        "n": 116,
+        "MAE": 2.9352672413793104,
+        "RMSE": 13.520786008382897,
+        "signed_bias": -1.1291982758620693
+      },
+      "UNPRICED": {
+        "n": 4377,
+        "MAE": 15.697009339087668,
+        "RMSE": 228.72862973641224,
+        "signed_bias": -15.697004280538598
+      }
+    }
+  },
+  "edge_speed_error_mps": {
+    "gwnet": {
+      "DIRECT": {
+        "n": 66,
+        "MAE": 2.5980570632561633,
+        "RMSE": 4.281409673467141,
+        "signed_bias": -0.4873133293371027
+      },
+      "DERIVED": {
+        "n": 126,
+        "MAE": 3.624714634825682,
+        "RMSE": 4.974518242477208,
+        "signed_bias": -0.44887982138668203
+      },
+      "UNPRICED": {
+        "n": 4360,
+        "MAE": 7.616463317195555,
+        "RMSE": 10.092234509618814,
+        "signed_bias": 7.616419817885814
+      }
+    },
+    "persistence": {
+      "DIRECT": {
+        "n": 59,
+        "MAE": 1.8078361754303642,
+        "RMSE": 2.3022428819774823,
+        "signed_bias": 1.4885780837681009
+      },
+      "DERIVED": {
+        "n": 116,
+        "MAE": 3.2007930863153593,
+        "RMSE": 4.6292826463234436,
+        "signed_bias": 0.48760760454270013
+      },
+      "UNPRICED": {
+        "n": 4377,
+        "MAE": 7.601350340676253,
+        "RMSE": 10.078306250669353,
+        "signed_bias": 7.601307010315165
+      }
+    }
+  },
+  "route_error_s": {
+    "gwnet": {
+      "n": 4826,
+      "MAE": 1235.1965893079187,
+      "RMSE": 2993.5595885757584,
+      "signed_bias": -1235.1860256941598
+    },
+    "persistence": {
+      "n": 4826,
+      "MAE": 1236.8399854952324,
+      "RMSE": 2994.6206117998,
+      "signed_bias": -1236.8314608371306
+    }
+  },
+  "saving_error_s": {
+    "gwnet": {
+      "n": 1185,
+      "MAE": 1711.719637130802,
+      "RMSE": 3303.3796016716997,
+      "signed_bias": -1710.740869198313
+    },
+    "persistence": {
+      "n": 1185,
+      "MAE": 1711.9202025316463,
+      "RMSE": 3303.5939629258837,
+      "signed_bias": -1711.0499409282709
+    }
+  },
+  "ranking_counts": {
+    "gwnet": {
+      "vehicles": 1185,
+      "oracle_top_route_agreement": 175,
+      "false_positive_reroutes": 17,
+      "false_negative_reroutes": 116,
+      "pairs": 10326,
+      "pair_agreements": 2685
+    },
+    "persistence": {
+      "vehicles": 1185,
+      "oracle_top_route_agreement": 176,
+      "false_positive_reroutes": 18,
+      "false_negative_reroutes": 118,
+      "pairs": 10326,
+      "pair_agreements": 2712
+    }
+  },
+  "opportunity_causes": {
+    "A_FORECAST_ERROR": 0,
+    "B_COVERAGE_MISSING": 0,
+    "C_DERIVATION_ERROR": 0,
+    "D_CANDIDATE_MISSING": 119,
+    "E_OPTIMIZER_REJECTION": 0,
+    "F_V2X_FAILURE": 0,
+    "G_NO_ACTION_DIFFERENCE": 0
+  },
+  "forecast_hash_matches_reference": true,
+  "edge_cost_hash_matches_reference": true
+}

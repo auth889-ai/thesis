@@ -9,7 +9,7 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "dashboard/backend"))
+sys.path.insert(0, str(REPO / "src/dashboard/backend"))
 
 from pipeline.routing import learned_gate as lg  # noqa: E402
 

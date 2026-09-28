@@ -1,0 +1,164 @@
+{
+ "simulation_run_id": "sim_v2x_s102_baseline_ideal_p0",
+ "arm": "baseline",
+ "seed": 102,
+ "profile": "ideal",
+ "penetration": 0.0,
+ "moment": "prepeak",
+ "config_hash": "ea08dddedc14",
+ "network_hash": "0d81df27ab2d",
+ "fork": null,
+ "information": "baseline",
+ "metrics": {
+  "arrived": 5304,
+  "unfinished_at_horizon": 97,
+  "unfinished": 97,
+  "total_vehicle_hours": 1292.1497222222222,
+  "mean_travel_time_all": 861.2736530272172,
+  "mean_travel_time_s": 838.4029034690799,
+  "p95_travel_time_s": 1821.0,
+  "mean_waiting_s": 225.31165158371041,
+  "total_waiting_s": 1195053.0,
+  "mean_time_loss_s": 419.84567119155355,
+  "mean_depart_delay_s": 0.7566779788838612,
+  "vehicles_rerouted_at_least_once": 0,
+  "teleports": 4,
+  "loaded": 5401,
+  "inserted": 5401,
+  "running_at_end": 97,
+  "waiting_to_insert_at_end": 0,
+  "mean_queue_veh": 357.35,
+  "max_queue_veh": 806.0,
+  "mean_running_veh": 1292.15,
+  "queue_steps": 3600,
+  "never_inserted": 0,
+  "never_inserted_vehicle_hours": 0.0,
+  "congestion": {
+   "major_edges": 4952,
+   "teleport_reasons": {
+    "total": 4,
+    "jam": 0,
+    "yield": 1,
+    "wrongLane": 3
+   },
+   "busiest_interval_utilisation": {
+    "p50": 0.017,
+    "p90": 0.097,
+    "max": 0.36,
+    "share_ge_0.5": 0.0,
+    "share_ge_0.7": 0.0,
+    "share_ge_0.9": 0.0
+   },
+   "mean_occupancy_pct_major": 1.15,
+   "spillback_major_edges_occ_ge_80": 0,
+   "spillback_share": 0.0,
+   "max_running_vehicles": 2487,
+   "max_halting_vehicles": 806,
+   "mean_halting_vehicles": 357.4,
+   "mean_speed_mps": 9.26,
+   "min_mean_speed_mps": 6.08,
+   "loaded_mean_speed_mps": 9.11,
+   "loaded_min_speed_mps": 6.08,
+   "loaded_mean_halting_share": 0.284,
+   "loaded_max_halting_share": 0.48,
+   "loaded_steps": 2546
+  },
+  "total_vehicle_hours_incl_never_inserted": 1292.1497,
+  "teleport_events": [
+   {
+    "vehicle_id": "veh0_1601",
+    "sim_time_s": 845,
+    "connected": false,
+    "edge": "397974218#0"
+   },
+   {
+    "vehicle_id": "veh0_3798",
+    "sim_time_s": 1579,
+    "connected": false,
+    "edge": "398038156#0"
+   },
+   {
+    "vehicle_id": "veh0_4516",
+    "sim_time_s": 2265,
+    "connected": false,
+    "edge": ""
+   },
+   {
+    "vehicle_id": "veh0_4849",
+    "sim_time_s": 2345,
+    "connected": false,
+    "edge": "380779252"
+   }
+  ],
+  "reactive_reroute_calls": 0,
+  "incidents_applied": [],
+  "wall_s": 33.7
+ },
+ "network": {
+  "uplink": {
+   "channel": "uplink",
+   "latency_profile": {
+    "latency_ms": 0.0,
+    "jitter_ms": 0.0,
+    "loss": 0.0,
+    "ttl_s": 60.0,
+    "source": "configured"
+   },
+   "messages_tx": 0,
+   "messages_rx": 0,
+   "messages_dropped": 0,
+   "messages_expired": 0,
+   "undelivered_at_end": 0,
+   "packet_delivery_ratio": null,
+   "latency_mean_ms": null,
+   "latency_median_ms": null,
+   "latency_p95_ms": null,
+   "latency_p99_ms": null,
+   "bytes_tx": 0,
+   "message_rate_per_s": 0.0,
+   "throughput_bytes_per_s": 0.0
+  },
+  "downlink": {
+   "channel": "downlink",
+   "latency_profile": {
+    "latency_ms": 0.0,
+    "jitter_ms": 0.0,
+    "loss": 0.0,
+    "ttl_s": 60.0,
+    "source": "configured"
+   },
+   "messages_tx": 0,
+   "messages_rx": 0,
+   "messages_dropped": 0,
+   "messages_expired": 0,
+   "undelivered_at_end": 0,
+   "packet_delivery_ratio": null,
+   "latency_mean_ms": null,
+   "latency_median_ms": null,
+   "latency_p95_ms": null,
+   "latency_p99_ms": null,
+   "bytes_tx": 0,
+   "message_rate_per_s": 0.0,
+   "throughput_bytes_per_s": 0.0
+  },
+  "connected_vehicles": 0,
+  "vehicles_seen": 5262,
+  "penetration_configured": 0.0,
+  "recommendations_delivered": 0,
+  "reroutes_applied": 0,
+  "recommendations_inapplicable": 0,
+  "incidents_detected": [],
+  "incident_detection_delay_s": null,
+  "lead_time": {
+   "incident_onset_s": null,
+   "first_reroute_applied_s": null,
+   "first_reroute_after_onset_s": null,
+   "reroutes_before_onset": 0
+  }
+ },
+ "rounds": [],
+ "routing_run_ids": [],
+ "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_prepeak_ideal_p0_cfgea08dddedc14_stress_x6/s102/baseline/reroute_log.jsonl",
+ "reroutes_applied": 0,
+ "out_dir": "results/v2x/closed_loop/la_c4_central_wide_prepeak_ideal_p0_cfgea08dddedc14_stress_x6/s102/baseline"
+}

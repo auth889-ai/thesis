@@ -1,119 +1,74 @@
-# Project Structure
+# Project structure — target and rules
 
-This repository has two layers:
+One Python package, one web application, one place for experiments, one place for evidence.
+Every module has one responsibility and stays under ~400 lines; a file that grows past that is split
+by responsibility, never by "part 1 / part 2". The layout is enforced by
+`tests/platform/test_repo_architecture.py`.
 
-1. **Existing DhakaFlow source code**: reusable package code, research modules,
-   scripts, frozen network assets, tests, and evidence.
-2. **120-hour rebuild layer**: a small, clear execution surface for the current
-   thesis goal: real-time route advice, traffic prediction benchmarks, a
-   real-user pilot, and V2X/NLP/SUMO appendix evidence.
+```
+traffictwin/                      the library (installed as `traffictwin`, lives in src/traffictwin)
+  data/          datasets (METR-LA, PEMS-BAY, PEMS04/08, uploads), recorded corridor history, provenance
+  forecasting/   models (Graph WaveNet, DCRNN, STID, STAEformer via BasicTS; Chronos, OpenCity pretrained),
+                 baselines (persistence, historical average, XGBoost, RandomForest), training jobs,
+                 evaluation (held-out error, skill vs persistence), checkpoint registry
+  routing/       edge costs from forecasts, route optimizer, local router (no external API), trip analysis
+  networking/    simulated V2X channel, latency/loss profiles from Eclipse MOSAIC, online state correction,
+                 MOSAIC penetration sweeps
+  digital_twin/  SUMO scenarios from OSM, runtime (TraCI), identical-state forks, metrics, incident injection
+  control/       closed-loop controller: rounds, budget, admission, recommendations
+  protocols/     the research protocols: oracle gate, stress calibration, scenario A/B, controller gate,
+                 statistics (paired t interval, bootstrap, Wilcoxon), report generators
+  nlp/           incident classifier (Dabiri traffic tweets)
+  research_status.py, paths.py, configuration.py
 
-The rebuild layer does not replace the existing project. It imports and reuses
-the existing project so the thesis can be understood and reproduced quickly.
+backend/app/                      FastAPI application — thin routers, no science
+  main.py, config.py, credentials.py
+  api/           one router per page or resource (system, predictions, routing, simulation, v2x,
+                 experiments, stress, references, research, training, cities, live_reference)
+  services/      request-scoped orchestration that calls traffictwin (trip analysis jobs, training jobs,
+                 execution jobs); no algorithm lives here
 
-## Read First
+frontend/                         browser application (ES modules, no build step)
+  index.html, app.js (hash router)
+  pages/         one file per page: home, prediction, control_room, results, references, system, models,
+                 city, live, network, advisor, twin
+  components/    shared widgets (map, cards, tables, tickers)
+  services/      api client, basemap, streaming
+  styles/
 
-| File | Purpose |
-|---|---|
-| `README.md` | one-page project overview |
-| `PROJECT_MAP.md` | fast map of active code paths |
-| `docs/REBUILD_120H_PLAN.md` | 5-day execution plan |
-| `docs/KEYS_AND_COMPUTE.md` | required keys, Colab/Drive/AWS setup, and secret rules |
-| `results/RESULTS.md` | every result, command, and evidence file |
-| `docs/ASSET_MANIFEST.md` | checksums for evidence assets restored by `download_assets.sh` |
-| `docs/CURRENT_SYSTEM_GAP_AUDIT.md` | known weaknesses and honesty limits |
-
-## Canonical Source Trees
-
-| Path | Role | Modify? |
-|---|---|---|
-| `dhakaflow/` | main Python package: shared interfaces, services, registries, labels | yes, for reusable platform fixes |
-| `research/` | experiment implementations: twin, forecasting, routing, control, perception, networking | yes, for algorithm fixes |
-| `scripts/` | runnable gate/demo commands around the older DhakaFlow pipeline | yes, only when the old gate path is needed |
-| `paper_labs/` | frozen foundation labs and real Dhaka R1 SUMO network | do not edit except with a deliberate freeze update |
-| `configs/` | subsystem configuration | yes |
-| `tests/` | architecture and platform tests | yes |
-| `artifacts/` | evidence outputs, small manifests, generated run records | add small evidence only; keep large files out of git |
-| `archive/` | old scaffolds and historical material | read-only unless explicitly reviving something |
-| `upstream/` | manifests only; official repos live outside the repo | do not vendor upstream code here |
-
-There must be no top-level `src/`. The source package is `dhakaflow/`.
-
-## Active Rebuild Layer
-
-| Path | Owns | Reuses |
-|---|---|---|
-| `live/` | no-fixed-seed route advisor and real user-pilot logging | `dhakaflow/live/google_providers.py`, `dhakaflow/live/providers.py` |
-| `pipeline/forecasting/` | twin sensor dataset, forecasting floors, forecast-to-SUMO weights | `research/twin/sensor_graph.py`, `research/forecasting/*`, BasicTS pins |
-| `pipeline/routing/` | static/reactive/predictive/DUE/DSO routing arms and paired-seed appendix stats | `research/routing/r1_router.py`, SUMO, `artifacts/gates/routes_repeat_1h.rou.xml.gz` |
-| `pipeline/networking/` | MOSAIC V2X penetration and latency/loss appendix sweeps | `artifacts/mosaic_dhaka/dhaka_r1`, `research/networking/v2x_bus.py` |
-| `pipeline/nlp/` | incident text classifier and event-to-edge weight injection | `dhakaflow/nlp`, R1 edge mapping, routing weight format |
-| `demo/` | presentation demo using generated results | `pipeline/forecasting/`, `pipeline/routing/`, `pipeline/networking/`, `pipeline/nlp/` outputs |
-| `results/` | final result index and generated summary tables | all active modules |
-| `paper/` | thesis chapters, slides, speaker notes | `results/RESULTS.md` |
-| `model_registry/` | metadata-only model registry | remote checkpoints only |
-| `dashboard/` | lightweight dashboard source/stub | generated heavy dashboards stay in `artifacts/` |
-| `deployment/` | deployment manifests | pinned runtime versions |
-
-## How The Existing Project Will Be Fixed
-
-| Existing issue | Fix direction | Files |
-|---|---|---|
-| Reader cannot find the project entrypoint | Use `README.md`, `PROJECT_MAP.md`, and this file as the navigation surface | `README.md`, `PROJECT_MAP.md`, `docs/PROJECT_STRUCTURE.md` |
-| Too many old gates and scripts | Keep them, but make the rebuild layer the active thesis path | `pipeline/forecasting/`, `pipeline/routing/`, `pipeline/networking/`, `pipeline/nlp/`, `demo/` |
-| Forecasting result not easy to reproduce | Put forecasting commands and tables behind `make predict` and `results/RESULTS.md` | `pipeline/forecasting/`, `Makefile`, `results/` |
-| Route optimization mixed with older demos | Put the paired-seed routing harness in one place | `pipeline/routing/predictive_routing.py`, `pipeline/routing/run_arms.py`, `pipeline/routing/stats.py` |
-| Large generated files tracked in git | Keep heavy outputs on disk/Drive/S3, remove from git index, add ignore rules | `.gitignore`, `artifacts/`, `results/` |
-| Claims can overreach the evidence | Keep labels: simulated Dhaka twin, provider integration, live reference only | docs, result JSON, model registry |
-
-## Git Policy
-
-Track:
-
-- source code
-- configs
-- small JSON/CSV/Markdown evidence
-- manifests with sha256 hashes
-- notebooks needed to reproduce cloud jobs
-
-Do not track:
-
-- model weights
-- raw datasets
-- large SUMO XML/FCD outputs
-- generated movies
-- large embedded HTML reports
-- API keys or `.env`
-
-Large assets belong in Drive/S3/GCS with a checksum and a download step.
-
-## Asset Bootstrap
-
-`download_assets.sh` is the safe restore/check entrypoint. It never calls Google
-Routes or spends API quota. With no environment variables it verifies the assets
-already present in the clone. With `DHAKAFLOW_ASSET_ROOT=/path/to/DhakaFlow-assets`
-it copies missing files from a local Drive/S3/GCS export that mirrors repository
-relative paths, then verifies sha256 checksums from `docs/ASSET_MANIFEST.json`.
-
-Regenerate the manifest only after producing a new accepted evidence set:
-
-```bash
-python results/build_asset_manifest.py
+experiments/                      CLI entry points only (argparse + call into traffictwin.protocols)
+configs/                          YAML settings per subsystem
+tests/                            mirrors the packages: tests/traffictwin, tests/backend, tests/frontend, tests/platform
+docs/                             structure, methodology, references (generated), reports
+results/                          generated evidence; only small summaries are versioned (see .gitignore)
+data/                             datasets and built scenarios (not versioned)
+archive/                          frozen labs (paper_labs), legacy code — kept for provenance, never imported
+upstream/                         pins and manifests of official third-party code (no clones)
 ```
 
-## Main Commands
+## Migration from the current tree
 
-```bash
-python results/build_asset_manifest.py
-bash download_assets.sh
-PYTHONPATH=. pytest tests/platform/test_interfaces.py tests/platform/test_repo_architecture.py -q
-make route
-make nlp
-make results
-```
+`src/pipeline` (183 files, 27 000 lines, 13 sub-packages) is the old research code. It is migrated
+into `traffictwin` one sub-package at a time, each step leaving the suite green:
 
-For the 5-day rebuild, `make results` is the main evidence index command. It
-does not run simulations or spend API quota. Use `make local-results` for local
-non-billed regeneration, and `make live-capture` only when a live Google
-reference capture is intended. Older gate commands under `scripts/` remain
-available for appendix evidence.
+| step | from `src/pipeline/…` | to `traffictwin/…` | notes |
+|---|---|---|---|
+| 1 | routing/ (oracle_gate, learned_gate, stats, decision_guard, forecast_to_costs, chains) | protocols/, routing/ | protocols get the gates and statistics; routing keeps cost building |
+| 2 | v2x/ (closed_loop, stress_*, controller_gate, phase/stress reports, corridor_diversity, route_headroom, network_assignment) | control/, protocols/ | closed_loop is already duplicated in traffictwin.orchestration — keep one |
+| 3 | forecasting/ (basicts_train, aws_train, evaluate_models, benchmark_floors, adapters, opencity_*, chronos, federated_forecast, live_to_edges) | forecasting/ | split training / evaluation / adapters / federated |
+| 4 | city/ (sumo_scenario, sensor_map, coverage_rescue, datasets) | digital_twin/scenarios, data/ | |
+| 5 | networking/, nlp/, federated/ | networking/mosaic, nlp/, forecasting/federated | |
+| 6 | core/, adapters/, audit/, results/, upstream/, live/ | archive/ or folded where still used | perception/tracking adapters are off the canonical path |
+| 7 | `src/dashboard/backend` alias shims | removed | once nothing imports the old flat names |
+
+Then: `backend/app/simulation/runtime.py` and `backend/app/routing/trip_analysis.py` split into services;
+frontend `pages/legacy/*` retired or promoted to `pages/` one file each; `legacy/`, `paper_labs/`
+moved to `archive/`; root `main.py` becomes `traffictwin/cli.py`.
+
+## Rules the test enforces
+
+- no module over 400 lines outside `archive/`
+- nothing outside `src/traffictwin` imports `pipeline.*` once its step is done
+- `backend/app/api/*` import only `traffictwin`, `backend.app.services`, FastAPI and stdlib
+- `frontend/pages/*.js` import only `../components` and `../services`
+- `archive/` is never imported

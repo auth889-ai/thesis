@@ -1,4 +1,4 @@
-"""Fast tests for the rebuild tree (pipeline/forecasting/ pipeline/routing/ pipeline/nlp/ results/). No GPU, no network, no long SUMO runs."""
+"""Fast tests for the rebuild tree (src/pipeline/forecasting/ src/pipeline/routing/ src/pipeline/nlp/ results/). No GPU, no network, no long SUMO runs."""
 from __future__ import annotations
 
 import json
@@ -56,7 +56,7 @@ def test_load_weights_and_forecast_to_weights_sources(tmp_path):
     assert intervals[0][0] == 0.0 and intervals[0][1] == 300.0
     for src in ("oracle", "persistence"):
         out = tmp_path / f"{src}.xml"
-        r = subprocess.run([PY, str(REPO / "pipeline/forecasting/forecast_to_weights.py"), "--source", src, "--edgedata", str(SMOKE_EDGEDATA),
+        r = subprocess.run([PY, str(REPO / "src/pipeline/forecasting/forecast_to_weights.py"), "--source", src, "--edgedata", str(SMOKE_EDGEDATA),
                             "--out", str(out)], capture_output=True, text=True)
         assert r.returncode == 0, r.stderr[-800:]
         got = pr.load_weights(out)
@@ -79,7 +79,7 @@ def test_incident_helpers():
 @needs_nlp_model
 def test_event_feed_maps_karwan_bazar_to_r1_edges(tmp_path):
     out = tmp_path / "ev.jsonl"
-    r = subprocess.run([PY, str(REPO / "pipeline/nlp/event_feed.py"), "--text", "Heavy jam at Karwan Bazar after a bus breakdown", "--out", str(out)],
+    r = subprocess.run([PY, str(REPO / "src/pipeline/nlp/event_feed.py"), "--text", "Heavy jam at Karwan Bazar after a bus breakdown", "--out", str(out)],
                        capture_output=True, text=True)
     assert r.returncode == 0, r.stderr[-800:]
     ev = [json.loads(l) for l in out.read_text().splitlines() if l.strip()]
@@ -88,7 +88,7 @@ def test_event_feed_maps_karwan_bazar_to_r1_edges(tmp_path):
 
 
 def test_gazetteer_all_inside_or_labelled():
-    g = json.loads((REPO / "pipeline/nlp/gazetteer.json").read_text())
+    g = json.loads((REPO / "src/pipeline/nlp/gazetteer.json").read_text())
     places = g if isinstance(g, list) else g.get("places", list(g.values()))
     assert len(places) >= 25
     for p in places:
@@ -106,7 +106,7 @@ def test_build_results_marks_missing(tmp_path, monkeypatch):
 def test_static_and_predictive_smoke(tmp_path):
     for arm, extra in (("static", []), ("predictive", ["--weights", str(SMOKE_EDGEDATA), "--compliance", "0.3"])):
         out = tmp_path / arm
-        r = subprocess.run([PY, str(REPO / "pipeline/routing/predictive_routing.py"), "--arm", arm, "--seed", "11", "--horizon", "300", "--out", str(out)] + extra,
+        r = subprocess.run([PY, str(REPO / "src/pipeline/routing/predictive_routing.py"), "--arm", arm, "--seed", "11", "--horizon", "300", "--out", str(out)] + extra,
                            capture_output=True, text=True)
         assert r.returncode == 0, r.stderr[-800:]
         m = json.loads((out / "metrics.json").read_text())["metrics"]

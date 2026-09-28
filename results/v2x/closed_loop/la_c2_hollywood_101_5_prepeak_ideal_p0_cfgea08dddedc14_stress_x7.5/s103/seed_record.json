@@ -1,0 +1,356 @@
+{
+ "seed": 103,
+ "analysis_run_id": "an_v2x_s103",
+ "as_of_index": 32451,
+ "demand": {
+  "demand_file": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x7.5/s103/demand_s103.rou.xml",
+  "demand_hash": "2e7f08738970",
+  "vehicles": 6750,
+  "demand_scale": 7.5,
+  "demand_profile": "uniform",
+  "profile_phases": [
+   [
+    0,
+    1800,
+    1.0
+   ]
+  ],
+  "od_rule": "any",
+  "od_rule_text": "scenario default: randomTrips samples origins/destinations from every passenger edge, lane-weighted, fringe factor 5"
+ },
+ "fork": null,
+ "arms": {
+  "baseline": {
+   "simulation_run_id": "sim_v2x_s103_baseline_ideal_p0",
+   "arm": "baseline",
+   "seed": 103,
+   "profile": "ideal",
+   "penetration": 0.0,
+   "moment": "prepeak",
+   "config_hash": "ea08dddedc14",
+   "network_hash": "fbed352e7c08",
+   "fork": null,
+   "information": "baseline",
+   "metrics": {
+    "arrived": 6628,
+    "unfinished_at_horizon": 122,
+    "unfinished": 122,
+    "total_vehicle_hours": 1291.7944444444445,
+    "mean_travel_time_all": 688.957037037037,
+    "mean_travel_time_s": 660.9603198551599,
+    "p95_travel_time_s": 1377.0,
+    "mean_waiting_s": 169.13805069402534,
+    "total_waiting_s": 1121047.0,
+    "mean_time_loss_s": 312.3322254073627,
+    "mean_depart_delay_s": 0.6394840072420036,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 32,
+    "loaded": 6750,
+    "inserted": 6750,
+    "running_at_end": 122,
+    "waiting_to_insert_at_end": 0,
+    "mean_queue_veh": 358.91,
+    "max_queue_veh": 750.0,
+    "mean_running_veh": 1291.79,
+    "queue_steps": 3600,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "congestion": {
+     "major_edges": 4251,
+     "teleport_reasons": {
+      "total": 32,
+      "jam": 17,
+      "yield": 11,
+      "wrongLane": 4
+     },
+     "busiest_interval_utilisation": {
+      "p50": 0.02,
+      "p90": 0.087,
+      "max": 0.46,
+      "share_ge_0.5": 0.0,
+      "share_ge_0.7": 0.0,
+      "share_ge_0.9": 0.0
+     },
+     "mean_occupancy_pct_major": 1.08,
+     "spillback_major_edges_occ_ge_80": 1,
+     "spillback_share": 0.0002,
+     "max_running_vehicles": 2500,
+     "max_halting_vehicles": 750,
+     "mean_halting_vehicles": 358.9,
+     "mean_speed_mps": 7.22,
+     "min_mean_speed_mps": 1.55,
+     "loaded_mean_speed_mps": 8.55,
+     "loaded_min_speed_mps": 5.11,
+     "loaded_mean_halting_share": 0.271,
+     "loaded_max_halting_share": 0.528,
+     "loaded_steps": 2354
+    },
+    "total_vehicle_hours_incl_never_inserted": 1291.7944,
+    "teleport_events": [
+     {
+      "vehicle_id": "veh0_2126",
+      "sim_time_s": 873,
+      "connected": false,
+      "edge": "-398734314#1"
+     },
+     {
+      "vehicle_id": "veh0_2839",
+      "sim_time_s": 1329,
+      "connected": false,
+      "edge": "866332298"
+     },
+     {
+      "vehicle_id": "veh0_869",
+      "sim_time_s": 1329,
+      "connected": false,
+      "edge": "148385676"
+     },
+     {
+      "vehicle_id": "veh0_5141",
+      "sim_time_s": 1715,
+      "connected": false,
+      "edge": ""
+     },
+     {
+      "vehicle_id": "veh0_4368",
+      "sim_time_s": 2187,
+      "connected": false,
+      "edge": "-639610968"
+     },
+     {
+      "vehicle_id": "veh0_2542",
+      "sim_time_s": 2187,
+      "connected": false,
+      "edge": "398607611#0"
+     },
+     {
+      "vehicle_id": "veh0_5455",
+      "sim_time_s": 2219,
+      "connected": false,
+      "edge": "-1426161361"
+     },
+     {
+      "vehicle_id": "veh0_5574",
+      "sim_time_s": 2219,
+      "connected": false,
+      "edge": "-724049607#2"
+     },
+     {
+      "vehicle_id": "veh0_5621",
+      "sim_time_s": 2224,
+      "connected": false,
+      "edge": "398607611#0"
+     },
+     {
+      "vehicle_id": "veh0_6475",
+      "sim_time_s": 2286,
+      "connected": false,
+      "edge": ""
+     },
+     {
+      "vehicle_id": "veh0_6729",
+      "sim_time_s": 2288,
+      "connected": false,
+      "edge": "-980554402#2"
+     },
+     {
+      "vehicle_id": "veh0_3866",
+      "sim_time_s": 2396,
+      "connected": false,
+      "edge": "-398607661"
+     },
+     {
+      "vehicle_id": "veh0_6314",
+      "sim_time_s": 2459,
+      "connected": false,
+      "edge": "535525435"
+     },
+     {
+      "vehicle_id": "veh0_5802",
+      "sim_time_s": 2482,
+      "connected": false,
+      "edge": "398607611#0"
+     },
+     {
+      "vehicle_id": "veh0_3902",
+      "sim_time_s": 2492,
+      "connected": false,
+      "edge": "-639610968"
+     },
+     {
+      "vehicle_id": "veh0_3023",
+      "sim_time_s": 2496,
+      "connected": false,
+      "edge": "398607611#0"
+     },
+     {
+      "vehicle_id": "veh0_4552",
+      "sim_time_s": 2498,
+      "connected": false,
+      "edge": "398607611#0"
+     },
+     {
+      "vehicle_id": "veh0_4064",
+      "sim_time_s": 2499,
+      "connected": false,
+      "edge": "398607611#0"
+     },
+     {
+      "vehicle_id": "veh0_4879",
+      "sim_time_s": 2555,
+      "connected": false,
+      "edge": ""
+     },
+     {
+      "vehicle_id": "veh0_5690",
+      "sim_time_s": 2555,
+      "connected": false,
+      "edge": "-724049607#2"
+     },
+     {
+      "vehicle_id": "veh0_6678",
+      "sim_time_s": 2593,
+      "connected": false,
+      "edge": "-980554402#2"
+     },
+     {
+      "vehicle_id": "veh0_6122",
+      "sim_time_s": 2601,
+      "connected": false,
+      "edge": "161699674"
+     },
+     {
+      "vehicle_id": "veh0_6279",
+      "sim_time_s": 2608,
+      "connected": false,
+      "edge": "398607611#0"
+     },
+     {
+      "vehicle_id": "veh0_3864",
+      "sim_time_s": 2749,
+      "connected": false,
+      "edge": ""
+     },
+     {
+      "vehicle_id": "veh0_6367",
+      "sim_time_s": 2753,
+      "connected": false,
+      "edge": ""
+     },
+     {
+      "vehicle_id": "veh0_5858",
+      "sim_time_s": 2764,
+      "connected": false,
+      "edge": "535525435"
+     },
+     {
+      "vehicle_id": "veh0_6651",
+      "sim_time_s": 2769,
+      "connected": false,
+      "edge": "539401592#0"
+     },
+     {
+      "vehicle_id": "veh0_4765",
+      "sim_time_s": 2787,
+      "connected": false,
+      "edge": "31588864"
+     },
+     {
+      "vehicle_id": "veh0_3802",
+      "sim_time_s": 2791,
+      "connected": false,
+      "edge": "511732878#0"
+     },
+     {
+      "vehicle_id": "veh0_3668",
+      "sim_time_s": 2798,
+      "connected": false,
+      "edge": "-639610968"
+     },
+     {
+      "vehicle_id": "veh0_5148",
+      "sim_time_s": 2804,
+      "connected": false,
+      "edge": "398612337#0"
+     },
+     {
+      "vehicle_id": "veh0_4098",
+      "sim_time_s": 2822,
+      "connected": false,
+      "edge": "1378283998"
+     }
+    ],
+    "reactive_reroute_calls": 0,
+    "incidents_applied": [],
+    "wall_s": 33.5
+   },
+   "network": {
+    "uplink": {
+     "channel": "uplink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 0,
+     "messages_rx": 0,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": null,
+     "latency_mean_ms": null,
+     "latency_median_ms": null,
+     "latency_p95_ms": null,
+     "latency_p99_ms": null,
+     "bytes_tx": 0,
+     "message_rate_per_s": 0.0,
+     "throughput_bytes_per_s": 0.0
+    },
+    "downlink": {
+     "channel": "downlink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 0,
+     "messages_rx": 0,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": null,
+     "latency_mean_ms": null,
+     "latency_median_ms": null,
+     "latency_p95_ms": null,
+     "latency_p99_ms": null,
+     "bytes_tx": 0,
+     "message_rate_per_s": 0.0,
+     "throughput_bytes_per_s": 0.0
+    },
+    "connected_vehicles": 0,
+    "vehicles_seen": 6475,
+    "penetration_configured": 0.0,
+    "recommendations_delivered": 0,
+    "reroutes_applied": 0,
+    "recommendations_inapplicable": 0,
+    "incidents_detected": [],
+    "incident_detection_delay_s": null,
+    "lead_time": {
+     "incident_onset_s": null,
+     "first_reroute_applied_s": null,
+     "first_reroute_after_onset_s": null,
+     "reroutes_before_onset": 0
+    }
+   },
+   "rounds": [],
+   "routing_run_ids": [],
+   "reroute_log_file": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x7.5/s103/baseline/reroute_log.jsonl",
+   "reroutes_applied": 0,
+   "out_dir": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x7.5/s103/baseline"
+  }
+ }
+}

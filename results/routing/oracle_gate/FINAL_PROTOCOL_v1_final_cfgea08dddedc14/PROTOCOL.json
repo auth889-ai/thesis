@@ -1,0 +1,77 @@
+{
+ "protocol_id": "FINAL_PROTOCOL_v1",
+ "network": "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml",
+ "network_hash": "06194df03974",
+ "demand_source": "artifacts/gates/routes_repeat_1h.rou.xml.gz",
+ "demand_source_hash": "e42e8450863c",
+ "demand_sample_fraction": 0.25,
+ "demand_sampling": "each seed keeps a deterministic random subset (fraction above) of the calibrated hourly demand, identical in all three arms; SUMO --scale 1",
+ "od_population": "every kept vehicle keeps its calibrated O/D, departure time and static route",
+ "simulation_duration_s": 3600,
+ "routing_round_s": 900,
+ "edgedata_period_s": 300,
+ "routing_horizon": "one routing round = 900 s of departures; the oracle table for a round is the measured edge travel time of the paired baseline over that round",
+ "compliance": 0.3,
+ "equipped_rule": "pipeline/routing/predictive_routing.equipped(vid, compliance): deterministic hash of the vehicle id",
+ "reactive_period_s": 60,
+ "time_to_teleport_s": 300,
+ "coverage_mode": "oracle: MEASURED per-edge travel time (sampledSeconds-weighted over the round), unmeasured edges free flow; no DERIVED propagation",
+ "routing_config_file": "pipeline/routing/routing_config.json",
+ "routing_config_hash": "ea08dddedc14",
+ "min_saving_s": 60.0,
+ "min_saving_pct": 5.0,
+ "admission": {
+  "_rule": "thin TrafficTwin layer above SUMO routing: a vehicle is admitted to an alternative only if no edge of it would exceed max_edge_load_ratio after admission, and no more than max_share_per_alternative of the vehicles in the round are sent to the same alternative; a vehicle rerouted within reroute_cooldown_s is not advised again",
+  "max_edge_load_ratio": 1.0,
+  "max_share_per_alternative": 0.4,
+  "reroute_cooldown_s": 300,
+  "share_gate_min_vehicles": 5,
+  "_share_gate_min": "the share gate only applies to rounds of at least share_gate_min_vehicles vehicles: a single analysed trip is not a herd"
+ },
+ "candidates": {
+  "k_alternatives": 5,
+  "_generator": "duarouter (pinned eclipse-sumo v1_27_1) on the forecast weight file: run 0 exact weights; runs 1..K-1 with --weights.random-factor and distinct seeds (SUMO's documented route-diversification mechanism, Simulation/Routing.md 'Randomized travel times'); distinct edge sequences kept; the vehicle's current route is always candidate 0",
+  "weights_random_factor": 1.5
+ },
+ "generalized_cost": {
+  "_rule": "final_cost_s = forecast_future_tt_s + load_penalty_s + overlap_penalty_s",
+  "load_penalty": {
+   "_rule": "BPR volume-delay on the vehicles this optimizer has already admitted: load_penalty_s = sum_over_edges future_tt_e x alpha x (admitted_e / capacity_e)^beta; capacity_e = lanes x capacity_veh_per_lane_h x window_h",
+   "bpr_alpha": 0.15,
+   "bpr_beta": 4.0,
+   "capacity_veh_per_lane_h": 1800,
+   "_source": "Bureau of Public Roads volume-delay function, standard alpha=0.15 beta=4; 1800 veh/h/lane is the HCM saturation-flow order of magnitude"
+  },
+  "overlap_penalty": {
+   "_rule": "overlap_penalty_s = switch_cost_s x (1 - shared_length_fraction_with_current_route); the current route itself costs 0",
+   "switch_cost_s": 30.0
+  }
+ },
+ "sumo_version": "Eclipse SUMO sumo 1.27.1",
+ "dev_seeds": [
+  101,
+  102,
+  103
+ ],
+ "final_seeds": [
+  201,
+  202,
+  203,
+  204,
+  205,
+  206,
+  207,
+  208,
+  209,
+  210
+ ],
+ "probe": {
+  "from": "33783822#0",
+  "to": "188458229#3",
+  "depart_s": 600,
+  "note": "one user trip, reported separately, never the system conclusion"
+ },
+ "primary_metric": "total vehicle-hours of every vehicle loaded before the horizon: inserted vehicles to arrival or the horizon, never-inserted vehicles from their departure to the horizon",
+ "primary_metric_key": "total_vehicle_hours_incl_never_inserted",
+ "lower_is_better": true
+}

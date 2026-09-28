@@ -1,0 +1,132 @@
+{
+ "protocol_id": "V2X_CLOSED_LOOP_v1",
+ "city_id": "la_c4_central_wide",
+ "network": "data/cities/la_c4_central_wide/sumo/la_c4_central_wide.net.xml",
+ "network_hash": "0d81df27ab2d",
+ "mapping_file": "results/routing/coverage_rescue/la_c4_central_wide/sensor_to_edge_207.json",
+ "mapping_hash": "d8414a9c7b0f",
+ "mapped_detectors": 83,
+ "detectors_total": 207,
+ "model": "GWNet",
+ "model_label": "Graph WaveNet (207-node METR-LA, verified)",
+ "checkpoint_path": "/Users/jannatulferdouseva/thesis/results/forecasting/checkpoints/GraphWaveNet/METR-LA_50_12_12/d1ffd3d52d3caacf60ebf59214673f7c/GraphWaveNet_best_val_MAE.pt",
+ "checkpoint_sha256": "548e399bd53c",
+ "dataset": "METR-LA",
+ "dataset_hash": "857a98d0ec47b353",
+ "graph_hash": "a35687c6",
+ "routing_config_hash": "ea08dddedc14",
+ "coverage_hops": 1,
+ "min_saving_s": 60.0,
+ "min_saving_pct": 5.0,
+ "admission": {
+  "_rule": "thin TrafficTwin layer above SUMO routing: a vehicle is admitted to an alternative only if no edge of it would exceed max_edge_load_ratio after admission, and no more than max_share_per_alternative of the vehicles in the round are sent to the same alternative; a vehicle rerouted within reroute_cooldown_s is not advised again",
+  "max_edge_load_ratio": 1.0,
+  "max_share_per_alternative": 0.4,
+  "reroute_cooldown_s": 300,
+  "share_gate_min_vehicles": 5,
+  "_share_gate_min": "the share gate only applies to rounds of at least share_gate_min_vehicles vehicles: a single analysed trip is not a herd"
+ },
+ "demand": "SYNTHETIC_WHAT_IF randomTrips on the real OSM network, one draw per seed, departures 0-1800 s",
+ "observations": "REAL METR-LA detector speeds (mph), replayed as lane speed caps on mapped edges in every arm",
+ "communication": "SIMULATED V2X (pipeline/v2x/channel.py) \u2014 not radio hardware",
+ "profile": "ideal",
+ "profile_params": {
+  "latency_ms": 0.0,
+  "jitter_ms": 0.0,
+  "loss": 0.0,
+  "ttl_s": 60.0
+ },
+ "penetration": 0.3,
+ "round_s": 300,
+ "horizon_min": 15,
+ "status_period_s": 10,
+ "reactive_period_s": 60,
+ "simulation_duration_s": 2700,
+ "time_to_teleport_s": 300,
+ "incident": [
+  {
+   "edge": "864049094",
+   "t_start_s": 600.0,
+   "cap_mps": 2.0
+  }
+ ],
+ "fuse_observed": false,
+ "fork_t0_s": 480,
+ "fork": "every arm is started from ONE SUMO state saved at fork_t0_s by a baseline prefix run (vehicles, positions, speeds, routes, signals, RNG); lane caps and incidents are re-applied identically after loading",
+ "controller": {
+  "time_dependent_costing": true,
+  "horizons_min": [
+   0,
+   15,
+   30,
+   60
+  ],
+  "correction": {
+   "tau_min": 30.0,
+   "upstream_hops": 2,
+   "hop_decay": 0.5,
+   "min_rel_residual": 0.15,
+   "observation_window_s": 60,
+   "only_priced": true
+  },
+  "detector": {
+   "window_s": 60,
+   "min_vehicles": 3,
+   "min_messages": 5,
+   "ratio": 0.5,
+   "scope": "edges with a base-forecast expectation only (DIRECT / DERIVED)"
+  },
+  "admission": {
+   "max_reroute_fraction_per_round": 0.1,
+   "min_reroutes_per_round": 2,
+   "stagger_s": 5
+  },
+  "status": "FROZEN 2026-09-08 (network-optimizer parameters added on development seeds before any evaluation-seed run of those arms)",
+  "seeds": {
+   "development": [
+    101,
+    102,
+    103
+   ],
+   "evaluation": [
+    201,
+    202,
+    203,
+    204,
+    205
+   ],
+   "rule": "parameters may be chosen only on development seeds; evaluation seeds are never inspected while choosing"
+  },
+  "optimizer": "vehicle",
+  "candidates": {
+   "diverse": true,
+   "max_overlap": 0.6,
+   "penalty_factor": 1.5,
+   "penalty_rounds": 4,
+   "_doc": "penalty-method diverse alternatives; used only by the network optimizer"
+  },
+  "assignment": {
+   "background_load": true,
+   "route_capacity": true,
+   "max_route_utilisation": 0.9,
+   "_doc": "network optimizer: background load from every vehicle on the road, greedy assignment in descending opportunity with load updates, per-route bottleneck admission"
+  },
+  "optimizer_variants": {
+   "vehicle": "the production route_optimizer (independent vehicles, K duarouter variants, share/capacity gates)",
+   "div": "network optimizer with diverse candidates only (no background load, no route capacity)",
+   "cap": "network optimizer with background load + route capacity but duarouter candidates",
+   "net": "network optimizer: diverse candidates + background load + route capacity + marginal cost"
+  },
+  "_hash": "3a5fc0fbdb87"
+ },
+ "controller_config_hash": "3a5fc0fbdb87",
+ "oracle": "oracle_v2x prices every edge with the sampledSeconds-weighted measured travel time of the paired BASELINE run over the routing window (edge_costs.oracle_table) \u2014 an experimental upper bound on future information, never leaked into the baseline",
+ "moment": "peak",
+ "moment_rule": "weekday 17:30 of the seed-th held-out weekday (evening rush hour); advances one dataset step per 300 s of simulation",
+ "sumo_version": "Eclipse SUMO sumo 1.27.1",
+ "seeds": [
+  101,
+  102,
+  103
+ ]
+}

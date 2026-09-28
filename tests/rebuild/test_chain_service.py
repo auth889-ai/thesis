@@ -202,7 +202,7 @@ def test_backtest_scores_every_model_on_identical_pairs_and_persistence_has_zero
 
 def test_forecast_ledger_logs_then_grades_only_reached_targets(tmp_path, monkeypatch):
     import sys
-    sys.path.insert(0, str(REPO / "dashboard/backend"))
+    sys.path.insert(0, str(REPO / "src/dashboard/backend"))
     import forecast_log as fl
     monkeypatch.setattr(fl, "DB", tmp_path / "ledger.sqlite")
     # three corridors, a forecast issued at bin 2 for +15 min (= bin 5) and +60 min (= bin 14)

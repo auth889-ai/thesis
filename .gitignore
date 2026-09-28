@@ -1,4 +1,10 @@
 # macOS
+*.egg-info/
+/build/
+/dist/
+/cache/
+/data/archive/**
+/results/networking/generated_scenarios/
 .DS_Store
 **/.DS_Store
 
@@ -60,34 +66,34 @@ paper_labs/02_dhaka_osm/outputs/lab02_*/
 # figures, metrics, tables, manifests, logs-as-evidence. Only genuinely large
 # binaries are excluded (datasets, weights, video, archives) — those live in
 # Drive/S3 and are referenced by checksum + URI.
-artifacts/**/*.mp4
-artifacts/**/*.avi
-artifacts/**/*.mov
-artifacts/**/*.zip
-artifacts/**/*.tar
-artifacts/**/*.tar.gz
-artifacts/**/*.npz
-artifacts/**/*.npy
-artifacts/**/*.pkl
-artifacts/**/*.parquet
+results/artifacts/**/*.mp4
+results/artifacts/**/*.avi
+results/artifacts/**/*.mov
+results/artifacts/**/*.zip
+results/artifacts/**/*.tar
+results/artifacts/**/*.tar.gz
+results/artifacts/**/*.npz
+results/artifacts/**/*.npy
+results/artifacts/**/*.pkl
+results/artifacts/**/*.parquet
 *.onnx
 *.safetensors
-artifacts/**/*.dat
-artifacts/**/*.npy
-artifacts/**/*.pkl
-artifacts/case_rush_live/case_report.html
-artifacts/case_rush_test/case_report.html
-artifacts/gates/pneuma_calibration/opt_run.log
-artifacts/mosaic_dhaka/dhaka_r1/sumo/dhaka_r1.net.xml
-artifacts/site_i70/site.osm
+results/artifacts/**/*.dat
+results/artifacts/**/*.npy
+results/artifacts/**/*.pkl
+results/artifacts/case_rush_live/case_report.html
+results/artifacts/case_rush_test/case_report.html
+results/artifacts/gates/pneuma_calibration/opt_run.log
+results/artifacts/mosaic_dhaka/dhaka_r1/sumo/dhaka_r1.net.xml
+results/artifacts/site_i70/site.osm
 results/final_validation/fcd.xml
 
 # road511 recorder output (grows continuously; never in git)
-artifacts/road511_recordings/
-artifacts/datasets_staging/
-artifacts/react_demo*/
+results/artifacts/road511_recordings/
+results/artifacts/datasets_staging/
+results/artifacts/react_demo*/
 BasicTS_legacy
-artifacts/urban_real_site/*.csv
+results/artifacts/urban_real_site/*.csv
 
 # Phase-1 prediction: data and large artefacts stay out of git (fetched/regenerated, sha-recorded)
 data/forecasting/cities/*/
@@ -141,12 +147,12 @@ results/runs/
 **/statistic.xml
 *.joblib
 *.pt
-dashboard/backend/cache/
+src/dashboard/backend/cache/
 results/routing/logs/
 results/live/sim/
 results/runs/
-artifacts/live_dhaka/normalized/google_routes_runtime_reference.jsonl
-artifacts/live_dhaka/RECORDER_MANIFEST.json
+results/artifacts/live_dhaka/normalized/google_routes_runtime_reference.jsonl
+results/artifacts/live_dhaka/RECORDER_MANIFEST.json
 *.db
 results/live/sim_history.json
 
@@ -155,3 +161,52 @@ results/routing/oracle_gate/
 results/routing/r2_route_decisions/
 results/routing/optimize/
 results/live/twin_tests/
+
+# Preserve the four already-tracked evidence inputs after directory relocation.
+!data/archive/pipeline/
+!data/archive/pipeline/forecasting/
+!data/archive/pipeline/forecasting/cities/
+!data/archive/pipeline/forecasting/cities/METR-LA/
+!data/archive/pipeline/forecasting/cities/PEMS-BAY/
+!data/archive/pipeline/forecasting/cities/METR-LA/adj_METR-LA.pkl
+!data/archive/pipeline/forecasting/cities/PEMS-BAY/adj_PEMS-BAY.pkl
+!results/artifacts/react_demo_rush/
+results/artifacts/react_demo_rush/**
+!results/artifacts/react_demo_rush/summary.json
+!results/artifacts/react_demo_rush/timeline.json
+
+# generated simulation outputs and recorded logs that must never be committed (tens of MB each)
+results/**/edgedata.xml
+results/**/messages_uplink.jsonl
+results/**/messages_downlink.jsonl
+results/**/vehroutes.xml
+results/**/tripinfo.xml
+results/**/summary.xml
+results/**/fork_state_*.xml
+results/**/*.rou.xml
+results/**/*.rou.alt.xml
+results/**/trips_*.xml
+data/archive/**/*.h5
+exports/*.zip
+
+# ---- results policy: generated evidence is large; only small summaries are versioned.
+# Everything under results/ is ignored, then the small evidence files are re-included.
+results/**
+!results/**/
+!results/*.md
+!results/*.py
+!results/**/*.md
+!results/**/report.json
+!results/**/summary*.json
+!results/**/*gate*.json
+!results/**/*pointer*.json
+!results/**/controller_status.json
+!results/**/PROTOCOL.json
+!results/**/MANIFEST.json
+!results/**/metrics.json
+!results/**/verify_*.json
+!results/**/sweep_*.json
+!results/**/summary.json
+!results/**/arm_result.json
+!results/**/seed_record.json
+!results/**/network_metrics.json

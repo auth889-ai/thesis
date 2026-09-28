@@ -107,7 +107,7 @@ def test_real_record_carries_full_provenance():
 
 @pytest.mark.skipif(not (RES / "phase1_comparison.json").exists(), reason="run comparison_table.py")
 def test_comparison_table_is_regenerable_and_self_consistent():
-    r = subprocess.run([PY, str(REPO / "pipeline/forecasting/comparison_table.py")], capture_output=True, text=True, cwd=REPO)
+    r = subprocess.run([PY, str(REPO / "src/pipeline/forecasting/comparison_table.py")], capture_output=True, text=True, cwd=REPO)
     assert r.returncode == 0, r.stderr[-500:]
     doc = json.loads((RES / "phase1_comparison.json").read_text())
     assert doc["rows"] and "gate" in doc
@@ -120,7 +120,7 @@ def test_comparison_table_is_regenerable_and_self_consistent():
 @pytest.mark.skipif(not (RES / "phase1_comparison.json").exists(), reason="run comparison_table.py")
 def test_phase1_gate_passes_on_the_real_evidence():
     """Phase 1 is complete. If this fails, a result regressed or evidence was deleted."""
-    r = subprocess.run([PY, str(REPO / "pipeline/forecasting/comparison_table.py"), "--check"],
+    r = subprocess.run([PY, str(REPO / "src/pipeline/forecasting/comparison_table.py"), "--check"],
                        capture_output=True, text=True, cwd=REPO)
     doc = json.loads((RES / "phase1_comparison.json").read_text())
     failed = [k for k, v in doc["gate"]["checks"].items() if not v["ok"]]

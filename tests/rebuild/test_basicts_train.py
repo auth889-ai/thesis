@@ -42,7 +42,7 @@ def test_upstream_tracked_files_untouched():
 @needs_bts
 def test_end_to_end_on_an_upload(tmp_path, monkeypatch):
     """Their prep script -> their trainer -> their test metrics -> a checkpoint our page can run."""
-    sys.path.insert(0, str(REPO / "dashboard/backend"))
+    sys.path.insert(0, str(REPO / "src/dashboard/backend"))
     import user_datasets
     monkeypatch.setattr(user_datasets, "ROOT", tmp_path / "ud")
     monkeypatch.setattr(bt, "CARDS", tmp_path / "cards")
@@ -106,7 +106,7 @@ def test_make_card_reads_their_metrics_file(tmp_path, monkeypatch):
 
 def test_cloud_status_never_exposes_a_key(monkeypatch):
     import sys as _s
-    _s.path.insert(0, str(REPO / "dashboard/backend"))
+    _s.path.insert(0, str(REPO / "src/dashboard/backend"))
     import predict_lab
     monkeypatch.setattr(predict_lab, "_aws_env", lambda: {"AWS_ACCESS_KEY_ID": "AKIAXXXX", "AWS_SECRET_ACCESS_KEY": "s3cr3t"})
     c = predict_lab.cloud()
@@ -161,7 +161,7 @@ def test_live_google_history_is_refused_for_training():
 
 def test_dispatcher_policy_and_stages(monkeypatch, tmp_path):
     import sys as _s
-    _s.path.insert(0, str(REPO / "dashboard/backend"))
+    _s.path.insert(0, str(REPO / "src/dashboard/backend"))
     import train_jobs, predict_lab
     monkeypatch.setattr(train_jobs, "JOBS_DIR", tmp_path / "jobs")
     monkeypatch.setattr(predict_lab, "datasets", lambda: [{"id": "user:x", "steps": 4032, "nodes": 20}, {"id": "live:dhaka", "steps": 500, "nodes": 6}])

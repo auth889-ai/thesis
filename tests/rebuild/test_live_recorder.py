@@ -8,7 +8,7 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "pipeline/forecasting"))
+sys.path.insert(0, str(REPO / "src/pipeline/forecasting"))
 
 import record_live as rec  # noqa: E402
 from pipeline.core.live.google_providers import GoogleDataPolicy  # noqa: E402
@@ -22,7 +22,7 @@ GOOGLE_CONTENT = {"duration", "staticDuration", "distanceMeters", "speedReadingI
 
 
 def run(tmp: Path, *args) -> subprocess.CompletedProcess:
-    return subprocess.run([PY, str(REPO / "pipeline/forecasting/record_live.py"), "--out", str(tmp), *args],
+    return subprocess.run([PY, str(REPO / "src/pipeline/forecasting/record_live.py"), "--out", str(tmp), *args],
                           capture_output=True, text=True)
 
 

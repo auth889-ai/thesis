@@ -1,0 +1,270 @@
+{
+ "seed": 206,
+ "demand": {
+  "vehicles_total": 24000,
+  "vehicles_kept": 5971,
+  "demand_hash": "a8246e6963ef"
+ },
+ "arms": {
+  "baseline": {
+   "arm": "baseline",
+   "seed": 206,
+   "run_id": "gate_FINAL_PROTOCOL_v1_s206_baseline",
+   "simulation_run_id": "sim_gate_s206_baseline",
+   "routing_run_ids": [],
+   "routing": null,
+   "routes_file_hash": "a8246e6963ef",
+   "network_hash": "06194df03974",
+   "demand_hash": "a8246e6963ef",
+   "routing_config_hash": "ea08dddedc14",
+   "metrics": {
+    "arrived": 3869,
+    "unfinished_at_horizon": 638,
+    "unfinished": 638,
+    "total_vehicle_hours": 530.6375,
+    "mean_travel_time_all": 423.8506767250943,
+    "mean_travel_time_s": 417.09253036960456,
+    "p95_travel_time_s": 938.0,
+    "mean_waiting_s": 81.04135435513052,
+    "total_waiting_s": 313549.0,
+    "mean_time_loss_s": 160.4434634272422,
+    "mean_depart_delay_s": 0.0661669682088395,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 12,
+    "loaded": 4537,
+    "inserted": 4507,
+    "running_at_end": 638,
+    "waiting_to_insert_at_end": 0,
+    "mean_queue_veh": 123.1,
+    "max_queue_veh": 257.0,
+    "mean_running_veh": 530.64,
+    "queue_steps": 3600,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "total_vehicle_hours_incl_never_inserted": 530.6375,
+    "top_route_share": 0.0339,
+    "top_edge_flow_concentration": 0.2212,
+    "vehicles_in_vehroutes": 3869,
+    "probe": {
+     "travel_time_s": 313.0,
+     "route_length_m": 4613.84,
+     "waiting_time_s": 18.0,
+     "finished": true
+    },
+    "in_simulation_reroute_calls": 0,
+    "wall_s": 7.2
+   },
+   "out_dir": "results/routing/oracle_gate/FINAL_PROTOCOL_v1_final_cfgea08dddedc14/s206/baseline"
+  },
+  "reactive": {
+   "arm": "reactive",
+   "seed": 206,
+   "run_id": "gate_FINAL_PROTOCOL_v1_s206_reactive",
+   "simulation_run_id": "sim_gate_s206_reactive",
+   "routing_run_ids": [],
+   "routing": null,
+   "routes_file_hash": "a8246e6963ef",
+   "network_hash": "06194df03974",
+   "demand_hash": "a8246e6963ef",
+   "routing_config_hash": "ea08dddedc14",
+   "metrics": {
+    "arrived": 3797,
+    "unfinished_at_horizon": 706,
+    "unfinished": 706,
+    "total_vehicle_hours": 525.1430555555555,
+    "mean_travel_time_all": 419.83455474128357,
+    "mean_travel_time_s": 407.8914932841717,
+    "p95_travel_time_s": 923.0,
+    "mean_waiting_s": 81.24940742691598,
+    "total_waiting_s": 308504.0,
+    "mean_time_loss_s": 161.36165130366078,
+    "mean_depart_delay_s": 0.06031077166183829,
+    "vehicles_rerouted_at_least_once": 815,
+    "teleports": 31,
+    "loaded": 4537,
+    "inserted": 4503,
+    "running_at_end": 706,
+    "waiting_to_insert_at_end": 4,
+    "mean_queue_veh": 136.18,
+    "max_queue_veh": 401.0,
+    "mean_running_veh": 525.14,
+    "queue_steps": 3600,
+    "never_inserted": 4,
+    "never_inserted_vehicle_hours": 0.0325,
+    "total_vehicle_hours_incl_never_inserted": 525.1756,
+    "top_route_share": 0.0398,
+    "top_edge_flow_concentration": 0.217,
+    "vehicles_in_vehroutes": 3797,
+    "probe": {
+     "travel_time_s": 342.0,
+     "route_length_m": 4613.84,
+     "waiting_time_s": 29.0,
+     "finished": true
+    },
+    "in_simulation_reroute_calls": 9056,
+    "wall_s": 16.3
+   },
+   "out_dir": "results/routing/oracle_gate/FINAL_PROTOCOL_v1_final_cfgea08dddedc14/s206/reactive"
+  },
+  "oracle": {
+   "arm": "oracle",
+   "seed": 206,
+   "run_id": "gate_FINAL_PROTOCOL_v1_s206_oracle",
+   "simulation_run_id": "sim_gate_s206_oracle",
+   "routing_run_ids": [
+    "rt_gate_s206_r0",
+    "rt_gate_s206_r1",
+    "rt_gate_s206_r2",
+    "rt_gate_s206_r3"
+   ],
+   "routing": {
+    "rounds": [
+     {
+      "routing_run_id": "rt_gate_s206_r0",
+      "round": 0,
+      "window_s": [
+       0,
+       900
+      ],
+      "future_cost_hash": "a0f1d82264b0dbe9",
+      "priced_edges": 895,
+      "vehicles": 350,
+      "admitted": 87,
+      "rejected_capacity": 0,
+      "rejected_share": 0,
+      "decisions": {
+       "REROUTE": 87,
+       "KEEP_CURRENT_BELOW_THRESHOLD": 239,
+       "NO_ALTERNATIVE": 24
+      },
+      "mean_candidates_real": 2.597,
+      "top_route_share_admitted": 0.0457,
+      "top_edge_flow_concentration_admitted": 0.7586
+     },
+     {
+      "routing_run_id": "rt_gate_s206_r1",
+      "round": 1,
+      "window_s": [
+       900,
+       1800
+      ],
+      "future_cost_hash": "991d514bcc364470",
+      "priced_edges": 899,
+      "vehicles": 322,
+      "admitted": 113,
+      "rejected_capacity": 0,
+      "rejected_share": 0,
+      "decisions": {
+       "KEEP_CURRENT_BELOW_THRESHOLD": 187,
+       "REROUTE": 113,
+       "NO_ALTERNATIVE": 22
+      },
+      "mean_candidates_real": 2.826,
+      "top_route_share_admitted": 0.0683,
+      "top_edge_flow_concentration_admitted": 0.8053
+     },
+     {
+      "routing_run_id": "rt_gate_s206_r2",
+      "round": 2,
+      "window_s": [
+       1800,
+       2700
+      ],
+      "future_cost_hash": "e6d0965e2a39fb4f",
+      "priced_edges": 901,
+      "vehicles": 344,
+      "admitted": 171,
+      "rejected_capacity": 0,
+      "rejected_share": 0,
+      "decisions": {
+       "KEEP_CURRENT_BELOW_THRESHOLD": 157,
+       "REROUTE": 171,
+       "NO_ALTERNATIVE": 16
+      },
+      "mean_candidates_real": 2.727,
+      "top_route_share_admitted": 0.093,
+      "top_edge_flow_concentration_admitted": 0.8187
+     },
+     {
+      "routing_run_id": "rt_gate_s206_r3",
+      "round": 3,
+      "window_s": [
+       2700,
+       3600
+      ],
+      "future_cost_hash": "586dbedde463217f",
+      "priced_edges": 902,
+      "vehicles": 316,
+      "admitted": 112,
+      "rejected_capacity": 0,
+      "rejected_share": 0,
+      "decisions": {
+       "KEEP_CURRENT_BELOW_THRESHOLD": 190,
+       "REROUTE": 112,
+       "NO_ALTERNATIVE": 14
+      },
+      "mean_candidates_real": 2.816,
+      "top_route_share_admitted": 0.0728,
+      "top_edge_flow_concentration_admitted": 0.7143
+     }
+    ],
+    "routes_changed": 483,
+    "routes_hash": "dc1035027212"
+   },
+   "routes_file_hash": "dc1035027212",
+   "network_hash": "06194df03974",
+   "demand_hash": "a8246e6963ef",
+   "routing_config_hash": "ea08dddedc14",
+   "metrics": {
+    "arrived": 3871,
+    "unfinished_at_horizon": 636,
+    "unfinished": 636,
+    "total_vehicle_hours": 507.7,
+    "mean_travel_time_all": 405.52917683603283,
+    "mean_travel_time_s": 382.94885042624645,
+    "p95_travel_time_s": 715.0,
+    "mean_waiting_s": 62.800568328597265,
+    "total_waiting_s": 243101.0,
+    "mean_time_loss_s": 133.71758977008525,
+    "mean_depart_delay_s": 0.05889950917075691,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 6,
+    "loaded": 4537,
+    "inserted": 4507,
+    "running_at_end": 636,
+    "waiting_to_insert_at_end": 0,
+    "mean_queue_veh": 115.66,
+    "max_queue_veh": 257.0,
+    "mean_running_veh": 507.7,
+    "queue_steps": 3600,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "total_vehicle_hours_incl_never_inserted": 507.7,
+    "top_route_share": 0.0331,
+    "top_edge_flow_concentration": 0.2178,
+    "vehicles_in_vehroutes": 3871,
+    "probe": {
+     "travel_time_s": 331.0,
+     "route_length_m": 4613.84,
+     "waiting_time_s": 21.0,
+     "finished": true
+    },
+    "in_simulation_reroute_calls": 0,
+    "wall_s": 8.1
+   },
+   "out_dir": "results/routing/oracle_gate/FINAL_PROTOCOL_v1_final_cfgea08dddedc14/s206/oracle"
+  }
+ },
+ "same_population": true,
+ "population_size": 5971,
+ "inserted_by_arm": {
+  "baseline": 4507,
+  "reactive": 4503,
+  "oracle": 4507
+ },
+ "never_inserted_by_arm": {
+  "baseline": 0,
+  "reactive": 4,
+  "oracle": 0
+ }
+}

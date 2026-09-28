@@ -1,0 +1,110 @@
+{
+ "gate": "ORACLE_HEADROOM",
+ "status": "PASSED",
+ "rule": "oracle_v2x must beat reactive on total vehicle-hours with a paired 95 % CI that excludes zero (paired() label HELPED)",
+ "oracle_vs_reactive": {
+  "pair": "oracle_v2x vs reactive",
+  "metric": "total_vehicle_hours_incl_never_inserted",
+  "seeds": 5,
+  "per_seed_pct": [
+   -1.071,
+   -3.973,
+   -0.717,
+   -1.003,
+   -2.405
+  ],
+  "mean_pct": -1.83,
+  "median_pct": -1.07,
+  "ci95": [
+   -3.52,
+   -0.14
+  ],
+  "wins": 5,
+  "losses": 0,
+  "ties": 0,
+  "label": "HELPED",
+  "lower_is_better": true
+ },
+ "oracle_vs_baseline": {
+  "pair": "oracle_v2x vs baseline",
+  "metric": "total_vehicle_hours_incl_never_inserted",
+  "seeds": 5,
+  "per_seed_pct": [
+   0.176,
+   -1.668,
+   -0.432,
+   -1.507,
+   -1.832
+  ],
+  "mean_pct": -1.05,
+  "median_pct": -1.51,
+  "ci95": [
+   -2.14,
+   0.04
+  ],
+  "wins": 4,
+  "losses": 1,
+  "ties": 0,
+  "label": "INCONCLUSIVE",
+  "lower_is_better": true
+ },
+ "reactive_vs_baseline": {
+  "pair": "reactive vs baseline",
+  "metric": "total_vehicle_hours_incl_never_inserted",
+  "seeds": 5,
+  "per_seed_pct": [
+   1.261,
+   2.401,
+   0.287,
+   -0.509,
+   0.587
+  ],
+  "mean_pct": 0.81,
+  "median_pct": 0.59,
+  "ci95": [
+   -0.55,
+   2.17
+  ],
+  "wins": 1,
+  "losses": 4,
+  "ties": 0,
+  "label": "INCONCLUSIVE",
+  "lower_is_better": true
+ },
+ "seeds": [
+  201,
+  202,
+  203,
+  204,
+  205
+ ],
+ "run_dir": "results/v2x/closed_loop/la_c4_central_wide_prepeak_ideal_p30_cfgea08dddedc14_stressA_eval_fork1200_x8_peak_arterial",
+ "fork_state_identical_across_arms": true,
+ "computed_utc": "2026-09-09T23:20:06.050991+00:00",
+ "scenario": "A",
+ "scenario_text": "forecastable congestion \u2014 demand rises to the calibrated level; no incident",
+ "stage": "learned",
+ "stress_level": {
+  "chosen_scale": 8.0,
+  "gate": "VALID_TRAFFIC_STRESS_CASE",
+  "rule": {
+   "teleport_rate_max": 0.01,
+   "arrival_share_min": 0.85,
+   "loaded_min_speed_mps": 2.0,
+   "tti_min": 1.3,
+   "jam_teleports_min": 1,
+   "bisection_steps": 2,
+   "v1_share_major_ge_0.7_min": 0.1,
+   "v1_loaded_speed_ratio_to_1x_max": 0.7
+  },
+  "chosen_utc": "2026-09-09T04:52:04.721705+00:00",
+  "seeds_used": [
+   101,
+   102,
+   103
+  ]
+ },
+ "od_rule": "arterial",
+ "seed_set": "evaluation",
+ "scenario_gate": "VALID_TRAFFIC_STRESS_CASE"
+}

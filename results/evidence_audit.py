@@ -101,7 +101,7 @@ def audit_routing(repo: Path) -> dict[str, str]:
 
 
 def audit_live_reference(repo: Path) -> dict[str, str]:
-    path = repo / "artifacts/p_live/live_reference_summary.json"
+    path = repo / "results/artifacts/p_live/live_reference_summary.json"
     summary = load_json(path)
     if not summary:
         return row("Live Google reference", "PENDING", path, "runtime reference summary exists",

@@ -53,7 +53,7 @@ def test_evidence_audit_passes_core_local_evidence_with_colab_pending(tmp_path: 
         },
     )
     _write(
-        tmp_path / "artifacts/p_live/live_reference_summary.json",
+        tmp_path / "results/artifacts/p_live/live_reference_summary.json",
         {
             "honesty_label": "EXTERNAL_LIVE_REFERENCE_NOT_TRAINING_DATA",
             "latest_corridors": 1,

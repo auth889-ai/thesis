@@ -1,0 +1,224 @@
+{
+ "seed": 101,
+ "analysis_run_id": "an_v2x_s101",
+ "as_of_index": 31875,
+ "demand": {
+  "demand_file": "results/v2x/closed_loop/la_c4_central_wide_prepeak_ideal_p0_cfgea08dddedc14_stress_x6_arterial/s101/demand_s101.rou.xml",
+  "demand_hash": "dbda473b6018",
+  "vehicles": 5401,
+  "demand_scale": 6.0,
+  "demand_profile": "uniform",
+  "profile_phases": [
+   [
+    0,
+    1800,
+    1.0
+   ]
+  ],
+  "od_rule": "arterial",
+  "od_rule_text": "origins and destinations restricted to MAJOR roads (OSM motorway/trunk/primary/secondary incl. links), weight = lanes \u00d7 length, minimum trip distance 2000 m \u2014 demand concentrates on the corridor's arterials instead of the 12k-edge residential grid"
+ },
+ "fork": null,
+ "arms": {
+  "baseline": {
+   "simulation_run_id": "sim_v2x_s101_baseline_ideal_p0",
+   "arm": "baseline",
+   "seed": 101,
+   "profile": "ideal",
+   "penetration": 0.0,
+   "moment": "prepeak",
+   "config_hash": "ea08dddedc14",
+   "network_hash": "0d81df27ab2d",
+   "fork": null,
+   "information": "baseline",
+   "metrics": {
+    "arrived": 5112,
+    "unfinished_at_horizon": 286,
+    "unfinished": 286,
+    "total_vehicle_hours": 1422.5747222222221,
+    "mean_travel_time_all": 948.7345313078918,
+    "mean_travel_time_s": 880.1545383411581,
+    "p95_travel_time_s": 2024.0,
+    "mean_waiting_s": 237.62578247261345,
+    "total_waiting_s": 1214743.0,
+    "mean_time_loss_s": 426.7191060250391,
+    "mean_depart_delay_s": 0.6685035211267606,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 10,
+    "loaded": 5401,
+    "inserted": 5398,
+    "running_at_end": 286,
+    "waiting_to_insert_at_end": 3,
+    "mean_queue_veh": 421.25,
+    "max_queue_veh": 889.0,
+    "mean_running_veh": 1422.57,
+    "queue_steps": 3600,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "congestion": {
+     "major_edges": 4952,
+     "teleport_reasons": {
+      "total": 10,
+      "jam": 6,
+      "yield": 3,
+      "wrongLane": 0
+     },
+     "busiest_interval_utilisation": {
+      "p50": 0.017,
+      "p90": 0.107,
+      "max": 0.633,
+      "share_ge_0.5": 0.0,
+      "share_ge_0.7": 0.0,
+      "share_ge_0.9": 0.0
+     },
+     "mean_occupancy_pct_major": 1.23,
+     "spillback_major_edges_occ_ge_80": 0,
+     "spillback_share": 0.0,
+     "max_running_vehicles": 2570,
+     "max_halting_vehicles": 889,
+     "mean_halting_vehicles": 421.3,
+     "mean_speed_mps": 9.47,
+     "min_mean_speed_mps": 4.19,
+     "loaded_mean_speed_mps": 9.71,
+     "loaded_min_speed_mps": 4.19,
+     "loaded_mean_halting_share": 0.311,
+     "loaded_max_halting_share": 0.617,
+     "loaded_steps": 2820
+    },
+    "total_vehicle_hours_incl_never_inserted": 1422.5747,
+    "teleport_events": [
+     {
+      "vehicle_id": "veh0_2515",
+      "sim_time_s": 1191,
+      "connected": false,
+      "edge": ""
+     },
+     {
+      "vehicle_id": "veh0_2159",
+      "sim_time_s": 1993,
+      "connected": false,
+      "edge": ""
+     },
+     {
+      "vehicle_id": "veh0_1537",
+      "sim_time_s": 2019,
+      "connected": false,
+      "edge": "-380769252#1"
+     },
+     {
+      "vehicle_id": "veh0_1731",
+      "sim_time_s": 2215,
+      "connected": false,
+      "edge": "1022216203#1"
+     },
+     {
+      "vehicle_id": "veh0_3826",
+      "sim_time_s": 2232,
+      "connected": false,
+      "edge": "1022216203#1"
+     },
+     {
+      "vehicle_id": "veh0_2238",
+      "sim_time_s": 2427,
+      "connected": false,
+      "edge": "552125259"
+     },
+     {
+      "vehicle_id": "veh0_4553",
+      "sim_time_s": 2509,
+      "connected": false,
+      "edge": "1032809348#0"
+     },
+     {
+      "vehicle_id": "veh0_5077",
+      "sim_time_s": 2509,
+      "connected": false,
+      "edge": "1032809349#0"
+     },
+     {
+      "vehicle_id": "veh0_4909",
+      "sim_time_s": 3121,
+      "connected": false,
+      "edge": "1022216203#1"
+     },
+     {
+      "vehicle_id": "veh0_3435",
+      "sim_time_s": 3561,
+      "connected": false,
+      "edge": "1022216203#1"
+     }
+    ],
+    "reactive_reroute_calls": 0,
+    "incidents_applied": [],
+    "wall_s": 32.9
+   },
+   "network": {
+    "uplink": {
+     "channel": "uplink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 0,
+     "messages_rx": 0,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": null,
+     "latency_mean_ms": null,
+     "latency_median_ms": null,
+     "latency_p95_ms": null,
+     "latency_p99_ms": null,
+     "bytes_tx": 0,
+     "message_rate_per_s": 0.0,
+     "throughput_bytes_per_s": 0.0
+    },
+    "downlink": {
+     "channel": "downlink",
+     "latency_profile": {
+      "latency_ms": 0.0,
+      "jitter_ms": 0.0,
+      "loss": 0.0,
+      "ttl_s": 60.0,
+      "source": "configured"
+     },
+     "messages_tx": 0,
+     "messages_rx": 0,
+     "messages_dropped": 0,
+     "messages_expired": 0,
+     "undelivered_at_end": 0,
+     "packet_delivery_ratio": null,
+     "latency_mean_ms": null,
+     "latency_median_ms": null,
+     "latency_p95_ms": null,
+     "latency_p99_ms": null,
+     "bytes_tx": 0,
+     "message_rate_per_s": 0.0,
+     "throughput_bytes_per_s": 0.0
+    },
+    "connected_vehicles": 0,
+    "vehicles_seen": 5322,
+    "penetration_configured": 0.0,
+    "recommendations_delivered": 0,
+    "reroutes_applied": 0,
+    "recommendations_inapplicable": 0,
+    "incidents_detected": [],
+    "incident_detection_delay_s": null,
+    "lead_time": {
+     "incident_onset_s": null,
+     "first_reroute_applied_s": null,
+     "first_reroute_after_onset_s": null,
+     "reroutes_before_onset": 0
+    }
+   },
+   "rounds": [],
+   "routing_run_ids": [],
+   "reroute_log_file": "results/v2x/closed_loop/la_c4_central_wide_prepeak_ideal_p0_cfgea08dddedc14_stress_x6_arterial/s101/baseline/reroute_log.jsonl",
+   "reroutes_applied": 0,
+   "out_dir": "results/v2x/closed_loop/la_c4_central_wide_prepeak_ideal_p0_cfgea08dddedc14_stress_x6_arterial/s101/baseline"
+  }
+ }
+}

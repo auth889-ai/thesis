@@ -1,13 +1,14 @@
-# Configuration hierarchy
+# Configuration Ownership
 
-One directory per subsystem. **No important hyperparameter may live only as an
-unexplained hard-coded constant** — if a number changes a result, it lives here
-with a comment saying where it came from.
+This directory holds non-secret YAML/JSON/XML settings, not algorithms, datasets
+or credentials. Keep local API keys in the gitignored root `.env`.
 
-Every value carries a provenance tag in its comment:
-`OFFICIAL` (from the upstream repo's own config), `MEASURED` (from our audit of
-real data), `ASSUMED` (our choice, must be justified or ablated).
+Perception, tracking, camera and deployment settings include historical work.
+Their presence does not establish validated features in the current Scenario A.
+Do not create empty subsystem folders or competing configuration copies.
 
-Each subsystem provides `smoke.yaml` (tiny, runs on a laptop) and the real
-config. Smoke configs exist so a pipeline breakage is found in seconds, not
-after an hour of GPU time.
+The migration is incomplete: the frozen controller still reads
+`src/pipeline/v2x/controller_config.json`, and routing reads
+`src/pipeline/routing/routing_config.json`. These paths and contents are preserved
+for protocol compatibility. Future moves must update all readers, preserve hashes,
+and pass protocol/import tests. A new setting must not silently alter evaluation.

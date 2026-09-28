@@ -3,7 +3,7 @@
 The live feed was verified 2026-08-25 (WA events 200, 524 CO cameras); these
 tests prove the integration code deterministically, mirroring
 test_ny511_provider.py per the in-repo pattern rule. Fixture shapes are taken
-from the REAL captured payloads (artifacts/road511_recordings/raw/), not
+from the REAL captured payloads (results/artifacts/road511_recordings/raw/), not
 invented.
 """
 from __future__ import annotations

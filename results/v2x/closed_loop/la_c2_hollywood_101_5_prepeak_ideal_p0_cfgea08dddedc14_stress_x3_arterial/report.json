@@ -1,0 +1,624 @@
+{
+ "protocol": {
+  "protocol_id": "V2X_CLOSED_LOOP_v1",
+  "city_id": "la_c2_hollywood_101_5",
+  "network": "data/cities/la_c2_hollywood_101_5/sumo/la_c2_hollywood_101_5.net.xml",
+  "network_hash": "fbed352e7c08",
+  "mapping_file": "results/routing/coverage_rescue/la_c2_hollywood_101_5/sensor_to_edge_207.json",
+  "mapping_hash": "5a820d8d3a01",
+  "mapped_detectors": 52,
+  "detectors_total": 207,
+  "model": "GWNet",
+  "model_label": "Graph WaveNet (207-node METR-LA, verified)",
+  "checkpoint_path": "/Users/jannatulferdouseva/thesis/results/forecasting/checkpoints/GraphWaveNet/METR-LA_50_12_12/d1ffd3d52d3caacf60ebf59214673f7c/GraphWaveNet_best_val_MAE.pt",
+  "checkpoint_sha256": "548e399bd53c",
+  "dataset": "METR-LA",
+  "dataset_hash": "857a98d0ec47b353",
+  "graph_hash": "a35687c6",
+  "routing_config_hash": "ea08dddedc14",
+  "coverage_hops": 1,
+  "min_saving_s": 60.0,
+  "min_saving_pct": 5.0,
+  "admission": {
+   "_rule": "thin TrafficTwin layer above SUMO routing: a vehicle is admitted to an alternative only if no edge of it would exceed max_edge_load_ratio after admission, and no more than max_share_per_alternative of the vehicles in the round are sent to the same alternative; a vehicle rerouted within reroute_cooldown_s is not advised again",
+   "max_edge_load_ratio": 1.0,
+   "max_share_per_alternative": 0.4,
+   "reroute_cooldown_s": 300,
+   "share_gate_min_vehicles": 5,
+   "_share_gate_min": "the share gate only applies to rounds of at least share_gate_min_vehicles vehicles: a single analysed trip is not a herd"
+  },
+  "demand": "SYNTHETIC_WHAT_IF randomTrips on the real OSM network, one draw per seed, scale 3.0x, profile uniform [(0, 1800, 1.0)]",
+  "demand_scale": 3.0,
+  "demand_profile": "uniform",
+  "od_rule": "arterial",
+  "od_rule_text": "origins and destinations restricted to MAJOR roads (OSM motorway/trunk/primary/secondary incl. links), weight = lanes \u00d7 length, minimum trip distance 2000 m \u2014 demand concentrates on the corridor's arterials instead of the 12k-edge residential grid",
+  "observations": "REAL METR-LA detector speeds (mph), replayed as lane speed caps on mapped edges in every arm",
+  "communication": "SIMULATED V2X (pipeline/v2x/channel.py) \u2014 not radio hardware",
+  "profile": "ideal",
+  "profile_params": {
+   "latency_ms": 0.0,
+   "jitter_ms": 0.0,
+   "loss": 0.0,
+   "ttl_s": 60.0
+  },
+  "penetration": 0.0,
+  "round_s": 300,
+  "horizon_min": 15,
+  "status_period_s": 10,
+  "reactive_period_s": 60,
+  "simulation_duration_s": 3600,
+  "time_to_teleport_s": 300,
+  "incident": [],
+  "fuse_observed": false,
+  "fork_t0_s": null,
+  "fork": "arms start from departure (no state fork)",
+  "controller": {
+   "time_dependent_costing": true,
+   "horizons_min": [
+    0,
+    15,
+    30,
+    60
+   ],
+   "correction": {
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "min_rel_residual": 0.15,
+    "observation_window_s": 60,
+    "only_priced": true
+   },
+   "detector": {
+    "window_s": 60,
+    "min_vehicles": 3,
+    "min_messages": 5,
+    "ratio": 0.5,
+    "scope": "edges with a base-forecast expectation only (DIRECT / DERIVED)"
+   },
+   "admission": {
+    "max_reroute_fraction_per_round": 0.1,
+    "min_reroutes_per_round": 2,
+    "stagger_s": 5
+   },
+   "status": "FROZEN 2026-09-08 (network-optimizer parameters added on development seeds before any evaluation-seed run of those arms)",
+   "seeds": {
+    "development": [
+     101,
+     102,
+     103
+    ],
+    "evaluation": [
+     201,
+     202,
+     203,
+     204,
+     205
+    ],
+    "rule": "parameters may be chosen only on development seeds; evaluation seeds are never inspected while choosing"
+   },
+   "optimizer": "vehicle",
+   "candidates": {
+    "diverse": true,
+    "max_overlap": 0.6,
+    "penalty_factor": 1.5,
+    "penalty_rounds": 4,
+    "_doc": "penalty-method diverse alternatives; used only by the network optimizer"
+   },
+   "assignment": {
+    "background_load": true,
+    "route_capacity": true,
+    "max_route_utilisation": 0.9,
+    "_doc": "network optimizer: background load from every vehicle on the road, greedy assignment in descending opportunity with load updates, per-route bottleneck admission"
+   },
+   "optimizer_variants": {
+    "vehicle": "the production route_optimizer (independent vehicles, K duarouter variants, share/capacity gates)",
+    "div": "network optimizer with diverse candidates only (no background load, no route capacity)",
+    "cap": "network optimizer with background load + route capacity but duarouter candidates",
+    "net": "network optimizer: diverse candidates + background load + route capacity + marginal cost"
+   },
+   "_hash": "3a5fc0fbdb87"
+  },
+  "controller_config_hash": "3a5fc0fbdb87",
+  "oracle": "oracle_v2x prices every edge with the sampledSeconds-weighted measured travel time of the paired BASELINE run over the routing window (edge_costs.oracle_table) \u2014 an experimental upper bound on future information, never leaked into the baseline",
+  "moment": "prepeak",
+  "moment_rule": "weekday 16:15 of the seed-th held-out weekday: the measured speeds fall over the next 45 min (forecastable build-up, no incident); advances one dataset step per 300 s of simulation",
+  "sumo_version": "Eclipse SUMO sumo 1.27.1",
+  "seeds": [
+   101,
+   102,
+   103
+  ]
+ },
+ "seeds": [
+  101,
+  102,
+  103
+ ],
+ "arms": [
+  "baseline"
+ ],
+ "per_seed": [
+  {
+   "seed": 101,
+   "analysis_run_id": "an_v2x_s101",
+   "as_of_index": 31875,
+   "demand": {
+    "demand_file": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x3_arterial/s101/demand_s101.rou.xml",
+    "demand_hash": "cadef97cd499",
+    "vehicles": 2700,
+    "demand_scale": 3.0,
+    "demand_profile": "uniform",
+    "profile_phases": [
+     [
+      0,
+      1800,
+      1.0
+     ]
+    ],
+    "od_rule": "arterial",
+    "od_rule_text": "origins and destinations restricted to MAJOR roads (OSM motorway/trunk/primary/secondary incl. links), weight = lanes \u00d7 length, minimum trip distance 2000 m \u2014 demand concentrates on the corridor's arterials instead of the 12k-edge residential grid"
+   },
+   "fork": null,
+   "arms": {
+    "baseline": {
+     "simulation_run_id": "sim_v2x_s101_baseline_ideal_p0",
+     "arm": "baseline",
+     "seed": 101,
+     "profile": "ideal",
+     "penetration": 0.0,
+     "moment": "prepeak",
+     "config_hash": "ea08dddedc14",
+     "network_hash": "fbed352e7c08",
+     "fork": null,
+     "information": "baseline",
+     "network": {
+      "uplink": {
+       "channel": "uplink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 0,
+       "messages_rx": 0,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": null,
+       "latency_mean_ms": null,
+       "latency_median_ms": null,
+       "latency_p95_ms": null,
+       "latency_p99_ms": null,
+       "bytes_tx": 0,
+       "message_rate_per_s": 0.0,
+       "throughput_bytes_per_s": 0.0
+      },
+      "downlink": {
+       "channel": "downlink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 0,
+       "messages_rx": 0,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": null,
+       "latency_mean_ms": null,
+       "latency_median_ms": null,
+       "latency_p95_ms": null,
+       "latency_p99_ms": null,
+       "bytes_tx": 0,
+       "message_rate_per_s": 0.0,
+       "throughput_bytes_per_s": 0.0
+      },
+      "connected_vehicles": 0,
+      "vehicles_seen": 2673,
+      "penetration_configured": 0.0,
+      "recommendations_delivered": 0,
+      "reroutes_applied": 0,
+      "recommendations_inapplicable": 0,
+      "incidents_detected": [],
+      "incident_detection_delay_s": null,
+      "lead_time": {
+       "incident_onset_s": null,
+       "first_reroute_applied_s": null,
+       "first_reroute_after_onset_s": null,
+       "reroutes_before_onset": 0
+      }
+     },
+     "rounds": [],
+     "routing_run_ids": [],
+     "reroute_log_file": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x3_arterial/s101/baseline/reroute_log.jsonl",
+     "reroutes_applied": 0,
+     "out_dir": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x3_arterial/s101/baseline",
+     "metrics": {
+      "arrived": 2700,
+      "unfinished_at_horizon": 0,
+      "unfinished": 0,
+      "total_vehicle_hours": 488.15444444444444,
+      "mean_travel_time_all": 650.8725925925926,
+      "mean_travel_time_s": 650.8725925925926,
+      "p95_travel_time_s": 1198.0,
+      "mean_waiting_s": 109.83444444444444,
+      "total_waiting_s": 296553.0,
+      "mean_time_loss_s": 236.16042592592592,
+      "mean_depart_delay_s": 0.695062962962963,
+      "vehicles_rerouted_at_least_once": 0,
+      "teleports": 6,
+      "loaded": 2700,
+      "inserted": 2700,
+      "running_at_end": 0,
+      "waiting_to_insert_at_end": 0,
+      "mean_queue_veh": 83.87,
+      "max_queue_veh": 234.0,
+      "mean_running_veh": 496.99,
+      "queue_steps": 3536,
+      "never_inserted": 0,
+      "never_inserted_vehicle_hours": 0.0,
+      "congestion": {
+       "major_edges": 4251,
+       "busiest_interval_utilisation": {
+        "p50": 0.01,
+        "p90": 0.044,
+        "max": 0.313,
+        "share_ge_0.5": 0.0,
+        "share_ge_0.7": 0.0,
+        "share_ge_0.9": 0.0
+       },
+       "mean_occupancy_pct_major": 0.51,
+       "spillback_major_edges_occ_ge_80": 0,
+       "spillback_share": 0.0,
+       "max_running_vehicles": 979,
+       "max_halting_vehicles": 234,
+       "mean_halting_vehicles": 83.9,
+       "mean_speed_mps": 11.18,
+       "min_mean_speed_mps": 2.29,
+       "loaded_mean_speed_mps": 10.6,
+       "loaded_min_speed_mps": 9.0,
+       "loaded_mean_halting_share": 0.169,
+       "loaded_max_halting_share": 0.263,
+       "loaded_steps": 2192
+      },
+      "total_vehicle_hours_incl_never_inserted": 488.1544,
+      "reactive_reroute_calls": 0,
+      "incidents_applied": [],
+      "wall_s": 13.4
+     }
+    }
+   }
+  },
+  {
+   "seed": 102,
+   "analysis_run_id": "an_v2x_s102",
+   "as_of_index": 32163,
+   "demand": {
+    "demand_file": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x3_arterial/s102/demand_s102.rou.xml",
+    "demand_hash": "34d9be845ab5",
+    "vehicles": 2700,
+    "demand_scale": 3.0,
+    "demand_profile": "uniform",
+    "profile_phases": [
+     [
+      0,
+      1800,
+      1.0
+     ]
+    ],
+    "od_rule": "arterial",
+    "od_rule_text": "origins and destinations restricted to MAJOR roads (OSM motorway/trunk/primary/secondary incl. links), weight = lanes \u00d7 length, minimum trip distance 2000 m \u2014 demand concentrates on the corridor's arterials instead of the 12k-edge residential grid"
+   },
+   "fork": null,
+   "arms": {
+    "baseline": {
+     "simulation_run_id": "sim_v2x_s102_baseline_ideal_p0",
+     "arm": "baseline",
+     "seed": 102,
+     "profile": "ideal",
+     "penetration": 0.0,
+     "moment": "prepeak",
+     "config_hash": "ea08dddedc14",
+     "network_hash": "fbed352e7c08",
+     "fork": null,
+     "information": "baseline",
+     "network": {
+      "uplink": {
+       "channel": "uplink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 0,
+       "messages_rx": 0,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": null,
+       "latency_mean_ms": null,
+       "latency_median_ms": null,
+       "latency_p95_ms": null,
+       "latency_p99_ms": null,
+       "bytes_tx": 0,
+       "message_rate_per_s": 0.0,
+       "throughput_bytes_per_s": 0.0
+      },
+      "downlink": {
+       "channel": "downlink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 0,
+       "messages_rx": 0,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": null,
+       "latency_mean_ms": null,
+       "latency_median_ms": null,
+       "latency_p95_ms": null,
+       "latency_p99_ms": null,
+       "bytes_tx": 0,
+       "message_rate_per_s": 0.0,
+       "throughput_bytes_per_s": 0.0
+      },
+      "connected_vehicles": 0,
+      "vehicles_seen": 2663,
+      "penetration_configured": 0.0,
+      "recommendations_delivered": 0,
+      "reroutes_applied": 0,
+      "recommendations_inapplicable": 0,
+      "incidents_detected": [],
+      "incident_detection_delay_s": null,
+      "lead_time": {
+       "incident_onset_s": null,
+       "first_reroute_applied_s": null,
+       "first_reroute_after_onset_s": null,
+       "reroutes_before_onset": 0
+      }
+     },
+     "rounds": [],
+     "routing_run_ids": [],
+     "reroute_log_file": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x3_arterial/s102/baseline/reroute_log.jsonl",
+     "reroutes_applied": 0,
+     "out_dir": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x3_arterial/s102/baseline",
+     "metrics": {
+      "arrived": 2698,
+      "unfinished_at_horizon": 2,
+      "unfinished": 2,
+      "total_vehicle_hours": 488.8377777777778,
+      "mean_travel_time_all": 651.7837037037037,
+      "mean_travel_time_s": 650.8235730170496,
+      "p95_travel_time_s": 1202.0,
+      "mean_waiting_s": 106.94588584136397,
+      "total_waiting_s": 288540.0,
+      "mean_time_loss_s": 231.7706671608599,
+      "mean_depart_delay_s": 0.7270200148257969,
+      "vehicles_rerouted_at_least_once": 0,
+      "teleports": 3,
+      "loaded": 2700,
+      "inserted": 2700,
+      "running_at_end": 2,
+      "waiting_to_insert_at_end": 0,
+      "mean_queue_veh": 80.18,
+      "max_queue_veh": 218.0,
+      "mean_running_veh": 488.84,
+      "queue_steps": 3600,
+      "never_inserted": 0,
+      "never_inserted_vehicle_hours": 0.0,
+      "congestion": {
+       "major_edges": 4251,
+       "busiest_interval_utilisation": {
+        "p50": 0.01,
+        "p90": 0.047,
+        "max": 0.34,
+        "share_ge_0.5": 0.0,
+        "share_ge_0.7": 0.0,
+        "share_ge_0.9": 0.0
+       },
+       "mean_occupancy_pct_major": 0.5,
+       "spillback_major_edges_occ_ge_80": 0,
+       "spillback_share": 0.0,
+       "max_running_vehicles": 980,
+       "max_halting_vehicles": 218,
+       "mean_halting_vehicles": 80.2,
+       "mean_speed_mps": 10.88,
+       "min_mean_speed_mps": 4.21,
+       "loaded_mean_speed_mps": 10.65,
+       "loaded_min_speed_mps": 8.67,
+       "loaded_mean_halting_share": 0.165,
+       "loaded_max_halting_share": 0.274,
+       "loaded_steps": 2212
+      },
+      "total_vehicle_hours_incl_never_inserted": 488.8378,
+      "reactive_reroute_calls": 0,
+      "incidents_applied": [],
+      "wall_s": 13.1
+     }
+    }
+   }
+  },
+  {
+   "seed": 103,
+   "analysis_run_id": "an_v2x_s103",
+   "as_of_index": 32451,
+   "demand": {
+    "demand_file": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x3_arterial/s103/demand_s103.rou.xml",
+    "demand_hash": "fc47eb9129e5",
+    "vehicles": 2700,
+    "demand_scale": 3.0,
+    "demand_profile": "uniform",
+    "profile_phases": [
+     [
+      0,
+      1800,
+      1.0
+     ]
+    ],
+    "od_rule": "arterial",
+    "od_rule_text": "origins and destinations restricted to MAJOR roads (OSM motorway/trunk/primary/secondary incl. links), weight = lanes \u00d7 length, minimum trip distance 2000 m \u2014 demand concentrates on the corridor's arterials instead of the 12k-edge residential grid"
+   },
+   "fork": null,
+   "arms": {
+    "baseline": {
+     "simulation_run_id": "sim_v2x_s103_baseline_ideal_p0",
+     "arm": "baseline",
+     "seed": 103,
+     "profile": "ideal",
+     "penetration": 0.0,
+     "moment": "prepeak",
+     "config_hash": "ea08dddedc14",
+     "network_hash": "fbed352e7c08",
+     "fork": null,
+     "information": "baseline",
+     "network": {
+      "uplink": {
+       "channel": "uplink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 0,
+       "messages_rx": 0,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": null,
+       "latency_mean_ms": null,
+       "latency_median_ms": null,
+       "latency_p95_ms": null,
+       "latency_p99_ms": null,
+       "bytes_tx": 0,
+       "message_rate_per_s": 0.0,
+       "throughput_bytes_per_s": 0.0
+      },
+      "downlink": {
+       "channel": "downlink",
+       "latency_profile": {
+        "latency_ms": 0.0,
+        "jitter_ms": 0.0,
+        "loss": 0.0,
+        "ttl_s": 60.0,
+        "source": "configured"
+       },
+       "messages_tx": 0,
+       "messages_rx": 0,
+       "messages_dropped": 0,
+       "messages_expired": 0,
+       "undelivered_at_end": 0,
+       "packet_delivery_ratio": null,
+       "latency_mean_ms": null,
+       "latency_median_ms": null,
+       "latency_p95_ms": null,
+       "latency_p99_ms": null,
+       "bytes_tx": 0,
+       "message_rate_per_s": 0.0,
+       "throughput_bytes_per_s": 0.0
+      },
+      "connected_vehicles": 0,
+      "vehicles_seen": 2668,
+      "penetration_configured": 0.0,
+      "recommendations_delivered": 0,
+      "reroutes_applied": 0,
+      "recommendations_inapplicable": 0,
+      "incidents_detected": [],
+      "incident_detection_delay_s": null,
+      "lead_time": {
+       "incident_onset_s": null,
+       "first_reroute_applied_s": null,
+       "first_reroute_after_onset_s": null,
+       "reroutes_before_onset": 0
+      }
+     },
+     "rounds": [],
+     "routing_run_ids": [],
+     "reroute_log_file": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x3_arterial/s103/baseline/reroute_log.jsonl",
+     "reroutes_applied": 0,
+     "out_dir": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x3_arterial/s103/baseline",
+     "metrics": {
+      "arrived": 2700,
+      "unfinished_at_horizon": 0,
+      "unfinished": 0,
+      "total_vehicle_hours": 477.075,
+      "mean_travel_time_all": 636.1,
+      "mean_travel_time_s": 636.1,
+      "p95_travel_time_s": 1135.0,
+      "mean_waiting_s": 107.96222222222222,
+      "total_waiting_s": 291498.0,
+      "mean_time_loss_s": 228.46295185185184,
+      "mean_depart_delay_s": 0.7283962962962963,
+      "vehicles_rerouted_at_least_once": 0,
+      "teleports": 2,
+      "loaded": 2700,
+      "inserted": 2700,
+      "running_at_end": 0,
+      "waiting_to_insert_at_end": 0,
+      "mean_queue_veh": 83.89,
+      "max_queue_veh": 229.0,
+      "mean_running_veh": 494.24,
+      "queue_steps": 3475,
+      "never_inserted": 0,
+      "never_inserted_vehicle_hours": 0.0,
+      "congestion": {
+       "major_edges": 4251,
+       "busiest_interval_utilisation": {
+        "p50": 0.01,
+        "p90": 0.043,
+        "max": 0.333,
+        "share_ge_0.5": 0.0,
+        "share_ge_0.7": 0.0,
+        "share_ge_0.9": 0.0
+       },
+       "mean_occupancy_pct_major": 0.5,
+       "spillback_major_edges_occ_ge_80": 0,
+       "spillback_share": 0.0,
+       "max_running_vehicles": 973,
+       "max_halting_vehicles": 229,
+       "mean_halting_vehicles": 83.9,
+       "mean_speed_mps": 11.05,
+       "min_mean_speed_mps": 0.0,
+       "loaded_mean_speed_mps": 10.94,
+       "loaded_min_speed_mps": 9.34,
+       "loaded_mean_halting_share": 0.17,
+       "loaded_max_halting_share": 0.285,
+       "loaded_steps": 2154
+      },
+      "total_vehicle_hours_incl_never_inserted": 477.075,
+      "reactive_reroute_calls": 0,
+      "incidents_applied": [],
+      "wall_s": 13.5
+     }
+    }
+   }
+  }
+ ],
+ "paired": {},
+ "network_summary": null,
+ "reroutes_by_arm": {
+  "baseline": 0
+ },
+ "fork_state_identical_across_arms": null,
+ "fork_state_hashes": {
+  "101": null,
+  "102": null,
+  "103": null
+ },
+ "verdict_predictive_v2x_vs_baseline": null,
+ "generated_utc": "2026-09-09T03:34:57.179832+00:00",
+ "run_dir": "results/v2x/closed_loop/la_c2_hollywood_101_5_prepeak_ideal_p0_cfgea08dddedc14_stress_x3_arterial"
+}

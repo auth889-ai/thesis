@@ -12,7 +12,7 @@ sys.path.insert(0, str(REPO))
 from pipeline.forecasting import opencity_city_eval as oce      # noqa: E402
 from pipeline.forecasting import _opencity_boot as boot          # noqa: E402
 
-needs_recorded = pytest.mark.skipif(not (REPO / "artifacts/live_dhaka/normalized/google_routes_runtime_reference.jsonl").exists(), reason="recorded live series is git-ignored; absent on CI")
+needs_recorded = pytest.mark.skipif(not (REPO / "results/artifacts/live_dhaka/normalized/google_routes_runtime_reference.jsonl").exists(), reason="recorded live series is git-ignored; absent on CI")
 
 
 def test_gates_are_the_models_own():
@@ -45,7 +45,7 @@ def test_recorded_classes_are_recoded_so_zero_means_missing():
 
 
 def test_geo_adjacency_leaves_no_node_isolated():
-    sys.path.insert(0, str(REPO / "dashboard/backend"))
+    sys.path.insert(0, str(REPO / "src/dashboard/backend"))
     import corridors as cz
     A = oce.geo_adjacency([c["id"] for c in cz.CORRIDORS])
     assert A.shape == (12, 12) and np.allclose(A, A.T)
