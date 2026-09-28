@@ -33,11 +33,11 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
 from pipeline.routing import edge_costs as ec              # noqa: E402
-from pipeline.routing import integrated_chain as ic       # noqa: E402
+from traffictwin.protocols.chains import integrated_chain as ic       # noqa: E402
 from pipeline.routing import predictive_routing as pr     # noqa: E402
 from pipeline.routing import route_optimizer as ro        # noqa: E402
-from pipeline.routing.forecast_to_costs import corridor_records, fetch_forecast  # noqa: E402
-from pipeline.routing.predeparture_arm import read_routes  # noqa: E402
+from traffictwin.optimization.forecast_costs import corridor_records, fetch_forecast  # noqa: E402
+from traffictwin.protocols.chains.predeparture_arm import read_routes  # noqa: E402
 from pipeline.routing.r1_sensitivity import find_baseline_edgedata  # noqa: E402
 
 OUT = REPO / "results/routing/r2_route_decisions"
@@ -65,7 +65,7 @@ def forecast_values(label: str, model: str | None, a) -> tuple[dict | None, dict
             if "not a registered model" in reason:          # ask the registry's own gates why the graph models refuse this data
                 try:
                     from pipeline.forecasting.adapters.registry import available_for
-                    from pipeline.routing.forecast_to_costs import recorded_city_data
+                    from traffictwin.optimization.forecast_costs import recorded_city_data
                     cd, _obs = recorded_city_data(a.city, a.as_of)
                     gates = [m for m in available_for(cd) if m["model"].split("/")[0] == model]
                     reason = "; ".join(f"{m['model']}: {', '.join(m.get('reasons') or ['refused'])}" for m in gates) or reason

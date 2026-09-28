@@ -362,7 +362,7 @@ def _run(job: str, p: dict) -> None:
         observe = {"city_id": cid, "watched": bool(cid) and cid in obs_mod.observatory.cities(),
                    "steps_have": obs_mod.observatory.readiness(cid)["steps_have"] if cid else 0}
         if dhaka:
-            from pipeline.routing.forecast_to_costs import recorded_forecast
+            from traffictwin.optimization.forecast_costs import recorded_forecast
             fc = recorded_forecast("dhaka", HORIZONS, model_req, "latest")
             f = fc.get("forecast") or {}
             pred = {hh: dict(zip(f.get("node_ids", []), f["values"].get(hh) or f["values"].get(str(hh)) or []))
@@ -576,7 +576,7 @@ def models_for_city(city: str) -> list[dict]:
         return out
     try:
         if is_dhaka(city):
-            from pipeline.routing.forecast_to_costs import recorded_city_data
+            from traffictwin.optimization.forecast_costs import recorded_city_data
             cd = recorded_city_data("dhaka")
             cd = cd[0] if isinstance(cd, tuple) else cd
         elif cid and obs_mod.observatory.readiness(cid)["steps_have"] >= 1:

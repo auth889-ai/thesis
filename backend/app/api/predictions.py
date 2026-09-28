@@ -61,7 +61,7 @@ def city_forecast(city_id: str, horizons: str = "5,15,30,60", source: str = "aut
     cd = observatory_mod.observatory.city_data(city_id)
     use_recorded = source == "recorded" or (source == "auto" and _recorded_is_longer(city_id, cd))
     if use_recorded:
-        from pipeline.routing.forecast_to_costs import recorded_forecast
+        from traffictwin.optimization.forecast_costs import recorded_forecast
         out = recorded_forecast(city_id, hs, model, "latest")
         out["source"] = "recorded"
     else:
@@ -118,7 +118,7 @@ def history(city_id: str, horizons: str = "5,15,30,60"):
     if _recorded_is_longer(city_id, cd):
         # the recorded REAL_LIVE series on disk is the longer history: draw that day and forecast
         # from it — the same window E1 was measured on, so its accuracy can be quoted
-        from pipeline.routing.forecast_to_costs import recorded_city_data
+        from traffictwin.optimization.forecast_costs import recorded_city_data
         rcd, observed = recorded_city_data(city_id, "latest")
         out = run_forecast(rcd, hs)
         window = 288

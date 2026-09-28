@@ -131,7 +131,7 @@ def score(city: str = "dhaka", recent: int = 200) -> dict:
 def tick(city: str = "dhaka") -> dict:
     """Issue and log one forecast per model. Called by the scheduler and by tests."""
     sys.path.insert(0, str(config.REPO))
-    from pipeline.routing.forecast_to_costs import recorded_forecast
+    from traffictwin.optimization.forecast_costs import recorded_forecast
     written = {}
     for m in MODELS:
         res = recorded_forecast(city, HORIZONS, m, "latest")

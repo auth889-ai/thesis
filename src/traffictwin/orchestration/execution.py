@@ -15,7 +15,7 @@ from traffictwin.orchestration import closed_loop as cl
 from traffictwin.orchestration.live_controls import Timeline, scheduled
 from traffictwin.data.execution_trace import TraceStore
 from traffictwin.optimization import edge_costs as ec
-from pipeline.routing.oracle_gate import sha_file
+from traffictwin.protocols.oracle_gate import sha_file
 
 ARMS = ("predictive_v2x", "baseline", "reactive", "persistence_v2x", "oracle_v2x")
 JOBS = REPO / "results/v2x/executions"

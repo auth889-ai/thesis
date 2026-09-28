@@ -11,7 +11,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 from pipeline.routing import predictive_routing as pr  # noqa: E402
-from pipeline.routing import incident_scenario as inc  # noqa: E402
+from traffictwin.protocols.chains import incident_scenario as inc  # noqa: E402
 
 SMOKE_EDGEDATA = REPO / "results/routing/static_s11_h900/edgedata.xml"
 PY = sys.executable

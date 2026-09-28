@@ -10,7 +10,7 @@ from traffictwin.digital_twin.state import state_content_hash
 from traffictwin.digital_twin.route_application import apply_recommendation
 from traffictwin.digital_twin.metrics import congestion_metrics
 from traffictwin.networking.channel import Channel, connected
-from pipeline.routing.oracle_gate import never_inserted_charge
+from traffictwin.protocols.oracle_gate import never_inserted_charge
 from traffictwin.forecasting.routing_forecast import Forecaster
 
 def run_sumo(arm: str, seed: int, routes: Path, out: Path, P: dict, cfg: dict, fc: Forecaster, caps: dict, fork: tuple[Path, str] | None = None, oracle_edgedata: Path | None = None, event_hook=None, control_hook=None, trace_hook=None, *, controller_factory, information, optimizers, full_budget_arms) -> dict:

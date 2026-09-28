@@ -216,7 +216,7 @@ def recorded_state(city: str = "dhaka") -> tuple[dict, str | None]:
     """The last recorded corridor congestion levels (0 NORMAL · 1 SLOW · 2.5 TRAFFIC_JAM) and their
     as-of time, from the project's own recorded history. Returns ({}, None) when there is none."""
     try:
-        from pipeline.routing.forecast_to_costs import recorded_city_data
+        from traffictwin.optimization.forecast_costs import recorded_city_data
         _, observed = recorded_city_data(city, "latest")
         return dict(observed.get("levels") or {}), observed.get("as_of_utc")
     except (SystemExit, Exception):        # noqa: BLE001 - no recorded history: the router still routes, unpriced

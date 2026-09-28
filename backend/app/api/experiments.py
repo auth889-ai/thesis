@@ -109,7 +109,7 @@ _CHAIN_ACTIVE: dict[str, dict] = {}
 def _chain_module():
     import sys
     sys.path.insert(0, str(config.REPO))
-    from pipeline.routing import integrated_chain
+    from traffictwin.protocols.chains import integrated_chain
     return integrated_chain
 
 

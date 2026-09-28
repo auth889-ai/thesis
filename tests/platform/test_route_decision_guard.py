@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from pipeline.routing.decision_guard import compare_arm, main
+from traffictwin.optimization.decision_guard import compare_arm, main
 
 
 def _m(total: float, arrived: int, teleports: int) -> dict:

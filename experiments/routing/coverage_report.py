@@ -14,7 +14,7 @@ sys.path[:0] = [str(REPO), str(REPO / "src")]
 from experiments.routing.coverage_diagnostic import REFERENCE, ARMS, read
 from experiments.routing.coverage_analysis import Errors
 from experiments.routing.coverage_scoring import score_all
-from pipeline.routing.oracle_gate import paired
+from traffictwin.protocols.oracle_gate import paired
 from traffictwin.research_status import compute_research_status
 from traffictwin.forecasting import ModelRegistry
 

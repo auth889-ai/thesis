@@ -7,7 +7,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
-from pipeline.routing import oracle_gate as og  # noqa: E402
+from traffictwin.protocols import oracle_gate as og  # noqa: E402
 
 
 def _runs(vals: dict[str, list[float]]):

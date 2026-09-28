@@ -118,11 +118,11 @@ def test_moved_adapters_resolve_the_original_repository_and_data_paths():
 
 def test_relocated_research_dependencies_resolve_the_workspace():
     for name in ("pipeline.city.registry", "pipeline.forecasting.basicts_train",
-                 "pipeline.routing.oracle_gate", "pipeline.v2x.stress_experiment",
+                 "traffictwin.protocols.oracle_gate", "traffictwin.protocols.stress_experiment",
                  "pipeline.core.network_file"):
         module = importlib.import_module(name)
         assert module.REPO == ROOT, name
-        assert Path(module.__file__).is_relative_to(ROOT / "src/pipeline"), name
+        assert Path(module.__file__).is_relative_to(ROOT / "src"), name          # pipeline (transitional) or traffictwin (canonical)
 
 
 def test_runtime_paths_use_consolidated_artifacts_and_source():

@@ -15,8 +15,8 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-from pipeline.routing import forecast_to_costs as fc            # noqa: E402
-from pipeline.routing import integrated_chain as ic             # noqa: E402
+from traffictwin.optimization import forecast_costs as fc            # noqa: E402
+from traffictwin.protocols.chains import integrated_chain as ic             # noqa: E402
 
 VALS = np.array([[0.0, 1.0], [np.nan, 2.0], [3.0, np.nan], [1.0, 1.0]])
 MASK = ~np.isnan(VALS)
@@ -152,7 +152,7 @@ def test_every_forecast_kind_is_explained():
 
 
 def test_ablation_pairs_the_prediction_arm_with_its_own_seed():
-    from pipeline.routing import forecast_quality_ablation as ab
+    from traffictwin.protocols.chains import forecast_quality_ablation as ab
     rec = {"seeds": [1, 2],
            "runs": [{"arm": "baseline", "seed": 1, "metrics": {"total_vehicle_hours": 100.0}},
                     {"arm": "prediction_aware", "seed": 1, "metrics": {"total_vehicle_hours": 90.0}},
@@ -164,7 +164,7 @@ def test_ablation_pairs_the_prediction_arm_with_its_own_seed():
 
 
 def test_route_sensitivity_counts_vehicles_routed_differently(tmp_path, monkeypatch):
-    from pipeline.routing import forecast_quality_ablation as ab
+    from traffictwin.protocols.chains import forecast_quality_ablation as ab
     monkeypatch.setattr(ic, "RUNS", tmp_path)
     def write(rid, routes):
         d = tmp_path / rid / "prediction_aware_s1"

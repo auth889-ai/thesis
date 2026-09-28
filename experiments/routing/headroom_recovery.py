@@ -17,7 +17,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(REPO), str(REPO / "src")]
 
-from pipeline.routing.oracle_gate import paired  # noqa: E402
+from traffictwin.protocols.oracle_gate import paired  # noqa: E402
 from pipeline.v2x.closed_loop import Forecaster  # noqa: E402
 from traffictwin.research_status import compute_research_status  # noqa: E402
 

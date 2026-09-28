@@ -74,7 +74,7 @@ def test_residual_correction_decays_with_horizon_propagates_upstream_only_and_ne
 
 
 def test_controller_gate_is_computed_not_declared():
-    from pipeline.v2x.controller_gate import gate
+    from traffictwin.protocols.controller_gate import gate
     st = lambda mean, lo, hi, label, w=3, l=0: {"mean_pct": mean, "ci95": [lo, hi], "wins": w, "losses": l, "ties": 0, "label": label, "seeds": 3}
     good = {"seeds": [201, 202, 203], "reroutes_by_arm": {"x": 40}, "fork_state_identical_across_arms": True, "protocol": {}, "run_dir": "r",
             "paired": {"x_vs_baseline": {"total_vehicle_hours_incl_never_inserted": st(-2, -3, -1, "HELPED"), "teleports": st(0, -1, 1, "INCONCLUSIVE")}, "x_vs_reactive": {"total_vehicle_hours_incl_never_inserted": st(-1, -2, -0.5, "HELPED")}}}

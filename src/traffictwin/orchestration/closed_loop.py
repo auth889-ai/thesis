@@ -54,7 +54,7 @@ from pipeline.city.sumo_scenario import scenario_dir, sumo_tools_dir      # noqa
 from traffictwin.optimization import edge_costs as ec
 from traffictwin.digital_twin import runtime as pr
 from traffictwin.optimization import route_optimizer as ro
-from pipeline.routing.oracle_gate import never_inserted_charge, paired, sha_file, sumo_version   # noqa: E402
+from traffictwin.protocols.oracle_gate import never_inserted_charge, paired, sha_file, sumo_version   # noqa: E402
 from traffictwin.networking.channel import PROFILES, Channel, connected
 
 OUT = REPO / "results/v2x/closed_loop"

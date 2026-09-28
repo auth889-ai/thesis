@@ -11,7 +11,7 @@ REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "src/dashboard/backend"))
 
-from pipeline.routing import learned_gate as lg  # noqa: E402
+from traffictwin.protocols import learned_gate as lg  # noqa: E402
 
 MAPPING = REPO / "data/cities/los_angeles_metr/sumo/sensor_to_edge.json"
 CKPT = REPO / "results/forecasting/checkpoints_cloud/city-user-los-angeles-gwnet"

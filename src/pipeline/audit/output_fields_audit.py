@@ -50,7 +50,7 @@ FIELDS = [
     field("Route cards: current / in N min / distance", MC, "GET /api/analyze/{job}", "live routes + the forecast pricing above", "LIVE_COMPUTATION"),
     field("Forecast model / checkpoint / sha256 / hashes / stage seconds", MC, "GET /api/analyze/{job}, GET /api/runs/{run_id}", "provenance.Run written by the analysis", "LIVE_COMPUTATION"),
     field("Sensor dots (now / predicted per road)", MC, "GET /api/analyze/{job}", "dataset_ops.forecast_all: the resolved model's forward pass at the dataset moment", "CHECKPOINT"),
-    field("SUMO test: BASELINE / REACTIVE / PREDICTION-AWARE metrics, verdict, CI", MC, "POST /api/experiment/chain/run → GET /api/experiment/chain/run/{id}", "pipeline.routing.integrated_chain.run_chain: SUMO runs started for this request; parse_metrics", "LIVE_COMPUTATION"),
+    field("SUMO test: BASELINE / REACTIVE / PREDICTION-AWARE metrics, verdict, CI", MC, "POST /api/experiment/chain/run → GET /api/experiment/chain/run/{id}", "traffictwin.protocols.chains.integrated_chain.run_chain: SUMO runs started for this request; parse_metrics", "LIVE_COMPUTATION"),
     field("Simulate this area: baseline vs reactive metrics", MC, "POST /api/twin/network → POST /api/twin/compare", "city.sumo_scenario.build + twin_compare (SUMO runs for this request)", "LIVE_COMPUTATION"),
     # ---------------------------------------------------------------- Prediction page
     field("Now / +h tiles (value, word)", PP, "POST /api/predict-lab/run → GET /api/predict-lab/{job}", "predict_lab._run: the chosen model's forward pass at the chosen moment (OpenCity harness / checkpoint / adapters)", "LIVE_COMPUTATION"),

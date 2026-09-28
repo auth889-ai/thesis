@@ -38,7 +38,7 @@ def compute_research_status() -> dict:
 
     network_run = REPO / "results/v2x/closed_loop/la_c4_central_wide_prepeak_ideal_p30_cfgea08dddedc14_stressA_eval_fork1200_x8_peak_arterial/report.json"
     report = _read(network_run) or {}
-    from pipeline.routing.oracle_gate import paired
+    from traffictwin.protocols.oracle_gate import paired
     rows = {r["seed"]: r["arms"] for r in report.get("per_seed", [])}
     key = "total_vehicle_hours_incl_never_inserted"
     def comparison(a, b):

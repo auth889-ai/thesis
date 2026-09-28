@@ -91,7 +91,7 @@ class RoutingController:
         if trips and self.optimizer == "vehicle":
             rec = ro.optimize(self.net_path, trips, table, self.out / f"routing_round_{k}", self.seed, float(self.P["round_s"]), self.cfg, self.last_reroute, t, keep_candidates=True)
         elif trips:
-            from pipeline.v2x.network_assignment import assign_round
+            from traffictwin.optimization.network_assignment import assign_round
             cc = json.loads(json.dumps(self.cc)); v = self.optimizer
             cc["candidates"]["diverse"] = v in ("div", "net"); cc["assignment"]["background_load"] = v in ("cap", "net"); cc["assignment"]["route_capacity"] = v in ("cap", "net")
             if v == "div":

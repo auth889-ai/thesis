@@ -23,7 +23,7 @@ _LOCK = threading.Lock()
 
 
 def _run(job: str, p: dict) -> None:
-    from pipeline.routing import integrated_chain as ic
+    from traffictwin.protocols.chains import integrated_chain as ic
     seeds = [int(x) for x in str(p.get("seeds", "11,12,13")).split(",")]
     arms = ("baseline", "reactive")
     total = len(seeds) * len(arms)

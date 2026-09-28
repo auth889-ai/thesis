@@ -14,7 +14,7 @@ sys.path.insert(0, str(REPO))
 
 from pipeline.v2x import closed_loop as cl            # noqa: E402
 from pipeline.v2x import stress_sweep as ss           # noqa: E402
-from pipeline.v2x import stress_experiment as se      # noqa: E402
+from traffictwin.protocols import stress_experiment as se      # noqa: E402
 
 needs_sumo = pytest.mark.skipif(shutil.which("netgenerate") is None, reason="SUMO binaries not installed")
 

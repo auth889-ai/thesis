@@ -234,7 +234,7 @@ def _wait_twin(live_sim, poll_s: float = 0.5, max_s: float = 7200.0):
 
 def _run(job: str, analysis_run_id: str, opts: dict) -> None:
     from backend.app.simulation.runtime import live_sim
-    from pipeline.routing import integrated_chain as ic
+    from traffictwin.protocols.chains import integrated_chain as ic
     sim_id = job
     gui = bool(opts.get("gui"))
     run = pv.Run(sim_id, analysis_run_id=analysis_run_id, kind="twin_test", result_source="SYNTHETIC_WHAT_IF", gui=gui)

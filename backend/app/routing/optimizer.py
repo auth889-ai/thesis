@@ -99,7 +99,7 @@ def corridor_map_for(rec: dict) -> tuple[dict, dict | None, dict]:
         facts["_source"] = {"file": mapping.get("file"), "file_hash": mapping.get("file_hash"), "upstream": mapping.get("source"), "counts": mapping.get("counts"),
                             "network": mapping.get("network"), "network_hash": mapping.get("network_hash")}
         return cmap, free, facts
-    from pipeline.routing.forecast_to_costs import corridor_records
+    from traffictwin.optimization.forecast_costs import corridor_records
     return corridor_records(), None, {"_source": {"file": "data/forecasting/live_dhaka/corridor_edges.json"}}
 
 

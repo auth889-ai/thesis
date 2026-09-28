@@ -83,7 +83,7 @@ def test_history_falls_back_to_the_recorded_day_with_accuracy_attached(client):
 
 def test_chain_run_executes_the_real_function_in_the_background(client, tmp_path, monkeypatch):
     """POST starts a run, GET reports its progress, and the result is what run_chain returned."""
-    from pipeline.routing import integrated_chain as ic
+    from traffictwin.protocols.chains import integrated_chain as ic
     monkeypatch.setattr(ic, "RUNS", tmp_path)
     calls = {}
 
@@ -116,7 +116,7 @@ def test_chain_run_rejects_unknown_options_and_paths(client, tmp_path, monkeypat
         r = client.get(f"/api/experiment/chain/run/{bad}")
         assert r.status_code == 404 or r.json().get("found") is False
     # unknown keys are dropped before the run starts — and no real chain is launched here
-    from pipeline.routing import integrated_chain as ic
+    from traffictwin.protocols.chains import integrated_chain as ic
     monkeypatch.setattr(ic, "RUNS", tmp_path)
     seen = {}
     monkeypatch.setattr(ic, "run_chain", lambda **o: seen.update(o) or {"summary": {}})
@@ -161,7 +161,7 @@ def test_analyze_job_reports_real_stages_and_refuses_honestly(client, monkeypatc
 
 
 def test_verdict_ci_labels_from_paired_seeds():
-    from pipeline.routing import integrated_chain as ic
+    from traffictwin.protocols.chains import integrated_chain as ic
     def run(arm, seed, vh):
         return {"arm": arm, "seed": seed, "routes_changed": 0, "advisories_delivered": 0,
                 "metrics": {"total_vehicle_hours": vh, "mean_travel_time_s": 1, "p95_travel_time_s": 1,
@@ -239,7 +239,7 @@ def test_learned_gate_endpoint_reads_the_newest_report_or_says_it_is_missing(cli
     """Blocker #6: the learned-model outcome is read as-is from the frozen protocol's report; the oracle arm stays research-only."""
     import json
     from backend.app import config
-    from pipeline.routing import learned_gate as lg
+    from traffictwin.protocols import learned_gate as lg
     monkeypatch.setattr(config, "REPO", tmp_path)
     r = client.get("/api/experiment/learned_gate").json()
     assert r["available"] is False and "learned_gate.py" in r["command"]
