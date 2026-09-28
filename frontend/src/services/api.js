@@ -118,6 +118,8 @@ export const api = {
   routeOptimizeGet: (id) => get(`/api/route/optimize/${id}`),
   twinCompareStatus: (job) => get(`/api/twin/compare/${job}`),
   analyzeStart:  (body) => post("/api/analyze", body),
+  commutePlan:   (body) => post("/api/commute/plan", body),
+  commuteProfile:(corridor) => get(`/api/commute/profile?corridor=${encodeURIComponent(corridor)}`),
   analyzeStatus: (job) => get(`/api/analyze/${job}`),
   chainRun:      (body) => post("/api/experiment/chain/run", body),
   chainStatus:   (id) => get(`/api/experiment/chain/run/${encodeURIComponent(id)}`),

@@ -404,6 +404,88 @@
     }
    }
   },
+  "/api/commute/plan": {
+   "post": {
+    "tags": [
+     "commute"
+    ],
+    "summary": "Commute Plan",
+    "description": "Leave when? The latest departure that still arrives by `arrive_by` with \u2265 80 % probability, the route to\ntake, ETA now vs at that departure, and the day's traffic profile with the congestion window.",
+    "operationId": "commute_plan_api_commute_plan_post",
+    "requestBody": {
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/CommutePlanRequest"
+       }
+      }
+     },
+     "required": true
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/commute/profile": {
+   "get": {
+    "tags": [
+     "commute"
+    ],
+    "summary": "Commute Profile",
+    "description": "The recorded congestion profile of one corridor by local time of day (TYPICAL_RECORDED, never live).",
+    "operationId": "commute_profile_api_commute_profile_get",
+    "parameters": [
+     {
+      "name": "corridor",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "farmgate_to_shahbagh",
+       "title": "Corridor"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/models": {
    "get": {
     "tags": [
@@ -3908,6 +3990,57 @@
      "csv"
     ],
     "title": "Body_predict_lab_upload_api_predict_lab_upload_post"
+   },
+   "CommutePlanRequest": {
+    "properties": {
+     "city": {
+      "type": "string",
+      "title": "City",
+      "default": "dhaka"
+     },
+     "origin": {
+      "type": "string",
+      "title": "Origin",
+      "examples": [
+       "Farmgate"
+      ]
+     },
+     "destination": {
+      "type": "string",
+      "title": "Destination",
+      "examples": [
+       "Shahbagh"
+      ]
+     },
+     "arrive_by": {
+      "type": "string",
+      "title": "Arrive By",
+      "description": "ISO-8601 datetime with offset, e.g. 2026-09-29T09:00:00+06:00"
+     },
+     "buffer_min": {
+      "type": "integer",
+      "maximum": 60.0,
+      "minimum": 0.0,
+      "title": "Buffer Min",
+      "description": "safety margin subtracted from the deadline",
+      "default": 5
+     },
+     "step_min": {
+      "type": "integer",
+      "maximum": 30.0,
+      "minimum": 5.0,
+      "title": "Step Min",
+      "description": "candidate departures every N minutes",
+      "default": 10
+     }
+    },
+    "type": "object",
+    "required": [
+     "origin",
+     "destination",
+     "arrive_by"
+    ],
+    "title": "CommutePlanRequest"
    },
    "Corridor": {
     "properties": {

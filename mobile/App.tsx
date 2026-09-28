@@ -9,14 +9,15 @@ import React, {useEffect, useState} from "react";
 import {ActivityIndicator, Pressable, SafeAreaView, ScrollView, StyleSheet, Text, TextInput, View} from "react-native";
 
 import {API_URL, analyzeTrip, forecastNetwork, health, researchStatus, stressEvidence, type ForecastNetwork, type StressEvidence, type TripResult} from "./src/api/client";
+import {MobilityScreen} from "./src/screens/Mobility";
 
-type Tab = "trip" | "forecast" | "results";
+type Tab = "mobility" | "trip" | "forecast" | "results";
 const mins = (s: number | null | undefined) => (s == null ? "—" : `${(s / 60).toFixed(s < 600 ? 1 : 0)} min`);
 const pct = (v: number | null | undefined, d = 1) => (v == null ? "—" : `${v > 0 ? "+" : ""}${v.toFixed(d)} %`);
 const word = (label: string | null | undefined) => (label === "HELPED" ? "shorter" : label === "HURT" ? "longer" : "about the same");
 
 export default function App() {
-  const [tab, setTab] = useState<Tab>("trip");
+  const [tab, setTab] = useState<Tab>("mobility");
   const [online, setOnline] = useState<boolean | null>(null);
   useEffect(() => { health().then(() => setOnline(true)).catch(() => setOnline(false)); }, []);
   return (
@@ -28,11 +29,11 @@ export default function App() {
         <Text style={[s.dot, online === false && s.dotBad]}>{online == null ? "connecting…" : online ? `● API ${API_URL}` : `✕ API unreachable at ${API_URL}`}</Text>
       </View>
       <View style={s.tabs}>
-        {(["trip", "forecast", "results"] as Tab[]).map((t) => (
-          <Pressable key={t} onPress={() => setTab(t)} style={[s.tab, tab === t && s.tabOn]}><Text style={[s.tabText, tab === t && s.tabTextOn]}>{t === "trip" ? "Trip" : t === "forecast" ? "Forecast" : "Results"}</Text></Pressable>
+        {(["mobility", "trip", "forecast", "results"] as Tab[]).map((t) => (
+          <Pressable key={t} onPress={() => setTab(t)} style={[s.tab, tab === t && s.tabOn]}><Text style={[s.tabText, tab === t && s.tabTextOn]}>{t === "mobility" ? "Mobility" : t === "trip" ? "Trip" : t === "forecast" ? "Forecast" : "Results"}</Text></Pressable>
         ))}
       </View>
-      {tab === "trip" ? <TripScreen /> : tab === "forecast" ? <ForecastScreen /> : <ResultsScreen />}
+      {tab === "mobility" ? <MobilityScreen /> : tab === "trip" ? <TripScreen /> : tab === "forecast" ? <ForecastScreen /> : <ResultsScreen />}
     </SafeAreaView>
   );
 }

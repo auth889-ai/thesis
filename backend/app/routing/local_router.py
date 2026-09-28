@@ -184,8 +184,9 @@ class LocalRouter:
         routes = []
         for ids, path in found:
             static = sum(e.getLength() / max(e.getSpeed(), 1.0) for e in path)
-            touched = {cid: st["level"] for cid, st in (corridor_state or {}).items() if st.get("level") is not None and st["edges"] & set(ids)}
-            worst = max(touched.values()) if touched else None
+            touched = {cid: st.get("level") for cid, st in (corridor_state or {}).items() if st["edges"] & set(ids)}      # every corridor the route shares edges with
+            known = [v for v in touched.values() if v is not None]
+            worst = max(known) if known else None
             dur = static * (multiplier(float(worst)) if worst is not None else 1.0)
             cat = category_of_level(worst) if worst is not None else "UNKNOWN"
             # segments coloured per edge by the recorded state of the corridor that edge belongs to

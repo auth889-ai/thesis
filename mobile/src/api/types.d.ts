@@ -232,6 +232,47 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/commute/plan": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Commute Plan
+         * @description Leave when? The latest departure that still arrives by `arrive_by` with ≥ 80 % probability, the route to
+         *     take, ETA now vs at that departure, and the day's traffic profile with the congestion window.
+         */
+        post: operations["commute_plan_api_commute_plan_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/commute/profile": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Commute Profile
+         * @description The recorded congestion profile of one corridor by local time of day (TYPICAL_RECORDED, never live).
+         */
+        get: operations["commute_profile_api_commute_profile_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/models": {
         parameters: {
             query?: never;
@@ -1953,6 +1994,41 @@ export interface components {
             /** Coords */
             coords?: string | null;
         };
+        /** CommutePlanRequest */
+        CommutePlanRequest: {
+            /**
+             * City
+             * @default dhaka
+             */
+            city: string;
+            /**
+             * Origin
+             * @example Farmgate
+             */
+            origin: string;
+            /**
+             * Destination
+             * @example Shahbagh
+             */
+            destination: string;
+            /**
+             * Arrive By
+             * @description ISO-8601 datetime with offset, e.g. 2026-09-29T09:00:00+06:00
+             */
+            arrive_by: string;
+            /**
+             * Buffer Min
+             * @description safety margin subtracted from the deadline
+             * @default 5
+             */
+            buffer_min: number;
+            /**
+             * Step Min
+             * @description candidate departures every N minutes
+             * @default 10
+             */
+            step_min: number;
+        };
         /** Corridor */
         Corridor: {
             /** Id */
@@ -2744,6 +2820,70 @@ export interface operations {
                 } | null;
             };
         };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    commute_plan_api_commute_plan_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommutePlanRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": unknown;
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    commute_profile_api_commute_profile_get: {
+        parameters: {
+            query?: {
+                corridor?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
         responses: {
             /** @description Successful Response */
             200: {

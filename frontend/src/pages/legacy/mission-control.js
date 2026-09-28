@@ -16,6 +16,7 @@
  */
 import {api, mins, km, ago, CATEGORY_LABEL} from "../../services/api.js";
 import {basemapStyle} from "../../services/basemap.js";
+import "../../components/commute-panel.js";
 
 const C = {olive: "#4a5d23", maroon: "#7b2d3b", good: "#3f7d3a", warn: "#b07a12", bad: "#a63d40", grey: "#b9b3a6", blue: "#3d6b8a"};
 const CAT = {NORMAL: C.good, SLOW: C.warn, TRAFFIC_JAM: C.bad, UNKNOWN: C.grey, UNAVAILABLE: C.grey};
@@ -45,6 +46,7 @@ export class MissionControl extends HTMLElement {
           <span><i style="background:${C.olive}"></i>recommended</span><span><i style="background:${C.blue}"></i>fastest now</span></div>
         <section class="float br sheet" id="side"><div class="empty-readout">Analyze a trip: the travel time now, in 15 / 30 / 60 minutes, the model in use and the recommended route appear here.</div></section>
       </div>
+      <section class="card" id="commute"><commute-panel></commute-panel></section>
       <section class="card about" id="about" hidden>
         <div><b>About this analysis</b> <span id="aboutline" class="muted"></span></div>
         <details class="why"><summary>Details for reviewers</summary><div id="tech" class="kv"></div></details>
