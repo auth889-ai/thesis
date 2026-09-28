@@ -114,7 +114,7 @@ def test_job_path_traversal_is_rejected(client, isolated_jobs):
 
 
 def test_completed_ui_comparison_keeps_reference_origins_explicit():
-    source = (Path(__file__).resolve().parents[2] / "frontend/src/components/execution-panel.js").read_text()
+    source = (Path(__file__).resolve().parents[2] / "frontend/src/features/twin/ExecutionPanel.tsx").read_text()
     assert "result.arm_origins[arm]" in source
     assert "one seed; no new significance claim" in source
 

@@ -261,7 +261,7 @@ def _train_aws(job_id: str, prep: dict, arch: str, epochs: int):
     card = next((c for c in cards if c["arch"] == arch), None)
     if not card:
         raise RuntimeError("the worker finished but no checkpoint came back")
-    _set(job_id, curve=card.get("curve", [])[-2 * epochs:], epoch=epochs, instances_after=at.running_instances())
+    _set(job_id, curve=card.get("curve", [])[-2 * epochs:], epoch=epochs, instances_after=at.running_instances(name))
     return card
 
 
