@@ -1,0 +1,83 @@
+"""Agent routes: submit a goal, follow it, approve a paused action, answer a question, read the audit log."""
+from __future__ import annotations
+
+from functools import lru_cache
+
+from fastapi import APIRouter, HTTPException
+
+from app.agent import audit, orchestrator, store, tools
+from app.agent.models import Goal
+from app.agent.schemas import AnswerRequest, ApproveRequest, GoalRequest
+
+router = APIRouter()
+
+
+@lru_cache(maxsize=1)
+def _llm():
+    from app.agent.llm import Bedrock
+    return Bedrock()
+
+
+def _llm_or_503():
+    try:
+        return _llm()
+    except Exception as exc:                                        # noqa: BLE001 - the page shows the real reason
+        raise HTTPException(503, f"language model unavailable: {type(exc).__name__}: {str(exc)[:200]}")
+
+
+@router.post("/api/agent/goals", status_code=202, tags=["agent"])
+def submit_goal(req: GoalRequest):
+    """Run the goal until it finishes or pauses (approval needed, or a question for the user)."""
+    llm = _llm_or_503()
+    goal = Goal(user_id=req.user_id, text=req.text); store.save_goal(goal)
+    return orchestrator.run(goal, llm).to_dict()
+
+
+@router.get("/api/agent/goals", tags=["agent"])
+def list_goals(user_id: str = "demo"):
+    return {"user_id": user_id, "goals": store.list_goals(user_id)}
+
+
+@router.get("/api/agent/goals/{goal_id}", tags=["agent"])
+def get_goal(goal_id: str):
+    g = store.load_goal(goal_id)
+    if not g:
+        raise HTTPException(404, "no such goal")
+    return g.to_dict()
+
+
+@router.post("/api/agent/goals/{goal_id}/approve", tags=["agent"])
+def approve(goal_id: str, req: ApproveRequest):
+    g = store.load_goal(goal_id)
+    if not g:
+        raise HTTPException(404, "no such goal")
+    try:
+        return orchestrator.approve(g, req.call_id, req.approved, _llm_or_503()).to_dict()
+    except ValueError as exc:
+        raise HTTPException(409, str(exc))
+
+
+@router.post("/api/agent/goals/{goal_id}/answer", tags=["agent"])
+def answer(goal_id: str, req: AnswerRequest):
+    g = store.load_goal(goal_id)
+    if not g:
+        raise HTTPException(404, "no such goal")
+    try:
+        return orchestrator.answer(g, req.step_id, req.text, _llm_or_503()).to_dict()
+    except ValueError as exc:
+        raise HTTPException(409, str(exc))
+
+
+@router.get("/api/agent/audit", tags=["agent"])
+def audit_log(user_id: str = "demo", goal_id: str | None = None, limit: int = 200):
+    return {"user_id": user_id, "entries": audit.read(user_id, goal_id, limit), "chain": audit.verify(user_id)}
+
+
+@router.get("/api/agent/tools", tags=["agent"])
+def tool_list():
+    return {"tools": [{"name": t.name, "description": t.description, "risk": t.risk.value, "schema": t.schema} for t in tools.TOOLS.values()], "policy": {k.value: v.value for k, v in __import__("app.agent.permissions", fromlist=["POLICY"]).POLICY.items()}}
+
+
+@router.get("/api/agent/tasks", tags=["agent"])
+def tasks(user_id: str = "demo"):
+    return {"tasks": store.list_tasks(user_id, None), "reminders": store.list_reminders(user_id, None), "commutes": store.list_commutes(user_id)}

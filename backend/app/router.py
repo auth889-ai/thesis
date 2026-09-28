@@ -1,6 +1,7 @@
 """The API: every domain registers its router here."""
 from fastapi import APIRouter
 
+from app.agent import router as agent_router
 from app.commute import router as commute_router
 from app.data import router as data_router
 from app.forecasting.routers import model_prototypes, predictions, training
@@ -11,6 +12,6 @@ from app.routing import router as routing_router
 from app.twin import router as twin_router
 
 api_router = APIRouter()
-for module in (platform_router, data_router, commute_router, predictions, training, model_prototypes, routing_router, twin_router, networking_router,
+for module in (platform_router, data_router, commute_router, agent_router, predictions, training, model_prototypes, routing_router, twin_router, networking_router,
                experiments, stress, research, panels, live_reference, references):
     api_router.include_router(module.router)
