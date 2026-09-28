@@ -1,5 +1,6 @@
 import {Link, NavLink, Outlet, useLocation} from "react-router-dom";
 
+import {ErrorBoundary} from "./ErrorBoundary";
 import {LAB_NAV} from "./routes";
 
 /** The research lab: a compact dark header, the evidence pages, and every number traceable. No photographs here. */
@@ -15,7 +16,7 @@ export function LabShell() {
           <nav>{LAB_NAV.map((n) => <NavLink key={n.path} to={n.path} className={({isActive}) => (isActive ? "on" : "")}>{n.label}</NavLink>)}</nav>
         </header>
         <div className="lab-head"><h1>{current.label}</h1><p>{current.hint}</p></div>
-        <main className="page"><Outlet /></main>
+        <main className="page"><ErrorBoundary><Outlet /></ErrorBoundary></main>
         <footer className="foot"><span>Every table and status on these pages is computed by the backend from run files; nothing is typed in.</span><Link to="/today">Back to the app</Link></footer>
       </div>
     </div>

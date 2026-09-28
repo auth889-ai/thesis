@@ -2,6 +2,7 @@ import {useQuery} from "@tanstack/react-query";
 import {Link, NavLink, Outlet, useLocation} from "react-router-dom";
 
 import {api} from "@/lib/api";
+import {ErrorBoundary} from "./ErrorBoundary";
 import {Hero} from "./Hero";
 import {APP_NAV} from "./routes";
 
@@ -19,7 +20,7 @@ export function AppShell() {
           <div className="status"><span className={`dot ${health.isError ? "bad" : health.data ? "ok" : ""}`} />{health.isError ? "offline" : health.data ? "live" : "connecting…"}</div>
         </header>
         <Hero page={current} />
-        <main className="page"><Outlet /></main>
+        <main className="page"><ErrorBoundary><Outlet /></ErrorBoundary></main>
         <footer className="foot"><span>TrafficTwin · every answer is computed from live data when you ask; nothing is prerecorded.</span><span><Link to="/lab">Research lab</Link> · photographs by Unsplash photographers, credited where shown</span></footer>
       </div>
     </div>

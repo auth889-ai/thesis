@@ -1,7 +1,7 @@
 import type {Map as MLMap} from "maplibre-gl";
 import {useEffect} from "react";
 
-import {MapView, maplibregl, useMapInstance} from "@/components/MapView";
+import {MapView, maplibregl, useMapInstance, whenStyled} from "@/components/MapView";
 import {fc, line} from "@/lib/basemap";
 import {CAT_COLOUR, ROUTE_COLOUR, type TripResult} from "./types";
 
@@ -10,7 +10,7 @@ const toLngLat = (c: [number, number][]) => c.map(([lat, lng]) => [lng, lat]);
 /** Draws the analysed trip: traffic-coloured segments underneath, the routes on top (recommended last), A and B pins. */
 export function RouteMap({result, highlight}: {result: TripResult | null; highlight?: number | null}) {
   const {map, onReady} = useMapInstance();
-  useEffect(() => { if (map) draw(map, result); }, [map, result]);
+  useEffect(() => { if (map) whenStyled(map, () => draw(map, result)); }, [map, result]);
   useEffect(() => {
     if (!map || !result) return;
     for (const c of result.routes) if (map.getLayer(`route-${c.key}`)) map.setPaintProperty(`route-${c.key}`, "line-opacity", highlight == null || c.index === highlight ? (c.recommended ? 0.95 : 0.8) : 0.3);

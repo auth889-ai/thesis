@@ -1,7 +1,7 @@
 import {useQuery} from "@tanstack/react-query";
 import {useEffect, useRef, useState} from "react";
 
-import {MapView, maplibregl, useMapInstance} from "@/components/MapView";
+import {MapView, maplibregl, useMapInstance, whenStyled} from "@/components/MapView";
 import {Button, Card, Field, Table} from "@/components/ui";
 import {api, pollJob} from "@/lib/api";
 import {fc, line, point} from "@/lib/basemap";
@@ -87,7 +87,7 @@ function Interventions({edges, disabled, note, onControl}: {edges: {id: string}[
 function VehicleMap({network, positions}: {network: any; positions: {vehicle_id: string; lon: number; lat: number}[]}) {
   const {map, onReady} = useMapInstance();
   const style = useRef<any>({version: 8, sources: {roads: {type: "geojson", attribution: "Road geometry: OpenStreetMap / SUMO", data: fc(network.edges.map((e: any) => line(e.shape)))}}, layers: [{id: "ground", type: "background", paint: {"background-color": "#f0f4f3"}}, {id: "roads", type: "line", source: "roads", paint: {"line-color": "#8fa7a0", "line-width": 1.3}}]});
-  useEffect(() => { if (!map) return; if (!map.getSource("vehicles")) { map.addSource("vehicles", {type: "geojson", data: fc([])}); map.addLayer({id: "vehicles", source: "vehicles", type: "circle", paint: {"circle-color": "#c24e35", "circle-radius": 4, "circle-stroke-color": "#ffffff", "circle-stroke-width": 1}}); const b = network.bbox; map.fitBounds([[b[1], b[0]], [b[3], b[2]]], {padding: 18, duration: 0}); } }, [map, network]);
+  useEffect(() => { if (!map) return; whenStyled(map, () => { if (!map.getSource("vehicles")) { map.addSource("vehicles", {type: "geojson", data: fc([])}); map.addLayer({id: "vehicles", source: "vehicles", type: "circle", paint: {"circle-color": "#c24e35", "circle-radius": 4, "circle-stroke-color": "#ffffff", "circle-stroke-width": 1}}); const b = network.bbox; map.fitBounds([[b[1], b[0]], [b[3], b[2]]], {padding: 18, duration: 0}); } }); }, [map, network]);
   useEffect(() => { (map?.getSource("vehicles") as maplibregl.GeoJSONSource | undefined)?.setData(fc(positions.map((v) => point([v.lon, v.lat], {vehicle_id: v.vehicle_id})))); }, [map, positions]);
   return <MapView onReady={onReady} style={style.current} className="map" />;
 }

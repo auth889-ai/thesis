@@ -7,8 +7,8 @@ import {basemapStyle} from "@/lib/basemap";
 export type MapReady = (map: MLMap) => void;
 
 /**
- * A MapLibre map inside a sized container. `onReady` fires once the style has loaded (or after a
- * timeout when the tile host is blocked: the data layers must never wait on a backdrop).
+ * A MapLibre map inside a sized container. `onReady` fires once the style has loaded; the style is a
+ * small JSON document, so this never waits on a tile host (blocked tiles only cost the backdrop).
  */
 export function MapView({onReady, center = [90.4, 23.76], zoom = 12, style, className = "map", children}: {onReady: MapReady; center?: [number, number]; zoom?: number; style?: StyleSpecification; className?: string; children?: React.ReactNode}) {
   const el = useRef<HTMLDivElement>(null);
@@ -24,8 +24,7 @@ export function MapView({onReady, center = [90.4, 23.76], zoom = 12, style, clas
       const ro = new ResizeObserver(() => map?.resize());
       ro.observe(el.current);
       const fire = () => { if (!dead && map) ready.current(map); };
-      if (map.isStyleLoaded()) fire();
-      else { map.once("style.load", fire); setTimeout(() => { if (map && !map.isStyleLoaded()) fire(); }, 5000); }
+      if (map.isStyleLoaded()) fire(); else map.once("style.load", fire);
     });
     return () => { dead = true; map?.remove(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -37,6 +36,11 @@ export function MapView({onReady, center = [90.4, 23.76], zoom = 12, style, clas
 export function useMapInstance() {
   const [map, setMap] = useState<MLMap | null>(null);
   return {map, onReady: setMap};
+}
+
+/** Run a drawing step now if the style is loaded, else as soon as it is: MapLibre throws on addSource before that. */
+export function whenStyled(map: MLMap, fn: () => void) {
+  if (map.isStyleLoaded()) fn(); else map.once("style.load", fn);
 }
 
 export {maplibregl};

@@ -6,7 +6,7 @@ forecast along the route comes from the model chosen in the registry — the exa
 loaded and run at the dataset moment that matches the departure (same weekday and slot of the
 day, in the last week of the data).
 
-    origin / destination  -> geocoded inside the dataset's city, routed live (Google Routes)
+    origin / destination  -> geocoded inside the dataset's city, routed live (the configured road provider)
     model                 -> model_registry.resolve(scope, requested): trained checkpoint, research
                              estimator, Chronos-Bolt, persistence or historical average
     sensors on the route  -> every road of the dataset within NEAR_M of the route polyline
@@ -141,7 +141,7 @@ def forecast_all(scope: str, entry: dict, as_of: int) -> tuple[np.ndarray, np.nd
 def analyze_dataset(p: dict, scope: str, emit, run_id: str = "") -> dict:
     from app.forecasting.operations import model_registry
     from app.data import provenance as pv
-    from app.data.live_providers.google_routes import service
+    from app.data.live_providers import live
     from app.routing.trip_analysis import resolve_place
     from app.forecasting.training import basicts_train as bt
     from app.forecasting.training import train_eval as te
@@ -167,14 +167,15 @@ def analyze_dataset(p: dict, scope: str, emit, run_id: str = "") -> dict:
     run.set(dataset_hash=te.sha256_file(bt.BTS / "datasets" / name / "data.dat"), graph_hash=te.sha256_file(bt.BTS / "datasets" / name / "adj_mx.pkl", 8),
             roads=len(meta["nodes"]), steps=int(vals.shape[0]))
     run.stage("Validating traffic data", emit)
-    routes = service.routes((o["lat"], o["lng"]), (d["lat"], d["lng"]))
+    service = live.provider()
+    routes = service.routes((o["lat"], o["lng"]), (d["lat"], d["lng"])) if service else {"is_live": False, "routes": [], "request_status": "NOT_CONFIGURED"}
     if not routes.get("is_live") or not routes.get("routes"):
         run.finish("failed", f"live routing unavailable: {routes.get('request_status')}")
         raise RuntimeError(f"live routing unavailable: {routes.get('request_status')}")
     quality = te.data_quality(np.where(vals == 0, np.nan, vals), int(meta["interval_s"]))
     run.set(routes_retrieved_at=routes.get("retrieved_at"), routes_n=len(routes.get("routes") or []), data_quality=te.to_jsonable(quality))
     run.set(routing_provider=routes.get("source"), routing_preference=routes.get("routing_preference"), routing_request_status=routes.get("request_status"),
-            routing_backend_function="src/dashboard/backend/live.py: LiveService.routes -> Google Routes API computeRoutes", routing_latency_ms=routes.get("request_latency_ms"),
+            routing_backend_function=live.backend_function(routes.get("source")), routing_latency_ms=routes.get("request_latency_ms"),
             route_geometry_hash=pv.sha_json([[pt for s in (r.get("segments") or []) for pt in (s.get("coordinates") or [])] for r in routes["routes"]]),
             routes_summary=[{"key": "ABC"[i], "distance_m": r.get("distance_m"), "duration_s": r.get("duration_s"), "static_duration_s": r.get("static_duration_s"),
                              "points": sum(len(s.get("coordinates") or []) for s in (r.get("segments") or []))} for i, r in enumerate(routes["routes"][:3])])
@@ -264,5 +265,7 @@ def analyze_dataset(p: dict, scope: str, emit, run_id: str = "") -> dict:
             "decision": {"recommended": best_pred["key"], "saving_s": max(0, saving), "reason": reason,
                          "basis": f"{entry['label']} ({info.get('checkpoint') or 'no checkpoint'}) on {len(names)} roads at {as_of_time[:16].replace('T', ' ')} in the dataset"},
             "routes": cards, "sensors": sensors, "layers": {"now": []},
+            "source": {"traffic": live.traffic_words(routes), "traffic_basis": "LIVE", "is_live": True, "traffic_coverage": bool(routes.get("traffic_coverage")), "routing": routes.get("source"),
+                       "incidents": [i for r in routes.get("routes", [])[:3] for i in (r.get("incidents") or [])]},
             "bbox": [min(lats) - 0.006, min(lngs) - 0.006, max(lats) + 0.006, max(lngs) + 0.006] if lats else meta.get("bbox"),
             "observe": {"city_id": None, "watched": False, "steps_have": meta["steps"]}}

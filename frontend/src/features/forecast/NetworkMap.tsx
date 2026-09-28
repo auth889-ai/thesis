@@ -1,7 +1,7 @@
 import type {Map as MLMap} from "maplibre-gl";
 import {useEffect, useRef} from "react";
 
-import {MapView, maplibregl, useMapInstance} from "@/components/MapView";
+import {MapView, maplibregl, useMapInstance, whenStyled} from "@/components/MapView";
 import {fc, line, point} from "@/lib/basemap";
 import {classify, limitsOf, STATE_COLOUR, type Horizon, type Network} from "./model";
 
@@ -16,6 +16,7 @@ export function NetworkMap({net, horizon, caption, onSelect, syncWith, onMove}: 
 
   useEffect(() => {
     if (!map) return;
+    whenStyled(map, () => {
     for (const id of ["bg", "edges", "sensors"]) if (!map.getSource(id)) map.addSource(id, {type: "geojson", data: fc([])});
     if (!map.getLayer("bg")) {
       map.addLayer({id: "bg", type: "line", source: "bg", paint: {"line-color": "#b9b3a6", "line-width": ["match", ["get", "type"], "motorway", 2.2, "motorway_link", 1.4, "trunk", 1.8, 1.1], "line-opacity": 0.8}});
@@ -27,6 +28,7 @@ export function NetworkMap({net, horizon, caption, onSelect, syncWith, onMove}: 
       map.on("mouseenter", "sensors", () => { map.getCanvas().style.cursor = "pointer"; }); map.on("mouseleave", "sensors", () => { map.getCanvas().style.cursor = ""; });
       map.on("move", () => move.current?.(map));
     }
+    });
   }, [map]);
 
   useEffect(() => {

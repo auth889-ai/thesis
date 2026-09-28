@@ -1,7 +1,7 @@
 import type {Map as MLMap} from "maplibre-gl";
 import {useEffect, useRef} from "react";
 
-import {MapView, maplibregl, useMapInstance} from "@/components/MapView";
+import {MapView, maplibregl, useMapInstance, whenStyled} from "@/components/MapView";
 import {fc, line} from "@/lib/basemap";
 import {atTime} from "./model";
 
@@ -11,6 +11,7 @@ export function ReplayMap({T, t}: {T: any; t: number}) {
   const fitted = useRef<string | null>(null);
   useEffect(() => {
     if (!map || !T) return;
+    whenStyled(map, () => {
     for (const id of ["bg", "incident", "old", "new"]) if (!map.getSource(id)) map.addSource(id, {type: "geojson", data: fc([])});
     if (!map.getLayer("bg")) {
       map.addLayer({id: "bg", type: "line", source: "bg", paint: {"line-color": "#b9b3a6", "line-width": ["match", ["get", "type"], "motorway", 2.2, "trunk", 1.8, 1.1], "line-opacity": 0.8}});
@@ -20,6 +21,7 @@ export function ReplayMap({T, t}: {T: any; t: number}) {
     }
     const key = `${T.run}/${T.seed}/${T.arm}`;
     if (fitted.current !== key) { fitted.current = key; (map.getSource("bg") as maplibregl.GeoJSONSource).setData(fc((T.background?.edges ?? []).map((e: any) => line(e.shape, {type: e.type})))); const b = T.bbox; map.fitBounds([[b[1], b[0]], [b[3], b[2]]], {padding: 20, duration: 0}); }
+    });
   }, [map, T]);
   useEffect(() => {
     if (!map || !T || !map.getSource("incident")) return;

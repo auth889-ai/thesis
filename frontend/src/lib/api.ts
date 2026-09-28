@@ -44,6 +44,7 @@ export const api = {
   analyzeStart: (body: Json) => post<{job: string}>("/api/analyze", body),
   analyzeStatus: (job: string) => get(`/api/analyze/${encodeURIComponent(job)}`),
   routeOptimize: (analysis_run_id: string) => post("/api/route/optimize", {analysis_run_id}),
+  transitPlan: (body: {city: string; origin: string; destination: string; depart_at?: string}) => post("/api/transit/plan", body),
   // forecast
   datasets: () => get("/api/predict-lab/datasets"),
   forecastNetwork: (ds: string, asOf: string | number = "latest") => get(`/api/forecast-map/${encodeURIComponent(ds)}?${q({as_of: asOf})}`),

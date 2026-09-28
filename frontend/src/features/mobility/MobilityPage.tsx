@@ -6,6 +6,7 @@ import {Card, ErrorNote} from "@/components/ui";
 import {CommutePlanner} from "./CommutePlanner";
 import {RouteCards} from "./RouteCards";
 import {RouteMap} from "./RouteMap";
+import {TransitCard} from "./TransitCard";
 import {TripForm, type TripFields} from "./TripForm";
 import {STAGES, useTripAnalysis} from "./useTripAnalysis";
 import "./mobility.css";
@@ -28,7 +29,8 @@ export function MobilityPage() {
         <Card title={r ? `${r.origin.label ?? "A"} → ${r.destination.label ?? "B"}` : "Your city"} sub={r ? `${r.routes.length} routes · horizon +${r.horizon_min} min` : "the routes are drawn here once a trip is analysed"}>
           <RouteMap result={r} highlight={highlight} />
         </Card>
-        {r && <Card title="Route options" sub="now, at departure, and why one is recommended"><RouteCards r={r} onPick={setHighlight} /></Card>}
+        {r && <div className="stack"><Card title="By road" sub="now, at departure, and why one is recommended"><RouteCards r={r} onPick={setHighlight} /></Card>
+          {fields && <TransitCard trip={{city: fields.city, origin: fields.origin, destination: fields.destination}} roadEtaS={r.current.eta_s} />}</div>}
       </div>
       {fields && <CommutePlanner trip={{city: fields.city, origin: fields.origin, destination: fields.destination}} />}
       <div className="phototiles">
