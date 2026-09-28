@@ -34,7 +34,7 @@ export function CorridorMap({corridors, horizon, center, onSelect, caption}: {co
       if (!fitted.current && corridors.length) {
         fitted.current = true;
         const b = new maplibregl.LngLatBounds(); corridors.forEach((c) => c.geometry.forEach(([lat, lng]) => b.extend([lng, lat])));
-        if (!b.isEmpty()) map.fitBounds(b, {padding: 40, duration: 0});
+        if (!b.isEmpty()) { map.resize(); map.fitBounds(b, {padding: 40, duration: 0}); }
       }
     });
   }, [map, corridors, horizon]);
