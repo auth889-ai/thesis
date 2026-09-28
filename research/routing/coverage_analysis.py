@@ -14,10 +14,10 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(REPO), str(REPO / "src")]
-from traffictwin.orchestration import closed_loop as cl
-from traffictwin.optimization import route_optimizer as ro, edge_costs as ec
+from app.control import closed_loop as cl
+from app.routing import route_optimizer as ro, edge_costs as ec
 from research.routing.coverage_diagnostic import REFERENCE, read
-from traffictwin.coverage import intervene
+from app.routing.coverage_report import intervene
 
 SOURCES = ("oracle", "gwnet", "persistence")
 CAUSES = ("A_FORECAST_ERROR", "B_COVERAGE_MISSING", "C_DERIVATION_ERROR", "D_CANDIDATE_MISSING", "E_OPTIMIZER_REJECTION", "F_V2X_FAILURE", "G_NO_ACTION_DIFFERENCE")

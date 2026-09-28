@@ -5,7 +5,7 @@ from collections import Counter
 from itertools import combinations
 
 from research.routing.coverage_analysis import Errors
-from traffictwin.optimization import route_optimizer as ro
+from app.routing import route_optimizer as ro
 
 
 def route_stratum(labels):

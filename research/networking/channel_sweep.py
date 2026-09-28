@@ -26,7 +26,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
-from traffictwin.orchestration import closed_loop as cl        # noqa: E402
+from app.control import closed_loop as cl        # noqa: E402
 
 GRIDS = {"latency":     [("ideal", 0.3), ("lat100", 0.3), ("lat500", 0.3), ("lat1000", 0.3), ("lat5000", 0.3)],
          "loss":        [("ideal", 0.3), ("loss05", 0.3), ("loss10", 0.3), ("loss20", 0.3), ("degraded", 0.3)],

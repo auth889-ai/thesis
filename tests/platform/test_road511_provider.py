@@ -12,9 +12,9 @@ import json
 
 import pytest
 
-from traffictwin.common.reality import RealityClass
-from traffictwin.data.live_providers.providers import CameraProvider, ObservationStore
-from traffictwin.data.live_providers.road511_provider import (CLASSIFICATION,
+from app.common.reality import RealityClass
+from app.data.live_providers.providers import CameraProvider, ObservationStore
+from app.data.live_providers.road511_provider import (CLASSIFICATION,
                                              FORBIDDEN_CLASSIFICATION,
                                              ROAD511_KEY_STATUS,
                                              Road511Provider)

@@ -7,7 +7,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from traffictwin.digital_twin.sensor_graph import (CHANNELS, DAILY_PROFILE,
+from app.twin.sensor_graph import (CHANNELS, DAILY_PROFILE,
                                         EVIDENCE_DOMAIN,
                                         gaussian_kernel_adjacency,
                                         node_list_sha256, parse_edgedata,
@@ -37,14 +37,14 @@ def test_n_target_outside_mandate_rejected(tmp_path):
 # ------------------------------------------------- placement on the frozen net
 @pytest.fixture(scope="module")
 def frozen_nodes():
-    from traffictwin.common.city import DHAKA_R1
+    from app.common.city import DHAKA_R1
     if not DHAKA_R1.network_path.exists():
         pytest.skip("frozen R1 network not present")
     return select_sensor_edges(DHAKA_R1.network_path, n_target=250)
 
 
 def test_placement_count_and_determinism(frozen_nodes):
-    from traffictwin.common.city import DHAKA_R1
+    from app.common.city import DHAKA_R1
     assert len(frozen_nodes) == 250
     again = select_sensor_edges(DHAKA_R1.network_path, n_target=250)
     assert node_list_sha256(frozen_nodes) == node_list_sha256(again)

@@ -46,4 +46,4 @@ Published 15-min MAE from STAEformer (CIKM 2023) Table 1, which retrained every 
 | G5_gwnet_reproduces_published | yes | METR-LA@15min +1.1 %, METR-LA@30min +1.3 %, METR-LA@60min +1.8 %, PEMS-BAY@15min +0.6 %, PEMS-BAY@30min +0.5 %, PEMS-BAY@60min -0.2 % |
 | G6_checkpoint_inference | yes | STID/PEMS-BAY, GWNet/PEMS-BAY, GWNet/METR-LA, STID/METR-LA |
 
-Regenerate: `python -m traffictwin.forecasting.evaluation.comparison_table`. Machine-readable: `phase1_comparison.json` / `.csv`.
+Regenerate: `python -m app.forecasting.evaluation.comparison_table`. Machine-readable: `phase1_comparison.json` / `.csv`.

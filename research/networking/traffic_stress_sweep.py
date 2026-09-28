@@ -33,7 +33,7 @@ kept in the JSON next to the v2 verdicts):
       STABLE and the first UNSTABLE level is bisected twice so the chosen level is not an artefact of the
       ladder's step size. This is the rule the gate uses.
 
-The chosen level is written to packages/traffictwin/src/traffictwin/protocols/controller_config.json under "stress_scenario" and the gate
+The chosen level is written to backend/app/protocols/controller_config.json under "stress_scenario" and the gate
 result to results/v2x/stress/<city>/summary.json. Baseline-only runs: no policy is involved in the choice.
 """
 from __future__ import annotations
@@ -48,7 +48,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
-from traffictwin.orchestration import closed_loop as cl        # noqa: E402
+from app.control import closed_loop as cl        # noqa: E402
 
 RULE = {"teleport_rate_max": 0.01, "arrival_share_min": 0.85, "loaded_min_speed_mps": 2.0, "tti_min": 1.30, "jam_teleports_min": 1, "bisection_steps": 2,
         "v1_share_major_ge_0.7_min": 0.10, "v1_loaded_speed_ratio_to_1x_max": 0.70}
@@ -135,7 +135,7 @@ def main() -> int:
         m = pt["mean"]; L.append(f"| {pt['scale']} | {m['vehicles_loaded']:.0f} | {m['arrival_share']:.2f} | {m['teleport_rate']:.3f} ({m['jam_teleports']:.0f}) | {m['util_p50']} / {m['util_p90']} / {m['util_max']} | {m['share_major_ge_0.7']} | {m['mean_occupancy_pct']} | {m['spillback_edges']} | {m['loaded_mean_speed_mps']} ({m['loaded_speed_ratio_to_1x']}) | {m['loaded_min_speed_mps']} | {m['loaded_mean_halting_share']} | {m['mean_travel_time_s']:.0f} | {m['tti']} | {m['p95_travel_time_s']:.0f} | {pt['STABLE']} | {pt['CONGESTED']} | {pt['CONGESTED_v1']} |")
     L += ["", f"**Gate: {gate}** — chosen scale {summary['chosen_scale']} ({summary['reason']}).", ""]
     (out / f"summary_{a.profile}_{a.od_rule}.md").write_text("\n".join(L))
-    cfgp = REPO / "packages/traffictwin/src/traffictwin/protocols/controller_config.json"; cfg = json.loads(cfgp.read_text())
+    cfgp = REPO / "backend/app/protocols/controller_config.json"; cfg = json.loads(cfgp.read_text())
     cfg.setdefault("stress_scenario", {})[f"{a.city}:{a.profile}:{a.od_rule}"] = {"chosen_scale": summary["chosen_scale"], "gate": gate, "rule": RULE, "chosen_utc": summary["generated_utc"], "seeds_used": seeds}
     cfgp.write_text(json.dumps(cfg, indent=2))
     print(f"\n[stress] gate {gate}; chosen scale {summary['chosen_scale']} → written to controller_config.json", flush=True)

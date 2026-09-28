@@ -6,13 +6,13 @@ import json
 
 import pytest
 
-from traffictwin.common.reality import (Provenance, RealityClass,
+from app.common.reality import (Provenance, RealityClass,
                                       assert_single_reality, derive)
-from traffictwin.data.live_providers.google_providers import (GoogleRoutesProvider,
+from app.data.live_providers.google_providers import (GoogleRoutesProvider,
                                              GoogleWeatherProvider)
-from traffictwin.data.live_providers.providers import (DHAKA_R1_CORRIDORS, ObservationStore,
+from app.data.live_providers.providers import (DHAKA_R1_CORRIDORS, ObservationStore,
                                       TrafficEdgeState, TrafficProvider)
-from traffictwin.data.live_providers.live_state import PRODUCT_FIELDS, assemble_live_state
+from app.data.live_providers.live_state import PRODUCT_FIELDS, assemble_live_state
 
 
 def _prov(reality=RealityClass.REAL_LIVE, **kw):
@@ -117,7 +117,7 @@ def test_runtime_reference_mode_persists_no_google_content(tmp_path):
 
 
 def test_non_default_google_flags_require_permission_basis():
-    from traffictwin.data.live_providers.google_providers import GoogleDataPolicy
+    from app.data.live_providers.google_providers import GoogleDataPolicy
     with pytest.raises(ValueError, match="permission_basis"):
         GoogleDataPolicy(ml_training_allowed=True)
     ok = GoogleDataPolicy(persist_google_route_content=True,
@@ -126,7 +126,7 @@ def test_non_default_google_flags_require_permission_basis():
 
 
 def test_congestion_buckets():
-    from traffictwin.data.live_providers.google_providers import GoogleDataPolicy
+    from app.data.live_providers.google_providers import GoogleDataPolicy
     pol = GoogleDataPolicy()
     assert pol.congestion_bucket(100, 95) == "FREE_FLOW"
     assert pol.congestion_bucket(540, 380) == "SLOW"

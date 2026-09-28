@@ -16,10 +16,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Runtime packages share src/; web applications and experiment entry points are separate.
 REQUIRED_TOP_LEVEL = [
-    "apps",          # deployables: apps/api (FastAPI), apps/web (browser app)
-    "packages",      # the domain library: packages/traffictwin
+    "backend",       # the application, organised by domain (backend/app/<domain>/...)
+    "frontend",      # the browser app
     "research",      # protocol runners, report builders, notebooks
-    "tests",         # cross-cutting platform tests (library and API tests live next to their code)
+    "tests",         # cross-cutting platform tests (domain tests live in backend/tests)
     "docs", "data", "results", "infra", "scripts", "upstream",
 ]
 
@@ -42,11 +42,11 @@ def test_required_top_level_directory_exists(name):
 
 
 def test_retired_root_directories_are_not_recreated():
-    for name in ("dashboard", "pipeline", "artifacts", "notebooks", "legacy", "paper_labs", "exports", "backend", "frontend", "src", "experiments", "configs", "main.py"):
+    for name in ("dashboard", "pipeline", "artifacts", "notebooks", "legacy", "paper_labs", "exports", "src", "apps", "packages", "experiments", "configs", "main.py"):
         assert not (REPO_ROOT / name).exists(), f"use the canonical nested location, not {name}/"
 
 
-@pytest.mark.parametrize("relative", ["apps/api/app/api", "apps/web/pages", "packages/traffictwin/src/traffictwin", "packages/traffictwin/tests", "apps/api/tests", "research/reports", "research/notebooks", "results/artifacts"])
+@pytest.mark.parametrize("relative", ["backend/app/data", "backend/app/forecasting/routers", "backend/app/routing", "backend/app/twin", "backend/app/networking", "backend/app/protocols/routers", "backend/tests", "frontend/pages", "research/reports", "research/notebooks", "results/artifacts"])
 def test_consolidated_directories_exist(relative):
     assert (REPO_ROOT / relative).is_dir()
 
@@ -54,14 +54,14 @@ def test_consolidated_directories_exist(relative):
 def test_configs_live_next_to_the_code_that_reads_them():
     """No root configs/ folder: every YAML sits in the package that reads it."""
     assert not (REPO_ROOT / "configs").exists()
-    for rel in ("perception/configs/training_budget.yaml", "digital_twin/configs/dhaka_r1.yaml", "forecasting/configs/benchmark.yaml"):
-        assert (REPO_ROOT / "packages/traffictwin/src/traffictwin" / rel).is_file(), rel
+    for rel in ("perception/configs/training_budget.yaml", "twin/configs/dhaka_r1.yaml", "forecasting/configs/benchmark.yaml"):
+        assert (REPO_ROOT / "backend/app" / rel).is_file(), rel
 
 
 def test_single_source_tree():
     """One library (traffictwin); no transitional copies of it remain."""
-    assert (REPO_ROOT / "packages/traffictwin/src/traffictwin/__init__.py").is_file()
-    assert not (REPO_ROOT / "src").exists() and not (REPO_ROOT / "backend").exists()
+    assert (REPO_ROOT / "backend/app/__init__.py").is_file()
+    assert not (REPO_ROOT / "src").exists() and not (REPO_ROOT / "packages").exists() and not (REPO_ROOT / "apps").exists()
 
 
 # ------------------------------------------------------------------- upstream
@@ -130,9 +130,9 @@ def test_no_large_tracked_files():
 # ------------------------------------------------------------- model registry
 @pytest.mark.skip(reason="model_registry/ was retired to legacy/ in the 2026-09 rebuild; model "
                          "provenance now lives in results/forecasting/trained_results.json, which "
-                         "packages/traffictwin/tests/rebuild/test_phase1_prediction.py validates")
+                         "backend/tests/rebuild/test_phase1_prediction.py validates")
 def test_model_registry_entries_validate():
-    from traffictwin.common.model_registry import load_entries
+    from app.common.model_registry import load_entries
 
     entries = load_entries()
     assert entries, "model registry has no entries"
@@ -142,7 +142,7 @@ def test_model_registry_entries_validate():
 
 def test_no_weights_paths_inside_registry_entries():
     """checkpoint_uri must be remote; the loader enforces it, this proves it stays on."""
-    from traffictwin.common.model_registry import ModelEntry, ModelStatus
+    from app.common.model_registry import ModelEntry, ModelStatus
 
     with pytest.raises(ValueError, match="never committed to git"):
         ModelEntry(key="bad", subsystem="perception", architecture="x",

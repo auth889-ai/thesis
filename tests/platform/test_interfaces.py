@@ -13,23 +13,23 @@ from __future__ import annotations
 
 import pytest
 
-from traffictwin.common.registry import available, build, clear, register
-from traffictwin.common.provenance import RunProvenance
-from traffictwin.common.types import (LaneState, TrafficMetrics, TrafficObservation,
+from app.common.registry import available, build, clear, register
+from app.common.provenance import RunProvenance
+from app.common.types import (LaneState, TrafficMetrics, TrafficObservation,
                                     TrafficScenario, VehicleClass)
-from traffictwin.common.units import (flow_per_interval_to_vph, kmh_to_ms,
+from app.common.units import (flow_per_interval_to_vph, kmh_to_ms,
                                     percent_to_fraction, speed_from_flow_density)
-from traffictwin.interfaces.control import (SignalAction, SignalActionType, TrafficController)
-from traffictwin.interfaces.evaluation import ArmSetup, BenchmarkSpec
-from traffictwin.protocols.traffic_science import (CriticalPoint, MFDPoint,
+from app.interfaces.control import (SignalAction, SignalActionType, TrafficController)
+from app.interfaces.evaluation import ArmSetup, BenchmarkSpec
+from app.protocols.traffic_science import (CriticalPoint, MFDPoint,
                                                   distance_to_critical, network_speed)
-from traffictwin.interfaces.genai import CopilotAnswer, Evidence
-from traffictwin.interfaces.perception import BoundingBox, Detection, Detector
-from traffictwin.interfaces.routing import RouteDecision
-from traffictwin.interfaces.safety import (LAB01_VALIDATED_REFERENCE_PROFILE, SAFETY_PROFILES,
+from app.interfaces.genai import CopilotAnswer, Evidence
+from app.interfaces.perception import BoundingBox, Detection, Detector
+from app.interfaces.routing import RouteDecision
+from app.interfaces.safety import (LAB01_VALIDATED_REFERENCE_PROFILE, SAFETY_PROFILES,
                                           SafetyConstraints)
-from traffictwin.interfaces.simulation import SimulationBackend
-from traffictwin.interfaces.visualization import FigureSpec
+from app.interfaces.simulation import SimulationBackend
+from app.interfaces.visualization import FigureSpec
 
 
 # --------------------------------------------------------------------- units

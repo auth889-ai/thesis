@@ -14,9 +14,9 @@ sys.path[:0] = [str(REPO), str(REPO / "src")]
 from research.routing.coverage_diagnostic import REFERENCE, ARMS, read
 from research.routing.coverage_analysis import Errors
 from research.routing.coverage_scoring import score_all
-from traffictwin.protocols.oracle_gate import paired
-from traffictwin.research_status import compute_research_status
-from traffictwin.forecasting import ModelRegistry
+from app.protocols.oracle_gate import paired
+from app.protocols.research_status import compute_research_status
+from app.forecasting import ModelRegistry
 
 KEY = "total_vehicle_hours_incl_never_inserted"
 

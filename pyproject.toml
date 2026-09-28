@@ -1,9 +1,5 @@
-# Workspace root. The library is packages/traffictwin, the HTTP API is apps/api, the browser app is apps/web.
-#   pip install -e packages/traffictwin        (library)
-#   make app                                   (API + web on http://127.0.0.1:8000)
-[tool.uv.workspace]
-members = ["packages/traffictwin", "apps/api"]
-
+# TrafficTwin. The application is backend/app (organised by domain); the browser app is frontend/.
+#   make app     -> http://127.0.0.1:8000        make test -> the whole suite
 [tool.ruff]
 line-length = 200
 target-version = "py310"

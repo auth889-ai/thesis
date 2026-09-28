@@ -1,7 +1,7 @@
 """yolo_to_coco adapter tests — format translation only, on synthetic files."""
 from pathlib import Path
 
-from traffictwin.perception.yolo_to_coco import convert_split, _image_size
+from app.perception.yolo_to_coco import convert_split, _image_size
 
 
 def _tiny_png(path: Path, w=32, h=16):

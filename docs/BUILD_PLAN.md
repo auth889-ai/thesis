@@ -21,7 +21,7 @@ backend/                   FastAPI application
   app/routing/              Web route/trip adapters
   app/evidence/             Read-only evidence and causal-trace readers
   app/live/                 External reference providers
-apps/web/                  Browser application, served by FastAPI
+frontend/                  Browser application, served by FastAPI
   pages/                   System, Prediction, Control Room, Results
   components/              Reusable controls and panels
   services/                API client and browser services
@@ -41,7 +41,7 @@ data/                      Dataset/network inputs, not application source
 configs/                   Non-secret settings; see configs/README.md
 results/                   Generated logs, metrics, reports and preserved evidence
 tests/                     Scientific and cross-package tests
-apps/api/tests/             HTTP and web-adapter tests
+backend/tests/             HTTP and web-adapter tests
 legacy/                    Retired implementations, not the current application
 paper_labs/                Frozen historical reproductions
 upstream/                  External implementation pins
@@ -93,8 +93,8 @@ closed loop. Do not claim collected or trained datasets that are absent.
 
 Consolidate credential lookup; remove the credentials-only root folder. Separate
 causal evidence processing from the V2X router. Next extract responsibilities from
-`apps/api/app/simulation/runtime.py` (catalog, lifecycle, stepping, serialization),
-`packages/traffictwin/src/traffictwin/orchestration/closed_loop.py` (protocol, demand, control, reporting),
+`backend/app/simulation/runtime.py` (catalog, lifecycle, stepping, serialization),
+`backend/app/control/closed_loop.py` (protocol, demand, control, reporting),
 and web prediction/training adapters. Resolve callers of the removed
 `dashboard.backend` compatibility package in a dedicated migration; do not silently
 restore deleted code or skip failing tests.
@@ -179,7 +179,7 @@ implementation and SUMO, not Google/LLM API keys. Structural cleanup must not la
 AWS training or paid live sampling. Web dependencies are listed in backend/requirements.txt.
 
 ```bash
-python -m pytest -q apps/api/tests/test_scientific_execution.py apps/api/tests/test_api.py
+python -m pytest -q backend/tests/test_scientific_execution.py backend/tests/test_api.py
 make canonical-package  # package existing evidence, not fresh execution
 ```
 

@@ -4,7 +4,7 @@ from __future__ import annotations
 import numpy as np
 import pytest
 
-from traffictwin.forecasting.evaluation.twin_baselines import (EVIDENCE_DOMAIN, HORIZONS_STEPS,
+from app.forecasting.evaluation.twin_baselines import (EVIDENCE_DOMAIN, HORIZONS_STEPS,
                                             ChronoSplit,
                                             historical_average_forecast,
                                             masked_metrics,

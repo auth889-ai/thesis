@@ -9,9 +9,9 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path[:0] = [str(REPO), str(REPO / "src")]
-from traffictwin.orchestration import closed_loop as cl
-from traffictwin.optimization import edge_costs as ec
-from traffictwin.protocols.oracle_gate import sha_file
+from app.control import closed_loop as cl
+from app.routing import edge_costs as ec
+from app.protocols.oracle_gate import sha_file
 
 REFERENCE = "la_c4_central_wide_prepeak_ideal_p30_cfgea08dddedc14_stressA_eval_fork1200_x8_peak_arterial"
 ARMS = ("oracle_coverage_limited_v2x", "gwnet_direct_v2x")
@@ -36,7 +36,7 @@ def main():
     assert P["network_hash"] == sha_file(REPO / P["network"]), "network changed"
     assert P["mapping_hash"] == sha_file(REPO / P["mapping_file"]), "mapping changed"
     assert P["sumo_version"] == cl.sumo_version(), "SUMO version changed"
-    from traffictwin.forecasting import ModelRegistry
+    from app.forecasting import ModelRegistry
     checkpoint = ModelRegistry.metr_la_gwnet()
     checkpoint_sha = hashlib.sha256(Path(checkpoint.checkpoint_path).read_bytes()).hexdigest()
     assert checkpoint_sha.startswith(P["checkpoint_sha256"]), "checkpoint changed"

@@ -34,17 +34,17 @@ git history are omitted; every file here is the real production file from the re
 - dashboard/backend/main.py            FastAPI API (analysis, routing, twin, training, experiments)
 - dashboard/backend/analyze.py, dataset_ops.py, route_opt.py, twin_test.py, live_sim.py,
   train_jobs.py, model_registry.py, provenance.py
-- dashboard/apps/web/                  ES-module app (Home, Prediction, Route Optimization, Digital Twin, Results)
+- dashboard/frontend/                  ES-module app (Home, Prediction, Route Optimization, Digital Twin, Results)
 - pipeline/routing/edge_costs.py, route_optimizer.py, oracle_gate.py, learned_gate.py, routing_config.json
 - pipeline/city/sensor_map.py           genuine METR-LA detector metadata → SUMO edges (no synthesis)
 - pipeline/forecasting/                 BasicTS-legacy adapters (official algorithms, pinned SHA)
-- packages/traffictwin/tests/rebuild/, dashboard/apps/api/tests/   pytest suite (402 passed, 5 skipped on 2026-09-06)
+- backend/tests/rebuild/, dashboard/backend/tests/   pytest suite (402 passed, 5 skipped on 2026-09-06)
 - results/routing/oracle_gate/*/report.md    the frozen oracle result
 - results/routing/learned_gate/*/report.md   the learned-model result (final, 20 seeds, INCONCLUSIVE)
 - results/routing/coverage_rescue/REPORT.md  the 207-sensor coverage feasibility study and corridor choice
 - results/forecasting/verify_GWNet_METR-LA_207.json   verification of the full 207-node checkpoint
 - pipeline/city/coverage_rescue.py           the coverage / traffic-exposure measurement
-- dashboard/backend/forecast_map.py + dashboard/apps/web/components/prediction-page.js   TRAFFIC FORECAST page (network map, DIRECT/DERIVED provenance, validation replay)
+- dashboard/backend/forecast_map.py + dashboard/frontend/components/prediction-page.js   TRAFFIC FORECAST page (network map, DIRECT/DERIVED provenance, validation replay)
 - docs/REBUILD_120H_PLAN.md, docs/audit/     plan and audit trail
 
 ## Things a reviewer should check hard

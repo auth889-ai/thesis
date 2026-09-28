@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import pytest
 
-from traffictwin.common.model_registry import (EvidenceDomain, MetricBlock,
+from app.common.model_registry import (EvidenceDomain, MetricBlock,
                                              ModelEntry, ModelStatus)
-from traffictwin.perception.taxonomy import (MAPPINGS, ClassMapping, DhakaFlowClass,
+from app.perception.taxonomy import (MAPPINGS, ClassMapping, DhakaFlowClass,
                                            MappingQuality, coverage_report,
                                            cross_dataset_conflicts, mapping_for,
                                            open_decisions, trainable_classes)
