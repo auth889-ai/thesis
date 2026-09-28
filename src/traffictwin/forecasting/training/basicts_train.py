@@ -57,9 +57,8 @@ def bts_name(dataset_id: str) -> str:
 # ------------------------------------------------------------------ our data -> their raw layout
 def load_series(dataset_id: str):
     """(values[T,N], node names, ISO times, adjacency[N,N], interval_s, quantity) for an app dataset."""
-    sys.path.insert(0, str(REPO / "src/dashboard/backend"))
     if dataset_id.startswith("user:"):
-        import user_datasets
+        from backend.app.datasets import uploads as user_datasets
         did = dataset_id.split(":", 1)[1]
         m = user_datasets.load_meta(did)
         if not m:
@@ -73,7 +72,7 @@ def load_series(dataset_id: str):
         raise SystemExit("live corridor history is derived from Google Routes responses and is not licensed as "
                          "training data — upload your own or a research dataset (user:<id>)")
     if False:                                              # kept for reference: how a live series would be read
-        import observatory as obs_mod
+        from backend.app.live import observatory as obs_mod
         from traffictwin.forecasting.opencity import opencity_city_eval as oce
         cid = dataset_id.split(":", 1)[1]
         cd = obs_mod.observatory.city_data(cid)
@@ -82,7 +81,7 @@ def load_series(dataset_id: str):
         if cid == "dhaka":
             A = oce.geo_adjacency(list(cd.node_ids))
         else:
-            import city_corridors
+            from backend.app.datasets import city_corridors as city_corridors
             byid = {c["id"]: c for c in city_corridors.load(cid)}
             pts = np.array([[(byid[n]["origin"]["lat"] + byid[n]["destination"]["lat"]) / 2,
                              (byid[n]["origin"]["lng"] + byid[n]["destination"]["lng"]) / 2] for n in cd.node_ids])

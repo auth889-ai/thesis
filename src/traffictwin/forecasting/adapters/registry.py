@@ -9,11 +9,11 @@ never lets a baseline be presented as the system's forecast.
 """
 from __future__ import annotations
 
-from .base import CityData, Forecast, ForecastAdapter, NotAvailable
-from .baselines import HistoricalAverageAdapter, PersistenceAdapter
-from .checkpoint_models import GraphWaveNetAdapter, STAEformerAdapter, STIDAdapter
-from .chronos_adapter import ChronosAdapter
-from .opencity import OpenCityAdapter
+from traffictwin.forecasting.adapters.base import CityData, Forecast, ForecastAdapter, NotAvailable
+from traffictwin.forecasting.adapters.baselines import HistoricalAverageAdapter, PersistenceAdapter
+from traffictwin.forecasting.adapters.checkpoint_models import GraphWaveNetAdapter, STAEformerAdapter, STIDAdapter
+from traffictwin.forecasting.adapters.chronos_adapter import ChronosAdapter
+from traffictwin.forecasting.adapters.opencity import OpenCityAdapter
 
 # Strongest first: a foundation model that transfers, then city-specific networks, then floors.
 def all_adapters(dataset_hint: str | None = None) -> list[ForecastAdapter]:

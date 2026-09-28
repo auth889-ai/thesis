@@ -157,7 +157,7 @@ def test_lab02_freeze_record_present():
                          "provenance now lives in results/forecasting/trained_results.json, which "
                          "tests/rebuild/test_phase1_prediction.py validates")
 def test_model_registry_entries_validate():
-    from pipeline.core.common.model_registry import load_entries
+    from traffictwin.common.model_registry import load_entries
 
     entries = load_entries()
     assert entries, "model registry has no entries"
@@ -167,7 +167,7 @@ def test_model_registry_entries_validate():
 
 def test_no_weights_paths_inside_registry_entries():
     """checkpoint_uri must be remote; the loader enforces it, this proves it stays on."""
-    from pipeline.core.common.model_registry import ModelEntry, ModelStatus
+    from traffictwin.common.model_registry import ModelEntry, ModelStatus
 
     with pytest.raises(ValueError, match="never committed to git"):
         ModelEntry(key="bad", subsystem="perception", architecture="x",

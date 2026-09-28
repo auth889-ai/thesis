@@ -29,10 +29,10 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from pipeline.core.common.city import get_city
-from pipeline.core.digital_twin.sumo_runner import SumoTwin
-from pipeline.core.routing.demand import build_multi_od_demand
-from pipeline.core.routing.graph_router import NetworkGraph
+from traffictwin.common.city import get_city
+from traffictwin.digital_twin.sumo_runner import SumoTwin
+from traffictwin.optimization.demand import build_multi_od_demand
+from traffictwin.optimization.graph_router import NetworkGraph
 
 
 def find_sumo_home() -> Path:

@@ -34,7 +34,7 @@ import numpy as np
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 
-from pipeline.core.network_file import ensure_net              # noqa: E402
+from traffictwin.digital_twin.network_file import ensure_net              # noqa: E402
 from traffictwin.forecasting.adapters.base import CityData        # noqa: E402
 from traffictwin.forecasting.adapters.registry import forecast as run_forecast  # noqa: E402
 from traffictwin.forecasting.live import live_state as live_state      # noqa: E402

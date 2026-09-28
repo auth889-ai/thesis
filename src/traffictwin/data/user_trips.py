@@ -21,7 +21,7 @@ from typing import Any
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 
-from pipeline.core.live.providers import DHAKA_R1_CORRIDORS  # noqa: E402
+from traffictwin.data.live_providers.providers import DHAKA_R1_CORRIDORS  # noqa: E402
 from traffictwin.data.live_schemas import append_jsonl, assert_no_google_content, coord_ref, load_jsonl, now_utc, parse_lat_lng, stable_ref  # noqa: E402
 
 DEFAULT_LOG = REPO / "results/live/pilot_trips.jsonl"

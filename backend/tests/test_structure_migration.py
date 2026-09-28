@@ -119,7 +119,7 @@ def test_moved_adapters_resolve_the_original_repository_and_data_paths():
 def test_relocated_research_dependencies_resolve_the_workspace():
     for name in ("traffictwin.data.cities", "traffictwin.forecasting.training.basicts_train",
                  "traffictwin.protocols.oracle_gate", "traffictwin.protocols.stress_experiment",
-                 "pipeline.core.network_file"):
+                 "traffictwin.digital_twin.network_file"):
         module = importlib.import_module(name)
         assert module.REPO == ROOT, name
         assert Path(module.__file__).is_relative_to(ROOT / "src"), name          # pipeline (transitional) or traffictwin (canonical)

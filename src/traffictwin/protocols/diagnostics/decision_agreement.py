@@ -41,8 +41,6 @@ import numpy as np
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "src/dashboard/backend"))
-
 from pipeline.routing import edge_costs as ec              # noqa: E402
 from pipeline.routing import predictive_routing as pr     # noqa: E402
 from pipeline.routing import route_optimizer as ro        # noqa: E402

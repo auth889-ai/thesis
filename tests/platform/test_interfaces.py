@@ -13,23 +13,23 @@ from __future__ import annotations
 
 import pytest
 
-from pipeline.core.common.registry import available, build, clear, register
-from pipeline.core.common.provenance import RunProvenance
-from pipeline.core.common.types import (LaneState, TrafficMetrics, TrafficObservation,
+from traffictwin.common.registry import available, build, clear, register
+from traffictwin.common.provenance import RunProvenance
+from traffictwin.common.types import (LaneState, TrafficMetrics, TrafficObservation,
                                     TrafficScenario, VehicleClass)
-from pipeline.core.common.units import (flow_per_interval_to_vph, kmh_to_ms,
+from traffictwin.common.units import (flow_per_interval_to_vph, kmh_to_ms,
                                     percent_to_fraction, speed_from_flow_density)
-from pipeline.core.control.interfaces import (SignalAction, SignalActionType, TrafficController)
-from pipeline.core.evaluation.interfaces import ArmSetup, BenchmarkSpec
-from pipeline.core.evaluation.traffic_science import (CriticalPoint, MFDPoint,
+from traffictwin.interfaces.control import (SignalAction, SignalActionType, TrafficController)
+from traffictwin.interfaces.evaluation import ArmSetup, BenchmarkSpec
+from traffictwin.protocols.traffic_science import (CriticalPoint, MFDPoint,
                                                   distance_to_critical, network_speed)
-from pipeline.core.genai.interfaces import CopilotAnswer, Evidence
-from pipeline.core.perception.interfaces import BoundingBox, Detection, Detector
-from pipeline.core.routing.interfaces import RouteDecision
-from pipeline.core.safety.interfaces import (LAB01_VALIDATED_REFERENCE_PROFILE, SAFETY_PROFILES,
+from traffictwin.interfaces.genai import CopilotAnswer, Evidence
+from traffictwin.interfaces.perception import BoundingBox, Detection, Detector
+from traffictwin.interfaces.routing import RouteDecision
+from traffictwin.interfaces.safety import (LAB01_VALIDATED_REFERENCE_PROFILE, SAFETY_PROFILES,
                                           SafetyConstraints)
-from pipeline.core.simulation.interfaces import SimulationBackend
-from pipeline.core.visualization.interfaces import FigureSpec
+from traffictwin.interfaces.simulation import SimulationBackend
+from traffictwin.interfaces.visualization import FigureSpec
 
 
 # --------------------------------------------------------------------- units

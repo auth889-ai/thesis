@@ -22,8 +22,6 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from traffictwin.paths import REPO
-sys.path.insert(0, str(REPO / "src/dashboard/backend"))
-
 MC = "frontend/pages/legacy/mission-control.js"
 PP = "frontend/pages/prediction.js"
 LT = "frontend/pages/legacy/live-twin-page.js"
@@ -72,7 +70,7 @@ def main() -> int:
     ap.add_argument("--run-id", default=None, help="a provenance run id to attach as the replayable example")
     ap.add_argument("--out", default=str(REPO / "docs/audit/output_fields_audit.json"))
     a = ap.parse_args()
-    import provenance
+    from traffictwin.data import provenance as provenance
     rec = provenance.load(a.run_id) if a.run_id else None
     if rec is None:
         recs = provenance.recent(1)

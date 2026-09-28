@@ -30,7 +30,7 @@ sys.path.insert(0, str(REPO))
 
 import numpy as np
 
-from pipeline.adapters.forecasting.baselines import (EVIDENCE_DOMAIN, STEP_S, ChronoSplit,
+from traffictwin.forecasting.evaluation.twin_baselines import (EVIDENCE_DOMAIN, STEP_S, ChronoSplit,
                                             historical_average_forecast,
                                             masked_metrics, persistence_forecast)
 

@@ -19,7 +19,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .base import CityData, Forecast, ForecastAdapter, NotAvailable
+from traffictwin.forecasting.adapters.base import CityData, Forecast, ForecastAdapter, NotAvailable
 
 REPO = Path(__file__).resolve().parents[4]
 CKPT_DIR = REPO / "results/forecasting/checkpoints"

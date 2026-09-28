@@ -40,8 +40,8 @@ from pathlib import Path
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 
-from pipeline.core.live.google_providers import GoogleDataPolicy, GoogleRoutesProvider  # noqa: E402
-from pipeline.core.live.providers import DHAKA_R1_CORRIDORS, ObservationStore  # noqa: E402
+from traffictwin.data.live_providers.google_providers import GoogleDataPolicy, GoogleRoutesProvider  # noqa: E402
+from traffictwin.data.live_providers.providers import DHAKA_R1_CORRIDORS, ObservationStore  # noqa: E402
 
 DEFAULT_OUT = REPO / "results/artifacts/live_dhaka"
 # Google Routes "Compute Routes Advanced" (TRAFFIC_AWARE_OPTIMAL + speed intervals) list price.

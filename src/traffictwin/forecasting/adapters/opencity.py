@@ -18,7 +18,7 @@ from pathlib import Path
 
 import numpy as np
 
-from .base import CityData, Forecast, ForecastAdapter, NotAvailable
+from traffictwin.forecasting.adapters.base import CityData, Forecast, ForecastAdapter, NotAvailable
 
 REPO = Path(__file__).resolve().parents[4]
 WORKSPACE = Path(os.environ.get("DHAKAFLOW_WORKSPACE", Path.home() / ".dhakaflow/upstream"))

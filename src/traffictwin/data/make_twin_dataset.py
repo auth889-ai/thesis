@@ -54,11 +54,11 @@ sys.path.insert(0, str(REPO))
 
 import numpy as np
 
-from pipeline.core.routing.graph_router import NetworkGraph
-from pipeline.adapters.forecasting.basicts_adapter import (export_basicts_dataset,
+from traffictwin.optimization.graph_router import NetworkGraph
+from traffictwin.forecasting.training.basicts_adapter import (export_basicts_dataset,
                                                   export_basicts_legacy_dataset)
-from pipeline.adapters.twin.demand import make_repeating_routes
-from pipeline.adapters.twin.sensor_graph import (CHANNELS, EVIDENCE_DOMAIN,
+from traffictwin.digital_twin.demand import make_repeating_routes
+from traffictwin.digital_twin.sensor_graph import (CHANNELS, EVIDENCE_DOMAIN,
                                         SENSOR_PERIOD_S, SensorNode, largest_scc,
                                         gaussian_kernel_adjacency,
                                         node_list_sha256, parse_edgedata,

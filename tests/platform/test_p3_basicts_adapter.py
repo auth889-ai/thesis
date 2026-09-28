@@ -6,8 +6,8 @@ import json
 import numpy as np
 import pytest
 
-from pipeline.adapters.forecasting.baselines import ChronoSplit
-from pipeline.adapters.forecasting.basicts_adapter import (
+from traffictwin.forecasting.evaluation.twin_baselines import ChronoSplit
+from traffictwin.forecasting.training.basicts_adapter import (
     LEGACY_RATIOS, export_basicts_dataset, export_basicts_legacy_dataset)
 
 

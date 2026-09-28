@@ -1,0 +1,1 @@
+"""Abstract interfaces of every subsystem (perception, forecasting, routing, control, digital twin, evaluation, safety, simulation, visualization, GenAI, NLP, priority) — the contracts adapters implement."""

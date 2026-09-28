@@ -45,7 +45,7 @@ import numpy as np
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-from pipeline.core.live.providers import DHAKA_R1_CORRIDORS  # noqa: E402
+from traffictwin.data.live_providers.providers import DHAKA_R1_CORRIDORS  # noqa: E402
 
 NET = REPO / "paper_labs/02_dhaka_osm/outputs/lab02_v2/network/dhaka_r1.net.xml"
 

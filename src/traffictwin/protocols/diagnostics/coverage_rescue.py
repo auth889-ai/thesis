@@ -33,8 +33,6 @@ import numpy as np
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "src/dashboard/backend"))
-
 from traffictwin.digital_twin import sensor_map as sm                       # noqa: E402
 from traffictwin.digital_twin.scenario_builder import scenario_dir             # noqa: E402
 from pipeline.routing import edge_costs as ec                    # noqa: E402
@@ -111,7 +109,7 @@ def forecast_207(as_of: int | None = None) -> dict:
     pred = bt.predict(card, as_of)                                # (12, 207), mph — the product's own inference path
     secs = time.perf_counter() - t0
     now = np.asarray(raw[as_of - 1, :, 0], dtype="float64")
-    import provenance as pv
+    from traffictwin.data import provenance as pv
     return {"as_of": as_of, "now": now, "pred": pred, "inference_seconds": round(secs, 3), "checkpoint_sha256": sha_file(CK207), "raw_prediction_hash": pv.sha_array(pred), "nodes": raw.shape[1]}
 
 
@@ -175,7 +173,7 @@ def exposure(vehroutes: Path, net_path: Path, direct: set[str], derived: set[str
 
 
 def routing_exposure(city_id: str, routes: Path, table: dict, out: Path, cfg: dict) -> dict:
-    from twin_test import read_any_routes
+    from backend.app.simulation.trip_comparison import read_any_routes
     man = json.loads((scenario_dir(city_id) / "MANIFEST.json").read_text())
     net = REPO / man["files"]["net"]
     veh = read_any_routes(routes)

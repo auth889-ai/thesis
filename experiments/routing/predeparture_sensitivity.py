@@ -44,7 +44,7 @@ import pipeline.routing.predictive_routing as pr                        # noqa: 
 from traffictwin.protocols.chains import integrated_chain as ic                     # noqa: E402
 from traffictwin.protocols.chains import live_chain as lc                           # noqa: E402
 from traffictwin.optimization.forecast_costs import build_table, fetch_forecast, write_weights  # noqa: E402
-from pipeline.core.network_file import ensure_net                       # noqa: E402
+from traffictwin.digital_twin.network_file import ensure_net                       # noqa: E402
 
 RESULTS = REPO / "results/routing"
 OUT = RESULTS / "r1_forecast_to_action"

@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import pytest
 
-from pipeline.adapters.perception.benchmark_schema import (BenchmarkRow, MANDATED_METRICS,
+from traffictwin.perception.benchmark_schema import (BenchmarkRow, MANDATED_METRICS,
                                                   assert_fair_common_budget,
                                                   select_winner)
-from pipeline.adapters.perception.voc_to_yolo import (PORIBOHON_CLASSES, convert_dataset,
+from traffictwin.perception.voc_to_yolo import (PORIBOHON_CLASSES, convert_dataset,
                                              round_trip_error, voc_box_to_yolo,
                                              yolo_box_to_voc)
 

@@ -25,8 +25,8 @@ from traffictwin.configuration import load_credential
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
 
-from pipeline.core.live.google_providers import GoogleDataPolicy, ROUTES_ENDPOINT  # noqa: E402
-from pipeline.core.live.providers import DHAKA_R1_CORRIDORS  # noqa: E402
+from traffictwin.data.live_providers.google_providers import GoogleDataPolicy, ROUTES_ENDPOINT  # noqa: E402
+from traffictwin.data.live_providers.providers import DHAKA_R1_CORRIDORS  # noqa: E402
 from traffictwin.data.live_schemas import AdviceRecord, RuntimeRouteOption, RouteQuery, append_jsonl, load_jsonl, now_utc, parse_lat_lng, stable_ref  # noqa: E402
 
 DEFAULT_OUT = REPO / "results/live/route_advice.jsonl"

@@ -1,48 +1,13 @@
-"""PNEUMATrajectoryProvider — official pNEUMA CSV (open-traffic.epfl.ch).
+"""Compatibility entry point; implementation lives in traffictwin.data.live_providers.pneuma_provider."""
+from pathlib import Path
+import sys
 
-Row format: track_id; type; traveled_d; avg_speed; then repeating
-(lat; lon; speed[km/h]; lon_acc; lat_acc; time[s]) samples at 25 Hz.
-Nothing synthetic: every sample is a real measured vehicle position.
-"""
-from __future__ import annotations
+_REPO = Path(__file__).resolve().parents[3]
+for _path in (str(_REPO), str(_REPO / "src")):
+    if _path not in sys.path:
+        sys.path.insert(0, _path)
+from traffictwin.data.live_providers import pneuma_provider as _implementation
 
-from dataclasses import dataclass
-
-
-@dataclass
-class Sample:
-    t: float
-    lat: float
-    lon: float
-    speed_kmh: float
-
-
-@dataclass
-class Track:
-    vid: int
-    vtype: str
-    samples: list
-
-
-def parse(csv_path: str, hz: float = 1.0):
-    """Yield Track objects downsampled to `hz` (from the 25 Hz raw)."""
-    step = max(int(round(25.0 / hz)), 1) * 6
-    with open(csv_path) as f:
-        next(f)
-        for line in f:
-            parts = [p.strip() for p in line.strip().strip(";").split(";")]
-            if len(parts) < 10:
-                continue
-            vid, vtype = int(parts[0]), parts[1]
-            flat = parts[4:]
-            samples = []
-            for j in range(0, len(flat) - 5, step):
-                try:
-                    samples.append(Sample(t=float(flat[j + 5]),
-                                          lat=float(flat[j]),
-                                          lon=float(flat[j + 1]),
-                                          speed_kmh=float(flat[j + 2])))
-                except ValueError:
-                    break
-            if samples:
-                yield Track(vid, vtype, samples)
+if __name__ == "__main__":
+    raise SystemExit(_implementation.main())
+sys.modules[__name__] = _implementation

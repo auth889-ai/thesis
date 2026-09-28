@@ -52,7 +52,7 @@ def test_all_adapters_use_same_google_key(private_config):
 
 
 def test_provider_adapters_keep_legacy_fallback(private_config):
-    from pipeline.core.live.road511_provider import load_road511_key
+    from traffictwin.data.live_providers.road511_provider import load_road511_key
     assert load_road511_key() == "old-road"
 
 

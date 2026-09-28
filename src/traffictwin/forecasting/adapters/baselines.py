@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from .base import CityData, Forecast, ForecastAdapter, NotAvailable
+from traffictwin.forecasting.adapters.base import CityData, Forecast, ForecastAdapter, NotAvailable
 
 
 class PersistenceAdapter(ForecastAdapter):

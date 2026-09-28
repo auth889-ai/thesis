@@ -39,7 +39,7 @@ from traffictwin.paths import REPO
 ROOT = HERE.parent
 sys.path.insert(0, str(REPO))  # so `pipeline.*` resolves when run as a script
 RESULTS = REPO / "results/nlp"
-from pipeline.core.network_file import DHAKA_R1, ensure_net  # noqa: E402
+from traffictwin.digital_twin.network_file import DHAKA_R1, ensure_net  # noqa: E402
 
 DEFAULT_NET = DHAKA_R1
 GAZETTEER = HERE / "gazetteer.json"

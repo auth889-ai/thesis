@@ -20,9 +20,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from pipeline.core.live.google_providers import (GoogleRoutesProvider,
+from traffictwin.data.live_providers.google_providers import (GoogleRoutesProvider,
                                              GoogleWeatherProvider)
-from pipeline.core.live.providers import DHAKA_R1_CORRIDORS, ObservationStore
+from traffictwin.data.live_providers.providers import DHAKA_R1_CORRIDORS, ObservationStore
 from traffictwin.configuration import load_credential
 
 

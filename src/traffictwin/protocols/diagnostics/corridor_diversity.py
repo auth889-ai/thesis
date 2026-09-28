@@ -27,8 +27,6 @@ from pathlib import Path
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "src/dashboard/backend"))
-
 from traffictwin.digital_twin.scenario_builder import scenario_dir          # noqa: E402
 from pipeline.routing import edge_costs as ec                 # noqa: E402
 from pipeline.routing import route_optimizer as ro            # noqa: E402
@@ -38,7 +36,7 @@ CAP_LANE_H = 1800.0
 
 
 def score_city(city: str, cc: dict, cfg: dict, out_root: Path, max_trips: int = 400) -> dict:
-    from twin_test import read_any_routes
+    from backend.app.simulation.trip_comparison import read_any_routes
     man = json.loads((scenario_dir(city) / "MANIFEST.json").read_text())
     net = REPO / man["files"]["net"]; routes = REPO / man["files"]["routes"]
     info = ro.NetInfo(net)

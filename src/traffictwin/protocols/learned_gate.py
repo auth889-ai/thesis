@@ -45,8 +45,6 @@ import numpy as np
 
 from traffictwin.paths import REPO
 sys.path.insert(0, str(REPO))
-sys.path.insert(0, str(REPO / "src/dashboard/backend"))
-
 from pipeline.routing import edge_costs as ec              # noqa: E402
 from pipeline.routing import predictive_routing as pr     # noqa: E402
 from pipeline.routing import route_optimizer as ro        # noqa: E402
@@ -88,14 +86,14 @@ PRED_ARMS = {"persistence_predictive": "persistence", "learned_predictive": "GWN
 # ---------------------------------------------------------------------------
 
 def protocol(cfg: dict | None = None, with_oracle: bool = False) -> dict:
-    import model_registry
+    from backend.app.forecasting import model_registry as model_registry
     cfg = cfg or ec.load_config()
     city_id, dataset = "los_angeles_metr", "user:los_angeles"
     man = json.loads((scenario_dir(city_id) / "MANIFEST.json").read_text())
     mapping = sensor_map.find_for_dataset(dataset)
     if not mapping:
         raise SystemExit(f"no detector -> edge mapping for {dataset}")
-    import train_jobs
+    from backend.app.forecasting import training_jobs as train_jobs
     ident = train_jobs.identity_for(FROZEN_JOB)
     if not ident or not ident.get("checkpoint_path"):
         raise SystemExit(f"the frozen training job {FROZEN_JOB} has no checkpoint identity")
@@ -174,7 +172,7 @@ def moment_for_seed(P: dict, seed: int, T: int) -> int:
 def forecast_for_seed(P: dict, seed: int, mapping: dict) -> dict:
     """A FRESH forward pass of the frozen checkpoint at this seed's moment, plus persistence and
     the measured future, all on the dataset's own arrays. Returns everything the arms need."""
-    import provenance as pv
+    from traffictwin.data import provenance as pv
     from traffictwin.forecasting.training import basicts_train as bt
     from traffictwin.forecasting.training import train_eval as te
     dataset = P["dataset"]
@@ -247,8 +245,8 @@ def speed_schedule(F: dict, mapping: dict, P: dict) -> dict:
 # ---------------------------------------------------------------------------
 
 def predictive_routes(arm: str, seed: int, demand: Path, F: dict, mapping: dict, out: Path, P: dict, cfg: dict) -> tuple[Path, list[str] | None, dict]:
-    import provenance as pv
-    from twin_test import read_any_routes, rewrite_routes
+    from traffictwin.data import provenance as pv
+    from backend.app.simulation.trip_comparison import read_any_routes, rewrite_routes
     cmap, free, facts = sensor_map.corridor_map(mapping)
     k_ms = 1 / 3.6 if "km/h" in (F["unit"] or "") else 0.44704 if "mph" in (F["unit"] or "") else 1.0
     veh = read_any_routes(demand)
@@ -373,7 +371,7 @@ def run_sumo(arm: str, seed: int, routes: Path, out: Path, P: dict, probe_route:
 # ---------------------------------------------------------------------------
 
 def run_seed(seed: int, P: dict, cfg: dict, mapping: dict, root: Path) -> dict:
-    import provenance as pv
+    from traffictwin.data import provenance as pv
     sdir = root / f"s{seed}"; sdir.mkdir(parents=True, exist_ok=True)
     demand, dinfo = demand_for_seed(P, seed, sdir)
     F = forecast_for_seed(P, seed, mapping)
@@ -389,7 +387,7 @@ def run_seed(seed: int, P: dict, cfg: dict, mapping: dict, root: Path) -> dict:
         if arm in PRED_ARMS:
             routes, probe_route, routing = predictive_routes(arm, seed, demand, F, mapping, sdir / "routing", P, cfg)
         elif arm == "oracle":
-            from twin_test import oracle_debug_routes      # research-only arm: measured future of the paired baseline
+            from backend.app.simulation.trip_comparison import oracle_debug_routes      # research-only arm: measured future of the paired baseline
             routes, probe_route, routing = oracle_debug_routes(f"sim_lg_s{seed}_oracle", str(REPO / P["network"]), demand, base_out, sdir / "oracle_routing", seed, P["simulation_duration_s"], P["compliance"],
                                                                 {"id": "probe", "from_edge": P["probe"]["from"], "to_edge": P["probe"]["to"], "depart_s": P["probe"]["depart_s"]})
         m = run_sumo(arm, seed, routes, out, P, probe_route, sched)
@@ -418,7 +416,7 @@ def run_seed(seed: int, P: dict, cfg: dict, mapping: dict, root: Path) -> dict:
                                  "reroutes_learned": lp["routing"]["routes_changed"], "reroutes_persistence": pp["routing"]["routes_changed"],
                                  "realized_saving_pct_learned_vs_baseline": round(100 * (b - lp["metrics"]["total_vehicle_hours_incl_never_inserted"]) / b, 3) if b else None,
                                  "realized_saving_pct_persistence_vs_baseline": round(100 * (b - pp["metrics"]["total_vehicle_hours_incl_never_inserted"]) / b, 3) if b else None}
-    from twin_test import read_any_routes
+    from backend.app.simulation.trip_comparison import read_any_routes
     pops = {a: hashlib.sha256(json.dumps([(v, d) for v, d, _ in read_any_routes(REPO / x["routes_file"])]).encode()).hexdigest()[:12] for a, x in rec["arms"].items()}
     rec["population_hash_by_arm"] = pops
     rec["same_population"] = len(set(pops.values())) == 1          # identical vehicles and departures in every arm; only routes differ

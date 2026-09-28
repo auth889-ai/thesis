@@ -170,7 +170,7 @@ class LiveSim:
         key = str(path)
         if key not in self._net:
             import sumolib
-            from pipeline.core.network_file import ensure_net
+            from traffictwin.digital_twin.network_file import ensure_net
             self._net[key] = sumolib.net.readNet(str(ensure_net(Path(path))))
         return self._net[key]
 

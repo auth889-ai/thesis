@@ -30,7 +30,7 @@ from __future__ import annotations
 
 import numpy as np
 
-from .base import CityData, Forecast, ForecastAdapter, NotAvailable
+from traffictwin.forecasting.adapters.base import CityData, Forecast, ForecastAdapter, NotAvailable
 
 DEFAULT_MODEL = "amazon/chronos-bolt-small"
 MIN_CONTEXT = 8            # below this a foundation model is guessing from noise

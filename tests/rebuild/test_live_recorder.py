@@ -11,8 +11,8 @@ sys.path.insert(0, str(REPO))
 sys.path.insert(0, str(REPO / "src/pipeline/forecasting"))
 
 import record_live as rec  # noqa: E402
-from pipeline.core.live.google_providers import GoogleDataPolicy  # noqa: E402
-from pipeline.core.live.providers import DHAKA_R1_CORRIDORS, ObservationStore  # noqa: E402
+from traffictwin.data.live_providers.google_providers import GoogleDataPolicy  # noqa: E402
+from traffictwin.data.live_providers.providers import DHAKA_R1_CORRIDORS, ObservationStore  # noqa: E402
 
 PY = sys.executable
 ALLOWED = {"corridor_id", "captured_utc", "request_latency_ms", "congestion_state",

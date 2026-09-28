@@ -92,8 +92,7 @@ def metrla_smoke(n_nodes: int = 12, steps: int = 2000):
 def geo_adjacency(nodes: list[str]) -> np.ndarray:
     """Gaussian-kernel adjacency on corridor midpoints — the construction OpenCity's own PEMS
     graphs use (distance-based, thresholded). No node is left isolated, which `cal_lape` needs."""
-    sys.path.insert(0, str(REPO / "src/dashboard/backend"))
-    import corridors as cz
+    from backend.app.datasets import reference_corridors as cz
     mid = {}
     for c in cz.CORRIDORS:
         (olat, olng), (dlat, dlng) = cz.coords(c)
