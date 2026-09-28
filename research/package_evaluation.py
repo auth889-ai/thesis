@@ -132,7 +132,7 @@ def introduction(full):
         "The new coverage diagnostic comprises ten new SUMO runs and 60 fresh same-state audit rounds. Earlier frozen comparison arms are explicitly reused, not claimed as new simulations. The audit excludes five end-of-simulation ticks from accuracy scoring because they have no future observations.", "",
         "## What Is And Is Not Dynamic", "",
         "- Fresh execution: research/routing/coverage_diagnostic.py calls the checkpoint and SUMO/TraCI when outputs are absent.",
-        "- Evidence replay: frontend/pages/control_room.js reads recorded run logs. Pressing Play animates those logs; it does not start a fresh closed-loop experiment.",
+        "- Evidence replay: frontend/src/pages/control_room.js reads recorded run logs. Pressing Play animates those logs; it does not start a fresh closed-loop experiment.",
         "- Google Routes is a live external reference, not the learned forecasting engine.",
         "- METR-LA checkpoint validation is not Dhaka validation. SUMO demand is synthetic; networking is simulated.", "",
         "## Review Scope And Limits", "",

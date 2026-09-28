@@ -486,6 +486,352 @@
     }
    }
   },
+  "/api/agent/goals": {
+   "post": {
+    "tags": [
+     "agent"
+    ],
+    "summary": "Submit Goal",
+    "description": "Run the goal until it finishes or pauses (approval needed, or a question for the user).",
+    "operationId": "submit_goal_api_agent_goals_post",
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/GoalRequest"
+       }
+      }
+     }
+    },
+    "responses": {
+     "202": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   },
+   "get": {
+    "tags": [
+     "agent"
+    ],
+    "summary": "List Goals",
+    "operationId": "list_goals_api_agent_goals_get",
+    "parameters": [
+     {
+      "name": "user_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "demo",
+       "title": "User Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/agent/goals/{goal_id}": {
+   "get": {
+    "tags": [
+     "agent"
+    ],
+    "summary": "Get Goal",
+    "operationId": "get_goal_api_agent_goals__goal_id__get",
+    "parameters": [
+     {
+      "name": "goal_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Goal Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/agent/goals/{goal_id}/approve": {
+   "post": {
+    "tags": [
+     "agent"
+    ],
+    "summary": "Approve",
+    "operationId": "approve_api_agent_goals__goal_id__approve_post",
+    "parameters": [
+     {
+      "name": "goal_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Goal Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/ApproveRequest"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/agent/goals/{goal_id}/answer": {
+   "post": {
+    "tags": [
+     "agent"
+    ],
+    "summary": "Answer",
+    "operationId": "answer_api_agent_goals__goal_id__answer_post",
+    "parameters": [
+     {
+      "name": "goal_id",
+      "in": "path",
+      "required": true,
+      "schema": {
+       "type": "string",
+       "title": "Goal Id"
+      }
+     }
+    ],
+    "requestBody": {
+     "required": true,
+     "content": {
+      "application/json": {
+       "schema": {
+        "$ref": "#/components/schemas/AnswerRequest"
+       }
+      }
+     }
+    },
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/agent/audit": {
+   "get": {
+    "tags": [
+     "agent"
+    ],
+    "summary": "Audit Log",
+    "operationId": "audit_log_api_agent_audit_get",
+    "parameters": [
+     {
+      "name": "user_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "demo",
+       "title": "User Id"
+      }
+     },
+     {
+      "name": "goal_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "anyOf": [
+        {
+         "type": "string"
+        },
+        {
+         "type": "null"
+        }
+       ],
+       "title": "Goal Id"
+      }
+     },
+     {
+      "name": "limit",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "integer",
+       "default": 200,
+       "title": "Limit"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/agent/tools": {
+   "get": {
+    "tags": [
+     "agent"
+    ],
+    "summary": "Tool List",
+    "operationId": "tool_list_api_agent_tools_get",
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     }
+    }
+   }
+  },
+  "/api/agent/tasks": {
+   "get": {
+    "tags": [
+     "agent"
+    ],
+    "summary": "Tasks",
+    "operationId": "tasks_api_agent_tasks_get",
+    "parameters": [
+     {
+      "name": "user_id",
+      "in": "query",
+      "required": false,
+      "schema": {
+       "type": "string",
+       "default": "demo",
+       "title": "User Id"
+      }
+     }
+    ],
+    "responses": {
+     "200": {
+      "description": "Successful Response",
+      "content": {
+       "application/json": {
+        "schema": {}
+       }
+      }
+     },
+     "422": {
+      "description": "Validation Error",
+      "content": {
+       "application/json": {
+        "schema": {
+         "$ref": "#/components/schemas/HTTPValidationError"
+        }
+       }
+      }
+     }
+    }
+   }
+  },
   "/api/models": {
    "get": {
     "tags": [
@@ -3913,6 +4259,43 @@
  },
  "components": {
   "schemas": {
+   "AnswerRequest": {
+    "properties": {
+     "step_id": {
+      "type": "string",
+      "title": "Step Id"
+     },
+     "text": {
+      "type": "string",
+      "minLength": 1,
+      "title": "Text"
+     }
+    },
+    "type": "object",
+    "required": [
+     "step_id",
+     "text"
+    ],
+    "title": "AnswerRequest"
+   },
+   "ApproveRequest": {
+    "properties": {
+     "call_id": {
+      "type": "string",
+      "title": "Call Id"
+     },
+     "approved": {
+      "type": "boolean",
+      "title": "Approved",
+      "default": true
+     }
+    },
+    "type": "object",
+    "required": [
+     "call_id"
+    ],
+    "title": "ApproveRequest"
+   },
    "Body_opencity_predict_upload_api_opencity_upload_post": {
     "properties": {
      "csv": {
@@ -4463,6 +4846,28 @@
      "detail"
     ],
     "title": "GateCheck"
+   },
+   "GoalRequest": {
+    "properties": {
+     "user_id": {
+      "type": "string",
+      "title": "User Id",
+      "default": "demo"
+     },
+     "text": {
+      "type": "string",
+      "minLength": 3,
+      "title": "Text",
+      "examples": [
+       "I must be at Shahbagh by 09:00 tomorrow from Farmgate; remind me 30 minutes before I should leave."
+      ]
+     }
+    },
+    "type": "object",
+    "required": [
+     "text"
+    ],
+    "title": "GoalRequest"
    },
    "HTTPValidationError": {
     "properties": {
