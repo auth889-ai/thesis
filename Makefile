@@ -3,6 +3,7 @@
 # The four experiments below are the thesis. Each reads real inputs, runs the real chain and writes
 # results/<area>/<name>.json; `make figures` draws those files and nothing else.
 PY    ?= python
+export PYTHONPATH := packages/traffictwin/src:apps/api
 SEEDS ?= 11,12,13,14,15
 H     ?= 1800
 
@@ -19,13 +20,13 @@ test:            ## the test suite: pipeline + backend API (~1 min, no SUMO, no 
 	$(PY) -m pytest -q
 
 app:             ## the dashboard on http://127.0.0.1:8000
-	$(PY) -m uvicorn backend.app.main:app --host 127.0.0.1 --port $(or $(PORT),8000)
+	$(PY) -m uvicorn app.main:app --app-dir apps/api --host 127.0.0.1 --port $(or $(PORT),8000)
 
 canonical:       ## oracle-first canonical closed-loop evaluation, then package log-derived evidence
-	$(PY) experiments/closed_loop/canonical.py --execute --stage oracle
+	$(PY) research/closed_loop/canonical.py --execute --stage oracle
 
 canonical-package: ## package the frozen canonical evidence without rerunning SUMO
-	$(PY) experiments/closed_loop/canonical.py
+	$(PY) research/closed_loop/canonical.py
 
 # ---------------------------------------------------------------- the four experiments
 backtest:        ## E1 how accurate is the forecast on Dhaka's own recorded data (rolling origin, ~15 s)
@@ -64,8 +65,8 @@ figures:         ## F1-F5 from the JSON evidence -> results/figures/
 	$(PY) -m traffictwin.protocols.figures
 
 results:         ## audit every evidence file and rebuild results/RESULTS.md (no simulation)
-	$(PY) results/evidence_audit.py
-	$(PY) results/build_results.py
+	$(PY) research/reports/evidence_audit.py
+	$(PY) research/reports/build_results.py
 
 all: backtest chain ablation coverage sweep figures results   ## everything above, in order (~30 min)
 

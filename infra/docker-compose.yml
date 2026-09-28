@@ -1,0 +1,7 @@
+# Local production-like run: the API serves the web app and every evidence endpoint.
+services:
+  api:
+    build: {context: .., dockerfile: infra/api.Dockerfile}
+    ports: ["8000:8000"]
+    environment: [DHAKAFLOW_NO_OBSERVATORY=1]
+    volumes: ["../data:/srv/data", "../results:/srv/results"]

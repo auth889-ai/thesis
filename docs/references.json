@@ -1,5 +1,5 @@
 {
-  "_about": "Every external research artifact the TrafficTwin code actually uses, grouped by contribution, with the files that use it. Served by GET /api/references and rendered as the References page; docs/REFERENCES.md is generated from this file by scripts in backend/app/api/references.py (make references). Items marked context_only are published numbers quoted for comparison, not code that runs here.",
+  "_about": "Every external research artifact the TrafficTwin code actually uses, grouped by contribution, with the files that use it. Served by GET /api/references and rendered as the References page; docs/REFERENCES.md is generated from this file by scripts in apps/api/app/api/references.py (make references). Items marked context_only are published numbers quoted for comparison, not code that runs here.",
   "groups": [
     {
       "id": "forecasting",
@@ -16,9 +16,9 @@
           "doi": "10.24963/ijcai.2019/264",
           "used_for": "The canonical forecaster: 207-node METR-LA checkpoint, verified against the published MAE, drives every predictive arm of the closed loop.",
           "files": [
-            "src/traffictwin/forecasting/service.py",
-            "src/traffictwin/forecasting/evaluation/benchmark_floors.py",
-            "src/traffictwin/protocols/learned_gate.py",
+            "packages/traffictwin/src/traffictwin/forecasting/service.py",
+            "packages/traffictwin/src/traffictwin/forecasting/evaluation/benchmark_floors.py",
+            "packages/traffictwin/src/traffictwin/protocols/learned_gate.py",
             "traffictwin.orchestration.closed_loop"
           ],
           "code": "nnzhan/Graph-WaveNet (pinned in upstream/UPSTREAM_PINS.yaml); trained through BasicTS"
@@ -34,8 +34,8 @@
           "used_for": "Source of the METR-LA and PEMS-BAY releases, the Gaussian-kernel sensor graph, the chronological 70/10/20 split and the published Historical-Average floors.",
           "files": [
             "traffictwin.digital_twin.sensor_graph",
-            "src/traffictwin/data/datasets.py",
-            "src/traffictwin/forecasting/evaluation/benchmark_floors.py"
+            "packages/traffictwin/src/traffictwin/data/datasets.py",
+            "packages/traffictwin/src/traffictwin/forecasting/evaluation/benchmark_floors.py"
           ],
           "code": "liyaguang/DCRNN (pinned)"
         },
@@ -50,8 +50,8 @@
           "used_for": "BasicTS is the training and evaluation harness for Graph WaveNet, DCRNN, STID and STAEformer; no per-model training loop is written in this repository.",
           "files": [
             "traffictwin.forecasting.training.basicts_adapter",
-            "src/traffictwin/forecasting/training/basicts_train.py",
-            "configs/forecasting/benchmark.yaml"
+            "packages/traffictwin/src/traffictwin/forecasting/training/basicts_train.py",
+            "packages/traffictwin/src/traffictwin/forecasting/configs/benchmark.yaml"
           ],
           "code": "GestaltCogTeam/BasicTS (two pins)"
         },
@@ -65,8 +65,8 @@
           "url": "https://arxiv.org/abs/2208.05233",
           "used_for": "Benchmark model run under the same protocol (Phase-1 gate G3).",
           "files": [
-            "src/traffictwin/forecasting/training/basicts_train.py",
-            "src/traffictwin/forecasting/evaluation/comparison_table.py"
+            "packages/traffictwin/src/traffictwin/forecasting/training/basicts_train.py",
+            "packages/traffictwin/src/traffictwin/forecasting/evaluation/comparison_table.py"
           ]
         },
         {
@@ -79,7 +79,7 @@
           "url": "https://arxiv.org/abs/2308.10425",
           "used_for": "Benchmark model, and the source of the one-protocol leaderboard the comparison table is checked against.",
           "files": [
-            "src/traffictwin/forecasting/evaluation/comparison_table.py"
+            "packages/traffictwin/src/traffictwin/forecasting/evaluation/comparison_table.py"
           ]
         },
         {
@@ -92,8 +92,8 @@
           "url": "https://arxiv.org/abs/2403.07815",
           "used_for": "Pretrained zero-shot univariate forecaster offered for cities with only a short recorded corridor history (Dhaka); kept pretrained, never retrained; its negative result is reported.",
           "files": [
-            "src/traffictwin/forecasting/adapters/chronos_adapter.py",
-            "src/traffictwin/forecasting/adapters/registry.py"
+            "packages/traffictwin/src/traffictwin/forecasting/adapters/chronos_adapter.py",
+            "packages/traffictwin/src/traffictwin/forecasting/adapters/registry.py"
           ],
           "code": "amazon-science/chronos-forecasting (pinned), weights amazon/chronos-bolt-small"
         },
@@ -107,8 +107,8 @@
           "url": "https://arxiv.org/abs/2408.10269",
           "used_for": "Cross-city foundation-model comparison; its pre-training corpus decides which cities may be called zero-shot.",
           "files": [
-            "src/traffictwin/forecasting/opencity/opencity_crosscity.py",
-            "src/traffictwin/forecasting/adapters/opencity.py"
+            "packages/traffictwin/src/traffictwin/forecasting/opencity/opencity_crosscity.py",
+            "packages/traffictwin/src/traffictwin/forecasting/adapters/opencity.py"
           ],
           "code": "HKUDS/OpenCity (pinned)"
         },
@@ -122,7 +122,7 @@
           "doi": "10.1145/2939672.2939785",
           "used_for": "Classical non-deep baseline on the same chronological split (with scikit-learn RandomForest).",
           "files": [
-            "src/traffictwin/forecasting/training/research_baselines.py"
+            "packages/traffictwin/src/traffictwin/forecasting/training/research_baselines.py"
           ]
         },
         {
@@ -135,7 +135,7 @@
           "url": "https://jmlr.org/papers/v12/pedregosa11a.html",
           "used_for": "RandomForest baseline and metric utilities.",
           "files": [
-            "src/traffictwin/forecasting/training/research_baselines.py"
+            "packages/traffictwin/src/traffictwin/forecasting/training/research_baselines.py"
           ]
         },
         {
@@ -148,7 +148,7 @@
           "doi": "10.1609/aaai.v33i01.3301922",
           "used_for": "Provenance of the PEMS04 / PEMS08 releases used in the cross-city corpus bookkeeping.",
           "files": [
-            "src/traffictwin/data/city_datasets.py"
+            "packages/traffictwin/src/traffictwin/data/city_datasets.py"
           ]
         },
         {
@@ -161,7 +161,7 @@
           "url": "https://arxiv.org/abs/2106.05223",
           "used_for": "Reference federated forecaster that the V2X-impairment study degrades.",
           "files": [
-            "src/traffictwin/forecasting/federated/federated_forecast.py"
+            "packages/traffictwin/src/traffictwin/forecasting/federated/federated_forecast.py"
           ],
           "context_only": false
         },
@@ -175,7 +175,7 @@
           "url": "https://arxiv.org/abs/1602.05629",
           "used_for": "The FedAvg aggregation rule implemented in the federated forecast.",
           "files": [
-            "src/traffictwin/forecasting/federated/federated_forecast.py"
+            "packages/traffictwin/src/traffictwin/forecasting/federated/federated_forecast.py"
           ]
         },
         {
@@ -188,7 +188,7 @@
           "url": "https://arxiv.org/abs/2308.10425",
           "used_for": "Leaderboard context only: their published MAE values appear in the comparison table; none of these models runs here.",
           "files": [
-            "src/traffictwin/forecasting/evaluation/comparison_table.py"
+            "packages/traffictwin/src/traffictwin/forecasting/evaluation/comparison_table.py"
           ],
           "context_only": true
         }
@@ -209,8 +209,8 @@
           "used_for": "The only dataset the headline forecast claim rests on; the 207-node checkpoint is validated on its held-out split. Speed-only: no flow counts, so SUMO demand cannot be calibrated from it (src/pipeline/v2x/METR_LA_FLOW_NOTE.md).",
           "files": [
             "data/forecasting/cities/METR-LA/",
-            "src/traffictwin/data/datasets.py",
-            "src/traffictwin/digital_twin/sensor_map.py"
+            "packages/traffictwin/src/traffictwin/data/datasets.py",
+            "packages/traffictwin/src/traffictwin/digital_twin/sensor_map.py"
           ]
         },
         {
@@ -223,8 +223,8 @@
           "url": "https://github.com/liyaguang/DCRNN",
           "used_for": "Second benchmark city for the forecasting gate.",
           "files": [
-            "src/traffictwin/data/datasets.py",
-            "src/traffictwin/forecasting/evaluation/benchmark_floors.py"
+            "packages/traffictwin/src/traffictwin/data/datasets.py",
+            "packages/traffictwin/src/traffictwin/forecasting/evaluation/benchmark_floors.py"
           ]
         },
         {
@@ -253,8 +253,8 @@
           "url": "https://www.openstreetmap.org/copyright",
           "used_for": "Road network of every simulated city (Dhaka R1, the four Los Angeles corridors): netconvert with the OSM typemap, left-hand traffic for Dhaka.",
           "files": [
-            "src/traffictwin/digital_twin/scenario_builder.py",
-            "src/traffictwin/data/city_corridors.py",
+            "packages/traffictwin/src/traffictwin/digital_twin/scenario_builder.py",
+            "packages/traffictwin/src/traffictwin/data/city_corridors.py",
             "paper_labs/02_dhaka_osm/"
           ]
         },
@@ -268,7 +268,7 @@
           "url": "https://operations.osmfoundation.org/policies/nominatim/",
           "used_for": "Free-text origin and destination → coordinates for the trip analysis; falls back to the built-in place list.",
           "files": [
-            "src/traffictwin/optimization/trip_analysis.py"
+            "packages/traffictwin/src/traffictwin/optimization/trip_analysis.py"
           ]
         },
         {
@@ -282,8 +282,8 @@
           "paper_doi": "10.1016/j.eswa.2018.10.017",
           "used_for": "Training data for the incident / congestion text classifier (off the canonical closed-loop path).",
           "files": [
-            "src/traffictwin/nlp/get_data.py",
-            "src/traffictwin/nlp/train_classifier.py"
+            "packages/traffictwin/src/traffictwin/nlp/get_data.py",
+            "packages/traffictwin/src/traffictwin/nlp/train_classifier.py"
           ]
         }
       ]
@@ -303,7 +303,7 @@
           "used_for": "Eclipse MOSAIC 25.2 is the only empirical grounding of the V2X latency and loss profiles: the official Barnim example was reproduced and its ITS-G5 latency distribution feeds the `mosaic` channel profile; the Dhaka R1 penetration sweep (DENM tx/rx, delivery ratio) runs in MOSAIC.",
           "files": [
             "src/pipeline/networking/",
-            "src/traffictwin/networking/channel.py",
+            "packages/traffictwin/src/traffictwin/networking/channel.py",
             "traffictwin.networking.v2x_bus"
           ],
           "code": "eclipse-mosaic/mosaic 25.2 @005fa1f3 (EPL-2.0)"
@@ -319,7 +319,7 @@
           "used_for": "The ITS-G5 access layer that MOSAIC's ad-hoc (SNS) channel model represents; every latency number labelled ITS-G5 in this project inherits that model, not a radio measurement.",
           "files": [
             "src/pipeline/networking/README.md",
-            "src/traffictwin/networking/channel.py"
+            "packages/traffictwin/src/traffictwin/networking/channel.py"
           ]
         },
         {
@@ -345,8 +345,8 @@
           "url": "https://www.etsi.org/deliver/etsi_en/302600_302699/30263703/",
           "used_for": "The hazard broadcast (DENM, 1 Hz re-broadcast, geocast radius) in the MOSAIC penetration sweep; ROUTE_RECOMMENDATION with a TTL follows the same expiry idea.",
           "files": [
-            "src/traffictwin/networking/mosaic/penetration_sweep.py",
-            "src/traffictwin/networking/mosaic/latency_injection.py"
+            "packages/traffictwin/src/traffictwin/networking/mosaic/penetration_sweep.py",
+            "packages/traffictwin/src/traffictwin/networking/mosaic/latency_injection.py"
           ]
         },
         {
@@ -358,8 +358,8 @@
           "year": 2026,
           "used_for": "Explicitly a SIMULATED V2X EMULATOR, not radio hardware and not a 5G / DSRC stack; profiles ideal, mosaic, lat100…lat5000, loss05…loss20, degraded.",
           "files": [
-            "src/traffictwin/networking/channel.py",
-            "experiments/networking/channel_sweep.py"
+            "packages/traffictwin/src/traffictwin/networking/channel.py",
+            "research/networking/channel_sweep.py"
           ]
         }
       ]
@@ -378,10 +378,10 @@
           "doi": "10.1109/ITSC.2018.8569938",
           "used_for": "Eclipse SUMO 1.27.1 is the simulator behind every outcome number; TraCI (setRoute, setMaxSpeed, saveState/loadState with --save-state.rng) is the only actuation path; duarouter, randomTrips, netconvert and sumolib are its tools.",
           "files": [
-            "src/traffictwin/digital_twin/",
+            "packages/traffictwin/src/traffictwin/digital_twin/",
             "traffictwin.orchestration.closed_loop",
-            "src/traffictwin/protocols/oracle_gate.py",
-            "src/traffictwin/optimization/local_router.py"
+            "packages/traffictwin/src/traffictwin/protocols/oracle_gate.py",
+            "packages/traffictwin/src/traffictwin/optimization/local_router.py"
           ],
           "code": "eclipse-sumo/sumo v1_27_1 (pip eclipse-sumo==1.27.1, EPL-2.0)"
         },
@@ -396,7 +396,7 @@
           "used_for": "Official SUMO scenario run unmodified as the Lab-01 baseline; source of the warm-up lesson in the control benchmark config.",
           "files": [
             "paper_labs/01_sumo_foundation/",
-            "configs/control/benchmark.yaml"
+            "packages/traffictwin/src/traffictwin/control/configs/benchmark.yaml"
           ]
         },
         {
@@ -448,8 +448,8 @@
           "year": 1964,
           "used_for": "The BPR volume-delay function whose alpha/beta coefficients price background load in the generalized route cost.",
           "files": [
-            "src/traffictwin/optimization/route_optimizer.py",
-            "src/traffictwin/optimization/network_assignment.py"
+            "packages/traffictwin/src/traffictwin/optimization/route_optimizer.py",
+            "packages/traffictwin/src/traffictwin/optimization/network_assignment.py"
           ]
         },
         {
@@ -476,7 +476,7 @@
           "url": "https://arxiv.org/abs/2505.17734",
           "used_for": "Routing benchmark challenger pinned for the control gate.",
           "files": [
-            "configs/routing/benchmark.yaml"
+            "packages/traffictwin/src/traffictwin/optimization/configs/benchmark.yaml"
           ],
           "code": "pinned in upstream/UPSTREAM_PINS.yaml"
         }
@@ -496,7 +496,7 @@
           "doi": "10.1093/biomet/6.1.1",
           "used_for": "The paired-seed 95 % confidence interval on percentage change in vehicle-hours uses the t critical value for n−1 degrees of freedom (table hard-coded for n = 2…13).",
           "files": [
-            "src/traffictwin/protocols/oracle_gate.py"
+            "packages/traffictwin/src/traffictwin/protocols/oracle_gate.py"
           ]
         },
         {
@@ -509,7 +509,7 @@
           "doi": "10.1201/9780429246593",
           "used_for": "Percentile bootstrap (10 000 resamples over seeds) as the alternate interval on the mean per-arm change.",
           "files": [
-            "src/traffictwin/protocols/statistics.py"
+            "packages/traffictwin/src/traffictwin/protocols/statistics.py"
           ]
         },
         {
@@ -522,7 +522,7 @@
           "doi": "10.2307/3001968",
           "used_for": "Two-sided signed-rank test on paired seeds (with the honest note that n = 3 gives a minimum p of 0.25, so the interval is the informative statistic).",
           "files": [
-            "src/traffictwin/protocols/statistics.py"
+            "packages/traffictwin/src/traffictwin/protocols/statistics.py"
           ]
         },
         {
@@ -535,7 +535,7 @@
           "doi": "10.1038/s41592-019-0686-2",
           "used_for": "scipy.stats implementation of the signed-rank test.",
           "files": [
-            "src/traffictwin/protocols/statistics.py"
+            "packages/traffictwin/src/traffictwin/protocols/statistics.py"
           ]
         },
         {
@@ -562,7 +562,7 @@
           "used_for": "Model training and inference for every deep forecaster.",
           "files": [
             "requirements.txt",
-            "src/traffictwin/forecasting/"
+            "packages/traffictwin/src/traffictwin/forecasting/"
           ]
         }
       ]
@@ -581,8 +581,8 @@
           "url": "https://developers.google.com/maps/documentation/routes",
           "used_for": "External LIVE reference travel time for the trip analysis when a key is configured. Never ground truth, never a training or validation target; recorded corridor states are replayed (labelled RECORDED) when the key is absent or denied.",
           "files": [
-            "src/traffictwin/data/live_providers/google_routes.py",
-            "src/traffictwin/optimization/trip_analysis.py"
+            "packages/traffictwin/src/traffictwin/data/live_providers/google_routes.py",
+            "packages/traffictwin/src/traffictwin/optimization/trip_analysis.py"
           ]
         },
         {
@@ -595,9 +595,9 @@
           "url": "https://maplibre.org/",
           "used_for": "All map rendering in the web application.",
           "files": [
-            "frontend/index.html",
-            "frontend/pages/prediction.js",
-            "frontend/pages/control_room.js"
+            "apps/web/index.html",
+            "apps/web/pages/prediction.js",
+            "apps/web/pages/control_room.js"
           ]
         },
         {
@@ -610,8 +610,8 @@
           "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
           "used_for": "Background tiles behind the traffic layers.",
           "files": [
-            "frontend/services/basemap.js",
-            "backend/app/api/system.py"
+            "apps/web/services/basemap.js",
+            "apps/api/app/api/system.py"
           ]
         },
         {
@@ -624,8 +624,8 @@
           "url": "https://fastapi.tiangolo.com/",
           "used_for": "The API server that serves the application and every evidence endpoint.",
           "files": [
-            "backend/app/main.py",
-            "backend/app/api/"
+            "apps/api/app/main.py",
+            "apps/api/app/api/"
           ]
         }
       ]

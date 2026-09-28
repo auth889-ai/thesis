@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from results.evidence_audit import build_report
+from research.reports.evidence_audit import build_report
 
 
 def _write(path: Path, payload: dict) -> None:

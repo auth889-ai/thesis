@@ -1,13 +1,13 @@
 # RESULTS — DhakaFlow rebuild
 
-Generated 2026-09-28T22:26 @ `edb027bb` by `python results/build_results.py`.
+Generated 2026-09-28T22:37 @ `c8a352c0` by `python research/reports/build_results.py`.
 
 Every table below is read from a file written by the pipeline named next to it. Nothing here is typed by hand.
 
 
 ## Evidence audit — reality labels and missing work
 
-`python results/evidence_audit.py` → `results/evidence_audit.md`
+`python research/reports/evidence_audit.py` → `results/evidence_audit.md`
 
 # Evidence Audit
 
@@ -88,7 +88,7 @@ target = speed_ms (m/s), test region only, masked
 
 ## Prediction — BasicTS benchmark (METR-LA / PEMS-BAY / PEMS08)
 
-`experiments/notebooks/Predict_BasicTS_Colab.ipynb (Colab Pro) -> results/forecasting/benchmark.csv` → `results/forecasting/benchmark.md`
+`research/notebooks/Predict_BasicTS_Colab.ipynb (Colab Pro) -> results/forecasting/benchmark.csv` → `results/forecasting/benchmark.md`
 
 # Trained baselines on real cities (AWS GPU, official BasicTS configs, unmodified)
 
@@ -250,7 +250,7 @@ Regenerate: `python pipeline/forecasting/city_datasets.py --list`.
 
 ## Prediction × Networking — federated forecasting under a SIMULATED V2X link
 
-`experiments/notebooks/Federated_V2X_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results results/forecasting --include federated*` → `results/forecasting/federated.md`
+`research/notebooks/Federated_V2X_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results results/forecasting --include federated*` → `results/forecasting/federated.md`
 
 # Federated forecasting under a SIMULATED V2X link
 
@@ -516,7 +516,7 @@ Regenerate: `python pipeline/routing/incident_scenario.py --seeds 11,12,13`.
 
 ## Prediction — Dhaka twin models (official BasicTS-legacy baselines; Colab results replace the local file)
 
-`experiments/notebooks/Predict_Twin_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results/twin_models results/forecasting/twin_models` → `results/forecasting/twin_models.md`
+`research/notebooks/Predict_Twin_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results/twin_models results/forecasting/twin_models` → `results/forecasting/twin_models.md`
 
 # Dhaka twin forecasting — official BasicTS baselines trained locally on CPU
 

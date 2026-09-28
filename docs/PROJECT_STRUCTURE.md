@@ -26,14 +26,14 @@ traffictwin/                      the library (installed as `traffictwin`, lives
   tools/         upstream fetch, reproduction records
   research_status.py, paths.py, configuration.py
 
-backend/app/                      FastAPI application — thin routers, no science
+apps/api/app/                      FastAPI application — thin routers, no science
   main.py, config.py, credentials.py
   api/           one router per page or resource (system, predictions, routing, simulation, v2x,
                  experiments, stress, references, research, training, cities, live_reference)
   services/      request-scoped orchestration that calls traffictwin (trip analysis jobs, training jobs,
                  execution jobs); no algorithm lives here
 
-frontend/                         browser application (ES modules, no build step)
+apps/web/                         browser application (ES modules, no build step)
   index.html, app.js (hash router)
   pages/         one file per page: home, prediction, control_room, results, references, system, models,
                  city, live, network, advisor, twin
@@ -41,7 +41,7 @@ frontend/                         browser application (ES modules, no build step
   services/      api client, basemap, streaming
   styles/
 
-experiments/                      CLI entry points only (argparse + call into traffictwin.protocols)
+research/                      CLI entry points only (argparse + call into traffictwin.protocols)
 configs/                          YAML settings per subsystem
 tests/                            mirrors the packages: tests/traffictwin, tests/backend, tests/frontend, tests/platform
 docs/                             structure, methodology, references (generated), reports
@@ -64,14 +64,14 @@ Additional layers that the migration surfaced: `traffictwin/interfaces` (subsyst
 `traffictwin/perception` and `traffictwin/control` (the detection and signal-control subsystems, off the
 canonical closed-loop path), `traffictwin/tools` (upstream fetch, reproduction records).
 
-Still to do: split `backend/app/simulation/runtime.py` and `backend/app/routing/trip_analysis.py` into
-services; retire or promote the ten `frontend/pages/legacy/*` pages; give the frontend a `package.json`
+Still to do: split `apps/api/app/simulation/runtime.py` and `apps/api/app/routing/trip_analysis.py` into
+services; retire or promote the ten `apps/web/pages/legacy/*` pages; give the frontend a `package.json`
 with a dev server and a test runner (Vite + Vitest) and migrate it to TypeScript one page at a time.
 
 ## Rules the test enforces
 
 - no module over 400 lines outside `archive/`
 - nothing outside `src/traffictwin` imports `pipeline.*` once its step is done
-- `backend/app/api/*` import only `traffictwin`, `backend.app.services`, FastAPI and stdlib
-- `frontend/pages/*.js` import only `../components` and `../services`
+- `apps/api/app/api/*` import only `traffictwin`, `app.services`, FastAPI and stdlib
+- `apps/web/pages/*.js` import only `../components` and `../services`
 - `archive/` is never imported

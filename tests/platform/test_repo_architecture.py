@@ -16,19 +16,13 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Runtime packages share src/; web applications and experiment entry points are separate.
 REQUIRED_TOP_LEVEL = [
-    "results",       # the evidence they produce
-    "data",          # the datasets they consume
-    "backend",       # FastAPI application adapters
-    "frontend",      # browser application, served by FastAPI
-    "src",           # shared scientific implementation
-    "experiments",   # executable research protocols and sweeps
-    "tests", "docs", "configs", "upstream",
+    "apps",          # deployables: apps/api (FastAPI), apps/web (browser app)
+    "packages",      # the domain library: packages/traffictwin
+    "research",      # protocol runners, report builders, notebooks
+    "tests",         # cross-cutting platform tests (library and API tests live next to their code)
+    "docs", "data", "results", "infra", "scripts", "upstream",
 ]
 
-REQUIRED_CONFIG_SUBSYSTEMS = [
-    "perception", "tracking", "forecasting", "twin",
-    "control", "routing", "live", "deployment",
-]
 
 
 WEIGHT_SUFFIXES = {".pt", ".pth", ".ckpt", ".h5", ".onnx", ".safetensors", ".pb"}
@@ -48,28 +42,26 @@ def test_required_top_level_directory_exists(name):
 
 
 def test_retired_root_directories_are_not_recreated():
-    for name in ("dashboard", "pipeline", "artifacts", "notebooks", "legacy", "paper_labs", "exports", "src/pipeline", "src/dashboard", "main.py"):
+    for name in ("dashboard", "pipeline", "artifacts", "notebooks", "legacy", "paper_labs", "exports", "backend", "frontend", "src", "experiments", "configs", "main.py"):
         assert not (REPO_ROOT / name).exists(), f"use the canonical nested location, not {name}/"
 
 
-@pytest.mark.parametrize("relative", [
-    "src/traffictwin", "experiments/notebooks", "results/artifacts",   # the web application lives in backend/ and frontend/ (REQUIRED_TOP_LEVEL); the library under src/
-])
+@pytest.mark.parametrize("relative", ["apps/api/app/api", "apps/web/pages", "packages/traffictwin/src/traffictwin", "packages/traffictwin/tests", "apps/api/tests", "research/reports", "research/notebooks", "results/artifacts"])
 def test_consolidated_directories_exist(relative):
     assert (REPO_ROOT / relative).is_dir()
 
 
-@pytest.mark.parametrize("subsystem", REQUIRED_CONFIG_SUBSYSTEMS)
-def test_config_subsystem_exists_and_is_not_empty(subsystem):
-    d = REPO_ROOT / "configs" / subsystem
-    assert d.is_dir(), f"missing configs/{subsystem}/"
-    assert list(d.glob("*.yaml")), f"configs/{subsystem}/ has no YAML — an empty config dir is decoration"
+def test_configs_live_next_to_the_code_that_reads_them():
+    """No root configs/ folder: every YAML sits in the package that reads it."""
+    assert not (REPO_ROOT / "configs").exists()
+    for rel in ("perception/configs/training_budget.yaml", "digital_twin/configs/dhaka_r1.yaml", "forecasting/configs/benchmark.yaml"):
+        assert (REPO_ROOT / "packages/traffictwin/src/traffictwin" / rel).is_file(), rel
 
 
 def test_single_source_tree():
     """One library (traffictwin); no transitional copies of it remain."""
-    assert (REPO_ROOT / "src/traffictwin/__init__.py").is_file()
-    assert not (REPO_ROOT / "src/pipeline").exists() and not (REPO_ROOT / "src/dashboard").exists()
+    assert (REPO_ROOT / "packages/traffictwin/src/traffictwin/__init__.py").is_file()
+    assert not (REPO_ROOT / "src").exists() and not (REPO_ROOT / "backend").exists()
 
 
 # ------------------------------------------------------------------- upstream
@@ -138,7 +130,7 @@ def test_no_large_tracked_files():
 # ------------------------------------------------------------- model registry
 @pytest.mark.skip(reason="model_registry/ was retired to legacy/ in the 2026-09 rebuild; model "
                          "provenance now lives in results/forecasting/trained_results.json, which "
-                         "tests/rebuild/test_phase1_prediction.py validates")
+                         "packages/traffictwin/tests/rebuild/test_phase1_prediction.py validates")
 def test_model_registry_entries_validate():
     from traffictwin.common.model_registry import load_entries
 

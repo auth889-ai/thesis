@@ -5,7 +5,7 @@ from pathlib import Path
 
 
 def test_colab_notebook_uses_legacy_basicts_and_one_pair_default():
-    nb = json.loads(Path("experiments/notebooks/Predict_BasicTS_Colab.ipynb").read_text())
+    nb = json.loads(Path("research/notebooks/Predict_BasicTS_Colab.ipynb").read_text())
     source = "\n".join("".join(cell.get("source", "")) for cell in nb["cells"])
 
     assert "4c3e2d373c647667c2123e1591f2d79c229dfcc6" in source

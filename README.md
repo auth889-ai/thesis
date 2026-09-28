@@ -52,7 +52,7 @@ make app
 Open http://127.0.0.1:8000. Use `make app PORT=8003` if that port is occupied.
 
 No API key is needed. Without a Google Routes key (or when the key is denied or over quota) the Home
-page routes on the project's own frozen Dhaka road network (`backend/app/routing/local_routes.py`,
+page routes on the project's own frozen Dhaka road network (`apps/api/app/routing/local_routes.py`,
 sumolib shortest paths with penalty-method alternatives) priced with the last RECORDED corridor
 states, and every screen says so; nothing recorded is ever called live. The **References** page
 (`/api/references`, `docs/REFERENCES.md`) lists every paper, dataset, standard, tool and service the
@@ -71,18 +71,18 @@ a separate mode. These single-seed execution checks never update research gates.
 | Path | Responsibility |
 | --- | --- |
 | [backend/](backend/README.md) | FastAPI server: small entry point, `api/`, and domain-grouped adapters |
-| [frontend/](frontend/README.md) | Four primary `pages/`, preserved legacy pages, shared components, API client, CSS |
-| `src/traffictwin/forecasting/` | Deep-learning inference contract and checkpoint registry |
-| `src/traffictwin/networking/` | Simulated V2X channel and online state correction |
-| `src/traffictwin/optimization/` | Edge costs, route optimization, coverage diagnostics |
-| `src/traffictwin/digital_twin/` | SUMO runtime and traffic measurement helpers |
-| `src/traffictwin/orchestration/` | Closed-loop controller and execution jobs |
-| `experiments/` | Research commands and sensitivity/sweep runners |
+| [apps/web/](apps/web/README.md) | Four primary `pages/`, preserved legacy pages, shared components, API client, CSS |
+| `packages/traffictwin/src/traffictwin/forecasting/` | Deep-learning inference contract and checkpoint registry |
+| `packages/traffictwin/src/traffictwin/networking/` | Simulated V2X channel and online state correction |
+| `packages/traffictwin/src/traffictwin/optimization/` | Edge costs, route optimization, coverage diagnostics |
+| `packages/traffictwin/src/traffictwin/digital_twin/` | SUMO runtime and traffic measurement helpers |
+| `packages/traffictwin/src/traffictwin/orchestration/` | Closed-loop controller and execution jobs |
+| `research/` | Research commands and sensitivity/sweep runners |
 | `src/pipeline/` | Transitional research dependencies; the Python import name remains `pipeline` |
-| `experiments/notebooks/` | Preserved exploratory notebooks and Colab builders |
+| `research/notebooks/` | Preserved exploratory notebooks and Colab builders |
 | `data/`, `results/` | Inputs and generated evidence; former root artifacts are in `results/artifacts/` |
 | `configs/`, `.env` | Non-secret settings and optional gitignored local credentials, respectively |
-| `backend/tests/`, `tests/` | API, scientific, compatibility, and architecture tests |
+| `apps/api/tests/`, `tests/` | API, scientific, compatibility, and architecture tests |
 
 See [the feature contract and seven-phase build order](BUILD_PLAN.md) for current
 capabilities, ownership, acceptance checks and remaining work. Structure changes
