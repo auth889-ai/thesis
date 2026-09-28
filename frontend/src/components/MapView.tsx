@@ -24,7 +24,7 @@ export function MapView({onReady, center = [90.4, 23.76], zoom = 12, style, clas
       const ro = new ResizeObserver(() => map?.resize());
       ro.observe(el.current);
       const fire = () => { if (!dead && map) ready.current(map); };
-      if (map.isStyleLoaded()) fire(); else map.once("style.load", fire);
+      if (styleLoaded(map)) fire(); else map.once("style.load", fire);
     });
     return () => { dead = true; map?.remove(); };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -38,9 +38,13 @@ export function useMapInstance() {
   return {map, onReady: setMap};
 }
 
-/** Run a drawing step now if the style is loaded, else as soon as it is: MapLibre throws on addSource before that. */
+/**
+ * Run a drawing step once the style JSON is loaded (addSource throws before that). Not `isStyleLoaded()`,
+ * which also waits for every tile and would leave a slow tile host blocking the data layers.
+ */
+const styleLoaded = (map: MLMap) => Boolean((map as unknown as {style?: {_loaded?: boolean}}).style?._loaded);
 export function whenStyled(map: MLMap, fn: () => void) {
-  if (map.isStyleLoaded()) fn(); else map.once("style.load", fn);
+  if (styleLoaded(map)) fn(); else map.once("style.load", () => fn());
 }
 
 export {maplibregl};
