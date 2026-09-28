@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from app.data.live_providers import observatory as observatory_mod
-from app.data.live_providers import google_routes as live_service
+from app.data.live_providers import live
 from app.routing import trip_analysis as analyze
 from app.data import city_corridors
 from app.dependencies import _city_bits
@@ -118,4 +118,4 @@ def city_observe_status(city_id: str):
     r = observatory_mod.observatory.readiness(city_id)
     return {"city_id": city_id, "corridors": city_corridors.load(city_id) if city_id != "dhaka" else None,
             "watched": city_id in observatory_mod.observatory.cities(), "readiness": r,
-            "live": live_service.service.corridors_for(city_id) if city_corridors.load(city_id) or city_id == "dhaka" else None}
+            "live": (live.provider().corridors_for(city_id) if live.provider() else None) if city_corridors.load(city_id) or city_id == "dhaka" else None}

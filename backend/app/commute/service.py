@@ -105,9 +105,25 @@ def _routes(city: str, origin: str, destination: str) -> tuple[dict, dict, list[
             edges = []
         if edges:
             state[c["id"]] = {"edges": set(e.getID() for e in edges), "level": None}
-    r = local_router.router.routes((o["lat"], o["lng"]), (d["lat"], d["lng"]), state, None)
+    from app.data.live_providers import live
+    from app.routing.trip.geometry import runs_along
+    provider = live.provider()
+    r = provider.routes((o["lat"], o["lng"]), (d["lat"], d["lng"])) if provider else {"routes": []}
+    if r.get("routes"):
+        # real roads and free-flow times from the provider; which recorded corridors each route runs along, by geometry
+        polys = {cid: local_router.router._geometry(local_router.router.corridor_route(cid, (c["origin"]["lat"], c["origin"]["lng"]), (c["destination"]["lat"], c["destination"]["lng"])))
+                 for cid, c in ((c["id"], c) for c in defs) if cid in state}
+        for route in r["routes"]:
+            pts = [tuple(p) for p in route.get("geometry") or []]
+            route["corridors_touched"] = sorted(cid for cid, poly in polys.items() if len(poly) >= 2 and runs_along(pts, [tuple(p) for p in poly]))
+            route["description"] = route.get("description") or f"{round(route.get('distance_m', 0) / 1000, 1)} km via the provider's road network"
+        r["routing_words"] = f"real roads and free-flow times from {live.WORDS[r['source']]['traffic']}"
+    else:
+        r = local_router.router.routes((o["lat"], o["lng"]), (d["lat"], d["lng"]), state, None)
+        r["routing_words"] = "free-flow times on the frozen OSM/SUMO network at posted limits — minutes are uncalibrated, compare departures and routes, not clocks"
     if not r.get("routes"):
         raise ValueError(f"no route between {origin} and {destination}: {r.get('request_status')}")
+    state["_routing_words"] = r["routing_words"]
     return o, d, r["routes"], state
 
 
@@ -128,7 +144,7 @@ def plan(city: str, origin: str, destination: str, arrive_by: datetime, buffer_m
     arrive_by = arrive_by.astimezone(timezone.utc) if arrive_by.tzinfo else arrive_by.replace(tzinfo=timezone.utc)
     if arrive_by <= now:
         raise ValueError("arrive_by must be in the future")
-    o, d, routes, _ = _routes(city, origin, destination)
+    o, d, routes, state = _routes(city, origin, destination)
     budget_floor = min(float(r["static_duration_s"]) for r in routes)
     departures = []
     t = now.replace(second=0, microsecond=0)
@@ -181,7 +197,7 @@ def plan(city: str, origin: str, destination: str, arrive_by: datetime, buffer_m
                         "now": next(x for x in departures[0]["options"] if x["route"] == r_key(r, routes)), "at_departure": next(x for x in rec["options"] if x["route"] == r_key(r, routes))} for r in routes],
             "departures": departures, "day_profile": day, "congestion_window": window,
             "provenance": {"kind": "TYPICAL_RECORDED", "traffic": f"recorded congestion classes of {len(meta['corridors'])} Dhaka corridors by local time of day ({meta['samples']} samples, {str(meta['first_utc'])[:10]} to {str(meta['last_utc'])[:10]}); not live",
-                           "routing": "free-flow times on the frozen OSM/SUMO network at posted limits — minutes are uncalibrated, compare departures and routes, not clocks",
+                           "routing": state.get("_routing_words", ""),
                            "probability": "share of the recorded distribution meeting the deadline minus the buffer (empirical), not a model confidence"}}
 
 

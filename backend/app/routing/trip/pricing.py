@@ -17,6 +17,11 @@ def price_routes(routes: dict, axes: dict[str, list], pred: dict, observed: dict
     for i, r in enumerate(routes["routes"][:3]):
         pts = [tuple(pt) for s in (r.get("segments") or []) for pt in (s.get("coordinates") or [])]
         touched = [cid for cid, poly in axes.items() if runs_along(pts, poly)]
+        # a provider without live traffic coverage here returns free-flow times: the recorded band of the
+        # worst corridor the route runs along prices it NOW, and the forecast band prices it later
+        free_flow = r.get("traffic_coverage") is False
+        now_levels = [float(observed[cid]) for cid in touched if observed.get(cid) is not None]
+        eta_now = float(r["duration_s"]) * (multiplier(max(0.0, min(3.0, max(now_levels)))) if (free_flow and now_levels) else 1.0)
         per_h = {}
         for hh in HORIZONS:
             pairs = [(float(pred[hh][cid]), observed.get(cid))
@@ -27,13 +32,13 @@ def price_routes(routes: dict, axes: dict[str, list], pred: dict, observed: dict
                 lvl_pred = max(0.0, min(3.0, max(x for x, _ in pairs)))
                 lvl_now = max(0.0, min(3.0, max(float(o) if o is not None else x for x, o in pairs)))
                 factor = max(0.7, min(3.0, multiplier(lvl_pred) / multiplier(lvl_now)))
-                eta, level, covered = float(r["duration_s"]) * factor, lvl_pred, True
+                eta, level, covered = eta_now * factor, lvl_pred, True
             else:
-                eta, level, covered = float(r["duration_s"]), None, False
+                eta, level, covered = eta_now, None, False
             per_h[hh] = {"eta_s": round(eta), "level": None if level is None else round(level, 2),
                          "risk": ("—" if level is None else "HIGH" if level >= 2 else "MEDIUM" if level >= 1 else "LOW"),
                          "covered": covered}
-        cards.append({"key": "ABC"[i], "index": i, "eta_now_s": r["duration_s"],
+        cards.append({"key": "ABC"[i], "index": i, "eta_now_s": round(eta_now), "free_flow_s": r.get("static_duration_s"),
                       "static_s": r.get("static_duration_s"), "distance_m": r.get("distance_m"),
                       "category_now": r.get("category"), "corridors": touched,
                       "forecast": per_h, "segments": r.get("segments") or []})

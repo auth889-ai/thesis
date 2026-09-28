@@ -1,634 +1,664 @@
 {
-  "_about": "Every external research artifact the TrafficTwin code actually uses, grouped by contribution, with the files that use it. Served by GET /api/references and rendered as the References page; docs/REFERENCES.md is generated from this file by scripts in backend/app/api/routes/evidence/references.py (make references). Items marked context_only are published numbers quoted for comparison, not code that runs here.",
-  "groups": [
+ "_about": "Every external research artifact the TrafficTwin code actually uses, grouped by contribution, with the files that use it. Served by GET /api/references and rendered as the References page; docs/REFERENCES.md is generated from this file by scripts in backend/app/api/routes/evidence/references.py (make references). Items marked context_only are published numbers quoted for comparison, not code that runs here.",
+ "groups": [
+  {
+   "id": "forecasting",
+   "title": "A · Traffic forecasting (ML / DL)",
+   "items": [
     {
-      "id": "forecasting",
-      "title": "A · Traffic forecasting (ML / DL)",
-      "items": [
-        {
-          "key": "wu2019gwnet",
-          "type": "paper",
-          "title": "Graph WaveNet for Deep Spatial-Temporal Graph Modeling",
-          "authors": "Wu, Z., Pan, S., Long, G., Jiang, J., Zhang, C.",
-          "venue": "IJCAI 2019",
-          "year": 2019,
-          "url": "https://arxiv.org/abs/1906.00121",
-          "doi": "10.24963/ijcai.2019/264",
-          "used_for": "The canonical forecaster: 207-node METR-LA checkpoint, verified against the published MAE, drives every predictive arm of the closed loop.",
-          "files": [
-            "backend/app/forecasting/service.py",
-            "backend/app/forecasting/evaluation/benchmark_floors.py",
-            "backend/app/protocols/learned_gate.py",
-            "app.control.closed_loop"
-          ],
-          "code": "nnzhan/Graph-WaveNet (pinned in upstream/UPSTREAM_PINS.yaml); trained through BasicTS"
-        },
-        {
-          "key": "li2018dcrnn",
-          "type": "paper",
-          "title": "Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting",
-          "authors": "Li, Y., Yu, R., Shahabi, C., Liu, Y.",
-          "venue": "ICLR 2018",
-          "year": 2018,
-          "url": "https://arxiv.org/abs/1707.01926",
-          "used_for": "Source of the METR-LA and PEMS-BAY releases, the Gaussian-kernel sensor graph, the chronological 70/10/20 split and the published Historical-Average floors.",
-          "files": [
-            "app.twin.sensor_graph",
-            "backend/app/data/datasets.py",
-            "backend/app/forecasting/evaluation/benchmark_floors.py"
-          ],
-          "code": "liyaguang/DCRNN (pinned)"
-        },
-        {
-          "key": "shao2024basicts",
-          "type": "paper",
-          "title": "Exploring Progress in Multivariate Time Series Forecasting: Comprehensive Benchmarking and Heterogeneity Analysis",
-          "authors": "Shao, Z., Wang, F., Xu, Y., et al.",
-          "venue": "IEEE TKDE 2024",
-          "year": 2024,
-          "url": "https://arxiv.org/abs/2310.06119",
-          "used_for": "BasicTS is the training and evaluation harness for Graph WaveNet, DCRNN, STID and STAEformer; no per-model training loop is written in this repository.",
-          "files": [
-            "app.forecasting.training.basicts_adapter",
-            "backend/app/forecasting/training/basicts_train.py",
-            "backend/app/forecasting/configs/benchmark.yaml"
-          ],
-          "code": "GestaltCogTeam/BasicTS (two pins)"
-        },
-        {
-          "key": "shao2022stid",
-          "type": "paper",
-          "title": "Spatial-Temporal Identity: A Simple yet Effective Baseline for Multivariate Time Series Forecasting",
-          "authors": "Shao, Z., Zhang, Z., Wang, F., Wei, W., Xu, Y.",
-          "venue": "CIKM 2022",
-          "year": 2022,
-          "url": "https://arxiv.org/abs/2208.05233",
-          "used_for": "Benchmark model run under the same protocol (Phase-1 gate G3).",
-          "files": [
-            "backend/app/forecasting/training/basicts_train.py",
-            "backend/app/forecasting/evaluation/comparison_table.py"
-          ]
-        },
-        {
-          "key": "liu2023staeformer",
-          "type": "paper",
-          "title": "STAEformer: Spatio-Temporal Adaptive Embedding Makes Vanilla Transformer SOTA for Traffic Forecasting",
-          "authors": "Liu, H., Dong, Z., Jiang, R., et al.",
-          "venue": "CIKM 2023",
-          "year": 2023,
-          "url": "https://arxiv.org/abs/2308.10425",
-          "used_for": "Benchmark model, and the source of the one-protocol leaderboard the comparison table is checked against.",
-          "files": [
-            "backend/app/forecasting/evaluation/comparison_table.py"
-          ]
-        },
-        {
-          "key": "ansari2024chronos",
-          "type": "paper",
-          "title": "Chronos: Learning the Language of Time Series",
-          "authors": "Ansari, A. F., Stella, L., Turkmen, C., et al.",
-          "venue": "Transactions on Machine Learning Research 2024",
-          "year": 2024,
-          "url": "https://arxiv.org/abs/2403.07815",
-          "used_for": "Pretrained zero-shot univariate forecaster offered for cities with only a short recorded corridor history (Dhaka); kept pretrained, never retrained; its negative result is reported.",
-          "files": [
-            "backend/app/forecasting/adapters/chronos_adapter.py",
-            "backend/app/forecasting/adapters/registry.py"
-          ],
-          "code": "amazon-science/chronos-forecasting (pinned), weights amazon/chronos-bolt-small"
-        },
-        {
-          "key": "li2024opencity",
-          "type": "paper",
-          "title": "OpenCity: Open Spatio-Temporal Foundation Models for Traffic Prediction",
-          "authors": "Li, Z., Xia, L., Shao, Z., et al.",
-          "venue": "arXiv 2024",
-          "year": 2024,
-          "url": "https://arxiv.org/abs/2408.10269",
-          "used_for": "Cross-city foundation-model comparison; its pre-training corpus decides which cities may be called zero-shot.",
-          "files": [
-            "backend/app/forecasting/opencity/opencity_crosscity.py",
-            "backend/app/forecasting/adapters/opencity.py"
-          ],
-          "code": "HKUDS/OpenCity (pinned)"
-        },
-        {
-          "key": "chen2016xgboost",
-          "type": "paper",
-          "title": "XGBoost: A Scalable Tree Boosting System",
-          "authors": "Chen, T., Guestrin, C.",
-          "venue": "KDD 2016",
-          "year": 2016,
-          "doi": "10.1145/2939672.2939785",
-          "used_for": "Classical non-deep baseline on the same chronological split (with scikit-learn RandomForest).",
-          "files": [
-            "backend/app/forecasting/training/research_baselines.py"
-          ]
-        },
-        {
-          "key": "pedregosa2011sklearn",
-          "type": "paper",
-          "title": "Scikit-learn: Machine Learning in Python",
-          "authors": "Pedregosa, F., et al.",
-          "venue": "JMLR 12:2825–2830",
-          "year": 2011,
-          "url": "https://jmlr.org/papers/v12/pedregosa11a.html",
-          "used_for": "RandomForest baseline and metric utilities.",
-          "files": [
-            "backend/app/forecasting/training/research_baselines.py"
-          ]
-        },
-        {
-          "key": "guo2019astgcn",
-          "type": "paper",
-          "title": "Attention Based Spatial-Temporal Graph Convolutional Networks for Traffic Flow Forecasting",
-          "authors": "Guo, S., Lin, Y., Feng, N., Song, C., Wan, H.",
-          "venue": "AAAI 2019",
-          "year": 2019,
-          "doi": "10.1609/aaai.v33i01.3301922",
-          "used_for": "Provenance of the PEMS04 / PEMS08 releases used in the cross-city corpus bookkeeping.",
-          "files": [
-            "backend/app/data/city_datasets.py"
-          ]
-        },
-        {
-          "key": "meng2021cnfgnn",
-          "type": "paper",
-          "title": "Cross-Node Federated Graph Neural Network for Spatio-Temporal Data Modeling",
-          "authors": "Meng, C., Rambhatla, S., Liu, Y.",
-          "venue": "KDD 2021",
-          "year": 2021,
-          "url": "https://arxiv.org/abs/2106.05223",
-          "used_for": "Reference federated forecaster that the V2X-impairment study degrades.",
-          "files": [
-            "backend/app/forecasting/federated/federated_forecast.py"
-          ],
-          "context_only": false
-        },
-        {
-          "key": "mcmahan2017fedavg",
-          "type": "paper",
-          "title": "Communication-Efficient Learning of Deep Networks from Decentralized Data",
-          "authors": "McMahan, H. B., Moore, E., Ramage, D., Hampson, S., Agüera y Arcas, B.",
-          "venue": "AISTATS 2017",
-          "year": 2017,
-          "url": "https://arxiv.org/abs/1602.05629",
-          "used_for": "The FedAvg aggregation rule implemented in the federated forecast.",
-          "files": [
-            "backend/app/forecasting/federated/federated_forecast.py"
-          ]
-        },
-        {
-          "key": "leaderboard_context",
-          "type": "paper",
-          "title": "STGCN, MTGNN, GTS, GMAN, STNorm, PDFormer, AGCRN, HI (published METR-LA / PEMS-BAY numbers)",
-          "authors": "various",
-          "venue": "as re-run under one protocol by STAEformer (Liu et al., CIKM 2023, Table 1)",
-          "year": 2023,
-          "url": "https://arxiv.org/abs/2308.10425",
-          "used_for": "Leaderboard context only: their published MAE values appear in the comparison table; none of these models runs here.",
-          "files": [
-            "backend/app/forecasting/evaluation/comparison_table.py"
-          ],
-          "context_only": true
-        }
-      ]
+     "key": "wu2019gwnet",
+     "type": "paper",
+     "title": "Graph WaveNet for Deep Spatial-Temporal Graph Modeling",
+     "authors": "Wu, Z., Pan, S., Long, G., Jiang, J., Zhang, C.",
+     "venue": "IJCAI 2019",
+     "year": 2019,
+     "url": "https://arxiv.org/abs/1906.00121",
+     "doi": "10.24963/ijcai.2019/264",
+     "used_for": "The canonical forecaster: 207-node METR-LA checkpoint, verified against the published MAE, drives every predictive arm of the closed loop.",
+     "files": [
+      "backend/app/forecasting/service.py",
+      "backend/app/forecasting/evaluation/benchmark_floors.py",
+      "backend/app/protocols/learned_gate.py",
+      "app.control.closed_loop"
+     ],
+     "code": "nnzhan/Graph-WaveNet (pinned in upstream/UPSTREAM_PINS.yaml); trained through BasicTS"
     },
     {
-      "id": "datasets",
-      "title": "Datasets and road data",
-      "items": [
-        {
-          "key": "metr_la",
-          "type": "dataset",
-          "title": "METR-LA — 207 loop detectors, Los Angeles, 5-minute speeds, March–June 2012",
-          "authors": "released with DCRNN (Li et al., ICLR 2018)",
-          "venue": "github.com/liyaguang/DCRNN",
-          "year": 2018,
-          "url": "https://github.com/liyaguang/DCRNN",
-          "used_for": "The only dataset the headline forecast claim rests on; the 207-node checkpoint is validated on its held-out split. Speed-only: no flow counts, so SUMO demand cannot be calibrated from it (src/pipeline/v2x/METR_LA_FLOW_NOTE.md).",
-          "files": [
-            "data/forecasting/cities/METR-LA/",
-            "backend/app/data/datasets.py",
-            "backend/app/twin/sensor_map.py"
-          ]
-        },
-        {
-          "key": "pems_bay",
-          "type": "dataset",
-          "title": "PEMS-BAY — 325 detectors, Bay Area, 5-minute speeds",
-          "authors": "released with DCRNN (Li et al., ICLR 2018)",
-          "venue": "github.com/liyaguang/DCRNN",
-          "year": 2018,
-          "url": "https://github.com/liyaguang/DCRNN",
-          "used_for": "Second benchmark city for the forecasting gate.",
-          "files": [
-            "backend/app/data/datasets.py",
-            "backend/app/forecasting/evaluation/benchmark_floors.py"
-          ]
-        },
-        {
-          "key": "utd19",
-          "type": "dataset",
-          "title": "UTD19 — Understanding traffic capacity of urban networks",
-          "authors": "Loder, A., Ambühl, L., Menendez, M., Axhausen, K. W.",
-          "venue": "Scientific Reports 9, 16283 (paper); ETH Research Collection (data)",
-          "year": 2019,
-          "doi": "10.1038/s41598-019-51539-5",
-          "data_doi": "10.3929/ethz-b-000437802",
-          "used_for": "Traffic-science foundation: flow, occupancy, accumulation, production and the macroscopic fundamental diagram carried into the platform's invariants and units.",
-          "files": [
-            "app.protocols.traffic_science",
-            "app.common.units",
-            "paper_labs/00_utd19/"
-          ]
-        },
-        {
-          "key": "osm",
-          "type": "dataset",
-          "title": "OpenStreetMap, queried through the Overpass API",
-          "authors": "OpenStreetMap contributors",
-          "venue": "ODbL 1.0",
-          "year": 2026,
-          "url": "https://www.openstreetmap.org/copyright",
-          "used_for": "Road network of every simulated city (Dhaka R1, the four Los Angeles corridors): netconvert with the OSM typemap, left-hand traffic for Dhaka.",
-          "files": [
-            "backend/app/twin/scenario_builder.py",
-            "backend/app/data/city_corridors.py",
-            "paper_labs/02_dhaka_osm/"
-          ]
-        },
-        {
-          "key": "nominatim",
-          "type": "api",
-          "title": "Nominatim geocoder (OpenStreetMap)",
-          "authors": "OpenStreetMap contributors",
-          "venue": "https://nominatim.org — usage policy: 1 request/s, attribution required",
-          "year": 2026,
-          "url": "https://operations.osmfoundation.org/policies/nominatim/",
-          "used_for": "Free-text origin and destination → coordinates for the trip analysis; falls back to the built-in place list.",
-          "files": [
-            "backend/app/routing/trip_analysis.py"
-          ]
-        },
-        {
-          "key": "dabiri2018",
-          "type": "dataset",
-          "title": "Traffic-related tweets dataset (with Dabiri & Heaslip, 'Developing a Twitter-based traffic event detection model using deep learning architectures', ESWA 2019)",
-          "authors": "Dabiri, S., Heaslip, K.",
-          "venue": "Mendeley Data, CC BY 4.0",
-          "year": 2018,
-          "doi": "10.17632/c3xvj5snvv.1",
-          "paper_doi": "10.1016/j.eswa.2018.10.017",
-          "used_for": "Training data for the incident / congestion text classifier (off the canonical closed-loop path).",
-          "files": [
-            "backend/app/nlp/get_data.py",
-            "backend/app/nlp/train_classifier.py"
-          ]
-        }
-      ]
+     "key": "li2018dcrnn",
+     "type": "paper",
+     "title": "Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting",
+     "authors": "Li, Y., Yu, R., Shahabi, C., Liu, Y.",
+     "venue": "ICLR 2018",
+     "year": 2018,
+     "url": "https://arxiv.org/abs/1707.01926",
+     "used_for": "Source of the METR-LA and PEMS-BAY releases, the Gaussian-kernel sensor graph, the chronological 70/10/20 split and the published Historical-Average floors.",
+     "files": [
+      "app.twin.sensor_graph",
+      "backend/app/data/datasets.py",
+      "backend/app/forecasting/evaluation/benchmark_floors.py"
+     ],
+     "code": "liyaguang/DCRNN (pinned)"
     },
     {
-      "id": "networking",
-      "title": "B · Networking and V2X",
-      "items": [
-        {
-          "key": "schrab2022mosaic",
-          "type": "paper",
-          "title": "Modeling an ITS Management Solution for Smart Highways with Eclipse MOSAIC",
-          "authors": "Schrab, K., Protzmann, R., Radusch, I.",
-          "venue": "IEEE Access 10:82007–82019",
-          "year": 2022,
-          "doi": "10.1109/ACCESS.2022.3193765",
-          "used_for": "Eclipse MOSAIC 25.2 is the only empirical grounding of the V2X latency and loss profiles: the official Barnim example was reproduced and its ITS-G5 latency distribution feeds the `mosaic` channel profile; the Dhaka R1 penetration sweep (DENM tx/rx, delivery ratio) runs in MOSAIC.",
-          "files": [
-            "src/pipeline/networking/",
-            "backend/app/networking/channel.py",
-            "app.networking.v2x_bus"
-          ],
-          "code": "eclipse-mosaic/mosaic 25.2 @005fa1f3 (EPL-2.0)"
-        },
-        {
-          "key": "etsi_en302663",
-          "type": "standard",
-          "title": "ETSI EN 302 663 — Intelligent Transport Systems (ITS); ITS-G5 Access layer specification for Intelligent Transport Systems operating in the 5 GHz frequency band",
-          "authors": "ETSI",
-          "venue": "ETSI standard",
-          "year": 2020,
-          "url": "https://www.etsi.org/deliver/etsi_en/302600_302699/302663/",
-          "used_for": "The ITS-G5 access layer that MOSAIC's ad-hoc (SNS) channel model represents; every latency number labelled ITS-G5 in this project inherits that model, not a radio measurement.",
-          "files": [
-            "src/pipeline/networking/README.md",
-            "backend/app/networking/channel.py"
-          ]
-        },
-        {
-          "key": "etsi_en302637_2",
-          "type": "standard",
-          "title": "ETSI EN 302 637-2 — ITS; Vehicular Communications; Basic Set of Applications; Part 2: Specification of Cooperative Awareness Basic Service (CAM)",
-          "authors": "ETSI",
-          "venue": "ETSI standard",
-          "year": 2019,
-          "url": "https://www.etsi.org/deliver/etsi_en/302600_302699/30263702/",
-          "used_for": "The periodic vehicle status uplink (VEHICLE_STATUS every 10 s) is the project's simplified analogue of the CAM service.",
-          "files": [
-            "app.control.closed_loop"
-          ]
-        },
-        {
-          "key": "etsi_en302637_3",
-          "type": "standard",
-          "title": "ETSI EN 302 637-3 — ITS; Vehicular Communications; Basic Set of Applications; Part 3: Specifications of Decentralized Environmental Notification Basic Service (DENM)",
-          "authors": "ETSI",
-          "venue": "ETSI standard",
-          "year": 2019,
-          "url": "https://www.etsi.org/deliver/etsi_en/302600_302699/30263703/",
-          "used_for": "The hazard broadcast (DENM, 1 Hz re-broadcast, geocast radius) in the MOSAIC penetration sweep; ROUTE_RECOMMENDATION with a TTL follows the same expiry idea.",
-          "files": [
-            "backend/app/networking/mosaic/penetration_sweep.py",
-            "backend/app/networking/mosaic/latency_injection.py"
-          ]
-        },
-        {
-          "key": "simulated_channel",
-          "type": "software",
-          "title": "Simulated V2X channel (this project)",
-          "authors": "TrafficTwin",
-          "venue": "deterministic emulator: latency, jitter, loss, TTL, penetration by seeded hash",
-          "year": 2026,
-          "used_for": "Explicitly a SIMULATED V2X EMULATOR, not radio hardware and not a 5G / DSRC stack; profiles ideal, mosaic, lat100…lat5000, loss05…loss20, degraded.",
-          "files": [
-            "backend/app/networking/channel.py",
-            "research/networking/channel_sweep.py"
-          ]
-        }
-      ]
+     "key": "shao2024basicts",
+     "type": "paper",
+     "title": "Exploring Progress in Multivariate Time Series Forecasting: Comprehensive Benchmarking and Heterogeneity Analysis",
+     "authors": "Shao, Z., Wang, F., Xu, Y., et al.",
+     "venue": "IEEE TKDE 2024",
+     "year": 2024,
+     "url": "https://arxiv.org/abs/2310.06119",
+     "used_for": "BasicTS is the training and evaluation harness for Graph WaveNet, DCRNN, STID and STAEformer; no per-model training loop is written in this repository.",
+     "files": [
+      "app.forecasting.training.basicts_adapter",
+      "backend/app/forecasting/training/basicts_train.py",
+      "backend/app/forecasting/configs/benchmark.yaml"
+     ],
+     "code": "GestaltCogTeam/BasicTS (two pins)"
     },
     {
-      "id": "simulation",
-      "title": "C · Traffic simulation and control (digital twin)",
-      "items": [
-        {
-          "key": "lopez2018sumo",
-          "type": "paper",
-          "title": "Microscopic Traffic Simulation using SUMO",
-          "authors": "Alvarez Lopez, P., Behrisch, M., Bieker-Walz, L., Erdmann, J., Flötteröd, Y.-P., Hilbrich, R., Lücken, L., Rummel, J., Wagner, P., Wießner, E.",
-          "venue": "IEEE ITSC 2018",
-          "year": 2018,
-          "doi": "10.1109/ITSC.2018.8569938",
-          "used_for": "Eclipse SUMO 1.27.1 is the simulator behind every outcome number; TraCI (setRoute, setMaxSpeed, saveState/loadState with --save-state.rng) is the only actuation path; duarouter, randomTrips, netconvert and sumolib are its tools.",
-          "files": [
-            "backend/app/twin/",
-            "app.control.closed_loop",
-            "backend/app/protocols/oracle_gate.py",
-            "backend/app/routing/local_router.py"
-          ],
-          "code": "eclipse-sumo/sumo v1_27_1 (pip eclipse-sumo==1.27.1, EPL-2.0)"
-        },
-        {
-          "key": "bieker2014bologna",
-          "type": "paper",
-          "title": "Traffic Simulation for All: A Real World Traffic Scenario from the City of Bologna",
-          "authors": "Bieker, L., Krajzewicz, D., Morra, A., Michelacci, C., Cartolano, F.",
-          "venue": "Modeling Mobility with Open Data, Springer",
-          "year": 2015,
-          "doi": "10.1007/978-3-319-15024-6_4",
-          "used_for": "Official SUMO scenario run unmodified as the Lab-01 baseline; source of the warm-up lesson in the control benchmark config.",
-          "files": [
-            "paper_labs/01_sumo_foundation/",
-            "backend/app/signals/configs/benchmark.yaml"
-          ]
-        },
-        {
-          "key": "kusic2023geneva",
-          "type": "paper",
-          "title": "A digital twin in transportation: Real-time synergy of traffic data streams and simulation for virtualizing motorway dynamics",
-          "authors": "Kušić, K., Schumann, R., Ivanjko, E.",
-          "venue": "Advanced Engineering Informatics 55, 101858",
-          "year": 2023,
-          "doi": "10.1016/j.aei.2022.101858",
-          "used_for": "Method pattern for synchronising a SUMO twin from measured counts (calibrator-based dynamic demand).",
-          "files": [
-            "app.twin.scenario_sync"
-          ],
-          "code": "SiLab-group/DigitalTwin_GenevaMotorway @5d2f6c2 (GPL-3.0)"
-        },
-        {
-          "key": "boeing2025osmnx",
-          "type": "paper",
-          "title": "Modeling and Analyzing Urban Networks and Amenities with OSMnx",
-          "authors": "Boeing, G.",
-          "venue": "Geographical Analysis 57(4):567–577",
-          "year": 2025,
-          "doi": "10.1111/gean.70009",
-          "used_for": "Cross-validation of the netconvert road graph against an independent OSM extraction (Lab 02).",
-          "files": [
-            "paper_labs/02_dhaka_osm/"
-          ]
-        },
-        {
-          "key": "varaiya2013maxpressure",
-          "type": "paper",
-          "title": "Max pressure control of a network of signalized intersections",
-          "authors": "Varaiya, P.",
-          "venue": "Transportation Research Part C 36:177–195",
-          "year": 2013,
-          "doi": "10.1016/j.trc.2013.08.014",
-          "used_for": "Classical signal-control baseline in the control benchmark.",
-          "files": [
-            "app.signals.signal_baselines"
-          ]
-        },
-        {
-          "key": "bpr1964",
-          "type": "report",
-          "title": "Traffic Assignment Manual",
-          "authors": "Bureau of Public Roads, U.S. Department of Commerce",
-          "venue": "Washington, D.C.",
-          "year": 1964,
-          "used_for": "The BPR volume-delay function whose alpha/beta coefficients price background load in the generalized route cost.",
-          "files": [
-            "backend/app/routing/route_optimizer.py",
-            "backend/app/routing/network_assignment.py"
-          ]
-        },
-        {
-          "key": "yu2022mappo",
-          "type": "paper",
-          "title": "The Surprising Effectiveness of PPO in Cooperative Multi-Agent Games",
-          "authors": "Yu, C., Velu, A., Vinitsky, E., Gao, J., Wang, Y., Bayen, A., Wu, Y.",
-          "venue": "NeurIPS 2022 Datasets and Benchmarks",
-          "year": 2022,
-          "url": "https://arxiv.org/abs/2103.01955",
-          "used_for": "MAPPO signal-control arms of the control benchmark (pinned official code).",
-          "files": [
-            "src/pipeline/adapters/control/"
-          ],
-          "code": "marlbenchmark/on-policy (pinned)"
-        },
-        {
-          "key": "urb2025",
-          "type": "paper",
-          "title": "URB: Urban Routing Benchmark for RL-equipped Connected Autonomous Vehicles",
-          "authors": "Psarou, A., et al.",
-          "venue": "NeurIPS 2025 Datasets and Benchmarks",
-          "year": 2025,
-          "url": "https://arxiv.org/abs/2505.17734",
-          "used_for": "Routing benchmark challenger pinned for the control gate.",
-          "files": [
-            "backend/app/routing/configs/benchmark.yaml"
-          ],
-          "code": "pinned in upstream/UPSTREAM_PINS.yaml"
-        }
-      ]
+     "key": "shao2022stid",
+     "type": "paper",
+     "title": "Spatial-Temporal Identity: A Simple yet Effective Baseline for Multivariate Time Series Forecasting",
+     "authors": "Shao, Z., Zhang, Z., Wang, F., Wei, W., Xu, Y.",
+     "venue": "CIKM 2022",
+     "year": 2022,
+     "url": "https://arxiv.org/abs/2208.05233",
+     "used_for": "Benchmark model run under the same protocol (Phase-1 gate G3).",
+     "files": [
+      "backend/app/forecasting/training/basicts_train.py",
+      "backend/app/forecasting/evaluation/comparison_table.py"
+     ]
     },
     {
-      "id": "statistics",
-      "title": "Experimental protocol and statistics",
-      "items": [
-        {
-          "key": "student1908",
-          "type": "paper",
-          "title": "The Probable Error of a Mean",
-          "authors": "Student (W. S. Gosset)",
-          "venue": "Biometrika 6(1):1–25",
-          "year": 1908,
-          "doi": "10.1093/biomet/6.1.1",
-          "used_for": "The paired-seed 95 % confidence interval on percentage change in vehicle-hours uses the t critical value for n−1 degrees of freedom (table hard-coded for n = 2…13).",
-          "files": [
-            "backend/app/protocols/oracle_gate.py"
-          ]
-        },
-        {
-          "key": "efron1993bootstrap",
-          "type": "book",
-          "title": "An Introduction to the Bootstrap",
-          "authors": "Efron, B., Tibshirani, R. J.",
-          "venue": "Chapman & Hall/CRC",
-          "year": 1993,
-          "doi": "10.1201/9780429246593",
-          "used_for": "Percentile bootstrap (10 000 resamples over seeds) as the alternate interval on the mean per-arm change.",
-          "files": [
-            "backend/app/protocols/statistics.py"
-          ]
-        },
-        {
-          "key": "wilcoxon1945",
-          "type": "paper",
-          "title": "Individual Comparisons by Ranking Methods",
-          "authors": "Wilcoxon, F.",
-          "venue": "Biometrics Bulletin 1(6):80–83",
-          "year": 1945,
-          "doi": "10.2307/3001968",
-          "used_for": "Two-sided signed-rank test on paired seeds (with the honest note that n = 3 gives a minimum p of 0.25, so the interval is the informative statistic).",
-          "files": [
-            "backend/app/protocols/statistics.py"
-          ]
-        },
-        {
-          "key": "virtanen2020scipy",
-          "type": "paper",
-          "title": "SciPy 1.0: fundamental algorithms for scientific computing in Python",
-          "authors": "Virtanen, P., et al.",
-          "venue": "Nature Methods 17:261–272",
-          "year": 2020,
-          "doi": "10.1038/s41592-019-0686-2",
-          "used_for": "scipy.stats implementation of the signed-rank test.",
-          "files": [
-            "backend/app/protocols/statistics.py"
-          ]
-        },
-        {
-          "key": "harris2020numpy",
-          "type": "paper",
-          "title": "Array programming with NumPy",
-          "authors": "Harris, C. R., et al.",
-          "venue": "Nature 585:357–362",
-          "year": 2020,
-          "doi": "10.1038/s41586-020-2649-2",
-          "used_for": "All numerics.",
-          "files": [
-            "requirements.txt"
-          ]
-        },
-        {
-          "key": "paszke2019pytorch",
-          "type": "paper",
-          "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
-          "authors": "Paszke, A., et al.",
-          "venue": "NeurIPS 2019",
-          "year": 2019,
-          "url": "https://arxiv.org/abs/1912.01703",
-          "used_for": "Model training and inference for every deep forecaster.",
-          "files": [
-            "requirements.txt",
-            "backend/app/forecasting/"
-          ]
-        }
-      ]
+     "key": "liu2023staeformer",
+     "type": "paper",
+     "title": "STAEformer: Spatio-Temporal Adaptive Embedding Makes Vanilla Transformer SOTA for Traffic Forecasting",
+     "authors": "Liu, H., Dong, Z., Jiang, R., et al.",
+     "venue": "CIKM 2023",
+     "year": 2023,
+     "url": "https://arxiv.org/abs/2308.10425",
+     "used_for": "Benchmark model, and the source of the one-protocol leaderboard the comparison table is checked against.",
+     "files": [
+      "backend/app/forecasting/evaluation/comparison_table.py"
+     ]
     },
     {
-      "id": "platform",
-      "title": "Web application and external services",
-      "items": [
-        {
-          "key": "google_routes",
-          "type": "api",
-          "title": "Google Maps Platform — Routes API (computeRoutes, TRAFFIC_AWARE_OPTIMAL)",
-          "authors": "Google",
-          "venue": "https://developers.google.com/maps/documentation/routes",
-          "year": 2026,
-          "url": "https://developers.google.com/maps/documentation/routes",
-          "used_for": "External LIVE reference travel time for the trip analysis when a key is configured. Never ground truth, never a training or validation target; recorded corridor states are replayed (labelled RECORDED) when the key is absent or denied.",
-          "files": [
-            "backend/app/data/live_providers/google_routes.py",
-            "backend/app/routing/trip_analysis.py"
-          ]
-        },
-        {
-          "key": "maplibre",
-          "type": "software",
-          "title": "MapLibre GL JS 4.7.1",
-          "authors": "MapLibre contributors",
-          "venue": "BSD-3-Clause",
-          "year": 2024,
-          "url": "https://maplibre.org/",
-          "used_for": "All map rendering in the web application.",
-          "files": [
-            "frontend/index.html",
-            "frontend/src/pages/prediction.js",
-            "frontend/src/pages/control_room.js"
-          ]
-        },
-        {
-          "key": "esri_tiles",
-          "type": "software",
-          "title": "Esri World Street Map tiles (ArcGIS Online)",
-          "authors": "Esri",
-          "venue": "basemap tiles, attribution required",
-          "year": 2026,
-          "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
-          "used_for": "Background tiles behind the traffic layers.",
-          "files": [
-            "frontend/src/services/basemap.js",
-            "backend/app/api/routes/platform/system.py"
-          ]
-        },
-        {
-          "key": "fastapi",
-          "type": "software",
-          "title": "FastAPI / Uvicorn",
-          "authors": "Ramírez, S.; Encode",
-          "venue": "MIT",
-          "year": 2026,
-          "url": "https://fastapi.tiangolo.com/",
-          "used_for": "The API server that serves the application and every evidence endpoint.",
-          "files": [
-            "backend/app/main.py",
-            "backend/app/api/"
-          ]
-        }
-      ]
+     "key": "ansari2024chronos",
+     "type": "paper",
+     "title": "Chronos: Learning the Language of Time Series",
+     "authors": "Ansari, A. F., Stella, L., Turkmen, C., et al.",
+     "venue": "Transactions on Machine Learning Research 2024",
+     "year": 2024,
+     "url": "https://arxiv.org/abs/2403.07815",
+     "used_for": "Pretrained zero-shot univariate forecaster offered for cities with only a short recorded corridor history (Dhaka); kept pretrained, never retrained; its negative result is reported.",
+     "files": [
+      "backend/app/forecasting/adapters/chronos_adapter.py",
+      "backend/app/forecasting/adapters/registry.py"
+     ],
+     "code": "amazon-science/chronos-forecasting (pinned), weights amazon/chronos-bolt-small"
+    },
+    {
+     "key": "li2024opencity",
+     "type": "paper",
+     "title": "OpenCity: Open Spatio-Temporal Foundation Models for Traffic Prediction",
+     "authors": "Li, Z., Xia, L., Shao, Z., et al.",
+     "venue": "arXiv 2024",
+     "year": 2024,
+     "url": "https://arxiv.org/abs/2408.10269",
+     "used_for": "Cross-city foundation-model comparison; its pre-training corpus decides which cities may be called zero-shot.",
+     "files": [
+      "backend/app/forecasting/opencity/opencity_crosscity.py",
+      "backend/app/forecasting/adapters/opencity.py"
+     ],
+     "code": "HKUDS/OpenCity (pinned)"
+    },
+    {
+     "key": "chen2016xgboost",
+     "type": "paper",
+     "title": "XGBoost: A Scalable Tree Boosting System",
+     "authors": "Chen, T., Guestrin, C.",
+     "venue": "KDD 2016",
+     "year": 2016,
+     "doi": "10.1145/2939672.2939785",
+     "used_for": "Classical non-deep baseline on the same chronological split (with scikit-learn RandomForest).",
+     "files": [
+      "backend/app/forecasting/training/research_baselines.py"
+     ]
+    },
+    {
+     "key": "pedregosa2011sklearn",
+     "type": "paper",
+     "title": "Scikit-learn: Machine Learning in Python",
+     "authors": "Pedregosa, F., et al.",
+     "venue": "JMLR 12:2825–2830",
+     "year": 2011,
+     "url": "https://jmlr.org/papers/v12/pedregosa11a.html",
+     "used_for": "RandomForest baseline and metric utilities.",
+     "files": [
+      "backend/app/forecasting/training/research_baselines.py"
+     ]
+    },
+    {
+     "key": "guo2019astgcn",
+     "type": "paper",
+     "title": "Attention Based Spatial-Temporal Graph Convolutional Networks for Traffic Flow Forecasting",
+     "authors": "Guo, S., Lin, Y., Feng, N., Song, C., Wan, H.",
+     "venue": "AAAI 2019",
+     "year": 2019,
+     "doi": "10.1609/aaai.v33i01.3301922",
+     "used_for": "Provenance of the PEMS04 / PEMS08 releases used in the cross-city corpus bookkeeping.",
+     "files": [
+      "backend/app/data/city_datasets.py"
+     ]
+    },
+    {
+     "key": "meng2021cnfgnn",
+     "type": "paper",
+     "title": "Cross-Node Federated Graph Neural Network for Spatio-Temporal Data Modeling",
+     "authors": "Meng, C., Rambhatla, S., Liu, Y.",
+     "venue": "KDD 2021",
+     "year": 2021,
+     "url": "https://arxiv.org/abs/2106.05223",
+     "used_for": "Reference federated forecaster that the V2X-impairment study degrades.",
+     "files": [
+      "backend/app/forecasting/federated/federated_forecast.py"
+     ],
+     "context_only": false
+    },
+    {
+     "key": "mcmahan2017fedavg",
+     "type": "paper",
+     "title": "Communication-Efficient Learning of Deep Networks from Decentralized Data",
+     "authors": "McMahan, H. B., Moore, E., Ramage, D., Hampson, S., Agüera y Arcas, B.",
+     "venue": "AISTATS 2017",
+     "year": 2017,
+     "url": "https://arxiv.org/abs/1602.05629",
+     "used_for": "The FedAvg aggregation rule implemented in the federated forecast.",
+     "files": [
+      "backend/app/forecasting/federated/federated_forecast.py"
+     ]
+    },
+    {
+     "key": "leaderboard_context",
+     "type": "paper",
+     "title": "STGCN, MTGNN, GTS, GMAN, STNorm, PDFormer, AGCRN, HI (published METR-LA / PEMS-BAY numbers)",
+     "authors": "various",
+     "venue": "as re-run under one protocol by STAEformer (Liu et al., CIKM 2023, Table 1)",
+     "year": 2023,
+     "url": "https://arxiv.org/abs/2308.10425",
+     "used_for": "Leaderboard context only: their published MAE values appear in the comparison table; none of these models runs here.",
+     "files": [
+      "backend/app/forecasting/evaluation/comparison_table.py"
+     ],
+     "context_only": true
     }
-  ]
+   ]
+  },
+  {
+   "id": "datasets",
+   "title": "Datasets and road data",
+   "items": [
+    {
+     "key": "metr_la",
+     "type": "dataset",
+     "title": "METR-LA — 207 loop detectors, Los Angeles, 5-minute speeds, March–June 2012",
+     "authors": "released with DCRNN (Li et al., ICLR 2018)",
+     "venue": "github.com/liyaguang/DCRNN",
+     "year": 2018,
+     "url": "https://github.com/liyaguang/DCRNN",
+     "used_for": "The only dataset the headline forecast claim rests on; the 207-node checkpoint is validated on its held-out split. Speed-only: no flow counts, so SUMO demand cannot be calibrated from it (src/pipeline/v2x/METR_LA_FLOW_NOTE.md).",
+     "files": [
+      "data/forecasting/cities/METR-LA/",
+      "backend/app/data/datasets.py",
+      "backend/app/twin/sensor_map.py"
+     ]
+    },
+    {
+     "key": "pems_bay",
+     "type": "dataset",
+     "title": "PEMS-BAY — 325 detectors, Bay Area, 5-minute speeds",
+     "authors": "released with DCRNN (Li et al., ICLR 2018)",
+     "venue": "github.com/liyaguang/DCRNN",
+     "year": 2018,
+     "url": "https://github.com/liyaguang/DCRNN",
+     "used_for": "Second benchmark city for the forecasting gate.",
+     "files": [
+      "backend/app/data/datasets.py",
+      "backend/app/forecasting/evaluation/benchmark_floors.py"
+     ]
+    },
+    {
+     "key": "utd19",
+     "type": "dataset",
+     "title": "UTD19 — Understanding traffic capacity of urban networks",
+     "authors": "Loder, A., Ambühl, L., Menendez, M., Axhausen, K. W.",
+     "venue": "Scientific Reports 9, 16283 (paper); ETH Research Collection (data)",
+     "year": 2019,
+     "doi": "10.1038/s41598-019-51539-5",
+     "data_doi": "10.3929/ethz-b-000437802",
+     "used_for": "Traffic-science foundation: flow, occupancy, accumulation, production and the macroscopic fundamental diagram carried into the platform's invariants and units.",
+     "files": [
+      "app.protocols.traffic_science",
+      "app.common.units",
+      "paper_labs/00_utd19/"
+     ]
+    },
+    {
+     "key": "osm",
+     "type": "dataset",
+     "title": "OpenStreetMap, queried through the Overpass API",
+     "authors": "OpenStreetMap contributors",
+     "venue": "ODbL 1.0",
+     "year": 2026,
+     "url": "https://www.openstreetmap.org/copyright",
+     "used_for": "Road network of every simulated city (Dhaka R1, the four Los Angeles corridors): netconvert with the OSM typemap, left-hand traffic for Dhaka.",
+     "files": [
+      "backend/app/twin/scenario_builder.py",
+      "backend/app/data/city_corridors.py",
+      "paper_labs/02_dhaka_osm/"
+     ]
+    },
+    {
+     "key": "nominatim",
+     "type": "api",
+     "title": "Nominatim geocoder (OpenStreetMap)",
+     "authors": "OpenStreetMap contributors",
+     "venue": "https://nominatim.org — usage policy: 1 request/s, attribution required",
+     "year": 2026,
+     "url": "https://operations.osmfoundation.org/policies/nominatim/",
+     "used_for": "Free-text origin and destination → coordinates for the trip analysis; falls back to the built-in place list.",
+     "files": [
+      "backend/app/routing/trip_analysis.py"
+     ]
+    },
+    {
+     "key": "dabiri2018",
+     "type": "dataset",
+     "title": "Traffic-related tweets dataset (with Dabiri & Heaslip, 'Developing a Twitter-based traffic event detection model using deep learning architectures', ESWA 2019)",
+     "authors": "Dabiri, S., Heaslip, K.",
+     "venue": "Mendeley Data, CC BY 4.0",
+     "year": 2018,
+     "doi": "10.17632/c3xvj5snvv.1",
+     "paper_doi": "10.1016/j.eswa.2018.10.017",
+     "used_for": "Training data for the incident / congestion text classifier (off the canonical closed-loop path).",
+     "files": [
+      "backend/app/nlp/get_data.py",
+      "backend/app/nlp/train_classifier.py"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "networking",
+   "title": "B · Networking and V2X",
+   "items": [
+    {
+     "key": "schrab2022mosaic",
+     "type": "paper",
+     "title": "Modeling an ITS Management Solution for Smart Highways with Eclipse MOSAIC",
+     "authors": "Schrab, K., Protzmann, R., Radusch, I.",
+     "venue": "IEEE Access 10:82007–82019",
+     "year": 2022,
+     "doi": "10.1109/ACCESS.2022.3193765",
+     "used_for": "Eclipse MOSAIC 25.2 is the only empirical grounding of the V2X latency and loss profiles: the official Barnim example was reproduced and its ITS-G5 latency distribution feeds the `mosaic` channel profile; the Dhaka R1 penetration sweep (DENM tx/rx, delivery ratio) runs in MOSAIC.",
+     "files": [
+      "src/pipeline/networking/",
+      "backend/app/networking/channel.py",
+      "app.networking.v2x_bus"
+     ],
+     "code": "eclipse-mosaic/mosaic 25.2 @005fa1f3 (EPL-2.0)"
+    },
+    {
+     "key": "etsi_en302663",
+     "type": "standard",
+     "title": "ETSI EN 302 663 — Intelligent Transport Systems (ITS); ITS-G5 Access layer specification for Intelligent Transport Systems operating in the 5 GHz frequency band",
+     "authors": "ETSI",
+     "venue": "ETSI standard",
+     "year": 2020,
+     "url": "https://www.etsi.org/deliver/etsi_en/302600_302699/302663/",
+     "used_for": "The ITS-G5 access layer that MOSAIC's ad-hoc (SNS) channel model represents; every latency number labelled ITS-G5 in this project inherits that model, not a radio measurement.",
+     "files": [
+      "src/pipeline/networking/README.md",
+      "backend/app/networking/channel.py"
+     ]
+    },
+    {
+     "key": "etsi_en302637_2",
+     "type": "standard",
+     "title": "ETSI EN 302 637-2 — ITS; Vehicular Communications; Basic Set of Applications; Part 2: Specification of Cooperative Awareness Basic Service (CAM)",
+     "authors": "ETSI",
+     "venue": "ETSI standard",
+     "year": 2019,
+     "url": "https://www.etsi.org/deliver/etsi_en/302600_302699/30263702/",
+     "used_for": "The periodic vehicle status uplink (VEHICLE_STATUS every 10 s) is the project's simplified analogue of the CAM service.",
+     "files": [
+      "app.control.closed_loop"
+     ]
+    },
+    {
+     "key": "etsi_en302637_3",
+     "type": "standard",
+     "title": "ETSI EN 302 637-3 — ITS; Vehicular Communications; Basic Set of Applications; Part 3: Specifications of Decentralized Environmental Notification Basic Service (DENM)",
+     "authors": "ETSI",
+     "venue": "ETSI standard",
+     "year": 2019,
+     "url": "https://www.etsi.org/deliver/etsi_en/302600_302699/30263703/",
+     "used_for": "The hazard broadcast (DENM, 1 Hz re-broadcast, geocast radius) in the MOSAIC penetration sweep; ROUTE_RECOMMENDATION with a TTL follows the same expiry idea.",
+     "files": [
+      "backend/app/networking/mosaic/penetration_sweep.py",
+      "backend/app/networking/mosaic/latency_injection.py"
+     ]
+    },
+    {
+     "key": "simulated_channel",
+     "type": "software",
+     "title": "Simulated V2X channel (this project)",
+     "authors": "TrafficTwin",
+     "venue": "deterministic emulator: latency, jitter, loss, TTL, penetration by seeded hash",
+     "year": 2026,
+     "used_for": "Explicitly a SIMULATED V2X EMULATOR, not radio hardware and not a 5G / DSRC stack; profiles ideal, mosaic, lat100…lat5000, loss05…loss20, degraded.",
+     "files": [
+      "backend/app/networking/channel.py",
+      "research/networking/channel_sweep.py"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "simulation",
+   "title": "C · Traffic simulation and control (digital twin)",
+   "items": [
+    {
+     "key": "lopez2018sumo",
+     "type": "paper",
+     "title": "Microscopic Traffic Simulation using SUMO",
+     "authors": "Alvarez Lopez, P., Behrisch, M., Bieker-Walz, L., Erdmann, J., Flötteröd, Y.-P., Hilbrich, R., Lücken, L., Rummel, J., Wagner, P., Wießner, E.",
+     "venue": "IEEE ITSC 2018",
+     "year": 2018,
+     "doi": "10.1109/ITSC.2018.8569938",
+     "used_for": "Eclipse SUMO 1.27.1 is the simulator behind every outcome number; TraCI (setRoute, setMaxSpeed, saveState/loadState with --save-state.rng) is the only actuation path; duarouter, randomTrips, netconvert and sumolib are its tools.",
+     "files": [
+      "backend/app/twin/",
+      "app.control.closed_loop",
+      "backend/app/protocols/oracle_gate.py",
+      "backend/app/routing/local_router.py"
+     ],
+     "code": "eclipse-sumo/sumo v1_27_1 (pip eclipse-sumo==1.27.1, EPL-2.0)"
+    },
+    {
+     "key": "bieker2014bologna",
+     "type": "paper",
+     "title": "Traffic Simulation for All: A Real World Traffic Scenario from the City of Bologna",
+     "authors": "Bieker, L., Krajzewicz, D., Morra, A., Michelacci, C., Cartolano, F.",
+     "venue": "Modeling Mobility with Open Data, Springer",
+     "year": 2015,
+     "doi": "10.1007/978-3-319-15024-6_4",
+     "used_for": "Official SUMO scenario run unmodified as the Lab-01 baseline; source of the warm-up lesson in the control benchmark config.",
+     "files": [
+      "paper_labs/01_sumo_foundation/",
+      "backend/app/signals/configs/benchmark.yaml"
+     ]
+    },
+    {
+     "key": "kusic2023geneva",
+     "type": "paper",
+     "title": "A digital twin in transportation: Real-time synergy of traffic data streams and simulation for virtualizing motorway dynamics",
+     "authors": "Kušić, K., Schumann, R., Ivanjko, E.",
+     "venue": "Advanced Engineering Informatics 55, 101858",
+     "year": 2023,
+     "doi": "10.1016/j.aei.2022.101858",
+     "used_for": "Method pattern for synchronising a SUMO twin from measured counts (calibrator-based dynamic demand).",
+     "files": [
+      "app.twin.scenario_sync"
+     ],
+     "code": "SiLab-group/DigitalTwin_GenevaMotorway @5d2f6c2 (GPL-3.0)"
+    },
+    {
+     "key": "boeing2025osmnx",
+     "type": "paper",
+     "title": "Modeling and Analyzing Urban Networks and Amenities with OSMnx",
+     "authors": "Boeing, G.",
+     "venue": "Geographical Analysis 57(4):567–577",
+     "year": 2025,
+     "doi": "10.1111/gean.70009",
+     "used_for": "Cross-validation of the netconvert road graph against an independent OSM extraction (Lab 02).",
+     "files": [
+      "paper_labs/02_dhaka_osm/"
+     ]
+    },
+    {
+     "key": "varaiya2013maxpressure",
+     "type": "paper",
+     "title": "Max pressure control of a network of signalized intersections",
+     "authors": "Varaiya, P.",
+     "venue": "Transportation Research Part C 36:177–195",
+     "year": 2013,
+     "doi": "10.1016/j.trc.2013.08.014",
+     "used_for": "Classical signal-control baseline in the control benchmark.",
+     "files": [
+      "app.signals.signal_baselines"
+     ]
+    },
+    {
+     "key": "bpr1964",
+     "type": "report",
+     "title": "Traffic Assignment Manual",
+     "authors": "Bureau of Public Roads, U.S. Department of Commerce",
+     "venue": "Washington, D.C.",
+     "year": 1964,
+     "used_for": "The BPR volume-delay function whose alpha/beta coefficients price background load in the generalized route cost.",
+     "files": [
+      "backend/app/routing/route_optimizer.py",
+      "backend/app/routing/network_assignment.py"
+     ]
+    },
+    {
+     "key": "yu2022mappo",
+     "type": "paper",
+     "title": "The Surprising Effectiveness of PPO in Cooperative Multi-Agent Games",
+     "authors": "Yu, C., Velu, A., Vinitsky, E., Gao, J., Wang, Y., Bayen, A., Wu, Y.",
+     "venue": "NeurIPS 2022 Datasets and Benchmarks",
+     "year": 2022,
+     "url": "https://arxiv.org/abs/2103.01955",
+     "used_for": "MAPPO signal-control arms of the control benchmark (pinned official code).",
+     "files": [
+      "src/pipeline/adapters/control/"
+     ],
+     "code": "marlbenchmark/on-policy (pinned)"
+    },
+    {
+     "key": "urb2025",
+     "type": "paper",
+     "title": "URB: Urban Routing Benchmark for RL-equipped Connected Autonomous Vehicles",
+     "authors": "Psarou, A., et al.",
+     "venue": "NeurIPS 2025 Datasets and Benchmarks",
+     "year": 2025,
+     "url": "https://arxiv.org/abs/2505.17734",
+     "used_for": "Routing benchmark challenger pinned for the control gate.",
+     "files": [
+      "backend/app/routing/configs/benchmark.yaml"
+     ],
+     "code": "pinned in upstream/UPSTREAM_PINS.yaml"
+    }
+   ]
+  },
+  {
+   "id": "statistics",
+   "title": "Experimental protocol and statistics",
+   "items": [
+    {
+     "key": "student1908",
+     "type": "paper",
+     "title": "The Probable Error of a Mean",
+     "authors": "Student (W. S. Gosset)",
+     "venue": "Biometrika 6(1):1–25",
+     "year": 1908,
+     "doi": "10.1093/biomet/6.1.1",
+     "used_for": "The paired-seed 95 % confidence interval on percentage change in vehicle-hours uses the t critical value for n−1 degrees of freedom (table hard-coded for n = 2…13).",
+     "files": [
+      "backend/app/protocols/oracle_gate.py"
+     ]
+    },
+    {
+     "key": "efron1993bootstrap",
+     "type": "book",
+     "title": "An Introduction to the Bootstrap",
+     "authors": "Efron, B., Tibshirani, R. J.",
+     "venue": "Chapman & Hall/CRC",
+     "year": 1993,
+     "doi": "10.1201/9780429246593",
+     "used_for": "Percentile bootstrap (10 000 resamples over seeds) as the alternate interval on the mean per-arm change.",
+     "files": [
+      "backend/app/protocols/statistics.py"
+     ]
+    },
+    {
+     "key": "wilcoxon1945",
+     "type": "paper",
+     "title": "Individual Comparisons by Ranking Methods",
+     "authors": "Wilcoxon, F.",
+     "venue": "Biometrics Bulletin 1(6):80–83",
+     "year": 1945,
+     "doi": "10.2307/3001968",
+     "used_for": "Two-sided signed-rank test on paired seeds (with the honest note that n = 3 gives a minimum p of 0.25, so the interval is the informative statistic).",
+     "files": [
+      "backend/app/protocols/statistics.py"
+     ]
+    },
+    {
+     "key": "virtanen2020scipy",
+     "type": "paper",
+     "title": "SciPy 1.0: fundamental algorithms for scientific computing in Python",
+     "authors": "Virtanen, P., et al.",
+     "venue": "Nature Methods 17:261–272",
+     "year": 2020,
+     "doi": "10.1038/s41592-019-0686-2",
+     "used_for": "scipy.stats implementation of the signed-rank test.",
+     "files": [
+      "backend/app/protocols/statistics.py"
+     ]
+    },
+    {
+     "key": "harris2020numpy",
+     "type": "paper",
+     "title": "Array programming with NumPy",
+     "authors": "Harris, C. R., et al.",
+     "venue": "Nature 585:357–362",
+     "year": 2020,
+     "doi": "10.1038/s41586-020-2649-2",
+     "used_for": "All numerics.",
+     "files": [
+      "requirements.txt"
+     ]
+    },
+    {
+     "key": "paszke2019pytorch",
+     "type": "paper",
+     "title": "PyTorch: An Imperative Style, High-Performance Deep Learning Library",
+     "authors": "Paszke, A., et al.",
+     "venue": "NeurIPS 2019",
+     "year": 2019,
+     "url": "https://arxiv.org/abs/1912.01703",
+     "used_for": "Model training and inference for every deep forecaster.",
+     "files": [
+      "requirements.txt",
+      "backend/app/forecasting/"
+     ]
+    }
+   ]
+  },
+  {
+   "id": "platform",
+   "title": "Web application and external services",
+   "items": [
+    {
+     "key": "amazon_location",
+     "type": "api",
+     "title": "Amazon Location Service — Routes API (CalculateRoutes, HERE road and traffic data)",
+     "authors": "Amazon Web Services; road and traffic data by HERE Technologies",
+     "venue": "https://docs.aws.amazon.com/location/latest/developerguide/routes.html",
+     "year": 2026,
+     "url": "https://docs.aws.amazon.com/location/latest/developerguide/routes.html",
+     "used_for": "The live road provider for any city: candidate routes with geometry, free-flow (best-case) and traffic-aware times per road span, and live incidents. Reports whether the city has traffic coverage; where it has none the recorded corridor bands carry the congestion. Never a training or validation target.",
+     "files": [
+      "backend/app/data/live_providers/amazon_location.py",
+      "backend/app/data/live_providers/live.py",
+      "backend/app/routing/trip/routes.py",
+      "backend/app/commute/service.py"
+     ]
+    },
+    {
+     "key": "osm_overpass",
+     "type": "dataset",
+     "title": "OpenStreetMap and the Overpass API (public transport routes, stations, road network)",
+     "authors": "OpenStreetMap contributors (ODbL)",
+     "venue": "https://www.openstreetmap.org · https://overpass-api.de",
+     "year": 2026,
+     "url": "https://wiki.openstreetmap.org/wiki/Overpass_API",
+     "used_for": "Road networks for the SUMO twin (osmWebWizard) and, at request time, the rail and metro routes and stations of a city for multimodal planning; the operator schedule (headway, hours) is read from OSM tags where mapped and otherwise from the operator's published timetable, stated on screen.",
+     "files": [
+      "backend/app/transit/osm.py",
+      "backend/app/twin/scenario_builder.py"
+     ]
+    },
+    {
+     "key": "google_routes",
+     "type": "api",
+     "title": "Google Maps Platform — Routes API (computeRoutes, TRAFFIC_AWARE_OPTIMAL)",
+     "authors": "Google",
+     "venue": "https://developers.google.com/maps/documentation/routes",
+     "year": 2026,
+     "url": "https://developers.google.com/maps/documentation/routes",
+     "used_for": "External LIVE reference travel time for the trip analysis when a key is configured. Never ground truth, never a training or validation target; recorded corridor states are replayed (labelled RECORDED) when the key is absent or denied.",
+     "files": [
+      "backend/app/data/live_providers/google_routes.py",
+      "backend/app/routing/trip_analysis.py"
+     ]
+    },
+    {
+     "key": "maplibre",
+     "type": "software",
+     "title": "MapLibre GL JS 4.7.1",
+     "authors": "MapLibre contributors",
+     "venue": "BSD-3-Clause",
+     "year": 2024,
+     "url": "https://maplibre.org/",
+     "used_for": "All map rendering in the web application.",
+     "files": [
+      "frontend/index.html",
+      "frontend/src/pages/prediction.js",
+      "frontend/src/pages/control_room.js"
+     ]
+    },
+    {
+     "key": "esri_tiles",
+     "type": "software",
+     "title": "Esri World Street Map tiles (ArcGIS Online)",
+     "authors": "Esri",
+     "venue": "basemap tiles, attribution required",
+     "year": 2026,
+     "url": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer",
+     "used_for": "Background tiles behind the traffic layers.",
+     "files": [
+      "frontend/src/services/basemap.js",
+      "backend/app/api/routes/platform/system.py"
+     ]
+    },
+    {
+     "key": "fastapi",
+     "type": "software",
+     "title": "FastAPI / Uvicorn",
+     "authors": "Ramírez, S.; Encode",
+     "venue": "MIT",
+     "year": 2026,
+     "url": "https://fastapi.tiangolo.com/",
+     "used_for": "The API server that serves the application and every evidence endpoint.",
+     "files": [
+      "backend/app/main.py",
+      "backend/app/api/"
+     ]
+    }
+   ]
+  }
+ ]
 }

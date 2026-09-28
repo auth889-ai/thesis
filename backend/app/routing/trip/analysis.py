@@ -16,6 +16,8 @@ from . import places
 from .corridors import accuracy, corridor_polylines, levels_from_speeds, observatory_fill, usable
 from .geometry import HORIZONS
 from .pricing import bbox_of, decide, layers_for, price_routes
+from app.data.live_providers import live
+
 from .routes import fetch_routes
 
 
@@ -49,10 +51,11 @@ def forecast_for(city: str, cid: str | None, model_req: str | None, observe: dic
         # a city being observed: its own corridors, its own live history, the same forecast
         # interface — persistence from the first sample, Chronos from the eighth
         from app.data.live_providers import observatory as obs_mod
-        from app.data.live_providers.google_routes import service
+        from app.data.live_providers import live
         from app.forecasting.adapters.registry import forecast as run_forecast
         cd_city = obs_mod.observatory.city_data(cid)
-        corr = service.corridors_for(cid)
+        service = live.provider()
+        corr = service.corridors_for(cid) if service else corr
         fc = run_forecast(cd_city, HORIZONS, model_req)
         f = fc.get("forecast") or {}
         fc["input"] = cd_city.describe()
@@ -146,8 +149,9 @@ def _run(job: str, p: dict, emit, city: str, run) -> dict:
         "decision": {"recommended": best_pred["key"], "saving_s": max(0, saving), "reason": reason,
                      "basis": "forecast-derived future edge costs on the observed corridors"},
         "routes": cards, "layers": layers_for(corr, axes, pred, dhaka or forecastable), "retrieved_at": routes.get("retrieved_at"),
-        "source": {"traffic": ("Google Routes API, TRAFFIC_AWARE_OPTIMAL (live)" if routes.get("source") == "google_routes" else f"local SUMO router on the frozen Dhaka OSM network · {traffic_basis}"),
-                   "traffic_basis": traffic_basis, "is_live": routes.get("source") == "google_routes", "routing": routes.get("source"), "forecast": fc.get("input", {})},
+        "source": {"traffic": live.traffic_words(routes, traffic_basis), "traffic_basis": traffic_basis, "is_live": bool(routes.get("is_live")),
+                   "traffic_coverage": bool(routes.get("traffic_coverage")), "routing": routes.get("source"), "forecast": fc.get("input", {}),
+                   "incidents": [i for r in routes.get("routes", [])[:3] for i in (r.get("incidents") or [])]},
     }
     run.stage("Preparing result", emit)
     run.set(postprocessed_prediction_hash=pv.sha_json([c["forecast"] for c in cards]), recommended=best_pred["key"])

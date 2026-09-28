@@ -8,10 +8,11 @@ const risk = (p?: {covered: boolean; risk: string}) => (!p?.covered ? ["live est
 export function provenanceWords(r: TripResult): string {
   const basis = r.source.traffic_basis ?? "";
   const when = (basis.match(/as of (\S+)/)?.[1] ?? "").replace("T", " ").slice(0, 16);
-  const traffic = r.source.is_live ? "live traffic from the provider" : basis.startsWith("RECORDED") ? `the last recorded traffic (${when})` : "free-flow times (no recorded traffic for this city yet)";
+  const provider = r.source.routing === "amazon_location" ? "Amazon Location (HERE road data)" : r.source.routing === "google_routes" ? "Google Routes" : "the city's own road network";
+  const traffic = r.source.is_live && r.source.traffic_coverage ? `live traffic from ${provider}` : basis.startsWith("RECORDED") ? `the last recorded traffic (${when}) on real roads from ${provider}` : "free-flow times (no live traffic coverage and no recorded traffic for this city yet)";
   const fd = r.forecast_decision ?? {};
   const forecast = r.forecastable ? `forecast by ${fd.label ?? fd.model ?? "the validated model"}` : "no forecast for this city yet, routes ranked on current traffic";
-  return `Based on ${traffic}, routed on the city's own road network, ${forecast}.`;
+  return `Based on ${traffic}, ${forecast}.`;
 }
 
 /** Every candidate route: ETA now, ETA at departure, congestion, and why one is recommended. */

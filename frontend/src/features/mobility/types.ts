@@ -20,7 +20,7 @@ export type TripResult = {
   forecast: {eta_s: number; risk: string; covered: boolean; model: string | null};
   decision: {recommended: string; saving_s: number; reason: string; basis?: string};
   routes: Route[];
-  source: {traffic: string; traffic_basis?: string; is_live: boolean; routing: string};
+  source: {traffic: string; traffic_basis?: string; is_live: boolean; traffic_coverage?: boolean; routing: string | null; incidents?: {type?: string; severity?: string; description?: string}[]};
   forecast_decision?: {model?: string; label?: string; status?: string; why?: string};
   routing_policy?: {policy?: string};
   provenance?: Record<string, string>;
