@@ -398,7 +398,7 @@ def main() -> int:
         "basicts_clock_convention": "period_steps=bins_per_seed: tod = fraction of the "
                                     "simulated window, day = seed index",
         "files_sha256": {str(p.relative_to(out)): sha256_file(p) for p in files},
-        "generator": "-m", "traffictwin.data.make_twin_dataset",
+        "generator": "python -m traffictwin.data.make_twin_dataset",
         "args": vars(a) | {"net": str(a.net), "pulse": str(a.pulse), "out": str(a.out)},
     })
     (out / "MANIFEST.json").write_text(json.dumps(m, indent=2))

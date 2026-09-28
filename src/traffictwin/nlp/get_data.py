@@ -358,7 +358,7 @@ def main() -> int:
         manifest = build_seed_fallback("--seed-only")
     manifest["labels"] = LABELS
     manifest["dhaka_seed"] = seed_info
-    manifest["created_by"] = "-m", "traffictwin.nlp.get_data"
+    manifest["created_by"] = "python -m traffictwin.nlp.get_data"
     (DATA / "MANIFEST.json").write_text(json.dumps(manifest, indent=2, ensure_ascii=False))
     print(f"[get_data] source = {manifest['source']}")
     for k, v in manifest["splits"].items():
