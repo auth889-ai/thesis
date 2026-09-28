@@ -1,6 +1,8 @@
 """TrafficTwin — application assembly only. Run from the repository root with `make app`."""
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from starlette.exceptions import HTTPException
 from fastapi.responses import FileResponse
@@ -9,13 +11,21 @@ from fastapi.staticfiles import StaticFiles
 from app import config, middleware
 from app.router import api_router
 
-app = FastAPI(title="TrafficTwin", version="1.0.0", docs_url=config.API_DOCS_URL,
+@asynccontextmanager
+async def _lifespan(_app: FastAPI):
+    """Startup work, then the MCP session manager for as long as the API runs."""
+    from app.mcp import server as mcp_server
+    _startup()
+    async with mcp_server.lifespan():
+        yield
+
+
+app = FastAPI(title="TrafficTwin", version="1.0.0", docs_url=config.API_DOCS_URL, lifespan=_lifespan,
               description="Traffic prediction (ML/DL), route optimization, SUMO simulation and V2X networking — for any city.")
 app.include_router(api_router)
 middleware.install(app)
 
 
-@app.on_event("startup")
 def _startup() -> None:
     """Re-attach training jobs; start the live corridor observatory and the forecast ledger unless disabled (tests)."""
     from app.forecasting.operations import training_jobs
@@ -33,6 +43,10 @@ def _startup() -> None:
     except Exception:                                   # noqa: BLE001 - never block startup
         pass
 
+
+from starlette.routing import Route                                                    # noqa: E402
+from app.mcp import server as _mcp                                                    # noqa: E402
+app.router.routes.append(Route("/mcp", _mcp.endpoint, methods=["GET", "POST", "DELETE"], name="mcp"))   # MCP over Streamable HTTP (Alexa+ and other agents)
 
 if config.FRONTEND.exists():
     if config.MEDIA.exists():
