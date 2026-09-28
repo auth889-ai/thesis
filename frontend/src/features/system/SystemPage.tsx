@@ -6,7 +6,7 @@ import {api} from "@/lib/api";
 import {AssistantLab} from "./AssistantLab";
 import "./system.css";
 
-const FLOW = ["REAL DATA", "GRAPH WAVENET", "FUTURE STATE", "OPTIMIZER", "SIMULATED V2X EMULATOR", "SUMO ACTION", "OUTCOME"];
+const FLOW = ["DATA: sensors · recorded corridors · live roads · OSM transit", "FORECAST: Graph WaveNet / STID, validated, gated", "ADVICE: routes · leave-when · rail option", "TWIN: SUMO + simulated V2X, oracle-first protocol", "PEOPLE: app · assistant · Alexa+ (MCP)"];
 const okStatus = (t: string) => /PASSED|ESTABLISHED/.test(t) && !/NOT/.test(t);
 
 /** SYSTEM: the research question, the pipeline, and the computed status read from frozen evidence. */
@@ -15,6 +15,17 @@ export function SystemPage() {
   return (
     <div className="stack sys">
       <div className="sys-flow">{FLOW.map((x, i) => <span key={x}>{x}{i < FLOW.length - 1 && <b aria-hidden="true">→</b>}</span>)}</div>
+      <Card title="What is ours" sub="new in this project; everything else is reused unchanged and cited on the References page">
+        <ul className="rs-list">
+          <li><b>Oracle-first protocol</b>: perfect information must beat reactive routing before any learned model is tested; a shuffled forecast is the negative control; paired confidence intervals over unseen days.</li>
+          <li><b>Closed-loop V2X digital twin</b>: forecast → edge costs → optimizer → simulated channel (latency, loss, expiry, 30 % penetration) → SUMO reroute, from saved-state forks, with hash-chained provenance per round.</li>
+          <li><b>Stress calibration rule</b> deciding when a scenario is congested enough for advice to matter (TTI ≥ 1.3, standing jams, ≤ 1 % lost vehicles).</li>
+          <li><b>Departure-time recommender</b>: empirical on-time probability from recorded time-of-day corridor distributions; a routing layer that says when a city has no live traffic coverage.</li>
+          <li><b>Routing-eligibility gate</b>: a model drives advice only after held-out validation on that city's own data.</li>
+          <li><b>Assistant permission engine and audit chain</b>, exposed to Alexa+ through MCP.</li>
+        </ul>
+        <p className="muted small">The full workflow with a diagram: <code>docs/WORKFLOW.md</code>.</p>
+      </Card>
       <Card title="Research question">
         <p>Can predicted future traffic, communicated through a V2X system, improve routing compared with reactive traffic management?</p>
         <p className="muted">Canonical experiment: real METR-LA detector observations and a verified Graph WaveNet checkpoint are mapped into a frozen OSM/SUMO scenario. Baseline, reactive, and oracle information arms start from the same saved state. Learned routing is only admissible after the oracle gate passes. <Link to="/control-room">Open the Control Room</Link> · <Link to="/results">see the Results</Link>.</p>
