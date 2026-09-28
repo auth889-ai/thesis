@@ -8,7 +8,7 @@ SEEDS ?= 11,12,13,14,15
 H     ?= 1800
 
 .DEFAULT_GOAL := help
-.PHONY: help status test web-install web-dev web-build web-test app canonical canonical-package backtest chain ablation coverage sweep sweep-v2x opencity-smoke opencity figures results all clean-runs
+.PHONY: help status test openapi mobile-install mobile-start web-install web-dev web-build web-test app canonical canonical-package backtest chain ablation coverage sweep sweep-v2x opencity-smoke opencity figures results all clean-runs
 
 help:            ## list targets
 	@grep -E '^[a-z-]+:.*##' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  make %-12s %s\n", $$1, $$2}'
@@ -18,6 +18,15 @@ status:          ## what exists, what is real, what is missing
 
 test:            ## the test suite: pipeline + backend API (~1 min, no SUMO, no live API)
 	$(PY) -m pytest -q
+
+openapi:         ## export the API's OpenAPI document for the web and mobile clients
+	$(PY) -c "from app.main import app; import json; json.dump(app.openapi(), open('frontend/openapi.json','w'), indent=1)"
+
+mobile-install:  ## install the mobile toolchain (Expo)
+	cd mobile && npm install --no-audit --no-fund
+
+mobile-start:    ## Expo dev server (scan the QR with Expo Go; set expo.extra.apiUrl in mobile/app.json to this machine's LAN address)
+	cd mobile && npm start
 
 web-install:     ## install the web toolchain (Vite, Vitest, TypeScript, OpenAPI client generator)
 	cd frontend && npm install --no-audit --no-fund

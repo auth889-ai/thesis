@@ -17,7 +17,8 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # Runtime packages share src/; web applications and experiment entry points are separate.
 REQUIRED_TOP_LEVEL = [
     "backend",       # the application, organised by domain (backend/app/<domain>/...)
-    "frontend",      # the browser app
+    "frontend",      # the browser app (Vite, Vitest, TypeScript)
+    "mobile",        # the mobile app (Expo / React Native, TypeScript) on the same API
     "research",      # protocol runners, report builders, notebooks
     "tests",         # cross-cutting platform tests (domain tests live in backend/tests)
     "docs", "data", "results", "infra", "scripts", "upstream",

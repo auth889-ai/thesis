@@ -22,7 +22,8 @@ backend/
     interfaces/  common/  nlp/  tools/
   tests/                       grouped like the code (rebuild/, forecasting/, city/, federated/, live/, API tests)
   pyproject.toml  requirements.txt  README.md
-frontend/                      browser app: index.html, app.js, pages/, components/, services/, styles/, tests/
+frontend/                      web app (Vite, Vitest, TypeScript): index.html, src/{app.js, pages/, components/, services/, styles/}, dist/ when built
+mobile/                        mobile app (Expo / React Native, TypeScript): App.tsx, src/api/client.ts — same API as the web app
 research/                      protocol runners: closed_loop/ routing/ networking/ · reports/ (results builders) · notebooks/
 infra/                         api.Dockerfile, docker-compose.yml, service.yaml
 scripts/  docs/  data/  results/  tests/platform/  upstream/

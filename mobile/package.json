@@ -1,0 +1,27 @@
+{
+  "name": "traffictwin-mobile",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "dependencies": {
+    "expo": "~57.0.25",
+    "expo-status-bar": "~57.0.1",
+    "react": "19.2.3",
+    "react-native": "0.86.3",
+    "expo-constants": "~57.0.19"
+  },
+  "devDependencies": {
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo start --android",
+    "ios": "expo start --ios",
+    "web": "expo start --web",
+    "typecheck": "tsc --noEmit",
+    "api:types": "cp ../frontend/src/services/api.types.d.ts src/api/types.d.ts",
+    "test": "tsc --noEmit"
+  },
+  "private": true,
+  "description": "TrafficTwin mobile app (Expo / React Native, TypeScript) \u2014 the same product as the web app on the same API"
+}
