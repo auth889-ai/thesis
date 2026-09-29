@@ -37,10 +37,12 @@ def test_life_twin_flags_an_infeasible_gap_and_finds_free_windows(user, monkeypa
     cal.upsert(user, {"uid": "a", "title": "Interview", "start_utc": t1.isoformat(), "end_utc": t2.isoformat(), "location": "Banani"}, "t")
     cal.upsert(user, {"uid": "b", "title": "Class", "start_utc": (t2 + timedelta(minutes=30)).isoformat(), "end_utc": (t2 + timedelta(minutes=90)).isoformat(), "location": "Shahbagh"}, "t")
     from app.commute import service
-    monkeypatch.setattr(service, "plan", lambda city, o, d, arrive_by, **kw: {"recommended": {"depart_utc": (arrive_by - timedelta(minutes=50)).isoformat(), "route": "A", "on_time_probability": 0.85, "expected_s": 2820}, "provenance": {}})
+    monkeypatch.setattr(service, "plan", lambda city, o, d, arrive_by, **kw: {"recommended": {"depart_utc": (arrive_by - timedelta(minutes=50)).isoformat(), "depart_local": "x", "route": "A", "on_time_probability": 0.85, "expected_s": 2820},
+                                                                          "departures": [{"depart_utc": (arrive_by - timedelta(minutes=m)).isoformat(), "expected_s": 2820, "on_time_probability": 0.85 if m >= 50 else 0.3, "best_route": "A"} for m in range(60, 0, -5)], "provenance": {}})
+    monkeypatch.setattr(life_twin, "WAKING", (0, 24))                 # the test must pass at any hour of the day
     s = life_twin.snapshot(user, 24)
     leg = next(c for c in s["feasibility"] if c["from"] == "Interview")
-    assert leg["feasible"] is False and leg["gap_min"] == 30 and leg["needed_min"] == 47 and "does not fit" in s["verdict"]
+    assert leg["grade"] == "impossible" and leg["feasible"] is False and leg["gap_min"] == 30 and leg["needed_min"] == 47 and leg["buffer_min"] == 20 and "does not fit" in s["verdict"]
     assert s["free_windows"] and s["free_windows"][0]["minutes"] >= 30 and len(s["departures"]) == 2
 
 

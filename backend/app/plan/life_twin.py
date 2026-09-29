@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from app.agent import memory, store
 from app.calendar import store as cal
 from app.plan import day, outcomes
+from app.plan import feasibility as feas
 
 WAKING = (6, 23)             # local hours in which a gap counts as free time
 MIN_FREE_MIN = 30
@@ -32,20 +33,8 @@ def free_windows(events: list[dict], now: datetime, hours: float) -> list[dict]:
 
 
 def feasibility(user_id: str, events: list[dict]) -> list[dict]:
-    """For every consecutive pair of placed commitments: the gap, the journey the planner expects, and whether it fits."""
-    placed = [e for e in events if e["location"] and not e["all_day"]]
-    checks = []
-    for prev, nxt in zip(placed, placed[1:]):
-        gap_min = (_dt(nxt["start_utc"]) - _dt(prev["end_utc"])).total_seconds() / 60
-        d = day.departure_for(user_id, prev["location"], nxt["location"], _dt(nxt["start_utc"]), f"leg:{prev['id']}-{nxt['id']}", nxt["title"])
-        if d["status"] != "OK":
-            checks.append({"from": prev["title"], "to": nxt["title"], "gap_min": round(gap_min), "needed_min": None, "feasible": None, "note": d["status"]})
-            continue
-        needed = round(d["expected_s"] / 60)
-        ok = _dt(d["depart_utc"]) >= _dt(prev["end_utc"])
-        checks.append({"from": prev["title"], "to": nxt["title"], "gap_min": round(gap_min), "needed_min": needed, "depart_local": d["depart_local"], "on_time_probability": d["on_time_probability"], "feasible": ok,
-                       "note": ("fits" if ok else f"only {round(gap_min)} min between them but the journey needs about {needed} min to arrive with {round((d['on_time_probability'] or 0) * 100)} % confidence")})
-    return checks
+    """Each gap between placed commitments graded feasible / risky / impossible / unknown (plan/feasibility.py)."""
+    return feas.assess(user_id, events)
 
 
 def snapshot(user_id: str, hours: float = 48.0) -> dict:
@@ -59,4 +48,4 @@ def snapshot(user_id: str, hours: float = 48.0) -> dict:
             "departures": day.departures(user_id, hours, now), "free_windows": free_windows(events, now, hours),
             "routines": store.list_commutes(user_id), "preferences": [m["text"] for m in memory.list_all(user_id)][:12],
             "calibration": outcomes.calibration(user_id), "feasibility": checks,
-            "verdict": ("no placed commitments to check" if not checks else "this schedule can work" if all(c["feasible"] for c in checks if c["feasible"] is not None) else "this schedule does not fit as it stands")}
+            "verdict": feas.verdict(checks)}
