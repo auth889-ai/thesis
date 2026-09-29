@@ -1,7 +1,10 @@
 import {useEffect, useState} from "react";
 import {useSearchParams} from "react-router-dom";
 
+import {useQuery} from "@tanstack/react-query";
+
 import {Prose} from "@/components/Prose";
+import {api} from "@/lib/api";
 import {Button, ErrorNote, Pill} from "@/components/ui";
 import {GoalCard} from "./GoalCard";
 import {useGoal, useStartGoal, useSubmitGoal} from "./hooks";
@@ -40,12 +43,25 @@ export function GoalChat({selected, onSelect}: {selected: string | null; onSelec
   );
 }
 
+type Compiled = {commitment: {title: string; type: string; start: string | null; deadline: string; location: {name: string} | null; requirements: string[]; flexibility: string} | null; path: string; confidence: number; missing: string[]};
+
+/** What the compiler understood as a commitment: type, when, where, what to bring, and which path read it. */
+function CommitmentLine({text}: {text: string}) {
+  const q = useQuery({queryKey: ["compile", USER_ID, text], queryFn: () => api.compile(USER_ID, text) as Promise<Compiled>, staleTime: Infinity});
+  const c = q.data?.commitment;
+  if (!q.data) return <p className="small muted">reading the commitment…</p>;
+  if (!c) return <p className="small muted">No commitment with a time in this; I will ask about: {q.data.missing.join(", ") || "the time"}.</p>;
+  const when = new Date(c.start ?? c.deadline).toLocaleString([], {weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit"});
+  return <p className="small commitment-line"><Pill tone="info">{c.type}</Pill> {c.flexibility === "anytime_before" ? "by" : "at"} <b>{when}</b>{c.location ? <> · {c.location.name}</> : null}{c.requirements.length ? <> · bring {c.requirements.join(", ")}</> : null}{q.data.missing.length ? <span className="muted"> · missing: {q.data.missing.join(", ")}</span> : null} <span className="muted">· read by {q.data.path === "rules" ? "rules" : "the model"}</span></p>;
+}
+
 function Proposal({g, busy, onStart}: {g: Goal; busy: boolean; onStart: (text?: string) => void}) {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(g.text);
   const it = g.intent;
   return (
     <div className="bubble bot proposal">
+      <CommitmentLine text={g.text} />
       <p>I can help with that. Here's what I understood{it?.deadline_local ? <>, for <b>{it.deadline_local.replace("T", " ")}</b></> : null}: <Pill tone="info">{it?.goal_type ?? "goal"}</Pill></p>
       {it?.plan?.length ? <ol className="plansteps">{it.plan.map((s, i) => <li key={i}>{s}</li>)}</ol> : it?.objectives?.length ? <ol className="plansteps">{it.objectives.map((s, i) => <li key={i}>{s}</li>)}</ol> : null}
       {it?.missing?.length ? <p className="small muted">I will ask you about: {it.missing.join(", ")}.</p> : null}

@@ -24,6 +24,7 @@ Authoritative state: the thirteen relational tables in `results/live/lifeos.sqli
 | Authoritative store and migrations | `backend/app/lifeos/db.py` (13 relational tables, foreign keys, UTC timestamps), `backend/alembic/` | `test_lifeos_core.py` | P0 | SQLite; PostgreSQL by URL, untested until P17; tool arguments and event payloads are JSON columns by nature |
 | Reads and writes | `backend/app/lifeos/repo.py` | `test_lifeos_core.py` | P0 | no pagination beyond a limit |
 | Routes and schema | `backend/app/lifeos/router.py` (`/api/lifeos/*`) | `test_lifeos_core.py` | P0 | no authentication until accounts (block D/F) |
+| Commitment compiler: text → Commitment (rules path: spaCy, dateparser, rapidfuzz; model path: Bedrock validated by the contract) | `backend/app/lifeos/compiler/{rules,model,service,router}.py`, `POST /api/lifeos/compile` | `test_compiler.py`; `evaluate.py` → `results/lifeos/compiler.json` | P1 | English rules only; Bangla and free prose need the model; "next Friday" follows the next-week convention |
 | Person profile (zone, city, home, target) | `backend/app/profile/` | `test_profile.py` | pre-plan | to be folded into `Person` |
 | Feasibility grades and conflicts | `backend/app/plan/{feasibility,conflicts}.py` | `test_feasibility.py`, `test_conflicts.py` | pre-plan | reads the commute planner, not `TravelEdge`; replaced by P3 |
 | Departure probability | `backend/app/commute/service.py` | `test_commute*.py` | pre-plan | real only where recorded Dhaka corridor bands exist; replaced by P9–P10 |

@@ -25,7 +25,7 @@ unless a permissive licence and a clean interface make a dependency the better c
 Repositories without a licence file grant no rights to copy: they are read for their method and used only for
 benchmark comparison or through a licensed re-implementation (STAEformer is available inside BasicTS under Apache-2.0).
 
-## Mini-reports (Phase 1)
+## Mini-reports (agent core, earlier Phase 1)
 
 ### tahodev/openmuse
 
@@ -143,4 +143,39 @@ What will remain uniquely ours?
 
 How will it be cited?
   docs/references.json (key copilotkit2026openmuse); docs/life_os_pins.json.
+```
+
+## Mini-reports (P1 commitment compiler)
+
+### dateparser 1.4.3 (BSD-3)
+
+```text
+What problem does it solve?      natural-language dates in 200 languages, relative to a base instant and a zone.
+Files / functions that matter    dateparser.parse(text, settings={RELATIVE_BASE, TIMEZONE, RETURN_AS_TIMEZONE_AWARE, PREFER_DATES_FROM}, languages=[...]); dateparser.search.search_dates.
+Official example reproduced      parse("Friday 10 AM"), ("tomorrow at 9"), ("in 2 hours"), ("2 October 4pm") with RELATIVE_BASE 2026-09-30 09:00 Asia/Dhaka → all correct instants in +06:00.
+Result / limits observed         "next Monday 14:30" → None; a bare clock "6 PM" or "18:00" → None; Bangla with Bengali numerals → None; search_dates mis-read "Friday 10 AM at" as 30 October.
+What we borrow                   the day resolution for explicit dates; our own clock parser and relative-weekday rules sit in front of it (compiler/rules.py).
+Use                              [x] dependency
+```
+
+### spaCy 3.8.8, en_core_web_sm (MIT model)
+
+```text
+Official example reproduced      nlp("Interview at TechNova in Banani on Friday 10 AM, bring CV and ID").ents → TechNova FAC, Banani GPE, "Friday 10 AM" DATE, CV PERSON (wrong).
+What we borrow                   DATE/TIME spans to locate the time phrase; GPE/FAC/ORG/LOC spans as place candidates; never the PERSON label for requirements.
+Use                              [x] dependency (English only; Bangla goes to the model path)
+```
+
+### rapidfuzz 3.14.6 (MIT)
+
+```text
+Official example reproduced      process.extractOne("evercare", saved_places, scorer=fuzz.WRatio, score_cutoff=70) → "Evercare Hospital Bashundhara" 78.75; "IUT" → 90; "Shahbagh" → None.
+What we borrow                   snapping a typed place to the person's saved places at ≥ 80.
+Use                              [x] dependency
+```
+
+### OpenAI Agents SDK structured output (read only, MIT)
+
+```text
+What we borrow                   the pattern: the model fills a schema through one forced tool call and the result is validated before use. Applied to Bedrock in compiler/model.py with the Commitment contract's own fields; an answer that does not validate is dropped and the rules answer.
 ```
