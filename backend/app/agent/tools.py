@@ -31,19 +31,21 @@ class Tool:
     needs_approval: Callable[[str, dict], str | None] | None = None   # (user_id, arguments) -> why this call must be approved, or None
 
 
-def _iso(dt: str) -> str:
-    """Accept 'YYYY-MM-DDTHH:MM' with or without offset; Dhaka (+06:00) when none."""
+def _iso(dt: str, user_id: str | None = None) -> str:
+    """Accept 'YYYY-MM-DDTHH:MM' with or without offset; the person's own zone when none."""
+    from app.profile import service as profile
     d = datetime.fromisoformat(dt)
     if d.tzinfo is None:
-        d = d.replace(tzinfo=timezone(timedelta(hours=6)))
+        d = d.replace(tzinfo=profile.tz_for(user_id))
     return d.astimezone(timezone.utc).isoformat()
 
 
 # ------------------------------------------------------------------ mobility (TrafficTwin)
 def plan_commute(user_id, a, goal_id):
     from app.commute import service
-    arrive = datetime.fromisoformat(_iso(a["arrive_by"]))
-    p = service.plan(a.get("city", "dhaka"), a["origin"], a["destination"], arrive, buffer_min=int(a.get("buffer_min", 5)))
+    from app.profile import service as profile
+    arrive = datetime.fromisoformat(_iso(a["arrive_by"], user_id))
+    p = service.plan(a.get("city") or profile.city_for(user_id), a["origin"], a["destination"], arrive, buffer_min=int(a.get("buffer_min", 5)), tz=profile.tz_for(user_id), target=profile.target_for(user_id))
     rec = p["recommended"]
     return {"recommended": rec, "arrive_by_local": p["arrive_by_local"], "routes": [{"key": r["key"], "distance_m": r["distance_m"], "now_s": r["now"]["expected_s"], "at_departure_s": r["at_departure"]["expected_s"], "on_time_probability": r["at_departure"]["on_time_probability"]} for r in p["routes"]],
             "congestion_window": p["congestion_window"], "provenance": p["provenance"]}
@@ -52,7 +54,8 @@ def plan_commute(user_id, a, goal_id):
 def analyze_trip(user_id, a, goal_id):
     import time
     from app.routing import trip_analysis
-    job = trip_analysis.start({"city": a.get("city", "dhaka"), "origin": a["origin"], "destination": a["destination"], "model": a.get("model", "auto"), "horizon_min": int(a.get("horizon_min", 30))})
+    from app.profile import service as profile
+    job = trip_analysis.start({"city": a.get("city") or profile.city_for(user_id), "origin": a["origin"], "destination": a["destination"], "model": a.get("model", "auto"), "horizon_min": int(a.get("horizon_min", 30))})
     for _ in range(90):
         st = trip_analysis.status(job)
         if st.get("status") in ("done", "failed"):
@@ -110,8 +113,8 @@ def commutes_list(user_id, a, goal_id):
 S = lambda props, req: {"type": "object", "properties": props, "required": req}
 TOOLS: dict[str, Tool] = {t.name: t for t in [
     Tool("mobility.plan_commute", "Plan when to leave for a trip so as to arrive by a target time: recommended departure, on-time probability, route options now vs at departure, the day's congestion window. Times are local (Dhaka, +06:00) as 'YYYY-MM-DDTHH:MM'.",
-         S({"origin": {"type": "string"}, "destination": {"type": "string"}, "arrive_by": {"type": "string", "description": "YYYY-MM-DDTHH:MM local"}, "city": {"type": "string", "default": "dhaka"}, "buffer_min": {"type": "integer", "default": 5}}, ["origin", "destination", "arrive_by"]), RiskClass.READ, plan_commute),
-    Tool("mobility.analyze_trip", "Analyse a trip now: current travel time, the forecast at +15/30/60 min, the recommended route and why.", S({"origin": {"type": "string"}, "destination": {"type": "string"}, "city": {"type": "string", "default": "dhaka"}, "horizon_min": {"type": "integer", "default": 30}}, ["origin", "destination"]), RiskClass.READ, analyze_trip),
+         S({"origin": {"type": "string"}, "destination": {"type": "string"}, "arrive_by": {"type": "string", "description": "YYYY-MM-DDTHH:MM local"}, "city": {"type": "string", "description": "defaults to the person's city"}, "buffer_min": {"type": "integer", "default": 5}}, ["origin", "destination", "arrive_by"]), RiskClass.READ, plan_commute),
+    Tool("mobility.analyze_trip", "Analyse a trip now: current travel time, the forecast at +15/30/60 min, the recommended route and why.", S({"origin": {"type": "string"}, "destination": {"type": "string"}, "city": {"type": "string", "description": "defaults to the person's city"}, "horizon_min": {"type": "integer", "default": 30}}, ["origin", "destination"]), RiskClass.READ, analyze_trip),
     Tool("mobility.forecast_network", "The sensor network's forecast (which roads slow down next) on the Los Angeles benchmark data.", S({"dataset": {"type": "string", "default": "METR_LA"}, "horizon_min": {"type": "integer", "default": 30}}, []), RiskClass.READ, forecast_network),
     Tool("tasks.create", "Create a task for the user.", S({"title": {"type": "string"}, "due": {"type": "string", "description": "YYYY-MM-DDTHH:MM local, optional"}}, ["title"]), RiskClass.WRITE_REVERSIBLE, tasks_create),
     Tool("tasks.list", "List the user's tasks.", S({"status": {"type": "string", "enum": ["open", "done"], "default": "open"}}, []), RiskClass.READ, tasks_list),

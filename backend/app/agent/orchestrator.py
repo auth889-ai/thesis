@@ -20,7 +20,7 @@ from app.agent.models import AuditEntry, Decision, Goal, GoalStatus, Step, ToolC
 MAX_STEPS = 12
 SYSTEM = """You are TrafficTwin's assistant. You complete the user's goal by calling tools; you never invent facts, times or
 personal details. If a detail you need (a place, a time, a recipient) is neither in the goal nor in a tool result,
-call user__ask with one specific question instead of guessing. Times are local Dhaka time (+06:00) written as
+call user__ask with one specific question instead of guessing. The person lives in {city}; times are their local time ({zone}) written as
 YYYY-MM-DDTHH:MM. When the goal is complete, reply with a short plain summary of what you did and what the user
 should know (including any honesty labels the tools returned, such as 'recorded, not live'). When the person states a durable
 preference, place or constraint, keep it with memory__remember. Today is {today}.
@@ -78,8 +78,8 @@ def _execute(goal: Goal, step: Step) -> None:
 def run(goal: Goal, llm, max_steps: int = MAX_STEPS, stop=None) -> Goal:
     """Advance the goal until it is done, paused (approval / question), cancelled or failed. Safe to call again to
     resume. `stop()` is asked between steps; when it answers True the goal is cancelled where it stands."""
-    from datetime import datetime, timedelta, timezone
-    today = (datetime.now(timezone.utc) + timedelta(hours=6)).strftime("%Y-%m-%d (%A)")
+    from app.profile import service as profile
+    tz = profile.tz_for(goal.user_id); today = profile.local_clock(goal.user_id).strftime("%Y-%m-%d (%A) %H:%M"); city = profile.city_for(goal.user_id)
     goal.model = getattr(llm, "model", None); goal.status = GoalStatus.RUNNING; store.save_goal(goal)
     for _ in range(max_steps):
         if stop and stop():
@@ -93,7 +93,7 @@ def run(goal: Goal, llm, max_steps: int = MAX_STEPS, stop=None) -> Goal:
         unanswered = next((s for s in goal.steps if s.question and not s.answer), None)
         if unanswered:
             goal.status = GoalStatus.WAITING_USER; store.save_goal(goal); return goal
-        turn = llm.complete(SYSTEM.format(today=today, memory=memory.prompt_section(goal.user_id, goal.text)), _messages(goal), tools.tool_specs())
+        turn = llm.complete(SYSTEM.format(today=today, city=city, zone=str(tz), memory=memory.prompt_section(goal.user_id, goal.text)), _messages(goal), tools.tool_specs())
         goal.tokens_in += turn.tokens_in; goal.tokens_out += turn.tokens_out
         if not turn.tool_calls:
             goal.summary = turn.text or "(done)"; goal.status = GoalStatus.DONE

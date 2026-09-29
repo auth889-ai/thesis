@@ -25,7 +25,7 @@ class OutcomeRequest(BaseModel):
 
 class WhatIfRequest(BaseModel):
     user_id: str = "demo"
-    city: str = "dhaka"
+    city: str | None = Field(None, description="defaults to the person's city")
     origin: str
     destination: str
     arrive_by: str = Field(..., description="ISO-8601 with offset")

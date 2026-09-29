@@ -29,7 +29,7 @@ def _llm_or_503():
 def submit_goal(req: GoalRequest):
     """Run the goal until it finishes or pauses (approval needed, or a question for the user)."""
     llm = _llm_or_503()
-    goal = Goal(user_id=req.user_id, text=req.text, intent=intent.extract(req.text, llm)); store.save_goal(goal)
+    goal = Goal(user_id=req.user_id, text=req.text, intent=intent.extract(req.text, llm, req.user_id)); store.save_goal(goal)
     audit.write(AuditEntry(user_id=goal.user_id, goal_id=goal.id, kind="intent", detail=goal.intent))
     if not req.start:
         goal.status = GoalStatus.PROPOSED; store.save_goal(goal)
@@ -55,7 +55,7 @@ def start_goal(goal_id: str, req: StartRequest | None = None):
         raise HTTPException(409, f"goal is {g.status.value}, not proposed")
     llm = _llm_or_503()
     if req and req.text and req.text.strip() and req.text.strip() != g.text:
-        g.text = req.text.strip(); g.intent = intent.extract(g.text, llm)
+        g.text = req.text.strip(); g.intent = intent.extract(g.text, llm, g.user_id)
         audit.write(AuditEntry(user_id=g.user_id, goal_id=g.id, kind="intent", detail=g.intent))
     audit.write(AuditEntry(user_id=g.user_id, goal_id=g.id, kind="start", detail={"text": g.text}))
     return _launch(g)

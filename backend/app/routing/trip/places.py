@@ -67,6 +67,30 @@ def _nominatim(params: dict) -> list[dict]:
         return hits
 
 
+def reverse_geocode(lat: float, lng: float) -> dict:
+    """The address at a point (OpenStreetMap's reverse geocoder, same rate limit and cache as the forward one)."""
+    import time
+    import urllib.parse
+    import urllib.request
+    q = urllib.parse.urlencode({"format": "json", "lat": f"{lat:.5f}", "lon": f"{lng:.5f}", "zoom": 10, "accept-language": "en"})
+    with _GEO_LOCK:
+        if q in _GEO_CACHE:
+            return _GEO_CACHE[q][0]
+        wait = 1.05 - (time.monotonic() - _GEO_LAST[0])
+        if wait > 0:
+            time.sleep(wait)
+        req = urllib.request.Request(f"https://nominatim.openstreetmap.org/reverse?{q}", headers={"User-Agent": "traffictwin/1.0 (research)"})
+        try:
+            with urllib.request.urlopen(req, timeout=20) as r:
+                hit = json.loads(r.read().decode())
+        finally:
+            _GEO_LAST[0] = time.monotonic()
+        if "error" in hit:
+            raise LookupError(hit["error"])
+        _GEO_CACHE[q] = [hit]
+        return hit
+
+
 def city_box(city: str) -> dict | None:
     """The city itself, geocoded once: centre + bounding box, so places are searched INSIDE it."""
     key = re.sub(r"[^a-z0-9]", "", (city or "").lower())

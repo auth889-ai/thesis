@@ -26,7 +26,7 @@ Goal → Context → Life Twin → Feasibility → TrafficTwin → Plan → Perm
 | Stage | Module | State on 2026-09-29 |
 |---|---|---|
 | Goal | `agent/models.py` (`Goal`, `Step`, `ToolCall`, `GoalStatus`), `agent/store.py` (SQLite, JSON document per goal) | done; statuses proposed · planning · running · waiting_approval · waiting_user · done · failed · cancelled |
-| Context | `agent/intent.py` (structured intent by forced tool call, rules fallback), `agent/memory.py` (facts: preference / place / pattern / constraint; lexical + recency recall into the system prompt) | done |
+| Context | `profile/` (who and where: name, zone, city, home, work, target; read by every module below), `agent/intent.py` (structured intent by forced tool call, rules fallback), `agent/memory.py` (facts: preference / place / pattern / constraint; lexical + recency recall into the system prompt) | done |
 | Life Twin | `plan/life_twin.py` (snapshot: commitments, deadlines, departures, free windows, routines, preferences, calibration) | partial — Phase 3 completes it |
 | Feasibility | `plan/life_twin.feasibility` (travel between placed commitments vs the gap), `plan/whatif.py` (verdict for one departure) | partial — no risky / impossible grading, no conflicting-task detection |
 | TrafficTwin | `commute/service.py` (departure with empirical on-time probability), `routing/trip/*`, `data/live_providers/*` (Amazon Location → Google → local SUMO router), `forecasting/*`, `transit/*` | done for the app path; the research gates are in `protocols/` |
@@ -43,6 +43,7 @@ Goal → Context → Life Twin → Feasibility → TrafficTwin → Plan → Perm
 
 | Domain | Files / lines | Responsibility |
 |---|---|---|
+| `profile/` | 4 | the person's name, zone, city, places and target; deployment defaults only when absent |
 | `agent/` | 13 / 1 160 | goals, orchestrator, permissions, approvals, audit, memory, intent, tools registry, LLM adapter, router |
 | `plan/` | 8 / 534 | day timeline, Life Twin, feasibility, what-if, monitor, notifications, outcomes |
 | `calendar/` | 5 / 245 | ICS reader, events store, calendar tools, import routes |

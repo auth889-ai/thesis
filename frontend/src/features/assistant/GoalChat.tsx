@@ -4,17 +4,17 @@ import {Prose} from "@/components/Prose";
 import {Button, ErrorNote, Pill} from "@/components/ui";
 import {GoalCard} from "./GoalCard";
 import {useGoal, useStartGoal, useSubmitGoal} from "./hooks";
-import type {Goal} from "./types";
+import {useProfile, type Profile} from "@/lib/profile";
+import {USER_ID, type Goal} from "./types";
 import "./chat.css";
 
-const remembered = (k: string, d: string) => { try { return localStorage.getItem(`tt.${k}`) || d; } catch { return d; } };
-const examples = () => { const city = remembered("city", "dhaka"), from = remembered("origin", "Farmgate"), to = remembered("destination", "Shahbagh"), inCity = city === "dhaka" ? "" : ` in ${city}`; return [`I must be at ${to}${inCity} by 09:00 tomorrow from ${from}. Remind me 30 minutes before I should leave.`, `How bad will traffic be on my way from ${from} to ${to} in the next hour?`, `Add a task: submit the report on Friday 17:00, and save my daily commute ${from} → ${to} arriving 08:30.`]; };
+const examples = (p?: Profile) => { const from = p?.home || "home", to = p?.work || "work"; return [`I must be at ${to} by 09:00 tomorrow from ${from}. Remind me 30 minutes before I should leave.`, `How bad will traffic be on my way from ${from} to ${to} in the next hour?`, `Add a task: submit the report on Friday 17:00, and save my daily commute ${from} → ${to} arriving 08:30.`]; };
 
 /** Goal creation as a conversation: you write the goal; the assistant records what it understood and proposes its steps; nothing runs until you say start. */
 export function GoalChat({selected, onSelect}: {selected: string | null; onSelect: (id: string | null) => void}) {
   const [text, setText] = useState("");
   const submit = useSubmitGoal(), start = useStartGoal();
-  const goal = useGoal(selected);
+  const goal = useGoal(selected), profile = useProfile(USER_ID);
   const send = () => { const t = text.trim(); if (t.length < 3 || submit.isPending) return; setText(""); submit.mutate([t], {onSuccess: (g) => onSelect(g.id)}); };
   const g = goal.data ?? null;
   return (
@@ -27,7 +27,7 @@ export function GoalChat({selected, onSelect}: {selected: string | null; onSelec
         {g && g.status !== "proposed" && <GoalCard goal={g} busy={start.isPending} onApprove={() => {}} onAnswer={() => {}} embedded />}
         {(submit.error || start.error) && <ErrorNote error={submit.error ?? start.error} />}
       </div>
-      <div className="row examples">{examples().map((x) => <button key={x} type="button" className="chip" onClick={() => setText(x)}>{x.slice(0, 44)}…</button>)}{g && <button type="button" className="chip" onClick={() => { onSelect(null); setText(""); }}>New goal</button>}</div>
+      <div className="row examples">{examples(profile.data).map((x) => <button key={x} type="button" className="chip" onClick={() => setText(x)}>{x.slice(0, 44)}…</button>)}{g && <button type="button" className="chip" onClick={() => { onSelect(null); setText(""); }}>New goal</button>}</div>
       <div className="row composer-line">
         <textarea value={text} onChange={(e) => setText(e.target.value)} rows={2} placeholder="Message TrafficTwin…" aria-label="Goal" onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }} />
         <Button onClick={send} disabled={submit.isPending || text.trim().length < 3}>Send</Button>

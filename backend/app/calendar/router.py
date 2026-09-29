@@ -21,7 +21,8 @@ async def calendar_import(user_id: str = Form("demo"), url: str | None = Form(No
         source = "ics:" + url[:80]
     else:
         raise HTTPException(422, "give a .ics file or a url")
-    events = ics.parse(text)
+    from app.profile import service as profile
+    events = ics.parse(text, profile.tz_for(user_id))
     if not events:
         raise HTTPException(422, "no events found in that calendar")
     rows = store.import_events(user_id, events, source)

@@ -1,6 +1,8 @@
 import {useEffect, useState} from "react";
 
 import {Button, Field} from "@/components/ui";
+import {useProfile} from "@/lib/profile";
+import {USER_ID} from "@/features/assistant/types";
 import {useCities, useModels, usePlaces, type TripRequest} from "./useTripAnalysis";
 
 export type TripFields = {city: string; origin: string; destination: string; departure: string; model: string};
@@ -11,7 +13,9 @@ const localNowPlus = (min: number) => { const d = new Date(Date.now() + min * 60
 
 /** City · from · to · departure · model. The place lists come from the server for the typed city. */
 export function TripForm({onSubmit, busy, onChange}: {onSubmit: (req: TripRequest, fields: TripFields) => void; busy: boolean; onChange?: (f: TripFields) => void}) {
-  const [f, setF] = useState<TripFields>({city: remembered("city", "Dhaka"), origin: remembered("origin", "Farmgate"), destination: remembered("destination", "Shahbagh"), departure: localNowPlus(5), model: "auto"});
+  const profile = useProfile(USER_ID);
+  const [f, setF] = useState<TripFields>({city: remembered("city", ""), origin: remembered("origin", ""), destination: remembered("destination", ""), departure: localNowPlus(5), model: "auto"});
+  useEffect(() => { const p = profile.data; if (!p) return; setF((cur) => ({...cur, city: cur.city || p.city, origin: cur.origin || p.home || "", destination: cur.destination || p.work || ""})); }, [profile.data]);
   const [q, setQ] = useState("");
   const cities = useCities(), places = usePlaces(f.city, q), models = useModels(f.city);
   useEffect(() => { onChange?.(f); }, [f, onChange]);

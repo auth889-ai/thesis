@@ -34,7 +34,7 @@ LEVEL_NAME = {v: k for k, v in LEVEL.items()}
 BAND = {0: 1.08, 1: 1.33, 2: 1.75, 3: 2.50}          # the same congestion multipliers the trip analysis uses
 SLOT_MIN = 15
 SLOTS = 24 * 60 // SLOT_MIN
-LOCAL_UTC_OFFSET_H = 6                                 # Dhaka
+LOCAL_UTC_OFFSET_H = 6                                 # the recorded Dhaka corridor profiles are binned in Dhaka local time
 ON_TIME_TARGET = 0.80
 _LOCK = threading.Lock()
 
@@ -139,7 +139,9 @@ def _route_time_distribution(route: dict, slot: int) -> tuple[dict[float, float]
     return {round(static * BAND[l]): p for l, p in worst.items()}, worst_name
 
 
-def plan(city: str, origin: str, destination: str, arrive_by: datetime, buffer_min: int = 5, step_min: int = 10, now: datetime | None = None) -> dict:
+def plan(city: str, origin: str, destination: str, arrive_by: datetime, buffer_min: int = 5, step_min: int = 10, now: datetime | None = None, tz=None, target: float = ON_TIME_TARGET) -> dict:
+    """`tz` is the person's zone for the local clock strings; `target` the on-time probability they asked for."""
+    tz = tz or timezone(timedelta(hours=LOCAL_UTC_OFFSET_H))
     now = (now or datetime.now(timezone.utc)).astimezone(timezone.utc)
     arrive_by = arrive_by.astimezone(timezone.utc) if arrive_by.tzinfo else arrive_by.replace(tzinfo=timezone.utc)
     if arrive_by <= now:
@@ -158,11 +160,11 @@ def plan(city: str, origin: str, destination: str, arrive_by: datetime, buffer_m
             exp = sum(s * p for s, p in dist.items()); p_ok = sum(p for s, p in dist.items() if s <= budget)
             opts.append({"route": r_key(r, routes), "covered": True, "expected_s": round(exp), "on_time_probability": round(p_ok, 3), "worst_corridor": worst})
         best = max(opts, key=lambda x: ((x["on_time_probability"] or 0.0), -x["expected_s"]))
-        departures.append({"depart_utc": t.isoformat(), "depart_local": (t + timedelta(hours=LOCAL_UTC_OFFSET_H)).strftime("%H:%M"), "slot": slot, "budget_s": round(budget), "best_route": best["route"], "on_time_probability": best["on_time_probability"], "expected_s": best["expected_s"], "options": opts})
+        departures.append({"depart_utc": t.isoformat(), "depart_local": t.astimezone(tz).strftime("%H:%M"), "slot": slot, "budget_s": round(budget), "best_route": best["route"], "on_time_probability": best["on_time_probability"], "expected_s": best["expected_s"], "options": opts})
         t += timedelta(minutes=step_min)
     if not departures:
         raise ValueError("no departure can reach the destination before arrive_by even in free flow")
-    ok = [x for x in departures if (x["on_time_probability"] or 0) >= ON_TIME_TARGET]
+    ok = [x for x in departures if (x["on_time_probability"] or 0) >= target]
     rec = ok[-1] if ok else max(departures, key=lambda x: ((x["on_time_probability"] or 0), x["depart_utc"]))
     rec_route = next(r for r in routes if r_key(r, routes) == rec["best_route"])
     # the day's profile on the recommended route, and the congestion window in the coming 12 hours
@@ -191,7 +193,7 @@ def plan(city: str, origin: str, destination: str, arrive_by: datetime, buffer_m
             window = {"from": best["from"], "to": best["to"], "peak_level": round(best["peak_level"], 2), "threshold": threshold}
             break
     meta = _profiles()
-    return {"city": city, "origin": o, "destination": d, "arrive_by_utc": arrive_by.isoformat(), "arrive_by_local": (arrive_by + timedelta(hours=LOCAL_UTC_OFFSET_H)).strftime("%H:%M"), "now_utc": now.isoformat(), "buffer_min": buffer_min, "on_time_target": ON_TIME_TARGET,
+    return {"city": city, "origin": o, "destination": d, "arrive_by_utc": arrive_by.isoformat(), "arrive_by_local": arrive_by.astimezone(tz).strftime("%H:%M"), "now_utc": now.isoformat(), "buffer_min": buffer_min, "on_time_target": target,
             "recommended": {"depart_utc": rec["depart_utc"], "depart_local": rec["depart_local"], "route": rec["best_route"], "on_time_probability": rec["on_time_probability"], "expected_s": rec["expected_s"], "leave_in_min": round((datetime.fromisoformat(rec["depart_utc"]) - now).total_seconds() / 60)},
             "routes": [{"key": r_key(r, routes), "description": r.get("description"), "distance_m": r.get("distance_m"), "static_s": r.get("static_duration_s"), "corridors": r.get("corridors_touched") or [],
                         "now": next(x for x in departures[0]["options"] if x["route"] == r_key(r, routes)), "at_departure": next(x for x in rec["options"] if x["route"] == r_key(r, routes))} for r in routes],

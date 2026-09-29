@@ -85,7 +85,7 @@ def _recover(uid: str, d: dict, prev: dict | None) -> int:
     if any(o["ref"] == d["ref"] for o in outcomes.list_for(uid, 50)):
         return 0
     try:
-        r = whatif.recovery(uid, "dhaka", d["origin"], d["destination"], datetime.fromisoformat(d["arrive_by_utc"]))
+        r = whatif.recovery(uid, None, d["origin"], d["destination"], datetime.fromisoformat(d["arrive_by_utc"]))
     except Exception as exc:                            # noqa: BLE001 - the message still says the departure passed
         notifications.publish(uid, "recovery", f"The planned departure for {d['title']} ({d['depart_local']}) has passed and no arrival was recorded; a fresh plan could not be computed ({type(exc).__name__}).")
         return 1

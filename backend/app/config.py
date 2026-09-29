@@ -31,3 +31,5 @@ from app.evidence_paths import FRONTEND, REPO as _REPO      # noqa: E402
 MEDIA = _REPO / "docs/media"
 API_DOCS_URL = "/api/docs"
 OBSERVATORY_ENABLED = not _os.environ.get("DHAKAFLOW_NO_OBSERVATORY")     # live corridor sampling off in tests
+DEFAULT_CITY = _os.environ.get("TRAFFICTWIN_DEFAULT_CITY", "Dhaka")           # used only for a person with no profile yet
+DEFAULT_TZ = _os.environ.get("TRAFFICTWIN_DEFAULT_TZ", "Asia/Dhaka")

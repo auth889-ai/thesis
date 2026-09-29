@@ -20,12 +20,13 @@ SCHEMA = {"type": "object", "properties": {
     "needs_approval": {"type": "boolean", "description": "true if an irreversible or external action will be needed"},
     "missing": {"type": "array", "items": {"type": "string"}, "description": "facts required but not stated (a place, a time, a recipient)"}}, "required": ["goal_type", "objectives", "domains"]}
 TOOL = {"toolSpec": {"name": "intent__record", "description": "Record what the person wants before planning.", "inputSchema": {"json": SCHEMA}}}
-PROMPT = "Read the goal and record its intent with intent__record. Do not plan, do not answer; only record. Today is {today} (local time +06:00)."
+PROMPT = "Read the goal and record its intent with intent__record. Do not plan, do not answer; only record. Today is {today} in the person's zone ({zone})."
 
 
-def by_rules(text: str, now: datetime | None = None) -> dict:
+def by_rules(text: str, now: datetime | None = None, user_id: str | None = None) -> dict:
     """A conservative reading without a model: keywords for type and domains, an explicit clock time for the deadline."""
-    t = (text or "").lower(); now = now or datetime.now(timezone.utc) + timedelta(hours=6)
+    from app.profile import service as profile
+    t = (text or "").lower(); now = now or profile.local_clock(user_id)
     goal_type = next((k for k, rx in _TYPE_WORDS.items() if re.search(rx, t)), "question" if "?" in t else "other")
     domains = [d for d, rx in _DOMAIN_WORDS.items() if re.search(rx, t)] or ["question"]
     deadline = ""
@@ -41,11 +42,12 @@ def by_rules(text: str, now: datetime | None = None) -> dict:
             "needs_approval": bool(re.search(r"send|email|book|pay|delete|share", t)), "missing": missing, "source": "rules"}
 
 
-def extract(text: str, llm) -> dict:
+def extract(text: str, llm, user_id: str | None = None) -> dict:
     """The model's reading when it answers with the forced tool; the rule-based reading otherwise."""
-    today = (datetime.now(timezone.utc) + timedelta(hours=6)).strftime("%Y-%m-%d (%A)")
+    from app.profile import service as profile
+    today = profile.local_clock(user_id).strftime("%Y-%m-%d (%A)")
     try:
-        turn = llm.complete(PROMPT.format(today=today), [{"role": "user", "content": [{"text": text}]}], [TOOL], max_tokens=400)
+        turn = llm.complete(PROMPT.format(today=today, zone=str(profile.tz_for(user_id))), [{"role": "user", "content": [{"text": text}]}], [TOOL], max_tokens=400)
         call = next((c for c in turn.tool_calls if c["name"] == "intent__record"), None)
         if call:
             d = dict(call["input"]); d["source"] = getattr(llm, "model", "model") or "model"
@@ -54,4 +56,4 @@ def extract(text: str, llm) -> dict:
             return d
     except Exception:                                   # noqa: BLE001 - the rules still read it
         pass
-    return by_rules(text)
+    return by_rules(text, user_id=user_id)

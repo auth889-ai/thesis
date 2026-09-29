@@ -22,16 +22,17 @@ def _unescape(v: str) -> str:
     return v.replace("\\n", "\n").replace("\\,", ",").replace("\\;", ";").replace("\\\\", "\\").strip()
 
 
-def parse_dt(value: str, params: str) -> tuple[str, bool]:
-    """('ISO instant in UTC', all_day). Forms: 20260930T090000Z · 20260930T090000 (+TZID) · 20260930 (date only)."""
+def parse_dt(value: str, params: str, tz=None) -> tuple[str, bool]:
+    """('ISO instant in UTC', all_day). Forms: 20260930T090000Z · 20260930T090000 (+TZID) · 20260930 (date only).
+    Floating times (no zone) are read in `tz`, the person's zone."""
+    tz = tz or timezone(timedelta(hours=LOCAL_UTC_OFFSET_H))
     v = value.strip()
     if re.fullmatch(r"\d{8}", v):
-        d = datetime.strptime(v, "%Y%m%d").replace(tzinfo=timezone(timedelta(hours=LOCAL_UTC_OFFSET_H)))
+        d = datetime.strptime(v, "%Y%m%d").replace(tzinfo=tz)
         return d.astimezone(timezone.utc).isoformat(), True
     if v.endswith("Z"):
         return datetime.strptime(v, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc).isoformat(), False
     d = datetime.strptime(v[:15], "%Y%m%dT%H%M%S")
-    offset = LOCAL_UTC_OFFSET_H
     m = re.search(r"TZID=([^;:]+)", params or "")
     if m:
         try:
@@ -39,10 +40,10 @@ def parse_dt(value: str, params: str) -> tuple[str, bool]:
             return d.replace(tzinfo=ZoneInfo(m.group(1))).astimezone(timezone.utc).isoformat(), False
         except Exception:                               # noqa: BLE001 - an unknown zone name: read as local time
             pass
-    return d.replace(tzinfo=timezone(timedelta(hours=offset))).astimezone(timezone.utc).isoformat(), False
+    return d.replace(tzinfo=tz).astimezone(timezone.utc).isoformat(), False
 
 
-def parse(text: str) -> list[dict]:
+def parse(text: str, tz=None) -> list[dict]:
     """Every VEVENT as {uid, title, start_utc, end_utc, location, all_day, description}."""
     events, cur = [], None
     for line in _unfold(text):
@@ -59,9 +60,9 @@ def parse(text: str) -> list[dict]:
             name, _, params = head.partition(";")
             name = name.upper()
             if name == "DTSTART":
-                cur["start_utc"], cur["all_day"] = parse_dt(value, params)
+                cur["start_utc"], cur["all_day"] = parse_dt(value, params, tz)
             elif name == "DTEND":
-                cur["end_utc"], _ = parse_dt(value, params)
+                cur["end_utc"], _ = parse_dt(value, params, tz)
             elif name == "SUMMARY":
                 cur["title"] = _unescape(value)
             elif name == "LOCATION":

@@ -5,7 +5,7 @@ import {Button, ErrorNote} from "@/components/ui";
 const remembered = (k: string, d: string) => { try { return localStorage.getItem(`tt.${k}`) || d; } catch { return d; } };
 /** Examples use the places this person last planned with, so they read naturally in any city. */
 const examples = () => {
-  const from = remembered("origin", "Farmgate"), to = remembered("destination", "Shahbagh");
+  const from = remembered("origin", "home"), to = remembered("destination", "work");
   return [
     `I must be at ${to} by 09:00 tomorrow from ${from}. Remind me 30 minutes before I should leave.`,
     `How bad will traffic be on my way from ${from} to ${to} in the next hour?`,

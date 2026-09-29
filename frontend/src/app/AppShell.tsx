@@ -6,6 +6,8 @@ import {ErrorBoundary} from "./ErrorBoundary";
 import {Hero} from "./Hero";
 import {photoUrl} from "./photos";
 import {APP_NAV} from "./routes";
+import {useProfile} from "@/lib/profile";
+import {USER_ID} from "@/features/assistant/types";
 
 const ICONS: Record<string, string> = {"/today": "☀", "/agent": "✦", "/goals": "◎", "/activity": "≡", "/you": "◍", "/lab": "⚗"};
 
@@ -14,6 +16,7 @@ export function AppShell() {
   const {pathname} = useLocation();
   const current = APP_NAV.find((n) => pathname.startsWith(n.path)) ?? APP_NAV[0];
   const health = useQuery({queryKey: ["health"], queryFn: api.health, refetchInterval: 30_000});
+  const profile = useProfile(USER_ID);
   return (
     <div className="shell">
       <div className="sheet side">
@@ -27,7 +30,7 @@ export function AppShell() {
           <div className="status"><span className={`dot ${health.isError ? "bad" : health.data ? "ok" : ""}`} />{health.isError ? "offline" : health.data ? "live" : "connecting…"}</div>
         </aside>
         <div className="content">
-          {current.path === "/today" ? <Hero page={current} /> : <div className="page-head"><div className="eyebrow">{current.eyebrow}</div><h1>{current.title}</h1><p className="muted">{current.hint}</p></div>}
+          {current.path === "/today" && !profile.data?.exists ? <Hero page={current} /> : <div className="page-head"><div className="eyebrow">{current.eyebrow}</div><h1>{current.title}</h1><p className="muted">{current.hint}</p></div>}
           <main className="page"><ErrorBoundary><Outlet /></ErrorBoundary></main>
           <footer className="foot"><span>Every answer is computed from live data when you ask; nothing is prerecorded.</span><span>Photographs by Unsplash photographers, credited where shown.</span></footer>
         </div>

@@ -10,6 +10,7 @@ import {Updates} from "@/features/assistant/Updates";
 import {useFeed, useTwin} from "./hooks";
 import {Risks} from "./Risks";
 import {Stats} from "./Stats";
+import {Greeting, Welcome} from "./Welcome";
 import "@/features/assistant/assistant.css";
 
 const ACTIVE = new Set(["planning", "running", "waiting_approval", "waiting_user"]);
@@ -20,6 +21,8 @@ export function TodayPage() {
   const active = (goals.data?.goals ?? []).filter((g) => ACTIVE.has(g.status));
   return (
     <div className="stack today">
+      <Welcome />
+      <Greeting />
       <Stats twin={twin.data} goals={goals.data?.goals} feed={feed.data} />
       <Risks twin={twin.data} goals={goals.data?.goals} feed={feed.data} />
       <div className="grid wide">

@@ -7,21 +7,24 @@ from datetime import datetime, timedelta, timezone
 from app.agent.models import RiskClass
 from app.plan import day
 
+from app.profile import service as profile
+
 LOCAL = day.LOCAL
 
 
-def _iso_local(dt: str) -> datetime:
+def _iso_local(dt: str, tz=LOCAL) -> datetime:
     d = datetime.fromisoformat(dt)
-    return (d if d.tzinfo else d.replace(tzinfo=LOCAL)).astimezone(timezone.utc)
+    return (d if d.tzinfo else d.replace(tzinfo=tz)).astimezone(timezone.utc)
 
 
-def evaluate(city: str, origin: str, destination: str, arrive_by: datetime, depart_at: datetime, user_id: str = "demo") -> dict:
+def evaluate(city: str | None, origin: str, destination: str, arrive_by: datetime, depart_at: datetime, user_id: str = "demo") -> dict:
     """The candidate departure nearest to `depart_at`: expected arrival, on-time probability, and the best option then."""
     from app.commute import service
     from app.plan import outcomes
     from app.transit import service as transit
     from app.routing.trip.places import resolve_place
-    p = service.plan(city, origin, destination, arrive_by, step_min=5, now=min(datetime.now(timezone.utc), depart_at - timedelta(minutes=1)))
+    LOCAL = profile.tz_for(user_id); city = city or profile.city_for(user_id)
+    p = service.plan(city, origin, destination, arrive_by, step_min=5, now=min(datetime.now(timezone.utc), depart_at - timedelta(minutes=1)), tz=LOCAL, target=profile.target_for(user_id))
     factor = outcomes.calibration(user_id)["factor"]
     slot = min(p["departures"], key=lambda d: abs(datetime.fromisoformat(d["depart_utc"]) - depart_at))
     expected = round(slot["expected_s"] * factor)
@@ -57,9 +60,10 @@ def recovery(user_id: str, city: str, origin: str, destination: str, arrive_by: 
 
 
 def tool_what_if(user_id, a, goal_id):
-    return evaluate(a.get("city", "dhaka"), a["origin"], a["destination"], _iso_local(a["arrive_by"]), _iso_local(a["depart_at"]), user_id)
+    tz = profile.tz_for(user_id)
+    return evaluate(a.get("city") or profile.city_for(user_id), a["origin"], a["destination"], _iso_local(a["arrive_by"], tz), _iso_local(a["depart_at"], tz), user_id)
 
 
 TOOL_SPECS = [("mobility.what_if", "What happens if the person leaves at a given time: expected arrival, on-time probability, the rail alternative, and a verdict. Times local 'YYYY-MM-DDTHH:MM'.",
-               {"type": "object", "properties": {"origin": {"type": "string"}, "destination": {"type": "string"}, "arrive_by": {"type": "string"}, "depart_at": {"type": "string"}, "city": {"type": "string", "default": "dhaka"}}, "required": ["origin", "destination", "arrive_by", "depart_at"]},
+               {"type": "object", "properties": {"origin": {"type": "string"}, "destination": {"type": "string"}, "arrive_by": {"type": "string"}, "depart_at": {"type": "string"}, "city": {"type": "string", "description": "defaults to the person's city"}}, "required": ["origin", "destination", "arrive_by", "depart_at"]},
                RiskClass.READ, tool_what_if)]

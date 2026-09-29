@@ -28,6 +28,9 @@ const q = (o: Record<string, string | number | boolean | null | undefined>) => O
 export const api = {
   health: () => get("/api/health"),
   mapConfig: () => get<{tiles?: string; attribution?: string}>("/api/config/map"),
+  profile: (user_id: string) => get(`/api/profile?${q({user_id})}`),
+  saveProfile: (user_id: string, edit: Record<string, unknown>) => request(`/api/profile`, {method: "PUT", headers: {"Content-Type": "application/json", Accept: "application/json"}, body: JSON.stringify({user_id, ...edit})}),
+  locate: (lat: number, lng: number) => post("/api/profile/locate", {lat, lng}),
   // assistant
   submitGoal: (text: string, user_id = "demo", start = false) => post("/api/agent/goals", {user_id, text, start}),
   cancelGoal: (id: string) => post(`/api/agent/goals/${encodeURIComponent(id)}/cancel`),
