@@ -1,4 +1,5 @@
-import {useState} from "react";
+import {useEffect, useState} from "react";
+import {useSearchParams} from "react-router-dom";
 
 import {Prose} from "@/components/Prose";
 import {Button, ErrorNote, Pill} from "@/components/ui";
@@ -12,7 +13,9 @@ const examples = (p?: Profile) => { const from = p?.home || "home", to = p?.work
 
 /** Goal creation as a conversation: you write the goal; the assistant records what it understood and proposes its steps; nothing runs until you say start. */
 export function GoalChat({selected, onSelect}: {selected: string | null; onSelect: (id: string | null) => void}) {
-  const [text, setText] = useState("");
+  const [params, setParams] = useSearchParams();
+  const [text, setText] = useState(params.get("ask") ?? "");
+  useEffect(() => { const a = params.get("ask"); if (a) { setText(a); setParams({}, {replace: true}); } }, [params, setParams]);
   const submit = useSubmitGoal(), start = useStartGoal();
   const goal = useGoal(selected), profile = useProfile(USER_ID);
   const send = () => { const t = text.trim(); if (t.length < 3 || submit.isPending) return; setText(""); submit.mutate([t], {onSuccess: (g) => onSelect(g.id)}); };

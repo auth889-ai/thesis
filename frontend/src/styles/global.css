@@ -177,3 +177,33 @@ details.why { margin-top: 10px; }
 ul.goals li a { color: inherit; text-decoration: none; }
 ul.goals li a:hover { text-decoration: underline; }
 .greeting { padding: 6px 0 2px; } .greeting h2 { font-family: var(--display); font-size: 30px; margin: 0 0 4px; } .greeting p { margin: 0; }
+
+/* ---- the shell per the screens: slim top bar, hero band on every page, three-card rows, no stranded columns */
+.topbar.slim { padding: 14px 28px 6px; }
+.toptabs { display: flex; gap: 26px; margin-left: auto; }
+.toptabs a { font-family: var(--display); font-size: 14px; letter-spacing: .12em; text-transform: uppercase; color: var(--ink-muted); text-decoration: none; padding: 6px 2px; border-bottom: 2px solid transparent; }
+.toptabs a.on { color: var(--ink); border-bottom-color: var(--ink); }
+.topbar.slim .status { margin-left: 18px; padding: 8px 14px; }
+.status.ok { background: #e6efdc; } .status.bad { background: #f3d9d3; }
+.hero.band { min-height: 0; grid-template-columns: 1.1fr 1fr; margin: 8px 28px 0; border-radius: var(--radius); overflow: hidden; }
+.hero.band .hero-copy { padding: 30px 34px 26px; gap: 12px; }
+.hero.band h1 { font-size: clamp(30px, 3.2vw, 46px); }
+.hero.band .hero-quote { font-size: 15px; padding: 10px 14px; max-width: 520px; }
+.hero.band .hero-cta { padding: 10px 20px; font-size: 14px; }
+.hero.band .hero-photo { min-height: 220px; max-height: 300px; }
+.hero-chip { position: absolute; right: 14px; top: 12px; font-size: 12px; color: #fff7ee; background: rgba(43, 26, 18, .62); padding: 6px 12px; border-radius: 999px; backdrop-filter: blur(6px); }
+.sidenav .settings-link { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 12px; color: var(--ink-muted); text-decoration: none; font-weight: 600; font-size: 14px; margin-top: auto; }
+.sidenav .settings-link.on { background: var(--accent); color: var(--accent-ink); }
+.cards3 .big { font-family: var(--display); font-size: 24px; margin: 4px 0 2px; }
+.journey { display: flex; align-items: center; gap: 8px; font-size: 12px; color: var(--ink-muted); margin-top: 10px; }
+.journey i { flex: 1; height: 2px; background: var(--line); border-radius: 2px; }
+.ask .askbar input { flex: 1; font-size: 16px; min-height: 48px; }
+.ask .tries { margin-top: 10px; }
+.stats.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid.plan3 { grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr) minmax(0, .9fr); align-items: start; }
+ul.kv li { display: flex; justify-content: space-between; gap: 12px; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+ul.kv li:last-child { border-bottom: 0; }
+.page > .grid.wide > .stack:empty { display: none; }
+@media (max-width: 1100px) { .grid.plan3, .grid.three.cards3 { grid-template-columns: 1fr; } .hero.band { grid-template-columns: 1fr; } }
+.stats.three .stat-v { font-size: 20px; } .stats.three .stat { padding: 10px 12px; }
+.compact-map .maplibregl-map, .compact-map .mapbox, .compact-map .map { height: 260px !important; min-height: 260px !important; }

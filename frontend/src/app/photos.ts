@@ -11,6 +11,14 @@ export const PHOTOS = {
   rickshaws: {id: "PoV905Bpaqo", by: "Samiul Haque Bhuyan", alt: "rickshaws and cars on a tree-lined Dhaka street"},
   crossing: {id: "9M1w0mP8CM8", by: "Md. Ashraful Kabir", alt: "a busy Dhaka street with pedestrians and a rickshaw"},
   rest: {id: "bd9i0SzEgBc", by: "Kabiur Rahman Riyad", alt: "a rickshaw driver resting"},
+  tokyo: {id: "IRqfQCgELX4", by: "Clarence E. Hsu", alt: "a crowded city intersection at night in Tokyo, from above"},
+  tokyoHighway: {id: "VTaATSuMSP8", by: "Jonathan Ikemura", alt: "an illuminated highway interchange at night in Tokyo"},
+  interchange: {id: "NCOYAer0vLw", by: "Paddma Sambhav", alt: "a highway interchange at night, light trails of traffic"},
+  nairobi: {id: "H1Z6DxyVYbE", by: "Michael Njoroge", alt: "a busy city street in Nairobi"},
+  lagos: {id: "cFT_Xq4XyA0", by: "Opeyemi Adisa", alt: "Idumota Avenue in Lagos, filled with traffic"},
+  jakarta: {id: "tPAKmlG356Y", by: "Muhamad Daffa Rial", alt: "rush hour on an elevated highway in Jakarta"},
+  newyork: {id: "00pM5WzCzR8", by: "Massimiliano Morosinotto", alt: "the New York skyline with the Brooklyn Bridge at dusk"},
+  shibuya: {id: "RDlhSZR4SR8", by: "Sarmat Batagov", alt: "Shibuya Crossing at night from a skyscraper"},
 } as const;
 
 export type PhotoKey = keyof typeof PHOTOS;

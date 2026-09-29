@@ -22,13 +22,14 @@ export function GoalsPage() {
   const goals = useGoals();
   const [filter, setFilter] = useState<string | null>(null);
   const all = goals.data?.goals ?? [];
+  const open = id ?? all[0]?.id ?? null;
   const groups = GROUPS.map((g) => ({...g, items: all.filter((x) => g.statuses.includes(x.status))})).filter((g) => g.items.length && (!filter || g.label === filter));
   return (
     <div className="grid wide">
       <div className="stack">
         {id ? <GoalOverview id={id} /> : (
-          <Card title="Your goals" sub={all.length ? `${all.length} in total` : "none yet"} right={<Link to="/agent" className="chip">New goal</Link>}>
-            {goals.isError ? <div className="note bad">The assistant is not reachable.</div> : !goals.data ? <Loading /> : !all.length ? <p className="muted small">Ask the agent for something on the Agent page; it appears here with its progress.</p> : (
+          <Card title="Your goals" sub={all.length ? `${all.length} in total` : "none yet"} right={<Link to="/messages" className="chip">New goal</Link>}>
+            {goals.isError ? <div className="note bad">The assistant is not reachable.</div> : !goals.data ? <Loading /> : !all.length ? <p className="muted small">Ask the assistant for something on the Messages page; it appears here with its progress.</p> : (
               <div className="stack">
                 <div className="row">{GROUPS.map((g) => <button key={g.label} type="button" className={`chip ${filter === g.label ? "on" : ""}`} onClick={() => setFilter(filter === g.label ? null : g.label)}>{g.label} · {all.filter((x) => g.statuses.includes(x.status)).length}</button>)}</div>
                 {groups.map((g) => (
@@ -41,6 +42,7 @@ export function GoalsPage() {
         )}
       </div>
       <div className="stack">
+        {!id && open && <GoalOverview id={open} />}
         {id && <Card title="Other goals"><ul className="plain goals">{all.filter((x) => x.id !== id).slice(0, 12).map((x) => <li key={x.id}><Link to={`/goals/${x.id}`}><Pill tone={STATUS_TONE[x.status]}>{STATUS_WORDS[x.status]}</Pill> {x.text}</Link></li>)}</ul></Card>}
         <Card title="How progress is counted" sub="nothing here is stored"><p className="small muted">Progress is finished tool calls against the steps the assistant proposed before it started. The next action is your approval, your answer, or the next proposed step. Risks are the facts it said were missing, actions it will have to ask about, and anything that failed.</p></Card>
       </div>

@@ -3,7 +3,7 @@ import {useQuery} from "@tanstack/react-query";
 import {get} from "@/lib/api";
 import {USER_ID} from "@/features/assistant/types";
 
-export type Departure = {ref: string; title: string; origin: string; destination: string; depart_utc?: string; depart_local?: string; arrive_by_utc: string; route?: string; on_time_probability?: number | null; expected_s?: number; status: string; leave_in_min?: number};
+export type Departure = {ref: string; title: string; origin: string; destination: string; depart_utc?: string; depart_local?: string; arrive_by_utc: string; route?: string; on_time_probability?: number | null; expected_s?: number; status: string; leave_in_min?: number; calibration_factor?: number};
 export type Feasibility = {from: string; to: string; gap_min: number; needed_min: number | null; feasible: boolean | null; note: string; depart_local?: string; on_time_probability?: number | null};
 export type Conflict = {kind: "overlap" | "deadline" | "gap"; severity: "high" | "medium" | "low"; items: string[]; when_local: string | null; note: string; fix: string};
 export type Twin = {now_utc: string; conflicts: Conflict[]; commitments: {id: string; title: string; start_utc: string; end_utc: string; location: string | null; all_day: boolean}[]; deadlines: {id: string; title: string; due_utc: string | null}[];

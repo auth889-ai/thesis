@@ -36,7 +36,7 @@ def test_frontend_is_served_from_its_canonical_directory(client):
 def test_browser_routes_fall_back_to_the_app_shell(client):
     """/today, /mobility, ... are routes inside the web app: a deep link or a refresh gets index.html; a missing asset stays a 404."""
     from app import config
-    for path in ("/today", "/plan", "/city", "/lab/evidence", "/lab/control-room"):
+    for path in ("/today", "/plan", "/map", "/messages", "/settings", "/city", "/lab/evidence", "/lab/control-room"):
         response = client.get(path)
         assert response.status_code == 200 and response.content == (config.FRONTEND / "index.html").read_bytes(), path
     assert client.get("/assets/missing-file.js").status_code == 404
@@ -76,8 +76,8 @@ def test_backend_root_contains_only_application_assembly_and_configuration():
 def test_web_app_is_organised_by_feature():
     """React + TypeScript: one page per feature folder, shared UI outside the features, no legacy module tree."""
     features = ROOT / "frontend/src/features"
-    assert {p.name for p in features.iterdir() if p.is_dir()} == {"today", "assistant", "goals", "activity", "you", "mobility", "forecast", "twin", "results", "references", "system"}
-    for page in ("today/TodayPage", "assistant/AgentPage", "goals/GoalsPage", "activity/ActivityPage", "you/YouPage", "mobility/MobilityPage", "forecast/CityPage", "forecast/ModelsPage", "twin/ControlRoomPage", "results/ResultsPage", "references/ReferencesPage", "system/SystemPage"):
+    assert {p.name for p in features.iterdir() if p.is_dir()} == {"today", "plan", "assistant", "goals", "activity", "you", "mobility", "forecast", "twin", "results", "references", "system"}
+    for page in ("today/TodayPage", "plan/PlanPage", "assistant/AgentPage", "goals/GoalsPage", "activity/ActivityPage", "you/YouPage", "mobility/MobilityPage", "forecast/CityPage", "forecast/ModelsPage", "twin/ControlRoomPage", "results/ResultsPage", "references/ReferencesPage", "system/SystemPage"):
         assert (features / f"{page}.tsx").is_file(), page
     assert not (ROOT / "frontend/legacy_src").exists() and not (ROOT / "frontend/src/pages").exists()
     assert not list((ROOT / "frontend/src").rglob("*.js")), "the web app is TypeScript only"

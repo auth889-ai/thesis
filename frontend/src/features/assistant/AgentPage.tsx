@@ -8,7 +8,7 @@ import {ActivityPanel, RulesPanel, TasksPanel} from "./SidePanels";
 import {STATUS_TONE, STATUS_WORDS} from "./types";
 import "./assistant.css";
 
-/** AGENT: say what you need; watch the plan in plain words; approve what needs approving; see what is yours. */
+/** MESSAGES (the agent): say what you need; watch the plan in plain words; approve what needs approving; see what is yours. */
 export function AgentPage() {
   const [selected, setSelected] = useState<string | null>(null);
   const goals = useGoals();

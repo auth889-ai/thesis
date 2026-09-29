@@ -25,7 +25,7 @@ export function MobilityPage() {
         {analysis.isPending && <div style={{marginTop: 10}}><Steps steps={STAGES} current={analysis.stage} /></div>}
         {analysis.error ? <div style={{marginTop: 10}}><ErrorNote error={analysis.error} /></div> : null}
       </Card>
-      <div className={r ? "grid wide" : "stack"}>
+      <div className={r ? "grid wide" : "stack compact-map"}>
         <Card title={r ? `${r.origin.label ?? "A"} → ${r.destination.label ?? "B"}` : "Your city"} sub={r ? `${r.routes.length} routes · horizon +${r.horizon_min} min` : "the routes are drawn here once a trip is analysed"}>
           <RouteMap result={r} highlight={highlight} />
         </Card>

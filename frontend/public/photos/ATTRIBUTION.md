@@ -18,4 +18,13 @@ Each file is named by its Unsplash photo id; the page shows the photographer's c
 | 9M1w0mP8CM8.jpg | Md. Ashraful Kabir | a busy Dhaka street with pedestrians and a rickshaw |
 | bd9i0SzEgBc.jpg | Kabiur Rahman Riyad | a rickshaw driver resting |
 
-Downloaded 2026-09-29 at 1600 px, re-encoded at JPEG quality 78.
+| IRqfQCgELX4.jpg | Clarence E. Hsu | a crowded city intersection at night, Tokyo |
+| VTaATSuMSP8.jpg | Jonathan Ikemura | an illuminated highway interchange at night, Tokyo |
+| NCOYAer0vLw.jpg | Paddma Sambhav | a highway interchange at night, light trails |
+| H1Z6DxyVYbE.jpg | Michael Njoroge | a busy city street, Nairobi |
+| cFT_Xq4XyA0.jpg | Opeyemi Adisa | Idumota Avenue, Lagos |
+| tPAKmlG356Y.jpg | Muhamad Daffa Rial | rush hour on an elevated highway, Jakarta |
+| 00pM5WzCzR8.jpg | Massimiliano Morosinotto | the New York skyline with the Brooklyn Bridge at dusk |
+| RDlhSZR4SR8.jpg | Sarmat Batagov | Shibuya Crossing at night, Tokyo |
+
+Dhaka set downloaded 2026-09-29, world set 2026-09-30, at 1600 px, re-encoded at JPEG quality 78.

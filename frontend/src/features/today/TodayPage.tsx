@@ -10,6 +10,8 @@ import {Updates} from "@/features/assistant/Updates";
 import {useFeed, useTwin} from "./hooks";
 import {Risks} from "./Risks";
 import {Stats} from "./Stats";
+import {Ask} from "./Ask";
+import {Cards} from "./Cards";
 import {Greeting, Welcome} from "./Welcome";
 import "@/features/assistant/assistant.css";
 
@@ -22,7 +24,9 @@ export function TodayPage() {
   return (
     <div className="stack today">
       <Welcome />
+      <Ask />
       <Greeting />
+      <Cards twin={twin.data} />
       <Stats twin={twin.data} goals={goals.data?.goals} feed={feed.data} />
       <Risks twin={twin.data} goals={goals.data?.goals} feed={feed.data} />
       <div className="grid wide">
@@ -30,16 +34,16 @@ export function TodayPage() {
           <DayPlan />
         </div>
         <div className="stack">
-          <Card title="Goals in progress" sub={active.length ? `${active.length} active` : "none active"} right={<Link to="/agent" className="chip">New goal</Link>}>
+          <Card title="Goals in progress" sub={active.length ? `${active.length} active` : "none active"} right={<Link to="/messages" className="chip">New goal</Link>}>
             {!goals.data ? <Loading /> : active.length ? <ul className="plain goals">{active.map((g) => <li key={g.id}><Link to={`/goals/${g.id}`}><Pill tone={STATUS_TONE[g.status]}>{STATUS_WORDS[g.status]}</Pill> {g.text}</Link> <span className="muted small">{ago(g.updated_utc)}</span></li>)}</ul> : <p className="muted small">Ask the agent for something and it appears here while it works.</p>}
           </Card>
           <Updates />
         </div>
       </div>
       <div className="phototiles">
-        <PhotoCard photo="rickshaws" title="Plan a trip" text="Routes now and at departure, and the latest time you can leave." to="/plan" />
-        <PhotoCard photo="metro" title="The city an hour ahead" text="Every measured road at +15, +30 and +60 minutes." to="/city" />
-        <PhotoCard photo="lapse" title="How it is tested" text="Simulation evidence, the models and every reference, for reviewers." to="/lab" />
+        <PhotoCard photo="interchange" title="Plan a trip" text="Routes now and at departure, and the latest time you can leave." to="/map" />
+        <PhotoCard photo="shibuya" title="The city an hour ahead" text="Every measured road at +15, +30 and +60 minutes." to="/city" />
+        <PhotoCard photo="tokyoHighway" title="How it is tested" text="Simulation evidence, the models and every reference, for reviewers." to="/lab" />
       </div>
     </div>
   );

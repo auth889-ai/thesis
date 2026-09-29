@@ -15,7 +15,7 @@ const localNowPlus = (min: number) => { const d = new Date(Date.now() + min * 60
 export function TripForm({onSubmit, busy, onChange}: {onSubmit: (req: TripRequest, fields: TripFields) => void; busy: boolean; onChange?: (f: TripFields) => void}) {
   const profile = useProfile(USER_ID);
   const [f, setF] = useState<TripFields>({city: remembered("city", ""), origin: remembered("origin", ""), destination: remembered("destination", ""), departure: localNowPlus(5), model: "auto"});
-  useEffect(() => { const p = profile.data; if (!p) return; setF((cur) => ({...cur, city: cur.city || p.city, origin: cur.origin || p.home || "", destination: cur.destination || p.work || ""})); }, [profile.data]);
+  useEffect(() => { const p = profile.data; if (!p) return; setF((cur) => (cur.city && cur.city !== p.city ? {...cur, city: p.city, origin: p.home || "", destination: p.work || ""} : {...cur, city: cur.city || p.city, origin: cur.origin || p.home || "", destination: cur.destination || p.work || ""})); }, [profile.data]);   // the profile's city wins over a remembered trip in another city
   const [q, setQ] = useState("");
   const cities = useCities(), places = usePlaces(f.city, q), models = useModels(f.city);
   useEffect(() => { onChange?.(f); }, [f, onChange]);

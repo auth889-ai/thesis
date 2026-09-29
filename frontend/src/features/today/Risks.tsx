@@ -10,7 +10,7 @@ export function Risks({twin, goals, feed}: {twin?: Twin; goals?: GoalSummary[]; 
   const waiting = (goals ?? []).filter((g) => g.status === "waiting_approval" || g.status === "waiting_user" || g.status === "failed");
   const risks: {tone: "warn" | "bad"; text: string; to?: string}[] = [];
   n?.conflicts.forEach((c) => risks.push({tone: c.severity === "high" ? "bad" : "warn", text: `${c.note}. Fix: ${c.fix}.`}));
-  n?.shaky.forEach((d) => risks.push({tone: "warn", text: `${d.title}: leaving at ${d.depart_local} gives only ${Math.round((d.on_time_probability ?? 0) * 100)} % on time; leave earlier or take the rail option.`, to: "/plan"}));
+  n?.shaky.forEach((d) => risks.push({tone: "warn", text: `${d.title}: leaving at ${d.depart_local} gives only ${Math.round((d.on_time_probability ?? 0) * 100)} % on time; leave earlier or take the rail option.`, to: "/map"}));
   waiting.forEach((g) => risks.push({tone: g.status === "failed" ? "bad" : "warn", text: `Goal “${g.text.slice(0, 60)}${g.text.length > 60 ? "…" : ""}” ${STATUS_WORDS[g.status]}.`, to: `/goals/${g.id}`}));
   feed?.notifications.filter((x) => !x.read_utc).slice(0, 3).forEach((x) => risks.push({tone: "warn", text: x.text, to: "/activity"}));
   const tips: string[] = [];
