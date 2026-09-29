@@ -5,7 +5,7 @@ from functools import lru_cache
 
 from fastapi import APIRouter, HTTPException
 
-from app.agent import approvals, audit, intent, orchestrator, store, tools, worker
+from app.agent import approvals, audit, intent, memory, orchestrator, store, tools, worker, you
 from app.agent.models import AuditEntry, Goal, GoalStatus
 from app.agent.schemas import AnswerRequest, ApproveRequest, GoalRequest, StartRequest, RuleRequest
 
@@ -143,3 +143,39 @@ def tool_list():
 @router.get("/api/agent/tasks", tags=["agent"])
 def tasks(user_id: str = "demo"):
     return {"tasks": store.list_tasks(user_id, None), "reminders": store.list_reminders(user_id, None), "commutes": store.list_commutes(user_id)}
+
+
+@router.get("/api/agent/goals/{goal_id}/related", tags=["agent"])
+def goal_related(goal_id: str):
+    """What the goal created: tasks and reminders that name it as their source."""
+    g = store.load_goal(goal_id)
+    if not g:
+        raise HTTPException(404, "no such goal")
+    return {"goal_id": goal_id} | store.items_for_goal(g.user_id, goal_id)
+
+
+@router.get("/api/agent/memory", tags=["agent"])
+def memory_list(user_id: str = "demo"):
+    """What the assistant keeps about the person: preferences, places, patterns, constraints — each with its origin."""
+    return {"user_id": user_id, "facts": memory.list_all(user_id), "kinds": list(memory.KINDS)}
+
+
+@router.delete("/api/agent/memory/{fact_id}", tags=["agent"])
+def memory_forget(fact_id: str, user_id: str = "demo"):
+    if not memory.forget(user_id, fact_id):
+        raise HTTPException(404, "no such fact")
+    return {"forgotten": fact_id}
+
+
+@router.get("/api/you/export", tags=["you"])
+def you_export(user_id: str = "demo"):
+    """Everything held about the person, as one document."""
+    return you.export(user_id)
+
+
+@router.delete("/api/you", tags=["you"])
+def you_erase(user_id: str = "demo", confirm: str = ""):
+    """Erase everything held about the person. `confirm` must equal the user id: a browser cannot do this by accident."""
+    if confirm != user_id:
+        raise HTTPException(400, "pass confirm=<your user id> to erase")
+    return you.erase(user_id)

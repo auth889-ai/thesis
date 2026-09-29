@@ -41,6 +41,11 @@ export const api = {
   audit: (user_id = "demo", goal_id?: string) => get(`/api/agent/audit?${q({user_id, goal_id})}`),
   agentTasks: (user_id = "demo") => get(`/api/agent/tasks?${q({user_id})}`),
   agentTools: () => get("/api/agent/tools"),
+  goalRelated: (id: string) => get(`/api/agent/goals/${encodeURIComponent(id)}/related`),
+  memory: (user_id = "demo") => get(`/api/agent/memory?${q({user_id})}`),
+  forget: (user_id: string, id: string) => del(`/api/agent/memory/${encodeURIComponent(id)}?${q({user_id})}`),
+  exportUrl: (user_id = "demo") => `/api/you/export?${q({user_id})}`,
+  erase: (user_id: string) => del(`/api/you?${q({user_id, confirm: user_id})}`),
   // mobility
   places: (city = "dhaka", search = "") => get(`/api/places?${q({city, q: search})}`),
   cities: () => get("/api/operate/cities"),

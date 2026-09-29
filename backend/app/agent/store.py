@@ -198,3 +198,23 @@ def request_cancel(goal_id: str) -> None:
 def cancel_requested(goal_id: str) -> bool:
     with _conn() as c:
         return c.execute("select 1 from goal_control where goal_id=?", (goal_id,)).fetchone() is not None
+
+
+# ------------------------------------------------------------------ erasure (agent/you.py)
+def erase_user(user_id: str) -> dict:
+    """Delete every row of this person's in the agent store; returns what was removed per table."""
+    out = {}
+    with _LOCK, _conn() as c:
+        ids = [r["id"] for r in c.execute("select id from goals where user_id=?", (user_id,)).fetchall()]
+        for table in ("goals", "tasks", "reminders", "commutes", "approval_rules"):
+            out[table] = c.execute(f"delete from {table} where user_id=?", (user_id,)).rowcount
+        for table in ("goal_leases", "goal_control"):
+            out[table] = sum(c.execute(f"delete from {table} where goal_id=?", (g,)).rowcount for g in ids)
+    return out
+
+
+def items_for_goal(user_id: str, goal_id: str) -> dict:
+    """What a goal created: its tasks and reminders (the tools record the goal that made them)."""
+    with _conn() as c:
+        return {"tasks": [dict(r) for r in c.execute("select * from tasks where user_id=? and source_goal=? order by created_utc", (user_id, goal_id)).fetchall()],
+                "reminders": [dict(r) for r in c.execute("select * from reminders where user_id=? and source_goal=? order by at_utc", (user_id, goal_id)).fetchall()]}

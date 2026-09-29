@@ -58,3 +58,8 @@ def upcoming(user_id: str, hours: float = 36.0, now: datetime | None = None) -> 
 def between(user_id: str, start_utc: str, end_utc: str) -> list[dict]:
     with _conn() as c:
         return [dict(r) for r in c.execute("select * from events where user_id=? and start_utc >= ? and start_utc < ? order by start_utc", (user_id, start_utc, end_utc)).fetchall()]
+
+
+def erase_user(user_id: str) -> dict:
+    with _LOCK, _conn() as c:
+        return {t: c.execute(f"delete from {t} where user_id=?", (user_id,)).rowcount for t in ("events", "calendars")}

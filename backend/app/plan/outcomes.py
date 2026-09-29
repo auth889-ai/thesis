@@ -60,3 +60,8 @@ TOOL_SPECS = [
     ("outcomes.record", "Record how a trip actually went (ISO times): when the person left and arrived, and the deadline if any. Improves their future on-time estimates.",
      {"type": "object", "properties": {"ref": {"type": "string"}, "origin": {"type": "string"}, "destination": {"type": "string"}, "predicted_s": {"type": "number"}, "recommended_depart": {"type": "string"}, "departed": {"type": "string"}, "arrived": {"type": "string"}, "deadline": {"type": "string"}}, "required": ["departed", "arrived"]}, RiskClass.WRITE_REVERSIBLE, tool_record),
 ]
+
+
+def erase_user(user_id: str) -> int:
+    with _conn() as c:
+        return c.execute("delete from outcomes where user_id=?", (user_id,)).rowcount

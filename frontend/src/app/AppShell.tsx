@@ -7,7 +7,7 @@ import {Hero} from "./Hero";
 import {photoUrl} from "./photos";
 import {APP_NAV} from "./routes";
 
-const ICONS: Record<string, string> = {"/today": "☀", "/plan": "➜", "/city": "▦", "/lab": "⚗"};
+const ICONS: Record<string, string> = {"/today": "☀", "/agent": "✦", "/goals": "◎", "/activity": "≡", "/you": "◍", "/lab": "⚗"};
 
 /** The app: a sidebar with the pages, one sheet with the hero (Today only) and the page. The health chip polls /api/health every 30 s. */
 export function AppShell() {
@@ -21,7 +21,7 @@ export function AppShell() {
         <aside className="sidenav">
           <Link to="/today" className="brand"><span className="brand-mark">TT</span><div><div className="brand-name">TrafficTwin</div><div className="brand-sub">leave on time, every day</div></div></Link>
           <nav>
-            {APP_NAV.map((n) => <NavLink key={n.path} to={n.path} className={({isActive}) => (isActive ? "on" : "")}><span className="ico" aria-hidden="true">{ICONS[n.path]}</span>{n.label}</NavLink>)}
+            {APP_NAV.filter((n) => n.nav).map((n) => <NavLink key={n.path} to={n.path} className={({isActive}) => (isActive ? "on" : "")}><span className="ico" aria-hidden="true">{ICONS[n.path]}</span>{n.label}</NavLink>)}
             <NavLink to="/lab" className={({isActive}) => (isActive ? "on" : "")}><span className="ico" aria-hidden="true">{ICONS["/lab"]}</span>Lab</NavLink>
           </nav>
           <div className="status"><span className={`dot ${health.isError ? "bad" : health.data ? "ok" : ""}`} />{health.isError ? "offline" : health.data ? "live" : "connecting…"}</div>

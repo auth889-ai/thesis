@@ -93,3 +93,8 @@ TOOL_SPECS = [
     ("memory.list", "List what is remembered about the person.", {"type": "object", "properties": {}, "required": []}, RiskClass.READ, tool_list),
     ("memory.forget", "Forget one remembered fact for good.", {"type": "object", "properties": {"memory_id": {"type": "string"}}, "required": ["memory_id"]}, RiskClass.WRITE_IRREVERSIBLE, tool_forget),
 ]
+
+
+def erase_user(user_id: str) -> int:
+    with _LOCK, _conn() as c:
+        return c.execute("delete from memories where user_id=?", (user_id,)).rowcount

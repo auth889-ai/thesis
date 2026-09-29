@@ -46,3 +46,8 @@ def mark_read(user_id: str, ids: list[str] | None = None) -> int:
         if ids:
             return sum(c.execute("update notifications set read_utc=? where user_id=? and id=? and read_utc is null", (now_iso(), user_id, i)).rowcount for i in ids)
         return c.execute("update notifications set read_utc=? where user_id=? and read_utc is null", (now_iso(), user_id)).rowcount
+
+
+def erase_user(user_id: str) -> int:
+    with _conn() as c:
+        return c.execute("delete from notifications where user_id=?", (user_id,)).rowcount

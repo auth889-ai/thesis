@@ -111,3 +111,13 @@ def verify(user_id: str) -> dict:
         if not (sig_ok and chain_ok):
             return {"ok": False, "broken_at": cp["entries"], "entries": len(rows), "checkpoint": cp}
     return {"ok": True, "entries": len(rows), "checkpoint": cp}
+
+
+def erase_user(user_id: str) -> int:
+    """Remove the person's log and its checkpoints (their data, on their request); the chain of other users is untouched."""
+    n = 0
+    with _LOCK:
+        for f in (_file(user_id), _file(user_id).with_suffix(".checkpoints.jsonl")):
+            if f.exists():
+                f.unlink(); n += 1
+    return n

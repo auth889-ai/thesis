@@ -65,8 +65,7 @@ change). Tests: 22 files under `backend/tests` plus `tests/platform`; 550 passed
 
 - `src/app/` — `routes.tsx` (consumer `APP_NAV`, lab `LAB_NAV`, redirects), `AppShell.tsx` (sidebar), `LabShell.tsx`, `Hero`, `photos`.
 - `src/features/<domain>/` — one folder per page; files ≤ 200 lines by test (`test_structure_migration.py`).
-- Consumer today: `/today` (goal conversation, day plan, updates, tasks, standing decisions, activity), `/plan`, `/city`.
-- Consumer target (Phase 2): **Today · Agent · Goals · Activity · You**.
+- Consumer: **Today · Agent · Goals · Activity · You** (`features/{today,assistant,goals,activity,you}`); `/plan` and `/city` are reached from Today and the Agent, not from the sidebar.
 - Lab today: `/lab/{evidence,control-room,models,references,system}`. Lab target (Phase 21): `/lab/{datasets,models,forecasting,routing,digital-twin,v2x,experiments,references}`.
 - The built bundle (`frontend/dist`) is served by the API with an SPA fallback; the mobile app (`mobile/`, Expo) uses the same API.
 
@@ -90,7 +89,7 @@ simulated data are labelled as such.
 |---|---|---|
 | 0 audit | this document set | — |
 | 1 agent core | persistent Goal/Step/ToolCall; statuses; pause on approval and on question; resume by `run()`; background worker with lease, heartbeat, reaper and restart recovery; cancel; approvals bound to the exact action with expiry, standing rules, rejection reason; audit chain with signed checkpoints; consumer wording of every audit line (`words.ts`); tests (`test_worker.py`, `test_agent.py`, `test_approvals.py`, `test_life_twin.py`) | status name `done` where the specification says `COMPLETED` (kept: it is the wire contract of the web and mobile clients; `done` ≡ COMPLETED) |
-| 2 consumer shell | Today with the goal conversation, day plan, updates, tasks, standing decisions, activity; Plan; City | Agent, Goals, Activity and You as pages; risks and recommendations on Today; the "one operating system" navigation |
+| 2 consumer shell | the five pages on one sidebar; per-user export and erasure (`agent/you.py`), memory and related-item routes | Mail and files connectors (Phase 17); Plan and City folded further into Today when routing is multimodal (Phase 10) |
 | 3 Life Twin | snapshot; free windows; feasibility between placed commitments; personal calibration; what-if verdict | feasible / risky / impossible grading with travel buffers; conflicting tasks and events; goal dependencies; routines learned from outcomes; unit tests per rule |
 
 ## 7. Technical debt (recorded, not hidden)
@@ -101,3 +100,4 @@ simulated data are labelled as such.
 4. Corridor traffic in Dhaka comes from recorded bands because no provider covers it; probe data (Phase 8) is the way out.
 5. The on-time probability is empirical from recorded distributions, not a conformal interval (Phase 7).
 6. Gmail and Google Calendar connectors need OAuth on a non-AWS provider; the person decides (Phase 17).
+7. The monitor's 5-minute threshold lets a departure flip between two routes on successive checks (two "replanned" lines 5 min apart in Activity); hysteresis belongs to Phase 18.

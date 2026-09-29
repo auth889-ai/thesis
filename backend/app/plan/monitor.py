@@ -116,3 +116,8 @@ def start() -> None:
 
 def state() -> dict:
     return {**_state, "running": bool(_thread and _thread.is_alive()), "tick_s": TICK_S}
+
+
+def erase_user(user_id: str) -> int:
+    with _conn() as c:
+        return c.execute("delete from watch where user_id=?", (user_id,)).rowcount
