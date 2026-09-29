@@ -14,8 +14,8 @@ export const Stat = ({k, v, sub, tone}: {k: ReactNode; v: ReactNode; sub?: React
   <div className={`stat ${tone ?? ""}`}><div className="stat-v">{v}</div><div className="stat-k">{k}</div>{sub && <div className="stat-sub">{sub}</div>}</div>
 );
 
-export const Button = ({children, kind = "primary", ...rest}: {children: ReactNode; kind?: "primary" | "ghost" | "danger"} & React.ButtonHTMLAttributes<HTMLButtonElement>) => (
-  <button className={`btn ${kind}`} {...rest}>{children}</button>
+export const Button = ({children, kind = "primary", className = "", ...rest}: {children: ReactNode; kind?: "primary" | "ghost" | "danger"} & React.ButtonHTMLAttributes<HTMLButtonElement>) => (
+  <button className={`btn ${kind} ${className}`} {...rest}>{children}</button>
 );
 
 export const Field = ({label, children}: {label: ReactNode; children: ReactNode}) => <label className="field"><span>{label}</span>{children}</label>;

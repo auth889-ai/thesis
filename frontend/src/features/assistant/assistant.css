@@ -19,3 +19,10 @@ ul.goals li > span:nth-child(2) { flex: 1; min-width: 0; overflow: hidden; text-
 .side-h:first-child { margin-top: 0; }
 ul.audit li, ul.tools li { font-size: 12.5px; }
 .approval-what { margin: 6px 0; font-weight: 600; }
+.timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.tl { display: grid; grid-template-columns: 52px 22px 1fr; gap: 8px; align-items: start; padding: 6px 0; border-bottom: 1px dashed var(--line); }
+.tl:last-child { border-bottom: 0; }
+.tl-time { font-family: var(--mono); font-size: 12px; color: var(--ink-muted); padding-top: 2px; }
+.tl.leave .tl-time { color: var(--accent); font-weight: 700; }
+.tl-actions { margin-top: 4px; }
+.tl.leave .tl-body { background: color-mix(in srgb, var(--caramel) 14%, transparent); border-radius: 10px; padding: 6px 10px; }

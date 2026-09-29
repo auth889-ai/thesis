@@ -35,6 +35,8 @@ def _startup() -> None:
         print(f"[train] could not re-attach jobs: {exc}")
     if not config.OBSERVATORY_ENABLED:
         return
+    from app.plan import monitor
+    monitor.start()                                     # the watch on every person's day
     from app.data.live_providers import observatory
     from app.protocols.evidence import forecast_ledger
     try:

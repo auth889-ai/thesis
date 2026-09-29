@@ -14,7 +14,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from app.agent import audit, permissions, store, tools
+from app.agent import audit, memory, permissions, store, tools
 from app.agent.models import AuditEntry, Decision, Goal, GoalStatus, Step, ToolCall, now_iso
 
 MAX_STEPS = 12
@@ -22,7 +22,9 @@ SYSTEM = """You are TrafficTwin's assistant. You complete the user's goal by cal
 personal details. If a detail you need (a place, a time, a recipient) is neither in the goal nor in a tool result,
 call user__ask with one specific question instead of guessing. Times are local Dhaka time (+06:00) written as
 YYYY-MM-DDTHH:MM. When the goal is complete, reply with a short plain summary of what you did and what the user
-should know (including any honesty labels the tools returned, such as 'recorded, not live'). Today is {today}."""
+should know (including any honesty labels the tools returned, such as 'recorded, not live'). When the person states a durable
+preference, place or constraint, keep it with memory__remember. Today is {today}.
+{memory}"""
 
 
 def _context_text(goal: Goal) -> str:
@@ -85,7 +87,7 @@ def run(goal: Goal, llm, max_steps: int = MAX_STEPS) -> Goal:
         unanswered = next((s for s in goal.steps if s.question and not s.answer), None)
         if unanswered:
             goal.status = GoalStatus.WAITING_USER; store.save_goal(goal); return goal
-        turn = llm.complete(SYSTEM.format(today=today), _messages(goal), tools.tool_specs())
+        turn = llm.complete(SYSTEM.format(today=today, memory=memory.prompt_section(goal.user_id, goal.text)), _messages(goal), tools.tool_specs())
         goal.tokens_in += turn.tokens_in; goal.tokens_out += turn.tokens_out
         if not turn.tool_calls:
             goal.summary = turn.text or "(done)"; goal.status = GoalStatus.DONE

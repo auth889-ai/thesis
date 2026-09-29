@@ -6,7 +6,10 @@ import {ago} from "@/lib/format";
 import {GoalCard} from "./GoalCard";
 import {GoalComposer} from "./GoalComposer";
 import {useAnswer, useApprove, useGoal, useGoals, useSubmitGoal} from "./hooks";
+import {CalendarImport} from "./CalendarImport";
+import {DayPlan} from "./DayPlan";
 import {ActivityPanel, TasksPanel} from "./SidePanels";
+import {Updates} from "./Updates";
 import {STATUS_TONE, STATUS_WORDS} from "./types";
 import "./assistant.css";
 
@@ -31,7 +34,10 @@ export function TodayPage() {
           </Card>
         </div>
         <div className="stack">
+          <DayPlan />
+          <Updates />
           <TasksPanel />
+          <CalendarImport />
           <ActivityPanel goalId={selected ?? undefined} />
         </div>
       </div>

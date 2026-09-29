@@ -122,6 +122,24 @@ TOOLS: dict[str, Tool] = {t.name: t for t in [
     Tool("commutes.list", "List saved commutes.", S({}, []), RiskClass.READ, commutes_list),
 ]}
 
+
+def _register(specs) -> None:
+    for name, desc, schema, risk, handler in specs:
+        TOOLS[name] = Tool(name, desc, schema, risk, handler)
+
+
+def _register_domains() -> None:
+    """Tools that live with their domain: memory, calendar, outcomes and notifications."""
+    from app.agent import memory
+    from app.calendar import tools as calendar_tools
+    from app.plan import outcomes, notifications
+    _register(memory.TOOL_SPECS); _register(calendar_tools.TOOL_SPECS); _register(outcomes.TOOL_SPECS)
+    _register([("notifications.list", "What the day monitor told the person recently (departure changes, worse traffic).", S({}, []), RiskClass.READ,
+                lambda user_id, a, goal_id: {"notifications": notifications.list_for(user_id, 20)})])
+
+
+_register_domains()
+
 ASK_USER = "user.ask"
 ASK_SCHEMA = S({"question": {"type": "string", "description": "one specific question the user must answer before you can continue"}}, ["question"])
 
