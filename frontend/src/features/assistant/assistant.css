@@ -14,7 +14,9 @@
 ul.plain { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
 ul.goals li { cursor: pointer; padding: 6px 8px; border-radius: 6px; display: flex; gap: 8px; align-items: center; }
 ul.goals li:hover, ul.goals li.on { background: var(--surface-2); }
-ul.goals li > span:nth-child(2) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+ul.goals li { overflow: hidden; min-width: 0; }
+ul.goals li > span:not(.pill):not(.muted) { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+ul.goals li > .muted { flex: none; }
 .side-h { font-size: 11.5px; text-transform: uppercase; letter-spacing: .05em; color: var(--ink-muted); margin: 10px 0 4px; }
 .side-h:first-child { margin-top: 0; }
 ul.audit li, ul.tools li { font-size: 12.5px; }
