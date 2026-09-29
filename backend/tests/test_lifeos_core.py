@@ -57,7 +57,13 @@ def test_every_entity_round_trips_through_the_store():
         day = repo.commitments_between(s, "eva", T - timedelta(hours=1), T + timedelta(hours=12))
         assert [x.id for x in day] == ["c1", "c2"] and day[1].depends_on == ["c1"]
         assert [e.kind for e in repo.events_since(s, T - timedelta(days=1), "eva")] == [EventKind.CALENDAR_CHANGED]
-        assert repo.get(s, "person", "eva").home.lat == 23.8
+        eva = repo.get(s, "person", "eva"); assert eva.home.lat == 23.8 and eva.home.kind == "home"
+        from sqlalchemy import text
+        assert [r[0] for r in s.execute(text("select name from sqlite_master where type='table' order by name"))] == ["actions", "alembic_version", "commitment_dependencies", "commitment_requirements", "commitments", "constraint_params", "constraint_targets", "constraints", "events", "outcomes", "persons", "places", "travel_edges"]
+        assert s.execute(text("select item from commitment_requirements where commitment_id='c1'")).fetchall() == []
+        assert s.execute(text("select depends_on_id from commitment_dependencies where commitment_id='c2'")).fetchall() == [("c1",)]
+        assert s.execute(text("select key, value from constraint_params where constraint_id='k1'")).fetchall() == [("rain_mm", "12")]
+        assert s.execute(text("select count(*) from places where person_id='eva'")).scalar() == 3          # Mirpur (home), IUT, Banani
         assert repo.delete(s, "outcome", "o1") and repo.get(s, "outcome", "o1") is None
 
 
@@ -68,7 +74,21 @@ def test_the_store_is_rebuilt_from_the_migration_and_is_idempotent(tmp_path):
         assert repo.list_for(s, "commitment", "nobody") == []
 
 
+def test_a_foreign_key_is_enforced_and_children_are_deleted_with_their_parent():
+    from sqlalchemy.exc import IntegrityError
+    with db.session() as s:
+        with pytest.raises(IntegrityError):
+            repo.put(s, Commitment(id="orphan", person_id="nobody", title="x", start=T, deadline=T))
+        s.rollback()
+        repo.put(s, Person(id="eva"))
+        repo.put(s, Commitment(id="c1", person_id="eva", title="x", start=T, deadline=T, requirements=["CV", "ID"]))
+        assert repo.delete(s, "commitment", "c1")
+        from sqlalchemy import text
+        assert s.execute(text("select count(*) from commitment_requirements")).scalar() == 0
+
+
 def test_the_contracts_are_served_over_http(client):
+    client.put("/api/lifeos/persons", json={"id": "eva", "timezone": "Asia/Dhaka"})
     body = {"id": "c9", "person_id": "eva", "title": "Viva", "type": "exam", "location": {"name": "Shahbagh"}, "start": "2026-10-02T10:00:00+06:00", "deadline": "2026-10-02T10:00:00+06:00", "requirements": ["thesis"]}
     r = client.put("/api/lifeos/commitments", json=body)
     assert r.status_code == 200 and r.json()["deadline"].startswith("2026-10-02T04:00:00")

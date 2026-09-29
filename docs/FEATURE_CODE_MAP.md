@@ -13,15 +13,15 @@ text / calendar / email ──(P1 compiler)──▶ Commitment ──(P2 Life T
                                                                                           Outcome ──(P11 personal ML)──▶ calibration
 ```
 
-Authoritative state: the seven tables in `results/live/lifeos.sqlite` (Alembic head). Derived state (plans, risks, repairs) is
-rebuildable from them and is never the source of truth.
+Authoritative state: the thirteen relational tables in `results/live/lifeos.sqlite` (Alembic head; see `DATA_MODEL.md`). Derived state
+(plans, risks, repairs) is rebuildable from them and is never the source of truth.
 
 ## Map
 
 | Feature | Code | Tests | Phase | Limitations |
 |---|---|---|---|---|
 | The seven contracts | `backend/app/lifeos/entities.py` | `test_lifeos_core.py` | P0 | `Person` overlaps the earlier `app/profile` store; the profile becomes a view of `Person` in P2 |
-| Authoritative store and migrations | `backend/app/lifeos/db.py`, `backend/alembic/` | `test_lifeos_core.py` | P0 | SQLite; PostgreSQL by URL, untested until P17 |
+| Authoritative store and migrations | `backend/app/lifeos/db.py` (13 relational tables, foreign keys, UTC timestamps), `backend/alembic/` | `test_lifeos_core.py` | P0 | SQLite; PostgreSQL by URL, untested until P17; tool arguments and event payloads are JSON columns by nature |
 | Reads and writes | `backend/app/lifeos/repo.py` | `test_lifeos_core.py` | P0 | no pagination beyond a limit |
 | Routes and schema | `backend/app/lifeos/router.py` (`/api/lifeos/*`) | `test_lifeos_core.py` | P0 | no authentication until accounts (block D/F) |
 | Person profile (zone, city, home, target) | `backend/app/profile/` | `test_profile.py` | pre-plan | to be folded into `Person` |

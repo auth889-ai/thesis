@@ -22,9 +22,11 @@ def _aware(v: datetime) -> datetime:
 
 
 class Place(BaseModel):
+    id: str | None = Field(None, description="assigned by the store on first save")
     name: str = Field(..., min_length=1)
     lat: float | None = Field(None, ge=-90, le=90)
     lng: float | None = Field(None, ge=-180, le=180)
+    kind: str = Field("other", pattern="^(home|work|saved|other)$")
 
 
 class MobilityProfile(BaseModel):
@@ -105,9 +107,10 @@ class Constraint(BaseModel):
     person_id: str
     kind: ConstraintKind
     applies_to: list[str] = Field(default_factory=list, description="commitment or edge ids; empty means the whole day")
-    params: dict[str, Any] = Field(default_factory=dict)
+    params: dict[str, str | int | float | bool] = Field(default_factory=dict, description="one row per key in the store")
     severity: str = Field("soft", pattern="^(hard|soft)$")
     source: str = "person"
+    created_at: datetime = Field(default_factory=now_utc)
 
 
 class Mode(str, enum.Enum):
