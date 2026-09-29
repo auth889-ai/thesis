@@ -1,0 +1,12 @@
+.chat .thread { display: grid; gap: 10px; margin-bottom: 12px; }
+.bubble { max-width: 92%; padding: 12px 16px; border-radius: 18px; line-height: 1.5; }
+.bubble.me { justify-self: end; background: var(--rose); color: var(--ink); border-bottom-right-radius: 6px; }
+.bubble.bot { justify-self: start; background: var(--surface-solid); border: 1px solid var(--line); border-bottom-left-radius: 6px; }
+.bubble.proposal p { margin: 0 0 8px; }
+.plansteps { margin: 4px 0 10px; padding-left: 0; list-style: none; display: grid; gap: 5px; }
+.plansteps li { padding-left: 22px; position: relative; }
+.plansteps li::before { content: "✓"; position: absolute; left: 0; color: var(--good); font-weight: 700; }
+.chat .goal { max-width: 100%; }
+.chat .goal.embedded { border: 1px solid var(--line); box-shadow: none; }
+.composer-line { margin-top: 10px; align-items: flex-end; }
+.composer-line textarea { flex: 1; resize: vertical; font-size: 15px; }

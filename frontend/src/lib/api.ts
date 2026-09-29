@@ -28,7 +28,8 @@ export const api = {
   health: () => get("/api/health"),
   mapConfig: () => get<{tiles?: string; attribution?: string}>("/api/config/map"),
   // assistant
-  submitGoal: (text: string, user_id = "demo") => post("/api/agent/goals", {user_id, text}),
+  submitGoal: (text: string, user_id = "demo", start = false) => post("/api/agent/goals", {user_id, text, start}),
+  startGoal: (id: string, text?: string) => post(`/api/agent/goals/${encodeURIComponent(id)}/start`, text ? {text} : {}),
   goals: (user_id = "demo") => get(`/api/agent/goals?${q({user_id})}`),
   goal: (id: string) => get(`/api/agent/goals/${encodeURIComponent(id)}`),
   approve: (id: string, call_id: string, approved: boolean) => post(`/api/agent/goals/${encodeURIComponent(id)}/approve`, {call_id, approved}),

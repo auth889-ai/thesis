@@ -34,6 +34,7 @@ class Decision(str, enum.Enum):
 
 
 class GoalStatus(str, enum.Enum):
+    PROPOSED = "proposed"                 # the intent is recorded and shown; nothing runs until the person says start
     PLANNING = "planning"
     RUNNING = "running"
     WAITING_APPROVAL = "waiting_approval"

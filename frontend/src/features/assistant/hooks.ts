@@ -40,6 +40,7 @@ function useGoalMutation<A extends unknown[]>(fn: (...a: A) => Promise<unknown>)
     },
   });
 }
-export const useSubmitGoal = () => useGoalMutation((text: string) => api.submitGoal(text, USER_ID));
+export const useSubmitGoal = () => useGoalMutation((text: string) => api.submitGoal(text, USER_ID, false));
+export const useStartGoal = () => useGoalMutation((id: string, text?: string) => api.startGoal(id, text));
 export const useApprove = () => useGoalMutation((id: string, call_id: string, approved: boolean) => api.approve(id, call_id, approved));
 export const useAnswer = () => useGoalMutation((id: string, step_id: string, text: string) => api.answer(id, step_id, text));

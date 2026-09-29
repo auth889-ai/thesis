@@ -6,8 +6,8 @@ from functools import lru_cache
 from fastapi import APIRouter, HTTPException
 
 from app.agent import audit, intent, orchestrator, store, tools
-from app.agent.models import AuditEntry, Goal
-from app.agent.schemas import AnswerRequest, ApproveRequest, GoalRequest
+from app.agent.models import AuditEntry, Goal, GoalStatus
+from app.agent.schemas import AnswerRequest, ApproveRequest, GoalRequest, StartRequest
 
 router = APIRouter()
 
@@ -31,7 +31,26 @@ def submit_goal(req: GoalRequest):
     llm = _llm_or_503()
     goal = Goal(user_id=req.user_id, text=req.text, intent=intent.extract(req.text, llm)); store.save_goal(goal)
     audit.write(AuditEntry(user_id=goal.user_id, goal_id=goal.id, kind="intent", detail=goal.intent))
+    if not req.start:
+        goal.status = GoalStatus.PROPOSED; store.save_goal(goal)
+        return goal.to_dict()
     return orchestrator.run(goal, llm).to_dict()
+
+
+@router.post("/api/agent/goals/{goal_id}/start", tags=["agent"])
+def start_goal(goal_id: str, req: StartRequest | None = None):
+    """Start a proposed goal; with an edited text the intent is read again first."""
+    g = store.load_goal(goal_id)
+    if not g:
+        raise HTTPException(404, "no such goal")
+    if g.status != GoalStatus.PROPOSED:
+        raise HTTPException(409, f"goal is {g.status.value}, not proposed")
+    llm = _llm_or_503()
+    if req and req.text and req.text.strip() and req.text.strip() != g.text:
+        g.text = req.text.strip(); g.intent = intent.extract(g.text, llm)
+        audit.write(AuditEntry(user_id=g.user_id, goal_id=g.id, kind="intent", detail=g.intent))
+    audit.write(AuditEntry(user_id=g.user_id, goal_id=g.id, kind="start", detail={"text": g.text}))
+    return orchestrator.run(g, llm).to_dict()
 
 
 @router.get("/api/agent/goals", tags=["agent"])

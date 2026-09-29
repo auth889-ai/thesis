@@ -1,8 +1,11 @@
-import {fireEvent, render, screen} from "@testing-library/react";
+import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
+import {fireEvent, render as rtlRender, screen} from "@testing-library/react";
 import {describe, expect, it, vi} from "vitest";
 
 import {GoalCard} from "./GoalCard";
 import type {Goal} from "./types";
+
+const render = (ui: React.ReactElement) => rtlRender(<QueryClientProvider client={new QueryClient()}>{ui}</QueryClientProvider>);
 
 const goal = (over: Partial<Goal> = {}): Goal => ({
   id: "goal_1", user_id: "demo", text: "Be at Shahbagh by 09:00", status: "waiting_approval", summary: null, model: "test", created_utc: new Date().toISOString(), updated_utc: new Date().toISOString(), tokens_in: 0, tokens_out: 0,

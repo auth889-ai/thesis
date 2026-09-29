@@ -49,3 +49,17 @@ def test_what_if_verdicts_prefer_on_time_then_rail_then_an_earlier_departure():
     assert "rail option" in whatif._verdict(0.4, 5, True, "07:50")
     assert "leave by 07:50" in whatif._verdict(0.4, 12, False, "07:50")
     assert "gamble" in whatif._verdict(0.5, 0, False, "07:50")
+
+
+def test_a_goal_can_be_proposed_first_and_started_later(client, monkeypatch):
+    from app.agent import router as agent_router
+    from app.agent.llm import Scripted, Turn
+    from app.agent.models import GoalStatus
+    llm = Scripted([Turn(text="", tool_calls=[{"name": "intent__record", "input": {"goal_type": "commute", "objectives": ["arrive"], "domains": ["mobility"], "plan": ["Check traffic", "Pick the departure"]}, "id": "i"}]),
+                    Turn(text="Nothing more to do.")])
+    monkeypatch.setattr(agent_router, "_llm", lambda: llm)
+    r = client.post("/api/agent/goals", json={"user_id": "p", "text": "reach IUT before 9", "start": False}).json()
+    assert r["status"] == GoalStatus.PROPOSED.value and r["intent"]["plan"] == ["Check traffic", "Pick the departure"] and r["steps"] == []
+    s = client.post(f"/api/agent/goals/{r['id']}/start", json={}).json()
+    assert s["status"] == "done" and s["summary"] == "Nothing more to do."
+    assert client.post(f"/api/agent/goals/{r['id']}/start", json={}).status_code == 409
