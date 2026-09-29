@@ -1,7 +1,7 @@
-# LIFE OS × TrafficTwin — roadmap in controlled phases
+# LIFE OS · Life Twin · AccessTwin · TrafficTwin — roadmap in controlled phases
 
-Companion to `ARCHITECTURE.md` (what exists), `WORKFLOW.md` (the core loop), `EXPERIMENT_PROTOCOL.md` (the research
-contract) and `REFERENCE_IMPLEMENTATIONS.md` (what each phase studies). One phase at a time; a phase ends only when
+Companion to `PROBLEM.md` (the frozen problem, entities, hypothesis, metrics), `ARCHITECTURE.md` (what exists), `WORKFLOW.md`,
+`EXPERIMENT_PROTOCOL.md` and `REFERENCE_IMPLEMENTATIONS.md` (what each phase studies). One phase at a time; a phase ends only when
 it works end-to-end with tests and evidence, and is committed. Reference repositories are inspected only in their phase.
 
 ## 1. The stack, and why each piece
@@ -36,47 +36,49 @@ client ──POST /api/commute/plan──▶ commute.service.plan
 
 Everything runs when asked. There is no stored answer; a fresh model pass and fresh provider calls every time.
 
-## 3. Phases
+## 3. Phases (frozen 2026-09-30; one at a time; a phase ends only with its exit condition, tests and a commit)
 
-Status on 2026-09-29. **done** = works end-to-end with tests; **partial** = exists but misses listed deliverables; **—** = not started.
-
-| # | Phase | Studies | Deliverables | Status |
+| # | Phase | Exit condition | Studies | What exists already |
 |---|---|---|---|---|
-| 0 | Repository and architecture audit | our code | `ARCHITECTURE`, `WORKFLOW`, `ROADMAP`, `REFERENCE_IMPLEMENTATIONS`, `THIRD_PARTY_LICENSES`, `EXPERIMENT_PROTOCOL` | done (this commit) |
-| 1 | LIFE OS agent core | tahodev/openmuse, CopilotKit/openmuse, openai-agents-python | persistent Goal/Step, states, durable background execution with a lease, resume after restart, cancel, approvals, activity feed, tests | done (see phase log) |
-| 2 | Consumer LIFE OS shell | (CopilotKit UI patterns if useful) | Today · Agent · Goals · Activity · You; no research internals in the consumer UI | done (see phase log) |
-| 3 | Life Twin | — (our own) | structured twin; feasibility engine: feasible / risky / impossible, conflicts, free windows, buffers; unit tests | in progress: steps 1 (grades and buffers) and 2 (conflicts) done; next: goal dependencies and routines from outcomes |
-| 4 | Core forecasting reproducibility | DCRNN, Graph WaveNet, STID, STAEformer (one at a time, after persistence and historical average) | full run records on METR-LA and PEMS-BAY, then PEMS | partial (GWNet and STID trained via BasicTS; records incomplete) |
-| 5 | Cross-city / foundation models | OpenCity, UniST, RAST | local vs zero-shot vs few-shot; days-of-data curve; validation gate before any advice | partial (OpenCity zero-shot exists) |
-| 6 | Large-scale evaluation | LargeST | dataset manifests and cards; SD region first | — |
-| 7 | Calibrated uncertainty | MAPIE | conformal intervals for ETA and departure; coverage, width, drift; reliability only from validated intervals | — |
-| 8 | Probe data and map matching | Map-Matching, Valhalla Meili | consented phone observations → segment speeds; never called live traffic until real observations exist | — |
-| 9 | Sensor fusion | — (our own) | interpretable baseline, then weighted / Kalman / learned; provenance per fused state | — |
-| 10 | Multimodal routing | OpenTripPlanner, Valhalla, docker-valhalla | car / walk / transit / mixed candidates from infrastructure; our contribution sits above | partial (Amazon Location + OSM transit) |
-| 11 | Future-aware routing and departure optimisation | — (ours) | segment entry times → forecast → cost distribution → reliability; latest departure meeting the target; baselines incl. oracle | partial (`commute/`, `routing/forecast_costs.py`) |
-| 12 | SUMO digital twin | eclipse-sumo | paired scenarios, versioned configs, the metric set | partial (oracle-first protocol exists) |
-| 13 | Traffic signal control | sumo-rl, LibSignal, RL_signals_CityFlow, smart-traffic-rl | fixed → actuated → max pressure → published RL → ours only if justified | partial (`signals/` benchmark) |
-| 14 | Learned rerouting | — | policy over forecast in the twin vs reactive / forecast-aware / oracle | partial (`protocols/learned_gate.py`) |
-| 15 | V2X research | eclipse-mosaic, SUMO-V2X example | penetration / latency / loss / interval sweeps | partial (`networking/`) |
-| 16 | LIFE OS × TrafficTwin integration | — | the interview workflow end-to-end with real tool results | partial |
-| 17 | Calendar / email / files / tasks | — | connectors as tools under the same permission engine | partial (calendar ICS, tasks) |
-| 18 | Event-driven monitoring | — | triggers; recompute only affected goals | partial (polling monitor) |
-| 19 | Outcome learning | — | outcome records and personal calibration; no silent global retraining | partial (`plan/outcomes.py`) |
-| 20 | Domain workflows | — | study, job, travel, errands on the same engine | — |
-| 21 | Research lab | — | `/lab/{datasets,models,forecasting,routing,digital-twin,v2x,experiments,references}` | partial |
-| 22 | Scale architecture | — | accounts, Postgres, workers, queues, S3, ECS, observability, shards; freshness fields on every result | — |
-| 23 | Alexa+ / hackathon | — | MCP tools executed for real from Alexa+; one plan-changing event | partial (MCP server live) |
+| 0 | Problem freeze | `PROBLEM.md`: Person, Commitment, Travel Edge; the system can answer YES / RISKY / NO for one day | Conveyal R5, SPOTAR literature, OR-Tools, MATSim (read) | done |
+| 1 | Static Life Twin | calendar, tasks, deadlines, places, travel requirements, dependencies, free windows; a constraint check with static travel times; "your 11:30 class cannot be reached after your 11:00 meeting" | — | profile, calendar, tasks, free windows, feasibility grades, conflicts (partial: travel is from the planner, not a static edge; dependencies missing) |
+| 2 | Real multimodal travel | A → B gives car, transit, walk, mixed with real routes; edges are real, no traffic ML | OpenTripPlanner / R5, Valhalla | car via the routing provider, rail via OSM (partial) |
+| 3 | Whole-day optimiser | fixed events + flexible tasks + deadlines + edges → a feasible day, deterministic | OR-Tools CP-SAT / Timefold | — |
+| 4 | TrafficTwin baseline | persistence, historical average, one Graph WaveNet; now / +15 / +30 / +60 with reproducible records | Graph WaveNet via BasicTS | GWNet trained; records incomplete |
+| 5 | Uncertainty | every edge has an expected time and a calibrated interval, in any city | MAPIE, Namma Commute | — (the empirical probability exists only where corridor history exists) |
+| 6 | Reliable reachability | P(arrive before deadline) per departure and mode; latest reliable departure | SPOTAR | partial (empirical, Dhaka only) |
+| 7 | Reachability risk | every Today item shows LOW / MEDIUM / HIGH from the model and the constraints | — | partial (grades from the empirical probability) |
+| 8 | Automatic day repair | a change recomputes only downstream nodes; "I repaired 3 parts of your day" | — | monitor + one-shot recovery (partial) |
+| 9 | Disruption engine | accident, closure, cancellation, weather, flooding as one abstraction that changes edges | — | — |
+| 10 | Accessibility | mobility profile; accessible vs fastest; the accessibility gap measured | — | — |
+| 11 | Opportunity explorer | "which internships can I reliably reach while keeping my schedule?" over jobs, hospitals, universities, services | R5 cumulative accessibility | — |
+| 12 | What-if simulator | leave later, rain, metro stops, take this job, move here; one simulation underneath | — | departure what-if (partial) |
+| 13 | TrafficTwin advanced models | DCRNN, STID, STAEformer one at a time; judged by reachability decisions, not MAE | official repos via BasicTS | STID trained |
+| 14 | Access research metrics | Access Success Rate, Access Regret, Buffer Waste, Recovery Rate, Opportunity Reachability computed from runs | — | outcomes store (partial) |
+| 15 | Sparse-data research | sensors at 100 / 75 / 50 / 25 / 10 %: forecast error → reachability error → access success | — | node subsampling exists |
+| 16 | Cross-city | OpenCity, UniST: useful reachability decisions with little local history | OpenCity, UniST | OpenCity zero-shot exists |
+| 17 | Digital twin | same people, destinations, congestion: reactive navigation vs AccessTwin decisions; late arrivals, waiting, queues, access success | SUMO | oracle-first protocol exists |
+| 18 | Population-level simulation | 1 000 to 10 000 agents; does predictive access planning raise city-wide opportunity accessibility | MATSim | — |
+| 19 | Emergency scenario | hospital reachability, future-aware route, signal priority, as an evaluation domain | — | — |
+| 20 | V2X | vehicles as a sensing channel; how communication degradation affects access decisions | MOSAIC | channel and sweeps exist |
+| 21 | LIFE OS agent | goal → planner → typed action → policy → approval → tool → audit over a mature AccessTwin | OpenMuse pattern | built (proposal, worker, approvals, audit) |
+| 22 | Email, calendar, files | "I have an interview": find the mail, the event, the place, the CV; build the commitment | — | calendar ICS only |
+| 23 | Consumer web app | Today · Plan · Agent · Explore · Activity · You; Today is the homepage, not a traffic map | — | Today · Agent · Goals · Activity · You built; Plan and Explore pending |
+| 24 | Hackathon | one flagship scenario on Alexa+ with one injected disruption, three minutes | — | MCP server live |
+| 25 | Growth | one daily loop: morning, before travel, during the day, evening; then the consented data flywheel and partners | — | — |
 
 ## 4. Rules that hold in every phase
 - Nothing on a page is typed in; every number comes from a file the pipeline wrote or a computation for this request.
-- A provider is a live external reference, never a training target.
-- A model drives advice only after the gate.
+- A provider is a live external reference, never a training target; consented probe data is the only city history a model may learn from.
+- A model drives a decision only after its validation gate; a probability is shown only when it comes from an evaluated method.
 - Irreversible actions pause for approval; every decision is in the audit chain.
-- One file, one responsibility; official implementations unchanged; each phase's evidence in the lab.
-- Amazon Bedrock stays the LIFE OS model unless a documented technical reason changes it; TrafficTwin stays the thesis core.
+- One file, one responsibility; official implementations unchanged and used as dependencies or adapters when their licence allows; each phase's evidence in the lab.
+- Amazon Bedrock stays the LIFE OS model; TrafficTwin predicts, AccessTwin decides, LIFE OS acts.
 - Commit after each completed phase; never continue because the UI looks complete.
 
 ## 5. Phase log
+
+Entries before 2026-09-30 refer to the earlier phase numbering; they are kept because the work is kept.
 
 | Phase | Date | What was verified | Evidence |
 |---|---|---|---|

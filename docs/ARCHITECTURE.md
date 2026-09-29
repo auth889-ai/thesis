@@ -1,4 +1,8 @@
-# Architecture — LIFE OS × TrafficTwin
+# Architecture — LIFE OS · Life Twin · AccessTwin · TrafficTwin
+
+The frozen problem, entities and hypothesis are in `PROBLEM.md`. The four layers: LIFE OS turns knowledge into action;
+the Life Twin is the day as a structure; AccessTwin decides whether a commitment can be reliably reached; TrafficTwin
+predicts mobility and its uncertainty. Everything below is the code as it exists, mapped onto those layers.
 
 Audit date: 2026-09-29 (Phase 0). Every statement here was checked against the code on that date; line counts are
 from `wc -l`. Companion documents: `WORKFLOW.md` (the core loop on one goal), `ROADMAP.md` (phases and gates),
