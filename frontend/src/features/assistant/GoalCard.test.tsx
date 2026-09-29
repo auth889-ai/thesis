@@ -22,6 +22,7 @@ describe("GoalCard", () => {
     expect(screen.getByText("Approve this action?")).toBeInTheDocument();
     expect(screen.getByText(/cannot be undone/)).toBeInTheDocument();
     expect(screen.queryByText(/commutes__delete|\{/)).toBeNull();
+    fireEvent.click(screen.getByText("Decline…"));                         // opens the reason box first
     fireEvent.click(screen.getByText("Decline"));
     expect(onApprove).toHaveBeenCalledWith("call_2", false);
   });

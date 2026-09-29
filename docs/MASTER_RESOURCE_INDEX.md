@@ -69,3 +69,25 @@ STAEformer / Chronos-2 (Labs 07–12), SUMO-RL / PressLight / FRAP / CoLight /
 MAPPO (Labs 15–19), URB/RouteRL challengers (Lab 27). Links are deliberately
 NOT listed here yet — they will be verified at lab start, not quoted from
 memory (no invented links).
+
+## Assistant (LIFE OS) — approvals, audit, planning
+
+| Resource | Type | Pin / provenance | Class |
+|---|---|---|---|
+| **OpenMuse (tahodev)** — exact-action approvals, hash-chained audit with signed checkpoints | official software | `github.com/tahodev/openmuse` @ `e39abd62fc61` (docs/life_os_pins.json); design adapted in `backend/app/agent/approvals.py`, `audit.py` | USED (design) |
+| **OpenAI Agents SDK** — `needs_approval` predicate, always-approve/reject, rejection message | official software | `github.com/openai/openai-agents-python` @ `7b27134b2da9`; adapted in `approvals.py`, `tools.py`, `orchestrator.py` | USED (design) |
+| **OpenMuse (CopilotKit)** — reviewable plan before it runs, action review, receipts | official software | `github.com/CopilotKit/openmuse` @ `6151b4e47543`; followed by the proposed-goal flow | USED (design) |
+
+## Pinned for later gates (2026-09-29)
+
+| Resource | Type | Pin / provenance | Class |
+|---|---|---|---|
+| UniST (KDD 2024), RAST | cross-city / retrieval forecasting | `upstream/UPSTREAM_PINS.yaml` | FUTURE |
+| LargeST (NeurIPS 2023 D&B) | large-scale benchmark | `upstream/UPSTREAM_PINS.yaml` | FUTURE |
+| MAPIE | conformal prediction intervals | `upstream/UPSTREAM_PINS.yaml` | FUTURE |
+| OpenTripPlanner, Valhalla (+ docker-valhalla) | multimodal / self-hosted routing, map matching | `upstream/UPSTREAM_PINS.yaml` | FUTURE |
+| Map-Matching (HMM reference) | phone probe traces → corridor speeds | `upstream/UPSTREAM_PINS.yaml` | FUTURE |
+| RL_signals_CityFlow, smart-traffic-rl | RL signal control references | `upstream/UPSTREAM_PINS.yaml` | FUTURE |
+| SUMO-V2X platooning & CIM | V2X worked example | `upstream/UPSTREAM_PINS.yaml` | FUTURE |
+| DCRNN, Graph WaveNet, STID, STAEformer, Eclipse SUMO, sumo-rl, LibSignal, Eclipse MOSAIC, OpenCity | already pinned in earlier labs | see the lab sections above and `UPSTREAM_PINS.yaml` | USED / PINNED |
+

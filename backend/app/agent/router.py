@@ -5,9 +5,9 @@ from functools import lru_cache
 
 from fastapi import APIRouter, HTTPException
 
-from app.agent import audit, intent, orchestrator, store, tools
+from app.agent import approvals, audit, intent, orchestrator, store, tools
 from app.agent.models import AuditEntry, Goal, GoalStatus
-from app.agent.schemas import AnswerRequest, ApproveRequest, GoalRequest, StartRequest
+from app.agent.schemas import AnswerRequest, ApproveRequest, GoalRequest, StartRequest, RuleRequest
 
 router = APIRouter()
 
@@ -72,7 +72,7 @@ def approve(goal_id: str, req: ApproveRequest):
     if not g:
         raise HTTPException(404, "no such goal")
     try:
-        return orchestrator.approve(g, req.call_id, req.approved, _llm_or_503()).to_dict()
+        return orchestrator.approve(g, req.call_id, req.approved, _llm_or_503(), message=req.message, always=req.always, action_hash=req.action_hash).to_dict()
     except ValueError as exc:
         raise HTTPException(409, str(exc))
 
@@ -86,6 +86,24 @@ def answer(goal_id: str, req: AnswerRequest):
         return orchestrator.answer(g, req.step_id, req.text, _llm_or_503()).to_dict()
     except ValueError as exc:
         raise HTTPException(409, str(exc))
+
+
+@router.get("/api/agent/approvals/rules", tags=["agent"])
+def approval_rules(user_id: str = "demo"):
+    """The person's standing decisions: tools they allow or decline every time, with when they said so."""
+    return {"user_id": user_id, "rules": approvals.list_rules(user_id)}
+
+
+@router.post("/api/agent/approvals/rules", tags=["agent"])
+def set_approval_rule(req: RuleRequest):
+    return approvals.set_rule(req.user_id, req.tool, req.decision, None)
+
+
+@router.delete("/api/agent/approvals/rules/{tool}", tags=["agent"])
+def clear_approval_rule(tool: str, user_id: str = "demo"):
+    if not approvals.clear_rule(user_id, tool):
+        raise HTTPException(404, "no such rule")
+    return {"cleared": tool}
 
 
 @router.get("/api/agent/audit", tags=["agent"])

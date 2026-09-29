@@ -32,6 +32,18 @@ def create_event(user_id, a, goal_id):
     return _view(store.upsert(user_id, ev, "assistant"))
 
 
+def overlaps(user_id: str, a: dict) -> str | None:
+    """Why creating this event needs approval: it would sit on top of something already in the calendar."""
+    try:
+        start = _iso(a["start"]); end = _iso(a["end"]) if a.get("end") else (datetime.fromisoformat(start) + timedelta(minutes=int(a.get("minutes", 60)))).isoformat()
+    except (KeyError, ValueError):
+        return None
+    for e in store.between(user_id, (datetime.fromisoformat(start) - timedelta(hours=12)).isoformat(), end):
+        if e["end_utc"] > start and e["start_utc"] < end:
+            return f"it overlaps '{e['title']}' ({_local(e['start_utc'])}–{_local(e['end_utc'])[-5:]})"
+    return None
+
+
 def import_url(user_id, a, goal_id):
     text = ics.fetch(a["url"])
     events = ics.parse(text)
@@ -42,6 +54,6 @@ def import_url(user_id, a, goal_id):
 
 TOOL_SPECS = [
     ("calendar.upcoming", "The person's calendar events in the coming hours (title, local start and end, location).", {"type": "object", "properties": {"hours": {"type": "number", "default": 36}}, "required": []}, RiskClass.READ, upcoming),
-    ("calendar.create_event", "Add an event to the person's calendar. Times are local 'YYYY-MM-DDTHH:MM'.", {"type": "object", "properties": {"title": {"type": "string"}, "start": {"type": "string"}, "end": {"type": "string"}, "minutes": {"type": "integer", "default": 60}, "location": {"type": "string"}, "notes": {"type": "string"}}, "required": ["title", "start"]}, RiskClass.WRITE_REVERSIBLE, create_event),
+    ("calendar.create_event", "Add an event to the person's calendar. Times are local 'YYYY-MM-DDTHH:MM'.", {"type": "object", "properties": {"title": {"type": "string"}, "start": {"type": "string"}, "end": {"type": "string"}, "minutes": {"type": "integer", "default": 60}, "location": {"type": "string"}, "notes": {"type": "string"}}, "required": ["title", "start"]}, RiskClass.WRITE_REVERSIBLE, create_event, overlaps),
     ("calendar.import_url", "Import the person's calendar from an iCalendar (.ics / webcal) subscription URL they gave.", {"type": "object", "properties": {"url": {"type": "string"}, "name": {"type": "string"}}, "required": ["url"]}, RiskClass.WRITE_REVERSIBLE, import_url),
 ]

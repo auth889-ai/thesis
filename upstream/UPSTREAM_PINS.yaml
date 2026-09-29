@@ -325,3 +325,115 @@ repos:
          OpenCity zero-shot vs OpenCity fine-tuned, on METR-LA + PEMS-BAY +
          a held-out third city. Pretrained weights are used as released; we do
          not pretrain a foundation model from scratch.
+
+  # ------------------------------------------------------------- pinned 2026-09-29 (roles stated; fetched when their gate opens)
+  - name: UniST
+    subsystem: forecasting
+    url: https://github.com/tsinghua-fib-lab/UniST.git
+    ref: main
+    sha: 6ee69db00d8f67e550f9bc3c06f004f9f7885703
+    verified: "2026-09-29"
+    status: PINNED_NOT_FETCHED
+    paper: https://arxiv.org/abs/2402.11838
+    venue: KDD 2024
+    why: Universal spatio-temporal model with prompt-based cross-city transfer; second
+         cross-city baseline next to OpenCity for a city with no sensor history (Dhaka).
+
+  - name: RAST
+    subsystem: forecasting
+    url: https://github.com/RWLinno/RAST.git
+    ref: main
+    sha: 4b48a47a002dd8d4151afe47be8f436f0c028a67
+    verified: "2026-09-29"
+    status: PINNED_NOT_FETCHED
+    why: Retrieval-augmented spatio-temporal forecasting; candidate for the
+         corridor forecaster once a corridor history exists (never Google-derived).
+
+  - name: LargeST
+    subsystem: forecasting
+    url: https://github.com/liuxu77/LargeST.git
+    ref: main
+    sha: b7c6ff5f7f0c10051ed10a319b2cfe58021312f9
+    verified: "2026-09-29"
+    status: PINNED_NOT_FETCHED
+    paper: https://arxiv.org/abs/2306.08259
+    venue: NeurIPS 2023 (datasets and benchmarks)
+    why: 8,600-sensor California benchmark; the scale test for the forecaster and for
+         the CPU-bounded evaluation (node subsampling) before any city-wide claim.
+
+  - name: MAPIE
+    subsystem: uncertainty
+    url: https://github.com/scikit-learn-contrib/MAPIE.git
+    ref: master
+    sha: 7e888f5249bf942912207d398525d3259a5f07c0
+    verified: "2026-09-29"
+    status: PINNED_NOT_FETCHED
+    license: BSD-3-Clause
+    why: Conformal prediction intervals for the departure-time and ETA predictions;
+         the on-time probability becomes a calibrated interval, not a point.
+
+  - name: OpenTripPlanner
+    subsystem: routing
+    url: https://github.com/opentripplanner/OpenTripPlanner.git
+    ref: dev-2.x
+    sha: 7e9465b48487b9ff0b4241c5b9713210b2abd124
+    verified: "2026-09-29"
+    status: PINNED_NOT_FETCHED
+    license: LGPL-3.0
+    why: Multimodal (transit + walk + bike) routing over GTFS + OSM; replaces the
+         in-house metro planner (app/transit) when a GTFS feed for the city exists.
+
+  - name: valhalla
+    subsystem: routing
+    url: https://github.com/valhalla/valhalla.git
+    ref: master
+    sha: 685e3d814675e2b692b8602c5709a76160b42fc4
+    verified: "2026-09-29"
+    status: PINNED_NOT_FETCHED
+    license: MIT
+    docker: https://github.com/nilsnolde/docker-valhalla @ 91b5ea11931c7b9e76bfb31f3bb2d13888d5deef
+    why: Self-hosted OSM routing engine with map matching (Meili) and time-dependent
+         costing; the local route provider behind Amazon Location, and the map matcher
+         for phone probe traces.
+
+  - name: Map-Matching
+    subsystem: probes
+    url: https://github.com/MapMatching-research/Map-Matching.git
+    ref: main
+    sha: 574b3f0fa31e2c28b679cb5d90a224c69f67af47
+    verified: "2026-09-29"
+    status: PINNED_NOT_FETCHED
+    why: Reference HMM map matching (Newson & Krumm 2009) for turning phone GPS
+         traces into corridor speeds; compared against Valhalla's matcher.
+
+  - name: RL_signals_CityFlow
+    subsystem: control
+    url: https://github.com/yizhihongli/RL_signals_CityFlow.git
+    ref: main
+    sha: 8162b4198ce43eb8e321e0f46dfddc93bb8e7b65
+    verified: "2026-09-29"
+    status: PINNED_NOT_FETCHED
+    why: RL signal control on CityFlow; a second simulator for the control gate
+         (sumo-rl and LibSignal remain the SUMO side).
+
+  - name: smart-traffic-rl
+    subsystem: control
+    url: https://github.com/taha-elbadaoui/smart-traffic-rl.git
+    ref: main
+    sha: 2392dfed0ad586cf34966e98f66268435cceea63
+    verified: "2026-09-29"
+    status: PINNED_NOT_FETCHED
+    why: Compact RL signal-control example; read for its reward and state design only.
+
+  - name: SUMO-V2X-Platooning-CIM
+    subsystem: networking
+    url: https://github.com/sraddon/SUMO-V2X-Communication-Research-Platooning-and-CIM.git
+    ref: main
+    sha: 7960fe4defad7b6989718da136c727312fb0bbd6
+    verified: "2026-09-29"
+    status: PINNED_NOT_FETCHED
+    why: SUMO + V2X platooning and collective perception example; a worked
+         reference next to Eclipse MOSAIC for the V2X arm.
+
+  # Forks the person pointed at (gusongen/sumo-rl a3eb923, sal0-h/LibSignal 0d4a29e) are
+  # not pinned: the originals above are the official implementations.

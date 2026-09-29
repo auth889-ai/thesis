@@ -14,7 +14,7 @@ from __future__ import annotations
 import json
 from typing import Any
 
-from app.agent import audit, memory, permissions, store, tools
+from app.agent import approvals, audit, memory, permissions, store, tools
 from app.agent.models import AuditEntry, Decision, Goal, GoalStatus, Step, ToolCall, now_iso
 
 MAX_STEPS = 12
@@ -82,6 +82,9 @@ def run(goal: Goal, llm, max_steps: int = MAX_STEPS) -> Goal:
     goal.model = getattr(llm, "model", None); goal.status = GoalStatus.RUNNING; store.save_goal(goal)
     for _ in range(max_steps):
         pending = next((s for s in goal.steps if s.call and s.call.decision == Decision.ASK and s.call.result is None and s.call.error is None), None)
+        if pending and approvals.expired(pending.call):
+            pending.call.error = f"not approved within {approvals.TTL_MIN} minutes; propose it again if it is still needed"
+            _log(goal, "approval", {"call_id": pending.call.id, "tool": pending.call.tool, "expired": True}); pending = None
         if pending:
             goal.status = GoalStatus.WAITING_APPROVAL; store.save_goal(goal); return goal
         unanswered = next((s for s in goal.steps if s.question and not s.answer), None)
@@ -102,7 +105,7 @@ def run(goal: Goal, llm, max_steps: int = MAX_STEPS) -> Goal:
                 goal.steps.append(Step(thought=turn.text, call=call)); _log(goal, "refusal", {"tool": name, "reason": "no such tool"}); continue
             tool = tools.TOOLS[name]
             call = ToolCall(tool=name, arguments=tc["input"], id=tc["id"], risk=tool.risk)
-            call.decision, call.decision_reason = permissions.decide(call, tool.risk, _context_text(goal))
+            call.decision, call.decision_reason = _decide(goal, tool, call)
             step = Step(thought=turn.text, call=call); goal.steps.append(step)
             _log(goal, "decision", {"call_id": call.id, "tool": name, "arguments": call.arguments, "risk": tool.risk.value, "decision": call.decision.value, "reason": call.decision_reason})
             if call.decision == Decision.ALLOW:
@@ -110,20 +113,43 @@ def run(goal: Goal, llm, max_steps: int = MAX_STEPS) -> Goal:
             elif call.decision == Decision.REFUSE:
                 call.error = f"refused: {call.decision_reason}"
             else:
-                goal.status = GoalStatus.WAITING_APPROVAL; store.save_goal(goal); return goal
+                approvals.bind(call); goal.status = GoalStatus.WAITING_APPROVAL; store.save_goal(goal); return goal
         store.save_goal(goal)
     goal.status = GoalStatus.FAILED; goal.summary = f"stopped after {max_steps} steps without finishing"; _log(goal, "error", {"reason": goal.summary}); store.save_goal(goal); return goal
 
 
-def approve(goal: Goal, call_id: str, approved: bool, llm) -> Goal:
+def _decide(goal: Goal, tool: tools.Tool, call: ToolCall) -> tuple[Decision, str]:
+    """The permission engine, then the tool's own predicate (an allowed call can still need approval for a reason
+    the tool sees, such as an overlapping event), then the person's standing rules for this tool."""
+    decision, reason = permissions.decide(call, tool.risk, _context_text(goal))
+    if decision == Decision.ALLOW and tool.needs_approval:
+        why = tool.needs_approval(goal.user_id, call.arguments)
+        if why:
+            decision, reason = Decision.ASK, f"{why}: paused until you approve this exact call"
+    if decision == Decision.ASK:
+        rule = approvals.rule_for(goal.user_id, call.tool)
+        if rule:
+            _log(goal, "approval", {"call_id": call.id, "tool": call.tool, "arguments": call.arguments, "approved": rule["decision"] == "approve", "by": "standing rule", "since": rule["created_utc"]})
+            return (Decision.ALLOW, f"{reason}; you allowed {call.tool} every time on {rule['created_utc'][:10]}") if rule["decision"] == "approve" else (Decision.REFUSE, f"you declined {call.tool} every time on {rule['created_utc'][:10]}")
+    return decision, reason
+
+
+def approve(goal: Goal, call_id: str, approved: bool, llm, message: str | None = None, always: bool = False, action_hash: str | None = None) -> Goal:
+    """One decision for one exact call: the hash the person saw must match, the window must be open. `always`
+    turns the decision into a standing rule for this tool; `message` is what the model reads after a rejection."""
     step = next((s for s in goal.steps if s.call and s.call.id == call_id), None)
-    if not step or step.call.decision != Decision.ASK or step.call.result is not None:
+    if not step or step.call.decision != Decision.ASK or step.call.result is not None or step.call.error:
         raise ValueError("no pending approval with that id")
-    _log(goal, "approval", {"call_id": call_id, "tool": step.call.tool, "arguments": step.call.arguments, "approved": approved})
+    problem = approvals.check(step.call, action_hash)
+    if problem:
+        raise ValueError(problem)
+    _log(goal, "approval", {"call_id": call_id, "tool": step.call.tool, "arguments": step.call.arguments, "action_hash": step.call.action_hash, "approved": approved, "always": always, "message": message})
+    if always:
+        approvals.set_rule(goal.user_id, step.call.tool, "approve" if approved else "reject", goal.id)
     if approved:
         _execute(goal, step)
     else:
-        step.call.error = "declined by the user"
+        step.call.error = "declined by the user" + (f": {message}" if message else "")
     return run(goal, llm)
 
 

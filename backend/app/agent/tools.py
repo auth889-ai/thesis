@@ -28,6 +28,7 @@ class Tool:
     schema: dict
     risk: RiskClass
     handler: Callable[[str, dict, str | None], Any]         # (user_id, arguments, goal_id) -> JSON-serialisable result
+    needs_approval: Callable[[str, dict], str | None] | None = None   # (user_id, arguments) -> why this call must be approved, or None
 
 
 def _iso(dt: str) -> str:
@@ -124,8 +125,8 @@ TOOLS: dict[str, Tool] = {t.name: t for t in [
 
 
 def _register(specs) -> None:
-    for name, desc, schema, risk, handler in specs:
-        TOOLS[name] = Tool(name, desc, schema, risk, handler)
+    for name, desc, schema, risk, handler, *rest in specs:
+        TOOLS[name] = Tool(name, desc, schema, risk, handler, rest[0] if rest else None)
 
 
 def _register_domains() -> None:

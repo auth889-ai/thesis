@@ -25,6 +25,7 @@ def _conn() -> sqlite3.Connection:
         create table if not exists tasks (id text primary key, user_id text, title text, due_utc text, status text, created_utc text, updated_utc text, source_goal text);
         create table if not exists reminders (id text primary key, user_id text, text text, at_utc text, status text, created_utc text, source_goal text);
         create table if not exists commutes (id text primary key, user_id text, name text, origin text, destination text, arrive_by_local text, created_utc text);
+        create table if not exists approval_rules (user_id text, tool text, decision text, created_utc text, source_goal text, primary key (user_id, tool));
         create index if not exists goals_user on goals(user_id, updated_utc);
     """)
     return c
@@ -112,3 +113,27 @@ def save_commute(user_id: str, name: str, origin: str, destination: str, arrive_
 def list_commutes(user_id: str) -> list[dict]:
     with _conn() as c:
         return [dict(r) for r in c.execute("select * from commutes where user_id=? order by created_utc", (user_id,)).fetchall()]
+
+
+# ------------------------------------------------------------------ standing approval rules (agent/approvals.py)
+def set_approval_rule(user_id: str, tool: str, decision: str, source_goal: str | None) -> dict:
+    row = {"user_id": user_id, "tool": tool, "decision": decision, "created_utc": now_iso(), "source_goal": source_goal}
+    with _LOCK, _conn() as c:
+        c.execute("insert or replace into approval_rules values (?,?,?,?,?)", tuple(row.values()))
+    return row
+
+
+def get_approval_rule(user_id: str, tool: str) -> dict | None:
+    with _conn() as c:
+        r = c.execute("select * from approval_rules where user_id=? and tool=?", (user_id, tool)).fetchone()
+    return dict(r) if r else None
+
+
+def list_approval_rules(user_id: str) -> list[dict]:
+    with _conn() as c:
+        return [dict(r) for r in c.execute("select * from approval_rules where user_id=? order by created_utc desc", (user_id,)).fetchall()]
+
+
+def clear_approval_rule(user_id: str, tool: str) -> bool:
+    with _LOCK, _conn() as c:
+        return c.execute("delete from approval_rules where user_id=? and tool=?", (user_id, tool)).rowcount > 0

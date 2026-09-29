@@ -21,6 +21,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 }
 export const get = <T = Json,>(p: string) => request<T>(p, {headers: {Accept: "application/json"}});
 export const post = <T = Json,>(p: string, body: unknown = {}) => request<T>(p, {method: "POST", headers: {"Content-Type": "application/json", Accept: "application/json"}, body: JSON.stringify(body)});
+export const del = <T = Json,>(p: string) => request<T>(p, {method: "DELETE", headers: {Accept: "application/json"}});
 export const postForm = <T = Json,>(p: string, form: FormData) => request<T>(p, {method: "POST", body: form});
 const q = (o: Record<string, string | number | boolean | null | undefined>) => Object.entries(o).filter(([, v]) => v != null && v !== "").map(([k, v]) => `${k}=${encodeURIComponent(String(v))}`).join("&");
 
@@ -32,7 +33,9 @@ export const api = {
   startGoal: (id: string, text?: string) => post(`/api/agent/goals/${encodeURIComponent(id)}/start`, text ? {text} : {}),
   goals: (user_id = "demo") => get(`/api/agent/goals?${q({user_id})}`),
   goal: (id: string) => get(`/api/agent/goals/${encodeURIComponent(id)}`),
-  approve: (id: string, call_id: string, approved: boolean) => post(`/api/agent/goals/${encodeURIComponent(id)}/approve`, {call_id, approved}),
+  approve: (id: string, call_id: string, approved: boolean, extra: {action_hash?: string | null; message?: string; always?: boolean} = {}) => post(`/api/agent/goals/${encodeURIComponent(id)}/approve`, {call_id, approved, ...extra}),
+  approvalRules: (user_id: string) => get(`/api/agent/approvals/rules?user_id=${encodeURIComponent(user_id)}`),
+  clearApprovalRule: (user_id: string, tool: string) => del(`/api/agent/approvals/rules/${encodeURIComponent(tool)}?user_id=${encodeURIComponent(user_id)}`),
   answer: (id: string, step_id: string, text: string) => post(`/api/agent/goals/${encodeURIComponent(id)}/answer`, {step_id, text}),
   audit: (user_id = "demo", goal_id?: string) => get(`/api/agent/audit?${q({user_id, goal_id})}`),
   agentTasks: (user_id = "demo") => get(`/api/agent/tasks?${q({user_id})}`),

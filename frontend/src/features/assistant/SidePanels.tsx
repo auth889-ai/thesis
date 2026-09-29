@@ -1,6 +1,7 @@
 import {Card, Loading, Pill} from "@/components/ui";
 import {ago} from "@/lib/format";
-import {useAgentTasks, useAudit} from "./hooks";
+import {useAgentTasks, useApprovalRules, useAudit, useClearRule} from "./hooks";
+import {toolWords} from "./words";
 import {auditSentence} from "./words";
 
 const when = (iso: string | null) => (iso ? new Date(iso).toLocaleString([], {weekday: "short", hour: "2-digit", minute: "2-digit"}) : "no time");
@@ -30,6 +31,17 @@ export function ActivityPanel({goalId}: {goalId?: string}) {
   return (
     <Card title="Activity" sub={goalId ? "this goal" : "everything recent"} right={<Pill tone={a.data.chain.ok ? "ok" : "bad"}>{a.data.chain.ok ? "log verified" : "log altered"}</Pill>}>
       {rows.length ? <ul className="plain audit">{rows.map(({e, text}) => <li key={e.id}><span className="muted small">{ago(e.at_utc)}</span> {text}</li>)}</ul> : <p className="muted small">nothing yet</p>}
+    </Card>
+  );
+}
+
+/** Decisions you made once for every time: the assistant no longer asks for these tools. Remove one to be asked again. */
+export function RulesPanel() {
+  const r = useApprovalRules(), clear = useClearRule();
+  if (!r.data?.rules.length) return null;
+  return (
+    <Card title="Standing decisions" sub="what you allowed or declined every time">
+      <ul className="plain">{r.data.rules.map((x) => <li key={x.tool} className="row"><span><Pill tone={x.decision === "approve" ? "ok" : "bad"}>{x.decision === "approve" ? "always" : "never"}</Pill> {toolWords(x.tool)} <span className="muted small">since {ago(x.created_utc)}</span></span><button type="button" className="chip" onClick={() => clear.mutate(x.tool)} disabled={clear.isPending}>ask me again</button></li>)}</ul>
     </Card>
   );
 }

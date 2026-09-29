@@ -3,7 +3,7 @@ export type RiskClass = "read" | "write_reversible" | "write_irreversible" | "ex
 export type Decision = "allow" | "ask" | "refuse";
 export type GoalStatus = "proposed" | "planning" | "running" | "waiting_approval" | "waiting_user" | "done" | "failed" | "cancelled";
 
-export type ToolCall = {id: string; tool: string; arguments: Record<string, unknown>; risk: RiskClass; decision: Decision | null; decision_reason: string | null; result: unknown; error: string | null; started_utc: string | null; finished_utc: string | null};
+export type ToolCall = {id: string; tool: string; arguments: Record<string, unknown>; risk: RiskClass; decision: Decision | null; decision_reason: string | null; result: unknown; error: string | null; started_utc: string | null; finished_utc: string | null; action_hash?: string | null; approval_expires_utc?: string | null};
 export type Step = {id: string; thought: string; call: ToolCall | null; question: string | null; answer: string | null; created_utc: string};
 export type Intent = {goal_type: string; deadline_local?: string; objectives: string[]; domains: string[]; plan?: string[]; needs_approval?: boolean; missing?: string[]; source?: string};
 export type Goal = {id: string; user_id: string; text: string; status: GoalStatus; steps: Step[]; summary: string | null; model: string | null; created_utc: string; updated_utc: string; tokens_in: number; tokens_out: number; intent?: Intent | null};
@@ -19,3 +19,4 @@ export const STATUS_WORDS: Record<GoalStatus, string> = {proposed: "waiting for 
 
 /** The user id is a session-scoped identity until accounts exist; it is read once here. */
 export const USER_ID = "demo";
+export type ApprovalRule = {user_id: string; tool: string; decision: "approve" | "reject"; created_utc: string; source_goal: string | null};

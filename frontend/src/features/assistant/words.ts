@@ -30,7 +30,7 @@ export function auditSentence(e: AuditEntry): string | null {
   switch (e.kind) {
     case "decision": return d.decision === "refuse" ? `Refused: ${toolWords(d.tool)} (${d.reason})` : d.decision === "ask" ? `Asked you before: ${toolWords(d.tool)}` : null;
     case "result": return d.ok ? toolWords(d.tool) : `Could not: ${toolWords(d.tool)} (${d.error})`;
-    case "approval": return `${d.approved ? "You approved" : "You declined"}: ${toolWords(d.tool)}`;
+    case "approval": return d.expired ? `Not approved in time: ${toolWords(d.tool)}` : `${d.by === "standing rule" ? (d.approved ? "Allowed by your standing decision" : "Declined by your standing decision") : d.approved ? "You approved" : "You declined"}${d.always ? " (every time from now)" : ""}: ${toolWords(d.tool)}${d.message ? ` — “${d.message}”` : ""}`;
     case "question": return `Asked you: ${d.question}`;
     case "answer": return `You answered: ${d.answer}`;
     case "summary": return `Finished: ${String(d.text).replace(/\*\*/g, "").split(/[\n✓]/)[0].trim()}`;

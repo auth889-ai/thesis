@@ -144,6 +144,33 @@
    "venue": "open standard",
    "id": "https://modelcontextprotocol.io/",
    "role": "the connector protocol: Gmail, Calendar, files, maps as MCP servers; one interface for every tool"
+  },
+  "openmuse_tahodev": {
+   "repo": "https://github.com/tahodev/openmuse",
+   "sha": "e39abd62fc610be4987ee8eb3a554160ddba3bd3",
+   "title": "OpenMuse: a local-first personal-agent runtime with exact-action approvals and verifiable audit",
+   "authors": "tahodev",
+   "venue": "software (alpha)",
+   "id": "github:tahodev/openmuse",
+   "role": "exact-action approval (hash of tool+arguments, one-time, expiring) and signed audit checkpoints; taken into backend/app/agent/approvals.py and audit.py"
+  },
+  "openmuse_copilotkit": {
+   "repo": "https://github.com/CopilotKit/openmuse",
+   "sha": "6151b4e4754349b42922ce13d26d95da8c3a6bcb",
+   "title": "OpenMuse (CopilotKit): a self-hosted personal agent with stored action review, durable task worker and receipts",
+   "authors": "CopilotKit",
+   "venue": "software",
+   "id": "github:CopilotKit/openmuse",
+   "role": "product pattern: plan visible before it runs, every consequential action reviewed, no hidden retry after an uncertain external write; the goal proposal screen follows it"
+  },
+  "openai_agents": {
+   "repo": "https://github.com/openai/openai-agents-python",
+   "sha": "7b27134b2da927c73ab9397100ad451eeead0f88",
+   "title": "OpenAI Agents SDK (Python), human-in-the-loop",
+   "authors": "OpenAI",
+   "venue": "software",
+   "id": "github:openai/openai-agents-python",
+   "role": "needs_approval as a per-tool predicate, always_approve / always_reject standing decisions, rejection_message returned to the model; taken into approvals.py, tools.Tool.needs_approval and orchestrator.approve"
   }
  }
 }

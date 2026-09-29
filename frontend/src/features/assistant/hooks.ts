@@ -1,7 +1,7 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 
 import {api} from "@/lib/api";
-import {USER_ID, type AuditEntry, type Commute, type Goal, type GoalSummary, type Reminder, type Task} from "./types";
+import {USER_ID, type ApprovalRule, type AuditEntry, type Commute, type Goal, type GoalSummary, type Reminder, type Task} from "./types";
 
 const ACTIVE = new Set(["planning", "running"]);
 
@@ -36,11 +36,19 @@ function useGoalMutation<A extends unknown[]>(fn: (...a: A) => Promise<unknown>)
     mutationFn: (args: A) => fn(...args) as Promise<Goal>,
     onSuccess: (goal) => {
       qc.setQueryData(["agent", "goal", goal.id], goal);
-      qc.invalidateQueries({queryKey: ["agent", "goals"]}); qc.invalidateQueries({queryKey: ["agent", "audit"]}); qc.invalidateQueries({queryKey: ["agent", "tasks"]});
+      qc.invalidateQueries({queryKey: ["agent", "goals"]}); qc.invalidateQueries({queryKey: ["agent", "audit"]}); qc.invalidateQueries({queryKey: ["agent", "tasks"]}); qc.invalidateQueries({queryKey: ["agent", "rules"]});
     },
   });
 }
 export const useSubmitGoal = () => useGoalMutation((text: string) => api.submitGoal(text, USER_ID, false));
 export const useStartGoal = () => useGoalMutation((id: string, text?: string) => api.startGoal(id, text));
-export const useApprove = () => useGoalMutation((id: string, call_id: string, approved: boolean) => api.approve(id, call_id, approved));
+export type ApproveExtra = {action_hash?: string | null; message?: string; always?: boolean};
+export const useApprove = () => useGoalMutation((id: string, call_id: string, approved: boolean, extra: ApproveExtra = {}) => api.approve(id, call_id, approved, extra));
+export function useApprovalRules() {
+  return useQuery({queryKey: ["agent", "rules"], queryFn: () => api.approvalRules(USER_ID) as Promise<{rules: ApprovalRule[]}>});
+}
+export function useClearRule() {
+  const qc = useQueryClient();
+  return useMutation({mutationFn: (tool: string) => api.clearApprovalRule(USER_ID, tool), onSuccess: () => qc.invalidateQueries({queryKey: ["agent", "rules"]})});
+}
 export const useAnswer = () => useGoalMutation((id: string, step_id: string, text: string) => api.answer(id, step_id, text));

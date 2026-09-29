@@ -17,6 +17,15 @@ class StartRequest(BaseModel):
 class ApproveRequest(BaseModel):
     call_id: str
     approved: bool = True
+    action_hash: str | None = Field(None, description="the hash shown with the pending action; a changed action is not approved")
+    message: str | None = Field(None, description="why it was declined; the assistant reads it and replans")
+    always: bool = Field(False, description="make this decision a standing rule for this tool")
+
+
+class RuleRequest(BaseModel):
+    user_id: str = "demo"
+    tool: str
+    decision: str = Field("approve", pattern="^(approve|reject)$")
 
 
 class AnswerRequest(BaseModel):

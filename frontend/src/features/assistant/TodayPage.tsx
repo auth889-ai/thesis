@@ -7,7 +7,7 @@ import {GoalChat} from "./GoalChat";
 import {useGoals} from "./hooks";
 import {CalendarImport} from "./CalendarImport";
 import {DayPlan} from "./DayPlan";
-import {ActivityPanel, TasksPanel} from "./SidePanels";
+import {ActivityPanel, RulesPanel, TasksPanel} from "./SidePanels";
 import {Updates} from "./Updates";
 import {STATUS_TONE, STATUS_WORDS} from "./types";
 import "./assistant.css";
@@ -31,6 +31,7 @@ export function TodayPage() {
           <DayPlan />
           <Updates />
           <TasksPanel />
+          <RulesPanel />
           <CalendarImport />
           <ActivityPanel goalId={selected ?? undefined} />
         </div>

@@ -56,6 +56,8 @@ class ToolCall:
     error: str | None = None
     started_utc: str | None = None
     finished_utc: str | None = None
+    action_hash: str | None = None          # identity of this exact action while it waits for approval (agent/approvals.py)
+    approval_expires_utc: str | None = None
 
 
 @dataclass

@@ -659,6 +659,72 @@
      ]
     }
    ]
+  },
+  {
+   "id": "agent",
+   "title": "D · The assistant: agent loop, approvals, audit",
+   "items": [
+    {
+     "key": "yao2023react",
+     "type": "paper",
+     "title": "ReAct: Synergizing Reasoning and Acting in Language Models",
+     "authors": "Yao, S., Zhao, J., Yu, D., Du, N., Shafran, I., Narasimhan, K., Cao, Y.",
+     "venue": "ICLR 2023",
+     "year": 2023,
+     "url": "https://arxiv.org/abs/2210.03629",
+     "used_for": "The agent loop: thought, tool call, observation, until the model answers in text.",
+     "files": [
+      "backend/app/agent/orchestrator.py"
+     ],
+     "code": "ysymyth/ReAct @ 6bdb3a1 (docs/life_os_pins.json)"
+    },
+    {
+     "key": "openmuse2026",
+     "type": "software",
+     "title": "OpenMuse: local-first personal-agent runtime with exact-action approvals and verifiable audit",
+     "authors": "tahodev",
+     "venue": "GitHub",
+     "year": 2026,
+     "url": "https://github.com/tahodev/openmuse",
+     "used_for": "Exact-action approval (the hash of tool and arguments, once, expiring) and signed audit checkpoints.",
+     "files": [
+      "backend/app/agent/approvals.py",
+      "backend/app/agent/audit.py"
+     ],
+     "code": "tahodev/openmuse @ e39abd6 (docs/life_os_pins.json)"
+    },
+    {
+     "key": "openai2026agents",
+     "type": "software",
+     "title": "OpenAI Agents SDK for Python: human-in-the-loop",
+     "authors": "OpenAI",
+     "venue": "GitHub",
+     "year": 2026,
+     "url": "https://github.com/openai/openai-agents-python",
+     "used_for": "Per-tool needs_approval predicates, standing always-approve / always-reject decisions, and the rejection message the model reads.",
+     "files": [
+      "backend/app/agent/approvals.py",
+      "backend/app/agent/tools.py",
+      "backend/app/agent/orchestrator.py"
+     ],
+     "code": "openai/openai-agents-python @ 7b27134 (docs/life_os_pins.json)"
+    },
+    {
+     "key": "copilotkit2026openmuse",
+     "type": "software",
+     "title": "OpenMuse (CopilotKit): self-hosted personal agent with stored action review",
+     "authors": "CopilotKit",
+     "venue": "GitHub",
+     "year": 2026,
+     "url": "https://github.com/CopilotKit/openmuse",
+     "used_for": "The product pattern: the plan is shown and started by the person; consequential actions are reviewed; no hidden retry after an uncertain external write.",
+     "files": [
+      "backend/app/agent/router.py",
+      "frontend/src/features/assistant/GoalChat.tsx"
+     ],
+     "code": "CopilotKit/openmuse @ 6151b4e (docs/life_os_pins.json)"
+    }
+   ]
   }
  ]
 }
