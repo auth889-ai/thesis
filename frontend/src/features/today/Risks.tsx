@@ -9,7 +9,7 @@ export function Risks({twin, goals, feed}: {twin?: Twin; goals?: GoalSummary[]; 
   const n = todayNumbers(twin);
   const waiting = (goals ?? []).filter((g) => g.status === "waiting_approval" || g.status === "waiting_user" || g.status === "failed");
   const risks: {tone: "warn" | "bad"; text: string; to?: string}[] = [];
-  n?.infeasible.forEach((f) => risks.push({tone: "bad", text: `${f.from} → ${f.to}: ${f.note}.`}));
+  n?.conflicts.forEach((c) => risks.push({tone: c.severity === "high" ? "bad" : "warn", text: `${c.note}. Fix: ${c.fix}.`}));
   n?.shaky.forEach((d) => risks.push({tone: "warn", text: `${d.title}: leaving at ${d.depart_local} gives only ${Math.round((d.on_time_probability ?? 0) * 100)} % on time; leave earlier or take the rail option.`, to: "/plan"}));
   waiting.forEach((g) => risks.push({tone: g.status === "failed" ? "bad" : "warn", text: `Goal “${g.text.slice(0, 60)}${g.text.length > 60 ? "…" : ""}” ${STATUS_WORDS[g.status]}.`, to: `/goals/${g.id}`}));
   feed?.notifications.filter((x) => !x.read_utc).slice(0, 3).forEach((x) => risks.push({tone: "warn", text: x.text, to: "/activity"}));
@@ -24,7 +24,7 @@ export function Risks({twin, goals, feed}: {twin?: Twin; goals?: GoalSummary[]; 
   return (
     <div className="grid two">
       <Card title="At risk" sub={risks.length ? "reasons, and what to do" : "nothing flagged right now"}>
-        {risks.length ? <ul className="plain risks">{risks.map((r, i) => <li key={i}><Pill tone={r.tone}>{r.tone === "bad" ? "does not fit" : "watch"}</Pill> {r.text}{r.to && <> <Link to={r.to}>open</Link></>}</li>)}</ul> : <p className="muted small">Every placed commitment fits and every planned departure is on track.</p>}
+        {risks.length ? <ul className="plain risks">{risks.map((r, i) => <li key={i}><Pill tone={r.tone}>{r.tone === "bad" ? "conflict" : "watch"}</Pill> {r.text}{r.to && <> <Link to={r.to}>open</Link></>}</li>)}</ul> : <p className="muted small">Every placed commitment fits and every planned departure is on track.</p>}
       </Card>
       <Card title="Suggested" sub="from your calendar, tasks and the roads, now">
         {tips.length ? <ul className="plain">{tips.map((t, i) => <li key={i}>{t}</li>)}</ul> : <p className="muted small">Nothing to suggest yet. Link a calendar or ask the agent for a plan.</p>}

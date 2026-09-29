@@ -5,7 +5,8 @@ import {USER_ID} from "@/features/assistant/types";
 
 export type Departure = {ref: string; title: string; origin: string; destination: string; depart_utc?: string; depart_local?: string; arrive_by_utc: string; route?: string; on_time_probability?: number | null; expected_s?: number; status: string; leave_in_min?: number};
 export type Feasibility = {from: string; to: string; gap_min: number; needed_min: number | null; feasible: boolean | null; note: string; depart_local?: string; on_time_probability?: number | null};
-export type Twin = {now_utc: string; commitments: {id: string; title: string; start_utc: string; end_utc: string; location: string | null; all_day: boolean}[]; deadlines: {id: string; title: string; due_utc: string | null}[];
+export type Conflict = {kind: "overlap" | "deadline" | "gap"; severity: "high" | "medium" | "low"; items: string[]; when_local: string | null; note: string; fix: string};
+export type Twin = {now_utc: string; conflicts: Conflict[]; commitments: {id: string; title: string; start_utc: string; end_utc: string; location: string | null; all_day: boolean}[]; deadlines: {id: string; title: string; due_utc: string | null}[];
   departures: Departure[]; free_windows: {from_local: string; to_local: string; minutes: number}[]; routines: {id: string; name: string}[]; preferences: string[]; calibration: {factor: number; trips: number; basis: string}; feasibility: Feasibility[]; verdict: string};
 export type Feed = {notifications: {id: string; kind: string; text: string; created_utc: string; read_utc: string | null}[]; unread: number; monitor: {running: boolean; last_tick_utc: string | null; tick_s: number}};
 
@@ -23,5 +24,6 @@ export function todayNumbers(t: Twin | undefined, now = new Date()) {
   const dueToday = t.deadlines.filter((d) => d.due_utc && sameLocalDay(d.due_utc, now));
   const infeasible = t.feasibility.filter((f) => f.feasible === false);
   const shaky = t.departures.filter((d) => d.status === "OK" && d.on_time_probability != null && d.on_time_probability < 0.8);
-  return {today, next, dueToday, infeasible, shaky, risks: infeasible.length + shaky.length};
+  const trips = t.departures.filter((d) => d.status === "OK" && d.depart_utc && new Date(d.depart_utc) > now);
+  return {today, next, dueToday, infeasible, shaky, trips, conflicts: t.conflicts ?? [], risks: infeasible.length + shaky.length};
 }

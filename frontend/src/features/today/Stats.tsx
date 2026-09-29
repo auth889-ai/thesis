@@ -13,10 +13,10 @@ export function Stats({twin, goals, feed}: {twin?: Twin; goals?: GoalSummary[]; 
   const waiting = active.filter((g) => g.status === "waiting_approval" || g.status === "waiting_user");
   return (
     <div className="stats">
-      <Stat k="commitments today" v={n ? n.today.length : "…"} sub={n?.today[0] ? `first: ${n.today[0].title}` : "nothing placed"} />
+      <Stat k="upcoming trips" v={n ? n.trips.length : "…"} sub={n?.today.length ? `${n.today.length} commitment${n.today.length > 1 ? "s" : ""} today` : "nothing placed today"} />
       <Stat k="next departure" v={n?.next ? n.next.depart_local ?? "" : "—"} sub={n?.next ? `for ${n.next.title}${n.next.on_time_probability != null ? ` · ${Math.round(n.next.on_time_probability * 100)} % on time` : ""}` : "no journey planned"} tone={n?.next && (n.next.on_time_probability ?? 1) < 0.8 ? "warn" : undefined} />
-      <Stat k="due today" v={n ? n.dueToday.length : "…"} sub={n?.dueToday[0]?.title ?? "no deadline today"} />
-      <Stat k="at risk" v={n ? n.risks : "…"} sub={n ? (n.risks ? "see below" : "nothing flagged") : ""} tone={n?.risks ? "warn" : "ok"} />
+      <Stat k="tasks remaining" v={twin ? twin.deadlines.length : "…"} sub={n?.dueToday.length ? `${n.dueToday.length} due today` : "none due today"} />
+      <Stat k="conflicts" v={n ? (n.conflicts.length || "No") : "…"} sub={n ? (n.conflicts.length ? n.conflicts[0].note.slice(0, 40) + "…" : "your day fits together") : ""} tone={n?.conflicts.length ? (n.conflicts.some((c) => c.severity === "high") ? "bad" : "warn") : "ok"} />
       <Stat k="agent" v={active.length} sub={waiting.length ? <Link to="/goals">{waiting.length} waiting for you</Link> : active.length ? "working" : "idle"} tone={waiting.length ? "warn" : undefined} />
       <Stat k="updates" v={feed ? feed.unread : "…"} sub={feed?.monitor.running ? "watching your day" : "watch not running"} tone={feed?.unread ? "warn" : undefined} />
     </div>

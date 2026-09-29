@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone
 from app.agent import memory, store
 from app.calendar import store as cal
 from app.plan import day, outcomes
+from app.plan import conflicts as conf
 from app.plan import feasibility as feas
 
 WAKING = (6, 23)             # local hours in which a gap counts as free time
@@ -42,10 +43,11 @@ def snapshot(user_id: str, hours: float = 48.0) -> dict:
     events = cal.upcoming(user_id, hours, now)
     tasks = [t for t in store.list_tasks(user_id, "open") if not t["due_utc"] or _dt(t["due_utc"]) <= now + timedelta(hours=hours)]
     checks = feasibility(user_id, events)
+    deps = day.departures(user_id, hours, now)
     return {"user_id": user_id, "now_utc": now.isoformat(), "hours": hours,
             "commitments": [{"id": e["id"], "title": e["title"], "start_utc": e["start_utc"], "end_utc": e["end_utc"], "location": e["location"] or None, "all_day": bool(e["all_day"])} for e in events],
             "deadlines": [{"id": t["id"], "title": t["title"], "due_utc": t["due_utc"]} for t in tasks],
-            "departures": day.departures(user_id, hours, now), "free_windows": free_windows(events, now, hours),
+            "departures": deps, "free_windows": free_windows(events, now, hours), "conflicts": conf.find(events, tasks, deps, checks),
             "routines": store.list_commutes(user_id), "preferences": [m["text"] for m in memory.list_all(user_id)][:12],
             "calibration": outcomes.calibration(user_id), "feasibility": checks,
             "verdict": feas.verdict(checks)}
