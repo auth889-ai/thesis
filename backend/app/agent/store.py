@@ -38,7 +38,7 @@ def _goal_from_doc(d: dict) -> Goal:
         if c:
             call = ToolCall(**{**c, "risk": RiskClass(c["risk"]), "decision": Decision(c["decision"]) if c.get("decision") else None})
         steps.append(Step(thought=s["thought"], call=call, question=s.get("question"), answer=s.get("answer"), id=s["id"], created_utc=s["created_utc"]))
-    return Goal(user_id=d["user_id"], text=d["text"], id=d["id"], status=GoalStatus(d["status"]), steps=steps, summary=d.get("summary"), model=d.get("model"), created_utc=d["created_utc"], updated_utc=d["updated_utc"], tokens_in=d.get("tokens_in", 0), tokens_out=d.get("tokens_out", 0))
+    return Goal(user_id=d["user_id"], text=d["text"], id=d["id"], status=GoalStatus(d["status"]), steps=steps, summary=d.get("summary"), model=d.get("model"), created_utc=d["created_utc"], updated_utc=d["updated_utc"], tokens_in=d.get("tokens_in", 0), tokens_out=d.get("tokens_out", 0), intent=d.get("intent"))
 
 
 def save_goal(g: Goal) -> None:
@@ -58,7 +58,7 @@ def list_goals(user_id: str, limit: int = 50) -> list[dict]:
         rows = c.execute("select doc from goals where user_id=? order by updated_utc desc limit ?", (user_id, limit)).fetchall()
     out = []
     for r in rows:
-        d = json.loads(r["doc"]); out.append({k: d[k] for k in ("id", "text", "status", "summary", "created_utc", "updated_utc")} | {"steps": len(d.get("steps", []))})
+        d = json.loads(r["doc"]); out.append({k: d[k] for k in ("id", "text", "status", "summary", "created_utc", "updated_utc")} | {"steps": len(d.get("steps", [])), "intent": d.get("intent")})
     return out
 
 

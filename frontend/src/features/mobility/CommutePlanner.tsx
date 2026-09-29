@@ -22,6 +22,8 @@ export function CommutePlanner({trip}: {trip: {city: string; origin: string; des
 
 function PlanView({P}: {P: CommutePlan}) {
   const rec = P.recommended, p = rec.on_time_probability, ok = (p ?? 0) >= P.on_time_target;
+  const [idx, setIdx] = useState(() => Math.max(0, P.departures.findIndex((d) => d.depart_local === rec.depart_local)));
+  const w = P.departures[Math.min(idx, P.departures.length - 1)];
   return (
     <div className="stack">
       <div className={`cm-reco ${ok ? "ok" : "warn"}`}>
@@ -40,6 +42,14 @@ function PlanView({P}: {P: CommutePlan}) {
         <div className="k">Typical day on route {rec.route}{P.congestion_window && <span className="bad"> · congestion usually {P.congestion_window.from}–{P.congestion_window.to}</span>}</div>
         <DayProfile profile={P.day_profile} />
       </div>
+      {w && P.departures.length > 1 && (
+        <div className="whatif">
+          <div className="k">What if I leave at {w.depart_local}?</div>
+          <input type="range" min={0} max={P.departures.length - 1} value={idx} onChange={(e) => setIdx(Number(e.target.value))} aria-label="Departure time" />
+          <div className="row"><b>{mins(w.expected_s)}</b><span className="muted small">expected on route {w.best_route}</span><Pill tone={(w.on_time_probability ?? 0) >= P.on_time_target ? "ok" : (w.on_time_probability ?? 0) >= 0.5 ? "warn" : "bad"}>{share(w.on_time_probability)} on time</Pill>
+            <span className="muted small">{(w.on_time_probability ?? 0) >= P.on_time_target ? "still fine" : `leave by ${rec.depart_local} instead`}</span></div>
+        </div>
+      )}
       <p className="provenance">{P.provenance.traffic}. {P.provenance.routing}. Probability: {P.provenance.probability}.</p>
     </div>
   );

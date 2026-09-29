@@ -5,7 +5,8 @@ export type GoalStatus = "planning" | "running" | "waiting_approval" | "waiting_
 
 export type ToolCall = {id: string; tool: string; arguments: Record<string, unknown>; risk: RiskClass; decision: Decision | null; decision_reason: string | null; result: unknown; error: string | null; started_utc: string | null; finished_utc: string | null};
 export type Step = {id: string; thought: string; call: ToolCall | null; question: string | null; answer: string | null; created_utc: string};
-export type Goal = {id: string; user_id: string; text: string; status: GoalStatus; steps: Step[]; summary: string | null; model: string | null; created_utc: string; updated_utc: string; tokens_in: number; tokens_out: number};
+export type Intent = {goal_type: string; deadline_local?: string; objectives: string[]; domains: string[]; needs_approval?: boolean; missing?: string[]; source?: string};
+export type Goal = {id: string; user_id: string; text: string; status: GoalStatus; steps: Step[]; summary: string | null; model: string | null; created_utc: string; updated_utc: string; tokens_in: number; tokens_out: number; intent?: Intent | null};
 export type GoalSummary = {id: string; text: string; status: GoalStatus; summary: string | null; created_utc: string; updated_utc: string; steps?: number};
 export type AuditEntry = {id: string; at_utc: string; kind: string; detail: Record<string, unknown>; goal_id: string; user_id: string; hash?: string; prev?: string};
 export type Task = {id: string; title: string; due_utc: string | null; status: string; notes?: string};

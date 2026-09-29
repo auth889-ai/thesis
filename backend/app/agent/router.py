@@ -5,8 +5,8 @@ from functools import lru_cache
 
 from fastapi import APIRouter, HTTPException
 
-from app.agent import audit, orchestrator, store, tools
-from app.agent.models import Goal
+from app.agent import audit, intent, orchestrator, store, tools
+from app.agent.models import AuditEntry, Goal
 from app.agent.schemas import AnswerRequest, ApproveRequest, GoalRequest
 
 router = APIRouter()
@@ -29,7 +29,8 @@ def _llm_or_503():
 def submit_goal(req: GoalRequest):
     """Run the goal until it finishes or pauses (approval needed, or a question for the user)."""
     llm = _llm_or_503()
-    goal = Goal(user_id=req.user_id, text=req.text); store.save_goal(goal)
+    goal = Goal(user_id=req.user_id, text=req.text, intent=intent.extract(req.text, llm)); store.save_goal(goal)
+    audit.write(AuditEntry(user_id=goal.user_id, goal_id=goal.id, kind="intent", detail=goal.intent))
     return orchestrator.run(goal, llm).to_dict()
 
 

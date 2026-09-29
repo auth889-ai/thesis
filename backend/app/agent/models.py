@@ -81,6 +81,7 @@ class Goal:
     updated_utc: str = field(default_factory=now_iso)
     tokens_in: int = 0
     tokens_out: int = 0
+    intent: dict | None = None                # what the person wants, recorded before planning (agent/intent.py)
 
     def to_dict(self) -> dict:
         return asdict(self)

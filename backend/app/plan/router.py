@@ -4,7 +4,9 @@ from __future__ import annotations
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from app.plan import day, monitor, notifications, outcomes
+from datetime import datetime
+
+from app.plan import day, life_twin, monitor, notifications, outcomes, whatif
 
 router = APIRouter()
 
@@ -21,6 +23,15 @@ class OutcomeRequest(BaseModel):
     deadline_utc: str | None = None
 
 
+class WhatIfRequest(BaseModel):
+    user_id: str = "demo"
+    city: str = "dhaka"
+    origin: str
+    destination: str
+    arrive_by: str = Field(..., description="ISO-8601 with offset")
+    depart_at: str = Field(..., description="ISO-8601 with offset")
+
+
 class ReadRequest(BaseModel):
     user_id: str = "demo"
     ids: list[str] | None = None
@@ -30,6 +41,21 @@ class ReadRequest(BaseModel):
 def plan_day(user_id: str = "demo", hours: float = 24.0):
     """The timeline: events, tasks due, reminders, and a fresh departure for every event or saved commute with a place."""
     return day.timeline(user_id, hours)
+
+
+@router.get("/api/plan/twin", tags=["plan"])
+def plan_twin(user_id: str = "demo", hours: float = 48.0):
+    """The person's situation as one snapshot, with the feasibility check between placed commitments."""
+    return life_twin.snapshot(user_id, hours)
+
+
+@router.post("/api/plan/whatif", tags=["plan"])
+def plan_whatif(req: WhatIfRequest):
+    """What happens if the person leaves at a given time."""
+    try:
+        return whatif.evaluate(req.city, req.origin, req.destination, datetime.fromisoformat(req.arrive_by), datetime.fromisoformat(req.depart_at), req.user_id)
+    except (ValueError, LookupError) as exc:
+        raise HTTPException(422, str(exc))
 
 
 @router.post("/api/plan/check", tags=["plan"])

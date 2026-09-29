@@ -132,8 +132,8 @@ def _register_domains() -> None:
     """Tools that live with their domain: memory, calendar, outcomes and notifications."""
     from app.agent import memory
     from app.calendar import tools as calendar_tools
-    from app.plan import outcomes, notifications
-    _register(memory.TOOL_SPECS); _register(calendar_tools.TOOL_SPECS); _register(outcomes.TOOL_SPECS)
+    from app.plan import outcomes, notifications, whatif
+    _register(memory.TOOL_SPECS); _register(calendar_tools.TOOL_SPECS); _register(outcomes.TOOL_SPECS); _register(whatif.TOOL_SPECS)
     _register([("notifications.list", "What the day monitor told the person recently (departure changes, worse traffic).", S({}, []), RiskClass.READ,
                 lambda user_id, a, goal_id: {"notifications": notifications.list_for(user_id, 20)})])
 

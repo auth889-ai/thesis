@@ -17,11 +17,25 @@ export function GoalCard({goal, onApprove, onAnswer, busy}: {goal: Goal; onAppro
         <div><h3>{goal.text}</h3><p className="muted">{ago(goal.updated_utc)} · {goal.steps.length} steps</p></div>
         <Pill tone={STATUS_TONE[goal.status]}>{STATUS_WORDS[goal.status]}</Pill>
       </div>
+      {goal.intent && <IntentLine intent={goal.intent} />}
       {goal.summary && <div className={`note ${goal.status === "failed" ? "bad" : "ok"}`}><Prose text={goal.summary} /></div>}
       {pending?.call && <ApprovalCard step={pending} busy={busy} onDecide={(ok) => onApprove(pending.call!.id, ok)} />}
       {question && <QuestionCard step={question} busy={busy} onAnswer={(t) => onAnswer(question.id, t)} />}
       <StepList steps={goal.steps} />
     </section>
+  );
+}
+
+/** What the assistant understood before it planned: type, deadline, the domains it will touch, what is missing. */
+function IntentLine({intent}: {intent: NonNullable<Goal["intent"]>}) {
+  return (
+    <div className="row intent">
+      <Pill tone="info">{intent.goal_type}</Pill>
+      {intent.deadline_local && <Pill>by {intent.deadline_local.replace("T", " ")}</Pill>}
+      {intent.domains.map((d) => <Pill key={d}>{d}</Pill>)}
+      {intent.needs_approval && <Pill tone="warn">will ask before acting</Pill>}
+      {intent.missing?.length ? <span className="muted small">missing: {intent.missing.join(", ")}</span> : null}
+    </div>
   );
 }
 

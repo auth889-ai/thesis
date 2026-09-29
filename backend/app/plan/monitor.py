@@ -24,7 +24,11 @@ _state = {"ticks": 0, "last_tick_utc": None, "last_error": None, "changes": 0}
 def _conn() -> sqlite3.Connection:
     DB.parent.mkdir(parents=True, exist_ok=True)
     c = sqlite3.connect(DB, check_same_thread=False); c.row_factory = sqlite3.Row
-    c.execute("create table if not exists watch (user_id text, ref text, depart_utc text, on_time_probability real, route text, checked_utc text, primary key (user_id, ref))")
+    c.execute("create table if not exists watch (user_id text, ref text, depart_utc text, on_time_probability real, route text, checked_utc text, recovery_utc text, primary key (user_id, ref))")
+    try:
+        c.execute("alter table watch add column recovery_utc text")
+    except sqlite3.OperationalError:
+        pass
     return c
 
 
@@ -65,9 +69,32 @@ def tick(user_id: str | None = None) -> int:
             if msg:
                 notifications.publish(uid, "departure", msg, json.dumps({"ref": d["ref"], "depart_utc": d["depart_utc"], "route": d["route"], "on_time_probability": d["on_time_probability"]}))
                 changes += 1
+            recovered = _recover(uid, d, dict(prev) if prev else None)
+            changes += recovered
             with _LOCK, _conn() as c:
-                c.execute("insert or replace into watch values (?,?,?,?,?,?)", (uid, d["ref"], d["depart_utc"], d["on_time_probability"], d["route"], now_iso()))
+                c.execute("insert or replace into watch values (?,?,?,?,?,?,?)", (uid, d["ref"], d["depart_utc"], d["on_time_probability"], d["route"], now_iso(), now_iso() if recovered else (prev["recovery_utc"] if prev and "recovery_utc" in prev.keys() else None)))
     return changes
+
+
+def _recover(uid: str, d: dict, prev: dict | None) -> int:
+    """The planned departure has passed, the arrival is still ahead, no outcome was recorded: say what the best move is now, once."""
+    from app.plan import outcomes, whatif
+    now = datetime.now(timezone.utc)
+    if not (datetime.fromisoformat(d["depart_utc"]) < now < datetime.fromisoformat(d["arrive_by_utc"])) or (prev and prev.get("recovery_utc")):
+        return 0
+    if any(o["ref"] == d["ref"] for o in outcomes.list_for(uid, 50)):
+        return 0
+    try:
+        r = whatif.recovery(uid, "dhaka", d["origin"], d["destination"], datetime.fromisoformat(d["arrive_by_utc"]))
+    except Exception as exc:                            # noqa: BLE001 - the message still says the departure passed
+        notifications.publish(uid, "recovery", f"The planned departure for {d['title']} ({d['depart_local']}) has passed and no arrival was recorded; a fresh plan could not be computed ({type(exc).__name__}).")
+        return 1
+    road, rail = r["road"], r.get("rail")
+    text = f"You are past the planned departure for {d['title']} ({d['depart_local']}). Leaving now by road: arrival {road['expected_arrival_local']}, {round((road['on_time_probability'] or 0) * 100)} % on time"
+    text += f"; by {rail['line']}: arrival {rail['expected_arrival_local']}{' (on time)' if rail['on_time'] else ' (late)'}." if rail else "."
+    text += " " + r["verdict"].capitalize() + "."
+    notifications.publish(uid, "recovery", text, json.dumps({"ref": d["ref"]}))
+    return 1
 
 
 def _loop() -> None:
