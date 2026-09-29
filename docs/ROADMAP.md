@@ -43,7 +43,7 @@ Status on 2026-09-29. **done** = works end-to-end with tests; **partial** = exis
 | # | Phase | Studies | Deliverables | Status |
 |---|---|---|---|---|
 | 0 | Repository and architecture audit | our code | `ARCHITECTURE`, `WORKFLOW`, `ROADMAP`, `REFERENCE_IMPLEMENTATIONS`, `THIRD_PARTY_LICENSES`, `EXPERIMENT_PROTOCOL` | done (this commit) |
-| 1 | LIFE OS agent core | tahodev/openmuse, CopilotKit/openmuse, openai-agents-python | persistent Goal/Step, states, durable background execution with a lease, resume after restart, cancel, approvals, activity feed, tests | partial → this phase's commit completes it |
+| 1 | LIFE OS agent core | tahodev/openmuse, CopilotKit/openmuse, openai-agents-python | persistent Goal/Step, states, durable background execution with a lease, resume after restart, cancel, approvals, activity feed, tests | done (see phase log) |
 | 2 | Consumer LIFE OS shell | (CopilotKit UI patterns if useful) | Today · Agent · Goals · Activity · You; no research internals in the consumer UI | partial (Today, Plan, City) |
 | 3 | Life Twin | — (our own) | structured twin; feasibility engine: feasible / risky / impossible, conflicts, free windows, buffers; unit tests | partial |
 | 4 | Core forecasting reproducibility | DCRNN, Graph WaveNet, STID, STAEformer (one at a time, after persistence and historical average) | full run records on METR-LA and PEMS-BAY, then PEMS | partial (GWNet and STID trained via BasicTS; records incomplete) |
@@ -75,3 +75,10 @@ Status on 2026-09-29. **done** = works end-to-end with tests; **partial** = exis
 - One file, one responsibility; official implementations unchanged; each phase's evidence in the lab.
 - Amazon Bedrock stays the LIFE OS model unless a documented technical reason changes it; TrafficTwin stays the thesis core.
 - Commit after each completed phase; never continue because the UI looks complete.
+
+## 5. Phase log
+
+| Phase | Date | What was verified | Evidence |
+|---|---|---|---|
+| 0 | 2026-09-29 | the six documents written from the code as it is | commit `adca7e36` |
+| 1 | 2026-09-29 | goals run on a background worker under a lease (`agent/worker.py`); the API answers at once and the page polls; a goal left running by a killed process is recovered at the next start or reaper pass with its in-flight call marked interrupted; cancel stops a running goal at its next step and a paused goal at once; approvals bound to the exact action with expiry, standing rules, rejection reason; signed audit checkpoints | `backend/tests/test_worker.py` (8), `test_approvals.py` (8), `test_agent.py`, `test_life_twin.py`; full suite 558 passed, 5 skipped; live: API killed with `kill -9` 1.5 s after a submit, restarted, the goal finished with audit kinds `intent, interrupted, decision, result, decision, result, summary` and an intact chain; a second goal cancelled after two steps with summary "stopped by you" |

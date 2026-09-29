@@ -37,6 +37,8 @@ def _startup() -> None:
         return
     from app.plan import monitor
     monitor.start()                                     # the watch on every person's day
+    from app.agent import router as agent_router, worker
+    worker.start(agent_router._llm_or_503)              # recover goals a previous process left running, then reap every 30 s
     from app.data.live_providers import observatory
     from app.protocols.evidence import forecast_ledger
     try:

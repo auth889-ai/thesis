@@ -75,12 +75,15 @@ def _execute(goal: Goal, step: Step) -> None:
     _log(goal, "result", {"call_id": call.id, "tool": call.tool, "ok": call.error is None, "error": call.error, "result_preview": str(call.result)[:400]})
 
 
-def run(goal: Goal, llm, max_steps: int = MAX_STEPS) -> Goal:
-    """Advance the goal until it is done, paused (approval / question) or failed. Safe to call again to resume."""
+def run(goal: Goal, llm, max_steps: int = MAX_STEPS, stop=None) -> Goal:
+    """Advance the goal until it is done, paused (approval / question), cancelled or failed. Safe to call again to
+    resume. `stop()` is asked between steps; when it answers True the goal is cancelled where it stands."""
     from datetime import datetime, timedelta, timezone
     today = (datetime.now(timezone.utc) + timedelta(hours=6)).strftime("%Y-%m-%d (%A)")
     goal.model = getattr(llm, "model", None); goal.status = GoalStatus.RUNNING; store.save_goal(goal)
     for _ in range(max_steps):
+        if stop and stop():
+            goal.status = GoalStatus.CANCELLED; goal.summary = "stopped by you"; _log(goal, "cancel", {"while": "running"}); store.save_goal(goal); return goal
         pending = next((s for s in goal.steps if s.call and s.call.decision == Decision.ASK and s.call.result is None and s.call.error is None), None)
         if pending and approvals.expired(pending.call):
             pending.call.error = f"not approved within {approvals.TTL_MIN} minutes; propose it again if it is still needed"
@@ -134,7 +137,7 @@ def _decide(goal: Goal, tool: tools.Tool, call: ToolCall) -> tuple[Decision, str
     return decision, reason
 
 
-def approve(goal: Goal, call_id: str, approved: bool, llm, message: str | None = None, always: bool = False, action_hash: str | None = None) -> Goal:
+def approve(goal: Goal, call_id: str, approved: bool, llm, message: str | None = None, always: bool = False, action_hash: str | None = None, resume: bool = True) -> Goal:
     """One decision for one exact call: the hash the person saw must match, the window must be open. `always`
     turns the decision into a standing rule for this tool; `message` is what the model reads after a rejection."""
     step = next((s for s in goal.steps if s.call and s.call.id == call_id), None)
@@ -150,12 +153,13 @@ def approve(goal: Goal, call_id: str, approved: bool, llm, message: str | None =
         _execute(goal, step)
     else:
         step.call.error = "declined by the user" + (f": {message}" if message else "")
-    return run(goal, llm)
+    store.save_goal(goal)
+    return run(goal, llm) if resume else goal
 
 
-def answer(goal: Goal, step_id: str, text: str, llm) -> Goal:
+def answer(goal: Goal, step_id: str, text: str, llm, resume: bool = True) -> Goal:
     step = next((s for s in goal.steps if s.id == step_id and s.question), None)
     if not step or step.answer:
         raise ValueError("no open question with that id")
-    step.answer = text; _log(goal, "answer", {"step_id": step_id, "answer": text})
-    return run(goal, llm)
+    step.answer = text; _log(goal, "answer", {"step_id": step_id, "answer": text}); store.save_goal(goal)
+    return run(goal, llm) if resume else goal

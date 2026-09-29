@@ -219,5 +219,5 @@ Every external research artifact the TrafficTwin code uses, with the files that 
 
 4. **OpenMuse (CopilotKit): self-hosted personal agent with stored action review** — CopilotKit. *GitHub*, 2026. https://github.com/CopilotKit/openmuse
    Used for: The product pattern: the plan is shown and started by the person; consequential actions are reviewed; no hidden retry after an uncertain external write.
-   Code: CopilotKit/openmuse @ 6151b4e (docs/life_os_pins.json)
+   Code: CopilotKit/openmuse @ 4f3f7c7 (docs/life_os_pins.json)
    Files: `backend/app/agent/router.py`, `frontend/src/features/assistant/GoalChat.tsx`

@@ -3,14 +3,15 @@ import {useState} from "react";
 import {Button, ErrorNote, Pill} from "@/components/ui";
 import {ago} from "@/lib/format";
 import {Prose} from "@/components/Prose";
-import {useAnswer, useApprove, type ApproveExtra} from "./hooks";
+import {useAnswer, useApprove, useCancelGoal, type ApproveExtra} from "./hooks";
 import {StepList} from "./StepList";
 import {STATUS_TONE, STATUS_WORDS, type Goal, type Step} from "./types";
 import {argsWords, riskWords, toolWords} from "./words";
 
 /** One goal: its status, the plan in plain words, and the approval or question card when it is paused. */
 export function GoalCard({goal, onApprove, onAnswer, busy, embedded = false}: {goal: Goal; onApprove: (callId: string, ok: boolean) => void; onAnswer: (stepId: string, text: string) => void; busy: boolean; embedded?: boolean}) {
-  const approve = useApprove(), answer = useAnswer();
+  const approve = useApprove(), answer = useAnswer(), cancel = useCancelGoal();
+  const stoppable = ["planning", "running", "waiting_approval", "waiting_user"].includes(goal.status);
   const doApprove = (c: string, ok: boolean, extra: ApproveExtra = {}) => { approve.mutate([goal.id, c, ok, extra]); onApprove(c, ok); };
   const doAnswer = (s: string, t: string) => { answer.mutate([goal.id, s, t]); onAnswer(s, t); };
   const pending_busy = busy || approve.isPending || answer.isPending;
@@ -20,7 +21,7 @@ export function GoalCard({goal, onApprove, onAnswer, busy, embedded = false}: {g
     <section className={`card goal ${goal.status} ${embedded ? "embedded" : ""}`}>
       <div className="card-head">
         <div><h3>{goal.text}</h3><p className="muted">{ago(goal.updated_utc)} · {goal.steps.length} steps</p></div>
-        <Pill tone={STATUS_TONE[goal.status]}>{STATUS_WORDS[goal.status]}</Pill>
+        <div className="row"><Pill tone={STATUS_TONE[goal.status]}>{STATUS_WORDS[goal.status]}</Pill>{stoppable && <button type="button" className="chip" onClick={() => cancel.mutate([goal.id])} disabled={cancel.isPending} title="Stop this goal; nothing further runs">Stop</button>}</div>
       </div>
       {goal.intent && <IntentLine intent={goal.intent} />}
       {goal.summary && <div className={`note ${goal.status === "failed" ? "bad" : "ok"}`}><Prose text={goal.summary} /></div>}

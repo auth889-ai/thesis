@@ -61,5 +61,8 @@ def test_a_goal_can_be_proposed_first_and_started_later(client, monkeypatch):
     r = client.post("/api/agent/goals", json={"user_id": "p", "text": "reach IUT before 9", "start": False}).json()
     assert r["status"] == GoalStatus.PROPOSED.value and r["intent"]["plan"] == ["Check traffic", "Pick the departure"] and r["steps"] == []
     s = client.post(f"/api/agent/goals/{r['id']}/start", json={}).json()
+    assert s["status"] == "running"                                                      # the API returns at once; the worker runs
+    from app.agent import worker
+    s = worker.wait(r["id"]).to_dict()
     assert s["status"] == "done" and s["summary"] == "Nothing more to do."
     assert client.post(f"/api/agent/goals/{r['id']}/start", json={}).status_code == 409

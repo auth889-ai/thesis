@@ -26,6 +26,8 @@ def _conn() -> sqlite3.Connection:
         create table if not exists reminders (id text primary key, user_id text, text text, at_utc text, status text, created_utc text, source_goal text);
         create table if not exists commutes (id text primary key, user_id text, name text, origin text, destination text, arrive_by_local text, created_utc text);
         create table if not exists approval_rules (user_id text, tool text, decision text, created_utc text, source_goal text, primary key (user_id, tool));
+        create table if not exists goal_leases (goal_id text primary key, lease_id text, worker text, until_utc text, claimed_utc text);
+        create table if not exists goal_control (goal_id text primary key, cancel_requested_utc text);
         create index if not exists goals_user on goals(user_id, updated_utc);
     """)
     return c
@@ -137,3 +139,62 @@ def list_approval_rules(user_id: str) -> list[dict]:
 def clear_approval_rule(user_id: str, tool: str) -> bool:
     with _LOCK, _conn() as c:
         return c.execute("delete from approval_rules where user_id=? and tool=?", (user_id, tool)).rowcount > 0
+
+
+# ------------------------------------------------------------------ leases and cancel flags (agent/worker.py)
+def claim_lease(goal_id: str, worker: str, until_utc: str) -> str | None:
+    """One runner per goal: the claim succeeds when no lease exists or the existing one has lapsed."""
+    lease_id = new_id("lease")
+    with _LOCK, _conn() as c:
+        row = c.execute("select until_utc from goal_leases where goal_id=?", (goal_id,)).fetchone()
+        if row and row["until_utc"] > now_iso():
+            return None
+        c.execute("insert or replace into goal_leases values (?,?,?,?,?)", (goal_id, lease_id, worker, until_utc, now_iso()))
+    return lease_id
+
+
+def renew_lease(goal_id: str, lease_id: str, until_utc: str) -> bool:
+    with _LOCK, _conn() as c:
+        return c.execute("update goal_leases set until_utc=? where goal_id=? and lease_id=?", (until_utc, goal_id, lease_id)).rowcount == 1
+
+
+def release_lease(goal_id: str, lease_id: str) -> None:
+    with _LOCK, _conn() as c:
+        c.execute("delete from goal_leases where goal_id=? and lease_id=?", (goal_id, lease_id))
+
+
+def lease_holder(goal_id: str) -> dict | None:
+    with _conn() as c:
+        row = c.execute("select * from goal_leases where goal_id=?", (goal_id,)).fetchone()
+    return dict(row) if row else None
+
+
+def purge_lapsed_leases() -> int:
+    with _LOCK, _conn() as c:
+        return c.execute("delete from goal_leases where until_utc <= ?", (now_iso(),)).rowcount
+
+
+def lease_alive(goal_id: str) -> bool:
+    with _conn() as c:
+        row = c.execute("select until_utc from goal_leases where goal_id=?", (goal_id,)).fetchone()
+    return bool(row and row["until_utc"] > now_iso())
+
+
+def list_leases() -> list[dict]:
+    with _conn() as c:
+        return [dict(r) for r in c.execute("select * from goal_leases order by claimed_utc").fetchall()]
+
+
+def active_goals(statuses: tuple[str, ...]) -> list[str]:
+    with _conn() as c:
+        return [r["id"] for r in c.execute(f"select id from goals where status in ({','.join('?' * len(statuses))}) order by updated_utc", statuses).fetchall()]
+
+
+def request_cancel(goal_id: str) -> None:
+    with _LOCK, _conn() as c:
+        c.execute("insert or replace into goal_control values (?,?)", (goal_id, now_iso()))
+
+
+def cancel_requested(goal_id: str) -> bool:
+    with _conn() as c:
+        return c.execute("select 1 from goal_control where goal_id=?", (goal_id,)).fetchone() is not None

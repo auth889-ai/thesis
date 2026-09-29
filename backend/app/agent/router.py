@@ -5,7 +5,7 @@ from functools import lru_cache
 
 from fastapi import APIRouter, HTTPException
 
-from app.agent import approvals, audit, intent, orchestrator, store, tools
+from app.agent import approvals, audit, intent, orchestrator, store, tools, worker
 from app.agent.models import AuditEntry, Goal, GoalStatus
 from app.agent.schemas import AnswerRequest, ApproveRequest, GoalRequest, StartRequest, RuleRequest
 
@@ -34,7 +34,15 @@ def submit_goal(req: GoalRequest):
     if not req.start:
         goal.status = GoalStatus.PROPOSED; store.save_goal(goal)
         return goal.to_dict()
-    return orchestrator.run(goal, llm).to_dict()
+    return _launch(goal)
+
+
+def _launch(goal: Goal) -> dict:
+    """Mark the goal running and hand it to the worker; the page polls GET /api/agent/goals/{id}."""
+    goal.status = GoalStatus.RUNNING; store.save_goal(goal)
+    if not worker.enqueue(goal.id, _llm_or_503):
+        raise HTTPException(409, "this goal is already being worked on")
+    return goal.to_dict()
 
 
 @router.post("/api/agent/goals/{goal_id}/start", tags=["agent"])
@@ -50,7 +58,21 @@ def start_goal(goal_id: str, req: StartRequest | None = None):
         g.text = req.text.strip(); g.intent = intent.extract(g.text, llm)
         audit.write(AuditEntry(user_id=g.user_id, goal_id=g.id, kind="intent", detail=g.intent))
     audit.write(AuditEntry(user_id=g.user_id, goal_id=g.id, kind="start", detail={"text": g.text}))
-    return orchestrator.run(g, llm).to_dict()
+    return _launch(g)
+
+
+@router.post("/api/agent/goals/{goal_id}/cancel", tags=["agent"])
+def cancel_goal(goal_id: str):
+    """Stop a goal: at once when it is waiting for you, at its next step when it is running."""
+    g = worker.cancel(goal_id)
+    if not g:
+        raise HTTPException(404, "no such goal")
+    return g.to_dict()
+
+
+@router.get("/api/agent/worker", tags=["agent"])
+def worker_state():
+    return worker.state()
 
 
 @router.get("/api/agent/goals", tags=["agent"])
@@ -72,9 +94,10 @@ def approve(goal_id: str, req: ApproveRequest):
     if not g:
         raise HTTPException(404, "no such goal")
     try:
-        return orchestrator.approve(g, req.call_id, req.approved, _llm_or_503(), message=req.message, always=req.always, action_hash=req.action_hash).to_dict()
+        g = orchestrator.approve(g, req.call_id, req.approved, _llm_or_503(), message=req.message, always=req.always, action_hash=req.action_hash, resume=False)
     except ValueError as exc:
         raise HTTPException(409, str(exc))
+    return _launch(g)
 
 
 @router.post("/api/agent/goals/{goal_id}/answer", tags=["agent"])
@@ -83,9 +106,10 @@ def answer(goal_id: str, req: AnswerRequest):
     if not g:
         raise HTTPException(404, "no such goal")
     try:
-        return orchestrator.answer(g, req.step_id, req.text, _llm_or_503()).to_dict()
+        g = orchestrator.answer(g, req.step_id, req.text, _llm_or_503(), resume=False)
     except ValueError as exc:
         raise HTTPException(409, str(exc))
+    return _launch(g)
 
 
 @router.get("/api/agent/approvals/rules", tags=["agent"])

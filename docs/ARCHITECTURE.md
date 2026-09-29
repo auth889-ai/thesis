@@ -33,7 +33,7 @@ Goal → Context → Life Twin → Feasibility → TrafficTwin → Plan → Perm
 | Plan | `agent/orchestrator.py` (ReAct loop over the tool registry; the intent's `plan` shown before start) | done |
 | Permission | `agent/permissions.py` (typed risk classes → allow / ask / refuse; grounding of sensitive arguments), `agent/approvals.py` (exact-action hash, 30-minute expiry, standing rules), `Tool.needs_approval` predicates | done |
 | Tools | `agent/tools.py` registry + domain `TOOL_SPECS` (calendar, memory, outcomes, what-if, notifications); `mcp/` exposes the same registry to Alexa+ and any MCP client | done |
-| Action | `orchestrator._execute` (the handler runs; result or real error goes back to the model) | done; **runs inside the HTTP request** (Phase 1 makes it a durable background job) |
+| Action | `orchestrator._execute` (the handler runs; result or real error goes back to the model); `agent/worker.py` (background thread per goal under a lease, heartbeat, reaper, restart recovery, cancel) | done |
 | Monitor | `plan/monitor.py` (thread, every 300 s: departure moved, probability dropped, route changed → notification; one recovery per reference) | done as polling; Phase 18 makes it event-driven |
 | Replan | `plan/whatif.recovery`, `monitor._recover` | partial |
 | Outcome | `plan/outcomes.py` (actual vs predicted; per-person calibration factor after 3 trips) | done |
@@ -89,14 +89,14 @@ simulated data are labelled as such.
 | Phase | Exists | Incomplete |
 |---|---|---|
 | 0 audit | this document set | — |
-| 1 agent core | persistent Goal/Step/ToolCall; statuses; pause on approval and on question; resume by `run()`; approvals bound to the exact action with expiry, standing rules, rejection reason; audit chain with signed checkpoints; consumer wording of every audit line (`words.ts`); tests for pause/resume/approvals (`test_agent.py`, `test_approvals.py`, `test_life_twin.py`) | execution is synchronous inside the request; no lease, so a restart mid-goal leaves it `running` forever; no cancel route; status name `done` where the specification says `COMPLETED` (kept: it is the wire contract of the web and mobile clients; the mapping is documented) |
+| 1 agent core | persistent Goal/Step/ToolCall; statuses; pause on approval and on question; resume by `run()`; background worker with lease, heartbeat, reaper and restart recovery; cancel; approvals bound to the exact action with expiry, standing rules, rejection reason; audit chain with signed checkpoints; consumer wording of every audit line (`words.ts`); tests (`test_worker.py`, `test_agent.py`, `test_approvals.py`, `test_life_twin.py`) | status name `done` where the specification says `COMPLETED` (kept: it is the wire contract of the web and mobile clients; `done` ≡ COMPLETED) |
 | 2 consumer shell | Today with the goal conversation, day plan, updates, tasks, standing decisions, activity; Plan; City | Agent, Goals, Activity and You as pages; risks and recommendations on Today; the "one operating system" navigation |
 | 3 Life Twin | snapshot; free windows; feasibility between placed commitments; personal calibration; what-if verdict | feasible / risky / impossible grading with travel buffers; conflicting tasks and events; goal dependencies; routines learned from outcomes; unit tests per rule |
 
 ## 7. Technical debt (recorded, not hidden)
 
 1. Eleven backend modules exceed the 400-line rule of `PROJECT_STRUCTURE.md` (largest: `routing/graph_router.py`, `protocols/chains/integrated_chain.py`, `protocols/learned_gate.py`, `forecasting/training/basicts_train.py`); they are split only when a phase touches them (rule 15).
-2. Goal execution is request-bound (fixed in Phase 1).
+2. The worker is a thread inside the API process; Phase 22 moves it to a separate worker service on the same lease table.
 3. The monitor polls every 300 s instead of reacting to events (Phase 18).
 4. Corridor traffic in Dhaka comes from recorded bands because no provider covers it; probe data (Phase 8) is the way out.
 5. The on-time probability is empirical from recorded distributions, not a conformal interval (Phase 7).

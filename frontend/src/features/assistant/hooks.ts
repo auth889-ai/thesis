@@ -43,6 +43,7 @@ function useGoalMutation<A extends unknown[]>(fn: (...a: A) => Promise<unknown>)
 export const useSubmitGoal = () => useGoalMutation((text: string) => api.submitGoal(text, USER_ID, false));
 export const useStartGoal = () => useGoalMutation((id: string, text?: string) => api.startGoal(id, text));
 export type ApproveExtra = {action_hash?: string | null; message?: string; always?: boolean};
+export const useCancelGoal = () => useGoalMutation((id: string) => api.cancelGoal(id));
 export const useApprove = () => useGoalMutation((id: string, call_id: string, approved: boolean, extra: ApproveExtra = {}) => api.approve(id, call_id, approved, extra));
 export function useApprovalRules() {
   return useQuery({queryKey: ["agent", "rules"], queryFn: () => api.approvalRules(USER_ID) as Promise<{rules: ApprovalRule[]}>});
