@@ -1,8 +1,8 @@
 # Resources: packages, APIs, repositories, datasets, models, and what they cost
 
-Recorded 2026-09-30 against the plan in `PHASES.md`. Budget on that date: AWS credits about $181 estimated remaining
-($150 Amazon Devices hackathon credit valid to 2028-08, $20 EC2 credit and about $9 of a Vercel-series credit that expires
-2026-12-31, $2.69 Lambda credit); 2 TB Google Drive; Google Colab for GPU notebooks. Prices below are list prices to check
+Recorded 2026-09-30 against the plan in `PHASES.md`. Budget on that date: AWS credits about $331 estimated remaining, applicable
+across AWS services (two Amazon Devices hackathon credits of $150 each, valid to 2028-08-31; a $20 EC2 credit and a $2.69 Lambda credit
+to 2027-06-17; about $9 of a Vercel-series credit that expires 2026-12-31); 2 TB Google Drive; Google Colab for GPU notebooks. Prices below are list prices to check
 before use; every paid call is logged so the bill is traceable.
 
 ## Packages (pip / npm), by phase
@@ -83,9 +83,14 @@ BentoML/BentoML, open-telemetry/opentelemetry-python.
 | Personal lateness and duration models | P11 | CPU, later federated with Flower | our outcomes |
 | Claude Haiku 4.5 on Bedrock | the compiler's model path and the agent | not trained | prompts validated by Pydantic |
 
-## How the credits are spent
+## How the credits are spent (about $331)
 
-Everything in blocks A, C, D and F runs on free software plus cents of Bedrock and Amazon Location. The GPU work in block
-B runs on Colab first; only a run that Colab cannot finish goes to an EC2 g5 spot instance, and a full campaign of the four
-deep models on two benchmarks is about 30 GPU hours, roughly $15 to $30. The $150 hackathon credit is reserved for the
-demo month: Bedrock, Location, SNS, a small host. The Vercel-series credit is spent first because it expires on 2026-12-31.
+| Envelope | Amount | For |
+|---|---|---|
+| Training campaign, block B | up to $120 | EC2 g5.xlarge spot for GWNet, DCRNN, STID, STAEformer on METR-LA and PEMS-BAY, then PEMS and LargeST-SD; about 30 to 60 GPU hours; Colab remains the first try for every run |
+| Model and agent calls | up to $40 | Bedrock (Claude Haiku 4.5) for the compiler and the agent across development, evaluation and the demo; Amazon Location routes |
+| Hosting the demo month | up to $60 | one small EC2 or ECS service for the API, Redis, Valhalla and OTP self-hosted; S3 and CloudFront for the web app; SNS; Cognito is free at our size |
+| Reserve | the rest, about $110 | a failed training run, the hackathon week, anything the judges ask to see live |
+
+Order of spending: the Vercel-series credit first (expires 2026-12-31), then the Lambda and EC2 credits, then the two
+hackathon credits. Every paid call is logged so the bill is traceable; a budget alarm at 80 % of each envelope.
