@@ -1,4 +1,28 @@
-# TrafficTwin — the full workflow and what is ours
+# LIFE OS × TrafficTwin — the workflow
+
+## The core loop (one goal, end to end)
+
+```
+Goal → Context → Life Twin → Feasibility → TrafficTwin → Plan → Permission → Tools → Action → Monitor → Replan → Outcome → Memory/Audit
+```
+
+| Stage | What happens | Where |
+|---|---|---|
+| Goal | the person writes what they need; the intent (type, deadline, objectives, plan, missing facts) is read and shown; nothing runs until they start it | `agent/intent.py`, `POST /api/agent/goals` (start=false), `/start` |
+| Context | remembered preferences, places and constraints are recalled into the prompt; calendar, tasks and saved commutes are readable tools | `agent/memory.py`, `calendar/`, `agent/store.py` |
+| Life Twin | the person's situation as one snapshot: commitments, deadlines, departures, free windows, routines, calibration | `plan/life_twin.py` |
+| Feasibility | can the day physically work: the journey between two placed commitments vs the gap; a what-if verdict for any departure | `plan/life_twin.feasibility`, `plan/whatif.py` |
+| TrafficTwin | live routes, recorded or live traffic, the forecast, the departure with its on-time probability, the rail option | `commute/`, `routing/`, `forecasting/`, `transit/`, `data/live_providers/` |
+| Plan | the ReAct loop: thought → one tool call → observation, until the model answers in text | `agent/orchestrator.py` |
+| Permission | typed risk → allow / ask / refuse; sensitive arguments must be grounded; an asked action is bound to its exact arguments and expires; standing rules | `agent/permissions.py`, `agent/approvals.py` |
+| Tools | the registry (mobility, tasks, reminders, commutes, calendar, memory, outcomes, what-if, notifications); the same registry over MCP | `agent/tools.py`, `mcp/` |
+| Action | the handler runs; the result or the real error goes back to the model; every step logged before and after | `orchestrator._execute`, `agent/audit.py` |
+| Monitor | planned departures re-checked; a moved departure, a worse probability or a changed route becomes a notification | `plan/monitor.py`, `plan/notifications.py` |
+| Replan | a recovery (earlier departure, another route, rail) is computed once per reference and offered | `plan/whatif.recovery` |
+| Outcome | actual vs predicted departure and arrival; a personal calibration after three trips | `plan/outcomes.py` |
+| Memory / Audit | durable facts the model chose to keep; the hash-chained, checkpoint-signed audit anyone can verify | `agent/memory.py`, `agent/audit.py` |
+
+## TrafficTwin — the research engine underneath
 
 One sentence: **TrafficTwin forecasts road traffic with a learned model, turns the forecast into route
 and departure advice, tests that advice in a traffic simulation with a simulated V2X channel, and

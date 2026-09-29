@@ -1,8 +1,8 @@
-# TrafficTwin — how it works and how it is built, phase by phase
+# LIFE OS × TrafficTwin — roadmap in controlled phases
 
-Companion to `WORKFLOW.md` (what happens on one request) and `BUILD_PLAN.md` (the research contract).
-This document is the engineering plan: the stack, the data flow, and the phases with their deliverables
-and the evidence each one must produce before the next starts.
+Companion to `ARCHITECTURE.md` (what exists), `WORKFLOW.md` (the core loop), `EXPERIMENT_PROTOCOL.md` (the research
+contract) and `REFERENCE_IMPLEMENTATIONS.md` (what each phase studies). One phase at a time; a phase ends only when
+it works end-to-end with tests and evidence, and is committed. Reference repositories are inspected only in their phase.
 
 ## 1. The stack, and why each piece
 
@@ -38,52 +38,34 @@ Everything runs when asked. There is no stored answer; a fresh model pass and fr
 
 ## 3. Phases
 
-Each phase ends with something a person can use and something a reviewer can check.
+Status on 2026-09-29. **done** = works end-to-end with tests; **partial** = exists but misses listed deliverables; **—** = not started.
 
-### Phase 0 — the two surfaces (done)
-App (`/today`, `/plan`, `/city`) for commuters; lab (`/lab/*`) for evidence. Fresh inference on every forecast.
-Live roads for any city, rail option, the city map, the assistant in plain words, MCP. Evidence: the test
-suite, the lab pages, `WORKFLOW.md`.
-
-### Phase 1 — data foundation
-- Loaders with manifests and hashes for METR-LA, PEMS-BAY, PEMS03/04/07/08, LargeST, UTD19; one interface (`app.data.datasets`).
-- Phone-reported speeds: `POST /api/probe/speeds` from the mobile app (consented, anonymised, batched), stored per road segment; this is the non-provider history a city model may be trained on.
-- Crowdsourced reports: `POST /api/reports` (incident, waterlogging, closure, strike), shown on the Plan map, and a route warning when a report lies on a route.
-- Evidence: dataset cards in the lab (rows, nodes, span, hash), a probe count per city.
-
-### Phase 2 — the model campaign
-- Train GWNet, STID, STAEformer, DCRNN, D2STGNN on the benchmarks with the official configs on AWS; BigST/PatchSTG for LargeST scale; Chronos, TimesFM, OpenCity zero-shot.
-- One protocol: chronological split, MAE/RMSE/MAPE at 15/30/60, skill vs persistence, a card per model per dataset, the eligibility gate.
-- A first city model on probe data once a city has enough of it (the gate decides when).
-- Evidence: the lab's Models page with every card and checkpoint hash; `results/forecasting/benchmark.md`.
-
-### Phase 3 — serving any city
-- City onboarding: name → OSM network → SUMO net → sensor or probe mapping → candidate models → gate → the city appears.
-- Inference service: the eligible model runs on request per city; ONNX export where it cuts latency.
-- Evidence: an onboarding log per city; latency per request on the lab's System page.
-
-### Phase 4 — the consumer product
-- Accounts (Cognito), saved commutes, reminders delivered by SNS at the recomputed departure, per-person calibration of the on-time probability from actual arrivals, data deletion.
-- Monitoring and replanning: a saved goal is re-priced when the forecast or an incident changes it materially; the person gets the reason.
-- Memory for the assistant: preferences and recurring patterns (buffer before interviews, reliability over speed), retrieved per goal.
-- Mobile release (EAS build, privacy policy, data-safety form).
-- Evidence: outcome records (recommended vs actual departure and arrival), the audit chain, crash-free sessions.
-
-### Phase 5 — the city and business products
-- Incident alerts for traffic police from probe speeds (the detector already in the twin).
-- Signal-timing recommendations from the twin, in the Green Light style: per intersection, applied with existing hardware.
-- What-if runs as a service: a closure, a bus lane, staggered hours, tested before spending.
-- Fleet ETA API for delivery and courier operators.
-- Evidence: a twin run per recommendation with its confidence interval; API latency and accuracy per fleet.
-
-### Phase 6 — scale
-- Stateless API on ECS behind a CDN, Postgres with Timescale for series, Redis only for sessions, S3 for artefacts, per-city shards, load tests published.
-- Per-request inference stays; GPUs scale with request rate, and same-second requests may share one forward pass (disclosed).
-- Evidence: load-test report, cost per city per day.
-
-### Phase 7 — research extensions
-- Coverage expansion (more roads priced), a learned reroute controller, federated training across the simulated V2X channel, the oracle-first protocol on a second city.
-- Evidence: the same gates, computed, on new runs.
+| # | Phase | Studies | Deliverables | Status |
+|---|---|---|---|---|
+| 0 | Repository and architecture audit | our code | `ARCHITECTURE`, `WORKFLOW`, `ROADMAP`, `REFERENCE_IMPLEMENTATIONS`, `THIRD_PARTY_LICENSES`, `EXPERIMENT_PROTOCOL` | done (this commit) |
+| 1 | LIFE OS agent core | tahodev/openmuse, CopilotKit/openmuse, openai-agents-python | persistent Goal/Step, states, durable background execution with a lease, resume after restart, cancel, approvals, activity feed, tests | partial → this phase's commit completes it |
+| 2 | Consumer LIFE OS shell | (CopilotKit UI patterns if useful) | Today · Agent · Goals · Activity · You; no research internals in the consumer UI | partial (Today, Plan, City) |
+| 3 | Life Twin | — (our own) | structured twin; feasibility engine: feasible / risky / impossible, conflicts, free windows, buffers; unit tests | partial |
+| 4 | Core forecasting reproducibility | DCRNN, Graph WaveNet, STID, STAEformer (one at a time, after persistence and historical average) | full run records on METR-LA and PEMS-BAY, then PEMS | partial (GWNet and STID trained via BasicTS; records incomplete) |
+| 5 | Cross-city / foundation models | OpenCity, UniST, RAST | local vs zero-shot vs few-shot; days-of-data curve; validation gate before any advice | partial (OpenCity zero-shot exists) |
+| 6 | Large-scale evaluation | LargeST | dataset manifests and cards; SD region first | — |
+| 7 | Calibrated uncertainty | MAPIE | conformal intervals for ETA and departure; coverage, width, drift; reliability only from validated intervals | — |
+| 8 | Probe data and map matching | Map-Matching, Valhalla Meili | consented phone observations → segment speeds; never called live traffic until real observations exist | — |
+| 9 | Sensor fusion | — (our own) | interpretable baseline, then weighted / Kalman / learned; provenance per fused state | — |
+| 10 | Multimodal routing | OpenTripPlanner, Valhalla, docker-valhalla | car / walk / transit / mixed candidates from infrastructure; our contribution sits above | partial (Amazon Location + OSM transit) |
+| 11 | Future-aware routing and departure optimisation | — (ours) | segment entry times → forecast → cost distribution → reliability; latest departure meeting the target; baselines incl. oracle | partial (`commute/`, `routing/forecast_costs.py`) |
+| 12 | SUMO digital twin | eclipse-sumo | paired scenarios, versioned configs, the metric set | partial (oracle-first protocol exists) |
+| 13 | Traffic signal control | sumo-rl, LibSignal, RL_signals_CityFlow, smart-traffic-rl | fixed → actuated → max pressure → published RL → ours only if justified | partial (`signals/` benchmark) |
+| 14 | Learned rerouting | — | policy over forecast in the twin vs reactive / forecast-aware / oracle | partial (`protocols/learned_gate.py`) |
+| 15 | V2X research | eclipse-mosaic, SUMO-V2X example | penetration / latency / loss / interval sweeps | partial (`networking/`) |
+| 16 | LIFE OS × TrafficTwin integration | — | the interview workflow end-to-end with real tool results | partial |
+| 17 | Calendar / email / files / tasks | — | connectors as tools under the same permission engine | partial (calendar ICS, tasks) |
+| 18 | Event-driven monitoring | — | triggers; recompute only affected goals | partial (polling monitor) |
+| 19 | Outcome learning | — | outcome records and personal calibration; no silent global retraining | partial (`plan/outcomes.py`) |
+| 20 | Domain workflows | — | study, job, travel, errands on the same engine | — |
+| 21 | Research lab | — | `/lab/{datasets,models,forecasting,routing,digital-twin,v2x,experiments,references}` | partial |
+| 22 | Scale architecture | — | accounts, Postgres, workers, queues, S3, ECS, observability, shards; freshness fields on every result | — |
+| 23 | Alexa+ / hackathon | — | MCP tools executed for real from Alexa+; one plan-changing event | partial (MCP server live) |
 
 ## 4. Rules that hold in every phase
 - Nothing on a page is typed in; every number comes from a file the pipeline wrote or a computation for this request.
@@ -91,3 +73,5 @@ suite, the lab pages, `WORKFLOW.md`.
 - A model drives advice only after the gate.
 - Irreversible actions pause for approval; every decision is in the audit chain.
 - One file, one responsibility; official implementations unchanged; each phase's evidence in the lab.
+- Amazon Bedrock stays the LIFE OS model unless a documented technical reason changes it; TrafficTwin stays the thesis core.
+- Commit after each completed phase; never continue because the UI looks complete.
