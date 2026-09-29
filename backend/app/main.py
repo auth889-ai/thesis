@@ -28,6 +28,11 @@ middleware.install(app)
 
 def _startup() -> None:
     """Re-attach training jobs; start the live corridor observatory and the forecast ledger unless disabled (tests)."""
+    from app.lifeos import db as lifeos_db
+    try:
+        lifeos_db.init()                                # the core store is always at the current migration
+    except Exception as exc:                            # noqa: BLE001
+        print(f"[lifeos] migration failed: {exc}")
     from app.forecasting.operations import training_jobs
     try:
         training_jobs.reattach_on_startup()

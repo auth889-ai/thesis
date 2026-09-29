@@ -1,7 +1,8 @@
 # LIFE OS · Life Twin · AccessTwin · TrafficTwin — roadmap in controlled phases
 
-Companion to `PROBLEM.md` (the frozen problem, entities, hypothesis, metrics), `ARCHITECTURE.md` (what exists), `WORKFLOW.md`,
-`EXPERIMENT_PROTOCOL.md` and `REFERENCE_IMPLEMENTATIONS.md` (what each phase studies). One phase at a time; a phase ends only when
+Companion to `PROBLEM.md` (the frozen problem, entities, hypothesis, metrics), `PHASES.md` (the full 31-phase plan with its
+packages and repositories, the authority for order and scope), `ARCHITECTURE.md`, `WORKFLOW.md`, `EXPERIMENT_PROTOCOL.md`,
+`REFERENCE_IMPLEMENTATIONS.md` and `FEATURE_CODE_MAP.md`. One phase at a time; a phase ends only when
 it works end-to-end with tests and evidence, and is committed. Reference repositories are inspected only in their phase.
 
 ## 1. The stack, and why each piece
@@ -36,49 +37,33 @@ client ──POST /api/commute/plan──▶ commute.service.plan
 
 Everything runs when asked. There is no stored answer; a fresh model pass and fresh provider calls every time.
 
-## 3. Phases (frozen 2026-09-30; one at a time; a phase ends only with its exit condition, tests and a commit)
+## 3. Phases (the plan of 2026-09-30, `PHASES.md`; one at a time; a phase ends with its exit condition, tests and a commit)
 
-| # | Phase | Exit condition | Studies | What exists already |
-|---|---|---|---|---|
-| 0 | Problem freeze | `PROBLEM.md`: Person, Commitment, Travel Edge; the system can answer YES / RISKY / NO for one day | Conveyal R5, SPOTAR literature, OR-Tools, MATSim (read) | done |
-| 1 | Static Life Twin | calendar, tasks, deadlines, places, travel requirements, dependencies, free windows; a constraint check with static travel times; "your 11:30 class cannot be reached after your 11:00 meeting" | — | profile, calendar, tasks, free windows, feasibility grades, conflicts (partial: travel is from the planner, not a static edge; dependencies missing) |
-| 2 | Real multimodal travel | A → B gives car, transit, walk, mixed with real routes; edges are real, no traffic ML | OpenTripPlanner / R5, Valhalla | car via the routing provider, rail via OSM (partial) |
-| 3 | Whole-day optimiser | fixed events + flexible tasks + deadlines + edges → a feasible day, deterministic | OR-Tools CP-SAT / Timefold | — |
-| 4 | TrafficTwin baseline | persistence, historical average, one Graph WaveNet; now / +15 / +30 / +60 with reproducible records | Graph WaveNet via BasicTS | GWNet trained; records incomplete |
-| 5 | Uncertainty | every edge has an expected time and a calibrated interval, in any city | MAPIE, Namma Commute | — (the empirical probability exists only where corridor history exists) |
-| 6 | Reliable reachability | P(arrive before deadline) per departure and mode; latest reliable departure | SPOTAR | partial (empirical, Dhaka only) |
-| 7 | Reachability risk | every Today item shows LOW / MEDIUM / HIGH from the model and the constraints | — | partial (grades from the empirical probability) |
-| 8 | Automatic day repair | a change recomputes only downstream nodes; "I repaired 3 parts of your day" | — | monitor + one-shot recovery (partial) |
-| 9 | Disruption engine | accident, closure, cancellation, weather, flooding as one abstraction that changes edges | — | — |
-| 10 | Accessibility | mobility profile; accessible vs fastest; the accessibility gap measured | — | — |
-| 11 | Opportunity explorer | "which internships can I reliably reach while keeping my schedule?" over jobs, hospitals, universities, services | R5 cumulative accessibility | — |
-| 12 | What-if simulator | leave later, rain, metro stops, take this job, move here; one simulation underneath | — | departure what-if (partial) |
-| 13 | TrafficTwin advanced models | DCRNN, STID, STAEformer one at a time; judged by reachability decisions, not MAE | official repos via BasicTS | STID trained |
-| 14 | Access research metrics | Access Success Rate, Access Regret, Buffer Waste, Recovery Rate, Opportunity Reachability computed from runs | — | outcomes store (partial) |
-| 15 | Sparse-data research | sensors at 100 / 75 / 50 / 25 / 10 %: forecast error → reachability error → access success | — | node subsampling exists |
-| 16 | Cross-city | OpenCity, UniST: useful reachability decisions with little local history | OpenCity, UniST | OpenCity zero-shot exists |
-| 17 | Digital twin | same people, destinations, congestion: reactive navigation vs AccessTwin decisions; late arrivals, waiting, queues, access success | SUMO | oracle-first protocol exists |
-| 18 | Population-level simulation | 1 000 to 10 000 agents; does predictive access planning raise city-wide opportunity accessibility | MATSim | — |
-| 19 | Emergency scenario | hospital reachability, future-aware route, signal priority, as an evaluation domain | — | — |
-| 20 | V2X | vehicles as a sensing channel; how communication degradation affects access decisions | MOSAIC | channel and sweeps exist |
-| 21 | LIFE OS agent | goal → planner → typed action → policy → approval → tool → audit over a mature AccessTwin | OpenMuse pattern | built (proposal, worker, approvals, audit) |
-| 22 | Email, calendar, files | "I have an interview": find the mail, the event, the place, the CV; build the commitment | — | calendar ICS only |
-| 23 | Consumer web app | Today · Plan · Agent · Explore · Activity · You; Today is the homepage, not a traffic map | — | Today · Agent · Goals · Activity · You built; Plan and Explore pending |
-| 24 | Hackathon | one flagship scenario on Alexa+ with one injected disruption, three minutes | — | MCP server live |
-| 25 | Growth | one daily loop: morning, before travel, during the day, evening; then the consented data flywheel and partners | — | — |
+Six blocks. Every technology has one role: NLP understands, ML/DL predicts, OR-Tools plans, generative AI coordinates, networking brings state, simulation verifies, LIFE OS acts and repairs.
+
+| Block | Phases | What it delivers | Packages and repositories used, not rewritten |
+|---|---|---|---|
+| A · Core life engine | 0 foundation · 1 commitment compiler · 2 Life Twin · 3 deterministic day optimiser · 4 real routing | the seven contracts; text → commitment; the day as a graph; "can the day work?"; real travel edges | pydantic, fastapi, sqlalchemy, alembic, pytest; spaCy, dateparser, rapidfuzz; networkx; **google/or-tools** (CP-SAT); OpenTripPlanner, Valhalla, OSM, GTFS, GTFS-Realtime, Photon/Pelias |
+| B · Prediction | 5 weather · 6 traffic baselines · 7 deep learning · 8 cross-city · 9 uncertainty · 10 AccessTwin | weather as a constraint; persistence, historical average, XGBoost; GWNet → DCRNN → STID → STAEformer one at a time; UniST, OpenCity; conformal intervals; P(arrive before deadline) and the latest safe departure | Open-Meteo; scikit-learn, xgboost; BasicTS, LibCity structure; torch, torch-geometric; MAPIE; AccessTwin is ours |
+| C · Agent | 11 personal ML · 12 commitment risk · 13 agent · 14 safe execution · 15 email/calendar/files · 16 repair engine | lateness and duration models; READY / AT RISK / BLOCKED; the agent over mature tools; OpenMuse pattern; connectors with approval; closed-loop repair through the solver | xgboost, lightgbm; OpenAI Agents SDK pattern on Bedrock or LangGraph; tahodev/openmuse; Google Calendar, Gmail, Drive APIs; OR-Tools again |
+| D · Systems | 17 event bus · 18 background jobs · 19 model serving · 20 observability | Redis Streams events; Celery/RQ then Ray; FastAPI then BentoML; OpenTelemetry traces across Agent → NLP → LifeTwin → TrafficTwin → AccessTwin → Solver | redis, celery/rq, ray (later), bentoml (later), opentelemetry |
+| E · Research depth | 21 digital twin · 22 population · 23 networking · 24 edge · 25 federated · 26 opportunity reachability · 27 what-if | SUMO and sumo-rl; MATSim 1 000 to 10 000 agents; ns-3 and MOSAIC sweeps; ONNX/ExecuTorch on device; Flower; Conveyal R5 jobs/hospitals/schools reachable; the life what-if | traci, sumolib, sumo-rl; matsim-libs; ns-3-dev, mosaic; onnxruntime, executorch; flower; r5 (pinned) |
+| F · Product | 28 web app · 29 research lab · 30 Alexa+ | Today · Plan · Agent · Explore · Activity · You; the lab pages on the same backend; "Make tomorrow work" through MCP on the same tools | react, typescript, tailwind, tanstack query, react-hook-form, zod, maplibre-gl, recharts |
+
+What stays ours: the commitment schema, the Life Twin, the reality-twin state model, the commitment compiler, the feasibility logic, AccessTwin, the risk logic, closed-loop repair, the cross-layer experiments, the human outcome metrics, and the integration. What is never rewritten: routing engines, constraint solvers, map matchers, federated runtimes, network and traffic simulators, observability.
 
 ## 4. Rules that hold in every phase
 - Nothing on a page is typed in; every number comes from a file the pipeline wrote or a computation for this request.
 - A provider is a live external reference, never a training target; consented probe data is the only city history a model may learn from.
-- A model drives a decision only after its validation gate; a probability is shown only when it comes from an evaluated method.
-- Irreversible actions pause for approval; every decision is in the audit chain.
-- One file, one responsibility; official implementations unchanged and used as dependencies or adapters when their licence allows; each phase's evidence in the lab.
+- A model drives a decision only after its validation gate; a probability is shown only when it comes from an evaluated method; LLM output validates through Pydantic before it is stored.
+- Irreversible or external actions pause for approval; every decision is in the audit chain.
+- Official implementations unchanged and used as packages when their licence allows; read only when it does not; each phase's evidence in the lab.
 - Amazon Bedrock stays the LIFE OS model; TrafficTwin predicts, AccessTwin decides, LIFE OS acts.
 - Commit after each completed phase; never continue because the UI looks complete.
 
 ## 5. Phase log
 
-Entries before 2026-09-30 refer to the earlier phase numbering; they are kept because the work is kept.
+Entries before the plan of 2026-09-30 refer to earlier numberings; they are kept because the work is kept. From `P0` on, numbers follow `PHASES.md`.
 
 | Phase | Date | What was verified | Evidence |
 |---|---|---|---|
@@ -88,3 +73,4 @@ Entries before 2026-09-30 refer to the earlier phase numbering; they are kept be
 | 3.1 | 2026-09-29 | every gap between placed commitments is graded feasible (p ≥ 0.8 leaving as the first ends), risky (0.5 ≤ p < 0.8), impossible (p < 0.5) or unknown, from the commute planner's own on-time distribution scaled by the person's calibration; `buffer_min` says how long before the first ends one must leave; the Life Twin verdict follows the grades | `backend/tests/test_feasibility.py` (7); live with the real planner: Viva at Shahbagh → dentist at Uttara with a 20-minute gap graded impossible (journey about 24 min, 0 % on time, leave 12 min before the end); dentist → Farmgate two hours later feasible |
 | 3.2 | 2026-09-29 | conflicts found from the twin's own facts: overlapping commitments, a task due during a commitment or during a journey, a risky or impossible gap; each with severity, the items, the time and one fix; the Today stats row shows upcoming trips, tasks remaining and conflicts (the four cards of screen 04, mail pending Phase 17) and the at-risk list carries each conflict with its fix | `backend/tests/test_conflicts.py` (5); web `today/hooks.test.ts`; full suite 573 passed, 5 skipped; rendered on Today against the live server |
 | fix 1 | 2026-09-30 | the audit found the consumer path fixed to one person (`demo`), one city (`dhaka`), fixed places (Farmgate, Shahbagh) and a fixed +06:00 clock in nine backend modules and three pages. Now a person has a profile (`app/profile`): name, IANA timezone, city (typed or from the browser's location through OpenStreetMap's reverse geocoder), home, work, on-time target. The planner, day timeline, Life Twin, conflicts, what-if, monitor recovery, calendar import, the agent's tools and prompts all read the person's zone, city, home and target; the deployment defaults (`TRAFFICTWIN_DEFAULT_CITY`, `TRAFFICTWIN_DEFAULT_TZ`) apply only to a person with no profile and say so. The browser keeps one generated id per person until accounts arrive; Today opens with a welcome step and then a greeting in the person's local time | `backend/tests/test_profile.py` (6); live: a Los Angeles person located from a point, saved with `America/Los_Angeles`, her day and a what-if computed in her zone and city with no city argument; full suite 579 passed, 5 skipped; web 27 passed |
+| P0 | 2026-09-30 | the seven contracts as Pydantic models with their invariants (a fixed commitment needs a start, a deadline cannot precede its start, a movable one needs a window, no self-dependency, p10 ≤ p50 ≤ p90, every travel edge names its provider and freshness); an authoritative SQLAlchemy store with an Alembic migration (SQLite now, PostgreSQL through the same URL later), the validated entity kept as JSON beside the query columns; routes under `/api/lifeos` with the JSON Schema of every contract; the store migrated to head at every start | `backend/tests/test_lifeos_core.py` (5): validation, round trip of all seven entities, day and event queries, idempotent rebuild from the migration, HTTP; `FEATURE_CODE_MAP.md` |
