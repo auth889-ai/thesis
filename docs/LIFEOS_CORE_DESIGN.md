@@ -34,6 +34,7 @@ The LLM orchestrates. Enforced in code, not in the prompt:
 | claim a cause without evidence | `confirm_hypothesis` rejects unless the cited evidence names the commitment and shows the risk |
 | silently move a fixed event | the solver treats `flexibility=fixed` as a hard constraint; a change of a fixed event is an external action needing approval |
 | perform an external consequential action without policy | the existing permission engine: exact-action approval, standing rules, audit |
+| present a plan the checker has not signed | every accepted plan carries a certificate from an independent verifier that shares no code with the solver |
 
 ## Model research design (one question, in order)
 

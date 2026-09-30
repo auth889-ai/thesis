@@ -179,3 +179,11 @@ Use                              [x] dependency
 ```text
 What we borrow                   the pattern: the model fills a schema through one forced tool call and the result is validated before use. Applied to Bedrock in compiler/model.py with the Commitment contract's own fields; an answer that does not validate is dropped and the rules answer.
 ```
+
+## Studied for the core design (2026-09-30)
+
+| Reference repo | Purpose | Files studied | Concept borrowed | Code reused? | License | Changes made | Citation / reference |
+|---|---|---|---|---|---|---|---|
+| bitanath/pixy @ `ec97e8d` | smallest functioning LLM on a watch; Arm Create winner | README, HOW-TO-LLM, OPTIMIZATIONS, benchmark.md, TRAIN.md, framework/core main/stream/ops, performix CLI, deploy scripts, LICENSE | benchmark-first with a correctness column; profile before optimising; resource budget; lazy loading; local PII processing; edge/cloud split; graveyard | no | Apache-2.0 | patterns only | `RESEARCH_PIXY_BLACKBOX.md` |
+| alejandro-publius/blackbox-datahub @ `b72a32c` | evidence-gated autonomous data-incident repair; DataHub Grand Prize | README, ARCHITECTURE, ACCEPTANCE, JUDGE_SCORECARD, models.py, investigator.py, tools.py (gates), prompts.py, repair.py, store.py, tracing.py, writeback.py, evals/*, judge_check.sh, ci.yml, invariants, tests, sample incident | facts vs hypotheses vs actions; evidence gate; forward-only stages as tool side effects; two-phase authorisation; repair verified by full re-check; revert; code-graded evals with a healthy control and a bad-repair rejection; keyless judge check; unedited example run; scorecard and limitations | no (re-implemented) | Apache-2.0 | applied to commitments and a solver instead of pipelines and a warehouse | `RESEARCH_PIXY_BLACKBOX.md` |
+| certified SAT solving (Princeton DATE 2003; JAR 2019) | trusted checker for an untrusted solver | papers | the solver proposes, an independent checker verifies; a certificate per accepted answer | no | — | applied to day schedules | `PHASE1_DESIGN.md` |
