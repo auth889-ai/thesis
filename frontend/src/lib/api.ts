@@ -64,6 +64,7 @@ export const api = {
   forecastNetwork: (ds: string, asOf: string | number = "latest") => get(`/api/forecast-map/${encodeURIComponent(ds)}?${q({as_of: asOf})}`),
   forecastRoad: (ds: string, node: string, asOf: string | number = "latest", models = "GWNet,persistence") => get(`/api/forecast-map/${encodeURIComponent(ds)}/road?${q({node, as_of: asOf, models})}`),
   registry: (scope: string) => get(`/api/registry?${q({scope})}`),
+  onset: (dataset?: string) => get(`/api/protocol-b/onset?${q({dataset})}`),
   trained: () => get("/api/predict-lab/trained"),
   predictRun: (body: Json) => post<{job: string}>("/api/predict-lab/run", body),
   predictStatus: (job: string) => get(`/api/predict-lab/${encodeURIComponent(job)}`),

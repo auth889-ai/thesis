@@ -77,15 +77,19 @@ window of a congested run. Sensor outages (0.0) are excluded from every metric.
 
 | Model | MAE@15 all | MAE@15 congested | Onset detection rate | Mean lead (min) |
 |---|---|---|---|---|
-| Persistence | 4.00 | 7.22 | 0.03 | 60.0 |
-| Historical average | 5.59 | 19.68 | 0.14 | 48.1 |
+| STAEformer (trained) | 2.93 | 5.49 | 0.66 | 50.8 |
+| Graph WaveNet (trained) | 3.04 | 5.88 | 0.58 | 48.7 |
+| STID (trained) | 3.13 | 6.61 | 0.52 | 48.9 |
 | XGBoost | 3.97 | 8.61 | 0.20 | 25.7 |
+| Persistence | 4.00 | 7.22 | 0.03 | 60.0 |
 | Chronos-Bolt zero-shot | 4.26 | 7.94 | 0.32 | 56.4 |
+| Historical average | 5.59 | 19.68 | 0.14 | 48.1 |
 
-Reading: on the aggregate column the four are within a mile per hour of each other; on the congested column the
-spread is 12 mph. Chronos-Bolt does not beat persistence on aggregate MAE at 15 minutes (a negative result, kept),
-yet detects ten times more onsets than persistence. Neither protocol alone tells the story. The trained graph
-networks are scored on Protocol B in the next phase, which is why their B rows are absent rather than estimated.
+Reading: on the aggregate column the trained models are within 0.2 mph of each other; in congestion the spread opens
+to 1.1 mph and against the zero-shot model to 2.5 mph. STAEformer flags two onsets in three, Chronos-Bolt one in
+three, persistence almost none. Chronos-Bolt does not beat persistence on aggregate MAE at 15 minutes (a negative
+result, kept) yet detects ten times more onsets than persistence. Neither protocol alone tells the story. DCRNN joins
+this table when its reproduction lands; the page `/lab/models` → Onset serves it from the run file.
 
 ### What to take away
 
@@ -112,7 +116,7 @@ Google-Routes history by rule).
 | Protocol | Windows scored | Status |
 |---|---|---|
 | A — aggregate | every test window, as in the papers | GWNet, STID, STAEformer, OpenCity, Chronos-Bolt complete |
-| B — regime-stratified | free-flow, onset and congested windows separately; detection and lead | floors, XGBoost and Chronos-Bolt complete; trained models next |
+| B — regime-stratified | free-flow, onset and congested windows separately; detection and lead | floors, XGBoost, Chronos-Bolt, GWNet, STID, STAEformer on METR-LA; served at `/api/protocol-b/onset` |
 | Deployment | the served model behind the map for any city, outcomes recorded, weekly recalibration | serving exists for GWNet; conformal bands and departure advice pending |
 
 Protocol B uses an 80-node subsample and a contiguous block so onset transitions are real, not shuffled. That is a
@@ -133,7 +137,9 @@ Every number on a page is read from a model run, a dataset or an API; the struct
 | Assistant · Alexa | questions answered from the same forecast API, over Bedrock and the MCP server at `/mcp` | `backend/app/agent/`, `backend/app/mcp/` |
 | Evidence | checkpoint hashes, logs, the protocol check | `/lab/evidence` |
 
-Pending pages, each tied to a phase in the master plan: onset page (P2), calibrated bands and departure advice (P8),
+| Onset | Protocol B: every model on the same windows, congested-regime error, onsets detected, mean lead | `GET /api/protocol-b/onset` |
+
+Pending pages, each tied to a phase in the master plan: calibrated bands and departure advice (P8),
 zero-shot upload for any city (P9), alerts (P10), cross-city page (P11).
 
 ## Data and models
@@ -208,8 +214,8 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 
 ## Limitations
 
-- Protocol B has been run on an 80-node METR-LA subsample with 120 windows; the trained graph networks are not yet
-  on it, so the headline comparison is pending, not estimated.
+- Protocol B has been run on an 80-node METR-LA subsample with 120 consecutive windows, one seed; PEMS-BAY and
+  more seeds are next, so the onset numbers are a first block, not a final estimate.
 - Chronos-Bolt was evaluated, not Chronos-2; the baseline paper's model is the next zero-shot run.
 - OpenCity's pre-training corpus includes METR-LA and PEMS-BAY, so its numbers there are not zero-shot; only the four
   held-out cities are reported.
@@ -221,8 +227,8 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 ## Planned work
 
 - [x] Protocol A: Graph WaveNet, STID, STAEformer within 2 %; OpenCity exact on held-out cities; Chronos-Bolt
-- [x] Protocol B: floors, XGBoost, Chronos-Bolt on the 80-node block
-- [ ] P1 DCRNN (official BasicTS config) · P2 Protocol B on every trained model
+- [x] Protocol B: floors, XGBoost, Chronos-Bolt, GWNet, STID, STAEformer on the 80-node block; the Onset page
+- [ ] P1 DCRNN (official BasicTS config), training on AWS
 - [ ] P3–P7 D2STGNN, MegaCRN, STD-MAE, HimNet, BigST, PatchSTG, STGformer
 - [ ] P8 regime-aware conformal intervals (MAPIE) and departure advice
 - [ ] P9 Chronos-2, TimesFM, Moirai, Time-MoE zero-shot; reproduce the baseline paper's numbers

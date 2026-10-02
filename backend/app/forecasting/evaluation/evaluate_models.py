@@ -14,6 +14,7 @@ WHO IS COMPARED
     random_forest         classical ML on lagged features, trained on the train split
     xgboost               the same features, gradient boosted
     chronos               pretrained univariate foundation model, zero-shot
+    GWNet, STID, STAEformer, DCRNN   the trained official checkpoints (checkpoint_stage.py)
 
 WHAT IS MEASURED
     overall MAE / RMSE / masked-MAPE, and then the operational metrics that a routing system
@@ -315,6 +316,12 @@ def stage(kind: str, dataset: str, n_windows: int, seed: int, chronos_model: str
             preds[name] = out
     elif kind == "chronos":
         preds["chronos"] = predict_chronos(ctx, steps, chronos_model)
+    elif kind == "checkpoints":
+        from app.forecasting.evaluation.checkpoint_stage import predict_checkpoints
+        full_n = load(dataset).shape[1]
+        node_idx = (np.linspace(0, full_n - 1, max_nodes).astype(int) if max_nodes and full_n > max_nodes
+                    else np.arange(full_n))
+        preds.update(predict_checkpoints(dataset, starts, CONTEXT, steps, node_idx, ctx))
     else:
         raise SystemExit(f"unknown stage {kind}")
 
@@ -333,7 +340,9 @@ def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
     thr = CONGESTION_RATIO * free_flow(data[:tr_end])
     steps = max(HORIZONS_MIN) // BIN_MIN
 
-    kinds = ["baselines", "trees"] + ([] if skip_chronos else ["chronos"])
+    from app.forecasting.evaluation.checkpoint_stage import checkpoints_for
+    kinds = (["baselines", "trees"] + ([] if skip_chronos else ["chronos"])
+             + (["checkpoints"] if checkpoints_for(dataset) else []))
     preds, truth, timings = {}, None, {}
     with tempfile.TemporaryDirectory() as td:
         for kind in kinds:

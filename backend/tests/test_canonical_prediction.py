@@ -160,3 +160,18 @@ def test_aws_job_script_applies_the_same_python312_fix_as_the_local_path():
     import inspect
     assert "random.randint(-1000000, 1000000)" in scripts.BENCHMARK_SCRIPT if hasattr(scripts, "BENCHMARK_SCRIPT") else "random.randint(-1000000, 1000000)" in inspect.getsource(scripts)
     assert "random.randint(-1000000, 1000000)" in inspect.getsource(basicts_train)
+
+
+def test_protocol_b_scores_the_trained_checkpoints_with_the_official_architecture():
+    """Protocol B (evaluate_models) must include every trained checkpoint it can find, loaded through the
+    pinned harness's config, never a local re-implementation; names must match the leaderboard's."""
+    import inspect
+    from app.forecasting.evaluation import checkpoint_stage, evaluate_models
+    assert checkpoint_stage.ARCH == {"GraphWaveNet": "GWNet", "STID": "STID", "STAEformer": "STAEformer", "DCRNN": "DCRNN"}
+    src = inspect.getsource(checkpoint_stage)
+    assert "load_official_cfg" in src and "find_checkpoints" in src
+    assert "the harness data file and the evaluation data file disagree" in src   # the timeline check stays
+    assert '"checkpoints"' in inspect.getsource(evaluate_models.stage)
+    assert "checkpoints_for(dataset)" in inspect.getsource(evaluate_models.evaluate)
+    for ck in checkpoint_stage.checkpoints_for("METR-LA"):
+        assert "best_val" in ck["path"].name and ck["dataset_dir"] == "METR-LA"
