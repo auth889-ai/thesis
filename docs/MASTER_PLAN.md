@@ -143,3 +143,32 @@ Q6 FMM + DeepTTE · Q7 BMD-45 + BoT-SORT · Q8 physics-informed TSE · Q9 MATSim
 
 Rules: official code unchanged and pinned; licence read at pin time; GPL tools run as separate processes; unlicensed repos are
 reference only; no Google APIs; Google-Routes recordings never used for training; AWS for compute; one phase at a time.
+
+## 6. The workflow with the signature features in place (added 2026-10-03; features in `SIGNATURE_FEATURES.md`)
+
+```
+ DATA IN                          ENGINE STAGE              SIGNATURE FEATURES                 PAPERS / CODE THAT POWER IT
+ ──────────────────────           ────────────────          ──────────────────────────────     ─────────────────────────────────────────
+ sensor datasets, 511 cameras,    1 SENSE                   S1 your phone is the sensor        FMM (map matching), RT-DETR, ByteTrack, BoT-SORT, BMD-45
+ users' phones (GPS), Amazon      2 ESTIMATE                S16 equity map (who is sensed)     ImputeFormer, SPIN/GRIN (tsl), IGNNK, physics-informed TSE
+ Location, OSM, GTFS, weather,    3 PREDICT                 S11 event-aware forecasts          DCRNN … STAEformer, STD-MAE, HimNet, BigST, PatchSTG, STGformer,
+ holidays, events                                           S3 "why will it be slow?"          OpenCity, UniST, Chronos-2, TimesFM, Moirai, Time-MoE;
+                                                            S9 open regime leaderboard         verbal explanations of STGNNs; TSFM-baselines 2026; regime-failure 2026
+                                  4 DETECT                  S13 incident radar                 IncidentNet; regime-failure 2026 (onset protocol)
+                                                            S10 time machine
+                                  5 CONTROL (simulated)     S14 signal lab with reasons        max-pressure, MAPPO, Advanced-XLight, CoSLight, LLMLight, LibSignal, CityFlow
+                                  6 ADVISE                  S12 reliability index per route    MAPIE (conformal), DeepTTE via LibCity, bounded-compliance rerouting
+                                                            S7 herding guard                   Nature Comms 2026 (navigation concentration), popularity-based alternative routing
+                                                            S4 ask the city                    TrafficGPT pattern, UrbanGPT; Bedrock agent + MCP
+                                  7 VERIFY                  S2 the living twin                 SUMO, MOSAIC, Geneva twin, deck.gl TripsLayer
+                                                            S5 what-if planner                 SUMO paired counterfactuals, DiTAT
+                                                            S6 CO2 and fuel meter              SUMO HBEFA emission models
+                                  8 LEARN / OPERATE         S15 model health                   Michelangelo-style monitoring, Evidently
+                                                            S8 world congestion pulse          TomTom index methodology on Amazon Location samples
+ ──────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────
+ what a person does: open a city → see live + forecast with a band → ask why → get a departure time with 95 % buffer → watch the twin →
+                     try a what-if → get warned at onset → see the model's health → submit a model to the leaderboard
+```
+
+Build order is unchanged: P1–P12 (prediction, the thesis core), then Q1–Q9 (other pillars), with each signature
+feature attached to the phase listed in `SIGNATURE_FEATURES.md`.
