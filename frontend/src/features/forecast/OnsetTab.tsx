@@ -2,6 +2,7 @@ import {useQuery} from "@tanstack/react-query";
 
 import {Pill, Table} from "@/components/ui";
 import {api} from "@/lib/api";
+import {IntervalsTable} from "./IntervalsTable";
 import {modelName} from "./model";
 
 type Row = {model: string; mae_15: number | null; congestion_mae_15: number | null; congestion_f1_15: number | null; mae_60: number | null; onset_detection_rate: number | null; mean_lead_min: number | null};
@@ -40,6 +41,7 @@ export function OnsetTab({datasetName}: {datasetName: string}) {
         ])}
       />
       <p className="muted">Source: <code>{run.source}</code>. Regenerate: <code>{run.regenerate}</code>. Trained models are the official checkpoints reloaded through the pinned harness; Chronos is the released zero-shot model; the trees are fitted on the train split only.</p>
+      <IntervalsTable datasetName={datasetName} />
     </div>
   );
 }

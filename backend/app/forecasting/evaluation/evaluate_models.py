@@ -253,8 +253,9 @@ def onset_lead(pred: np.ndarray, truth: np.ndarray, thr: np.ndarray) -> dict:
             "max_possible_lead_min": max(HORIZONS_MIN)}
 
 
-def _windows(data: np.ndarray, n_windows: int, seed: int, steps: int):
-    """A CONTIGUOUS block of consecutive windows from the test region.
+def _windows(data: np.ndarray, n_windows: int, seed: int, steps: int, region: str = "test"):
+    """A CONTIGUOUS block of consecutive windows from the test region (or the validation region,
+    `region="val"`, which the conformal layer uses for calibration so that test coverage is honest).
 
     Randomly scattered windows make the error metrics fine but the onset lead time meaningless:
     "an onset between window i-1 and window i" then compares two unrelated points in time, so the
@@ -264,7 +265,7 @@ def _windows(data: np.ndarray, n_windows: int, seed: int, steps: int):
     T = data.shape[0]
     tr_end, va_end = splits(T)
     rng = np.random.default_rng(seed)
-    lo, hi = va_end, T - CONTEXT - steps
+    lo, hi = (va_end, T - CONTEXT - steps) if region == "test" else (tr_end, va_end - CONTEXT - steps)
     span = min(n_windows, hi - lo)
     first = int(rng.integers(lo, max(lo + 1, hi - span)))
     starts = np.arange(first, first + span)
@@ -274,7 +275,7 @@ def _windows(data: np.ndarray, n_windows: int, seed: int, steps: int):
 
 
 def stage(kind: str, dataset: str, n_windows: int, seed: int, chronos_model: str,
-          max_nodes: int, out_path: Path) -> None:
+          max_nodes: int, out_path: Path, region: str = "test") -> None:
     """Compute one model family's predictions and save them. Run as its OWN process.
 
     torch and the tree libraries cannot share an interpreter here: sklearn/XGBoost leave worker
@@ -286,7 +287,7 @@ def stage(kind: str, dataset: str, n_windows: int, seed: int, chronos_model: str
     if max_nodes and data.shape[1] > max_nodes:
         data = data[:, np.linspace(0, data.shape[1] - 1, max_nodes).astype(int)]
     steps = max(HORIZONS_MIN) // BIN_MIN
-    starts, ctx, truth = _windows(data, n_windows, seed, steps)
+    starts, ctx, truth = _windows(data, n_windows, seed, steps, region)
     tr_end, _ = splits(data.shape[0])
     train = data[:tr_end]
 
@@ -330,7 +331,7 @@ def stage(kind: str, dataset: str, n_windows: int, seed: int, chronos_model: str
 
 
 def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
-             skip_chronos: bool = False, max_nodes: int = 0) -> dict:
+             skip_chronos: bool = False, max_nodes: int = 0, region: str = "test") -> dict:
     import tempfile
     data = load(dataset)
     if max_nodes and data.shape[1] > max_nodes:
@@ -352,7 +353,7 @@ def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
             subprocess.run([sys.executable, str(Path(__file__).resolve()), "--stage", kind,
                             "--dataset", dataset, "--windows", str(n_windows), "--seed", str(seed),
                             "--chronos-model", chronos_model, "--max-nodes", str(max_nodes),
-                            "--stage-out", str(f)], check=True)
+                            "--region", region, "--stage-out", str(f)], check=True)
             timings[kind] = round(time.time() - t0, 1)
             z = np.load(f)
             truth = z["truth"] if truth is None else truth
@@ -361,6 +362,12 @@ def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
                 if k.startswith("pred_"):
                     preds[k[5:]] = z[k]
 
+    # every prediction is kept: the conformal layer calibrates on the validation block and is scored on
+    # the test block, and a reviewer can re-score any model without re-running it
+    keep = OUT / "protocol_b"
+    keep.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(keep / f"{dataset}_{region}_w{n_windows}_n{N}_s{seed}.npz", truth=truth, starts=starts,
+                        threshold=thr, **{f"pred_{k}": v for k, v in preds.items()})
     results = {name: {"horizons": score(p, truth, thr), "onset_lead": onset_lead(p, truth, thr)}
                for name, p in preds.items()}
     return {
@@ -431,22 +438,25 @@ def main() -> int:
     p.add_argument("--stage-out", type=Path, default=None)
     p.add_argument("--max-nodes", type=int, default=0,
                    help="deterministic node subsample; 0 uses every node")
+    p.add_argument("--region", default="test", choices=["test", "val"],
+                   help="score the test block (the comparison) or the validation block (conformal calibration)")
     a = p.parse_args()
 
     if a.stage:
-        stage(a.stage, a.dataset, a.windows, a.seed, a.chronos_model, a.max_nodes, a.stage_out)
+        stage(a.stage, a.dataset, a.windows, a.seed, a.chronos_model, a.max_nodes, a.stage_out, a.region)
         return 0
 
     targets = ["METR-LA", "PEMS-BAY", "PEMS07M"] if a.all else [a.dataset]
     out = []
     for ds in targets:
         print(f"[eval] {ds} …", flush=True)
-        r = evaluate(ds, a.windows, a.seed, a.chronos_model, a.skip_chronos, a.max_nodes)
+        r = evaluate(ds, a.windows, a.seed, a.chronos_model, a.skip_chronos, a.max_nodes, a.region)
         for name, res in sorted(r["results"].items()):
             h = res["horizons"].get(15, {})
             print(f"   {name:<20} MAE@15={h.get('mae'):<8} congMAE={h.get('congestion_mae')} "
                   f"F1={h.get('congestion_f1')}")
-        out.append(r)
+        if a.region == "test":
+            out.append(r)
     write(out)
     print(f"\nwrote {(OUT / 'model_comparison.md').relative_to(REPO)}")
     return 0

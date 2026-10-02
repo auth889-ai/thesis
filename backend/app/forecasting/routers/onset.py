@@ -39,3 +39,23 @@ def onset(dataset: str | None = None):
                     "source": "results/forecasting/model_comparison.json",
                     "regenerate": "python -m app.forecasting.evaluation.evaluate_models --dataset <name> --windows 120 --seed 11 --max-nodes 80"})
     return {"datasets": out}
+
+
+CONFORMAL = REPO / "results/forecasting/conformal.json"
+
+
+@router.get("/api/protocol-b/conformal", tags=["predict"])
+def conformal(dataset: str | None = None):
+    """Coverage and width of 90 % intervals per model and horizon under three calibrators (global,
+    regime-aware, predicted-regime), on all test windows, in free flow, in congestion and at the
+    transition. Read from the committed run file."""
+    if not CONFORMAL.exists():
+        raise HTTPException(503, "no conformal run yet: python -m app.forecasting.evaluation.conformal --dataset <name>")
+    runs = json.loads(CONFORMAL.read_text())
+    if dataset:
+        key = dataset.replace("_", "-").upper()
+        runs = [r for r in runs if r["dataset"].upper() == key]
+        if not runs:
+            raise HTTPException(404, f"no conformal run for {dataset}")
+    return {"datasets": [{**r, "source": "results/forecasting/conformal.json",
+                          "regenerate": "python -m app.forecasting.evaluation.conformal --dataset <name>"} for r in runs]}

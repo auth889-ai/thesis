@@ -175,3 +175,28 @@ def test_protocol_b_scores_the_trained_checkpoints_with_the_official_architectur
     assert "checkpoints_for(dataset)" in inspect.getsource(evaluate_models.evaluate)
     for ck in checkpoint_stage.checkpoints_for("METR-LA"):
         assert "best_val" in ck["path"].name and ck["dataset_dir"] == "METR-LA"
+
+
+def test_regime_aware_conformal_restores_coverage_where_a_global_quantile_cannot():
+    """Residuals that are small in free flow and large in congestion: one global 90 % quantile over-covers
+    free flow and under-covers congestion; a quantile per prediction-time regime covers both. MAPIE owns
+    the quantile; our estimator is the identity on the stored point forecast."""
+    import numpy as np
+    from app.forecasting.evaluation import conformal
+    rng = np.random.default_rng(0)
+    n = 4000
+    cong = rng.random(n) < 0.3
+    scale = np.where(cong, 8.0, 1.0)
+    pred = rng.uniform(20, 60, n)
+    y_cal, y_te = pred + rng.normal(0, scale), pred + rng.normal(0, scale)
+    g = conformal._quantile_model(pred, y_cal)
+    lo, hi = conformal._interval(g, pred)
+    cov_global_cong = ((y_te >= lo) & (y_te <= hi))[cong].mean()
+    lo_r, hi_r = np.empty(n), np.empty(n)
+    for c in (False, True):
+        m = conformal._quantile_model(pred[cong == c], y_cal[cong == c])
+        lo_r[cong == c], hi_r[cong == c] = conformal._interval(m, pred[cong == c])
+    cov_regime_cong = ((y_te >= lo_r) & (y_te <= hi_r))[cong].mean()
+    cov_regime_all = ((y_te >= lo_r) & (y_te <= hi_r)).mean()
+    assert cov_global_cong < 0.8                       # the global quantile is set by the easy regime
+    assert 0.86 <= cov_regime_cong <= 0.94 and 0.86 <= cov_regime_all <= 0.94

@@ -20,4 +20,18 @@ Context 96 steps; chronological 70 / 10 / 20; a CONTIGUOUS block of consecutive 
 | random_forest | 3.9829 | 7.0419 | 12.022 | **8.6196** | 0.8229 | 6.4206 | 0.1325 | 23.25 min |
 | xgboost | 3.9689 | 7.0503 | 12.003 | **8.6148** | 0.8232 | 6.3701 | 0.1987 | 25.67 min |
 
+## PEMS-BAY — 80 nodes, 120 test windows
+
+Context 96 steps; chronological 70 / 10 / 20; a CONTIGUOUS block of consecutive windows from the TEST region, so onset transitions are real. Congestion: 0.6 x per-node free-flow (85th percentile of that node's TRAIN-split observed values). values of 0.0 are sensor outages and are excluded from every metric.
+
+| model | MAE@15 | RMSE@15 | MAPE@15 | congestion MAE@15 | F1@15 | MAE@60 | onset detection | mean lead |
+|---|---|---|---|---|---|---|---|---|
+| GWNet | – | – | – | **–** | – | – | 1.0 | 60.0 min |
+| STID | – | – | – | **–** | – | – | 1.0 | 55.0 min |
+| chronos | – | – | – | **–** | – | – | 0.1818 | 32.5 min |
+| historical_average | – | – | – | **–** | – | – | – | None min |
+| persistence | – | – | – | **–** | – | – | – | None min |
+| random_forest | – | – | – | **–** | – | – | 0.5455 | 55.0 min |
+| xgboost | – | – | – | **–** | – | – | 0.9091 | 54.0 min |
+
 Regenerate: `python -m app.forecasting.evaluation.evaluate_models --all`. Machine-readable: `model_comparison.json`.

@@ -91,12 +91,36 @@ three, persistence almost none. Chronos-Bolt does not beat persistence on aggreg
 result, kept) yet detects ten times more onsets than persistence. Neither protocol alone tells the story. DCRNN joins
 this table when its reproduction lands; the page `/lab/models` → Onset serves it from the run file.
 
+### Calibrated intervals per regime (METR-LA, 90 % level, calibrated on the validation block, scored on the test block)
+
+Three MAPIE split-conformal calibrators on each model's point forecast: one global quantile; one per regime observed at
+prediction time; one per regime the model itself predicts at the horizon. Coverage at 15 minutes, by where the truth landed.
+
+| Model | Calibrator | All | Free flow | Congested | Transition into congestion |
+|---|---|---|---|---|---|
+| STAEformer | global | 0.89 | 0.91 | 0.77 | 0.39 |
+| STAEformer | regime-aware | 0.91 | 0.91 | 0.88 | 0.33 |
+| STAEformer | predicted-regime | 0.90 | 0.90 | 0.90 | 0.50 |
+| Graph WaveNet | global | 0.89 | 0.92 | 0.75 | 0.33 |
+| Graph WaveNet | predicted-regime | 0.90 | 0.90 | 0.88 | 0.41 |
+| Chronos-Bolt | global | 0.88 | 0.92 | 0.68 | 0.21 |
+| Chronos-Bolt | predicted-regime | 0.88 | 0.89 | 0.83 | 0.20 |
+| Persistence | global | 0.89 | 0.92 | 0.74 | 0.20 |
+
+Reading: a "90 %" interval reported the usual way is a 92 % interval in free flow and a 20 to 39 % interval at the moment a
+jam forms. Conditioning on the regime observed now repairs congestion (0.77 → 0.88) and makes the transition *worse*
+(0.39 → 0.33), because at a transition the observed regime is still free flow. Conditioning on the regime the model
+predicts repairs congestion fully (0.90) and lifts the transition to 0.50 at 15 min and 0.70 at 60 min for STAEformer,
+but no calibrator reaches 90 % there. The transition is a forecasting problem, not a calibration problem: an interval can
+only be honest about a jam the model has some signal of. Full table in `results/forecasting/conformal.md`.
+
 ### What to take away
 
 - Reproduction is solved: four models within 2 % of their papers, two foundation-model evaluations exact.
 - Aggregate MAE is nearly blind to the congested regime; the regime column is where models separate.
-- A model can lose on aggregate and win on onset. Calibrated intervals per regime are the missing piece and the
-  method chapter (Phase P8).
+- A model can lose on aggregate and win on onset.
+- Published-style 90 % intervals cover about a third of transitions. Regime conditioning on the model's own forecast
+  recovers congestion coverage and half of the transition gap; the rest needs a better onset forecast, not a wider band.
 
 ## Experimental design
 
@@ -116,7 +140,8 @@ Google-Routes history by rule).
 | Protocol | Windows scored | Status |
 |---|---|---|
 | A — aggregate | every test window, as in the papers | GWNet, STID, STAEformer, OpenCity, Chronos-Bolt complete |
-| B — regime-stratified | free-flow, onset and congested windows separately; detection and lead | floors, XGBoost, Chronos-Bolt, GWNet, STID, STAEformer on METR-LA; served at `/api/protocol-b/onset` |
+| B — regime-stratified | free-flow, onset and congested windows separately; detection and lead | METR-LA and PEMS-BAY; served at `/api/protocol-b/onset` |
+| B + conformal | 90 % intervals per calibrator and regime, calibrated on the validation block | METR-LA; served at `/api/protocol-b/conformal` |
 | Deployment | the served model behind the map for any city, outcomes recorded, weekly recalibration | serving exists for GWNet; conformal bands and departure advice pending |
 
 Protocol B uses an 80-node subsample and a contiguous block so onset transitions are real, not shuffled. That is a
@@ -230,7 +255,8 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 - [x] Protocol B: floors, XGBoost, Chronos-Bolt, GWNet, STID, STAEformer on the 80-node block; the Onset page
 - [ ] P1 DCRNN (official BasicTS config), training on AWS
 - [ ] P3–P7 D2STGNN, MegaCRN, STD-MAE, HimNet, BigST, PatchSTG, STGformer
-- [ ] P8 regime-aware conformal intervals (MAPIE) and departure advice
+- [x] P8a regime-aware conformal intervals (MAPIE) on every Protocol B model, three calibrators, the transition result
+- [ ] P8b departure advice from the calibrated lower bound
 - [ ] P9 Chronos-2, TimesFM, Moirai, Time-MoE zero-shot; reproduce the baseline paper's numbers
 - [ ] P10–P12 alerts, cross-city to Dhaka with UniST and OpenCity, ONNX serving and twin re-run
 - [ ] Large-scale run: best supervised and best foundation model over all 8,600 LargeST sensors and thirty live cities for fourteen days; forecasts and regime labels published as Parquet with a report
