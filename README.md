@@ -166,6 +166,7 @@ Every number on a page is read from a model run, a dataset or an API; the struct
 | Evidence | checkpoint hashes, logs, the protocol check | `/lab/evidence` |
 
 | Onset | Protocol B: every model on the same windows, congested-regime error, onsets detected, mean lead | `GET /api/protocol-b/onset` |
+| Map → Your phone is the sensor | share your position while you move; fixes are snapped to the road with Amazon Location SnapToRoads, binned into 70 m road-direction cells every five minutes and drawn on the map with how many devices each rests on; device ids hashed, raw fixes purged after 24 h | `POST /api/probes`, `GET /api/probes/cells`, `GET /api/probes/status`; tables `probe_points`, `probe_cells` |
 
 Pending pages, each tied to a phase in the master plan: calibrated bands and departure advice (P8),
 zero-shot upload for any city (P9), alerts (P10), cross-city page (P11).
@@ -263,7 +264,8 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 - [ ] P9 Chronos-2, TimesFM, Moirai, Time-MoE zero-shot; reproduce the baseline paper's numbers
 - [ ] P10–P12 alerts, cross-city to Dhaka with UniST and OpenCity, ONNX serving and twin re-run
 - [ ] Large-scale run: best supervised and best foundation model over all 8,600 LargeST sensors and thirty live cities for fourteen days; forecasts and regime labels published as Parquet with a report
-- [ ] Other pillars of road traffic (imputation, incident detection, signal control, map matching) per `docs/TRAFFIC_FULL_SCOPE.md`
+- [x] Probes: the phone as the sensor (signature feature S1), snapped with Amazon Location, H3 cells, relational tables
+- [ ] Other pillars of road traffic (imputation, incident detection, signal control) per `docs/TRAFFIC_FULL_SCOPE.md`
 
 ## Citation
 
