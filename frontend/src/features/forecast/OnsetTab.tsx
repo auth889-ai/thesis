@@ -8,7 +8,7 @@ import {modelName} from "./model";
 type Row = {model: string; mae_15: number | null; congestion_mae_15: number | null; congestion_f1_15: number | null; mae_60: number | null; onset_detection_rate: number | null; mean_lead_min: number | null};
 type Run = {dataset: string; generated_utc: string; nodes: number; protocol: Record<string, any>; rows: Row[]; source: string; regenerate: string};
 
-const NAME: Record<string, string> = {chronos: "Chronos-Bolt", xgboost: "XGBoost", random_forest: "Random forest"};
+const NAME: Record<string, string> = {chronos: "Chronos-Bolt", chronos2: "Chronos-2", chronos2_mv: "Chronos-2 (multivariate)", timesfm: "TimesFM 2.5", xgboost: "XGBoost", random_forest: "Random forest"};
 const name = (k: string) => NAME[k] ?? modelName(k);
 const f = (v: number | null | undefined, d = 2) => (v == null ? "–" : v.toFixed(d));
 const pct = (v: number | null | undefined) => (v == null ? "–" : `${Math.round(v * 100)} %`);

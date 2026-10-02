@@ -200,3 +200,22 @@ def test_regime_aware_conformal_restores_coverage_where_a_global_quantile_cannot
     cov_regime_all = ((y_te >= lo_r) & (y_te <= hi_r)).mean()
     assert cov_global_cong < 0.8                       # the global quantile is set by the easy regime
     assert 0.86 <= cov_regime_cong <= 0.94 and 0.86 <= cov_regime_all <= 0.94
+
+
+def test_protocol_b_merge_refuses_a_stage_scored_on_different_windows(tmp_path, monkeypatch):
+    """A foundation model's predictions join the persisted block only if they were made on exactly the
+    same windows; otherwise the comparison would silently mix test moments."""
+    import numpy as np
+    from app.forecasting.evaluation import evaluate_models as em
+    monkeypatch.setattr(em, "OUT", tmp_path)
+    monkeypatch.setattr(em, "load", lambda ds: np.ones((1000, 4), dtype="float32"))
+    (tmp_path / "protocol_b").mkdir()
+    np.savez_compressed(tmp_path / "protocol_b/X_val_w3_n4_s1.npz", truth=np.ones((3, 12, 4)), starts=np.array([10, 11, 12]), threshold=np.ones(4))
+    bad = tmp_path / "bad.npz"
+    np.savez_compressed(bad, truth=np.ones((3, 12, 4)), starts=np.array([20, 21, 22]), pred_m=np.ones((3, 12, 4)))
+    with pytest.raises(SystemExit):
+        em.merge("X", "val", 3, 4, 1, [bad])
+    good = tmp_path / "good.npz"
+    np.savez_compressed(good, truth=np.ones((3, 12, 4)), starts=np.array([10, 11, 12]), pred_m=np.ones((3, 12, 4)))
+    assert em.merge("X", "val", 3, 4, 1, [good]) is None                      # the validation block is never a comparison record
+    assert "pred_m" in np.load(tmp_path / "protocol_b/X_val_w3_n4_s1.npz").files

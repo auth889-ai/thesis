@@ -13,7 +13,9 @@ WHO IS COMPARED
     historical_average    per-node mean of the context
     random_forest         classical ML on lagged features, trained on the train split
     xgboost               the same features, gradient boosted
-    chronos               pretrained univariate foundation model, zero-shot
+    chronos               Chronos-Bolt, pretrained univariate foundation model, zero-shot
+    chronos2, chronos2_mv Chronos-2 zero-shot, per road and with all roads as one multivariate input
+    timesfm               TimesFM 2.5 (200M) zero-shot, per road
     GWNet, STID, STAEformer, DCRNN   the trained official checkpoints (checkpoint_stage.py)
 
 WHAT IS MEASURED
@@ -317,6 +319,12 @@ def stage(kind: str, dataset: str, n_windows: int, seed: int, chronos_model: str
             preds[name] = out
     elif kind == "chronos":
         preds["chronos"] = predict_chronos(ctx, steps, chronos_model)
+    elif kind == "chronos2":
+        from app.forecasting.evaluation.foundation_stage import predict_chronos2
+        preds.update(predict_chronos2(ctx, steps))
+    elif kind == "timesfm":
+        from app.forecasting.evaluation.foundation_stage import predict_timesfm
+        preds.update(predict_timesfm(ctx, steps))
     elif kind == "checkpoints":
         from app.forecasting.evaluation.checkpoint_stage import predict_checkpoints
         full_n = load(dataset).shape[1]
@@ -342,7 +350,7 @@ def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
     steps = max(HORIZONS_MIN) // BIN_MIN
 
     from app.forecasting.evaluation.checkpoint_stage import checkpoints_for
-    kinds = (["baselines", "trees"] + ([] if skip_chronos else ["chronos"])
+    kinds = (["baselines", "trees"] + ([] if skip_chronos else ["chronos", "chronos2", "timesfm"])
              + (["checkpoints"] if checkpoints_for(dataset) else []))
     preds, truth, timings = {}, None, {}
     with tempfile.TemporaryDirectory() as td:
@@ -388,6 +396,35 @@ def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
         },
         "nodes": int(N), "timesteps": int(T), "results": results,
     }
+
+
+def merge(dataset: str, region: str, n_windows: int, max_nodes: int, seed: int, stage_files: list[Path]) -> dict | None:
+    """Add one or more staged prediction files to the persisted block and re-score every model on it.
+
+    A new model family (a foundation model that took an hour on the laptop's GPU) joins the comparison
+    without re-running the families already there; the windows must match exactly or the merge refuses.
+    """
+    data = load(dataset)
+    N = min(max_nodes, data.shape[1]) if max_nodes else data.shape[1]
+    keep = OUT / "protocol_b" / f"{dataset}_{region}_w{n_windows}_n{N}_s{seed}.npz"
+    base = dict(np.load(keep))
+    for f in stage_files:
+        z = np.load(f)
+        if not np.array_equal(z["starts"], base["starts"]):
+            raise SystemExit(f"{f}: windows differ from the persisted block; re-run the stage with the same seed/windows/nodes")
+        base.update({k: z[k] for k in z.files if k.startswith("pred_")})
+    np.savez_compressed(keep, **base)
+    if region != "test":
+        return None
+    truth, thr = base["truth"], base["threshold"]
+    preds = {k[5:]: v for k, v in base.items() if k.startswith("pred_")}
+    path = OUT / "model_comparison.json"
+    prior = {r["dataset"]: r for r in json.loads(path.read_text())} if path.exists() else {}
+    rec = prior.get(dataset) or {"dataset": dataset, "protocol": {}, "nodes": int(N), "timesteps": int(data.shape[0])}
+    rec["results"] = {name: {"horizons": score(p, truth, thr), "onset_lead": onset_lead(p, truth, thr)} for name, p in preds.items()}
+    rec["generated_utc"] = datetime.now(timezone.utc).isoformat()
+    rec["protocol"]["merged_stages"] = sorted(set(rec["protocol"].get("merged_stages", [])) | {f.name for f in stage_files})
+    return rec
 
 
 def write(records: list[dict]) -> None:
@@ -440,7 +477,19 @@ def main() -> int:
                    help="deterministic node subsample; 0 uses every node")
     p.add_argument("--region", default="test", choices=["test", "val"],
                    help="score the test block (the comparison) or the validation block (conformal calibration)")
+    p.add_argument("--merge", type=Path, nargs="*", default=None,
+                   help="staged prediction files (--stage ... --stage-out) to add to the persisted block, then re-score")
     a = p.parse_args()
+
+    if a.merge:
+        rec = merge(a.dataset, a.region, a.windows, a.max_nodes, a.seed, a.merge)
+        if rec:
+            for name, res in sorted(rec["results"].items()):
+                h = res["horizons"].get(15, {})
+                print(f"   {name:<20} MAE@15={h.get('mae'):<8} congMAE={h.get('congestion_mae')} onset={res['onset_lead'].get('detection_rate')}")
+            write([rec])
+        print(f"merged into the {a.region} block of {a.dataset}")
+        return 0
 
     if a.stage:
         stage(a.stage, a.dataset, a.windows, a.seed, a.chronos_model, a.max_nodes, a.stage_out, a.region)

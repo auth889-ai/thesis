@@ -7,7 +7,7 @@ import {modelName} from "./model";
 type Row = Record<string, any> & {model: string; horizon_min: number};
 type Run = {dataset: string; level: number; protocol: Record<string, string | number>; rows: Row[]; source: string; regenerate: string};
 const CAL = [["global", "global"], ["regime_aware", "regime-aware"], ["predicted_regime", "predicted-regime"]] as const;
-const NAME: Record<string, string> = {chronos: "Chronos-Bolt", xgboost: "XGBoost", random_forest: "Random forest"};
+const NAME: Record<string, string> = {chronos: "Chronos-Bolt", chronos2: "Chronos-2", chronos2_mv: "Chronos-2 (multivariate)", timesfm: "TimesFM 2.5", xgboost: "XGBoost", random_forest: "Random forest"};
 const pct = (v: number | null | undefined) => (v == null ? "–" : `${Math.round(v * 100)} %`);
 const tone = (v: number | null | undefined, level: number) => (v == null ? "neutral" : v >= level - 0.03 ? "ok" : v >= level - 0.15 ? "warn" : "bad");
 

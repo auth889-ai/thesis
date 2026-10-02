@@ -80,14 +80,17 @@ window of a congested run. Sensor outages (0.0) are excluded from every metric.
 | STAEformer (trained) | 2.93 | 5.49 | 0.66 | 50.8 |
 | Graph WaveNet (trained) | 3.04 | 5.88 | 0.58 | 48.7 |
 | STID (trained) | 3.13 | 6.61 | 0.52 | 48.9 |
+| Chronos-2 zero-shot, multivariate | 3.68 | 7.21 | 0.35 | 54.1 |
+| Chronos-2 zero-shot, univariate | 3.92 | 7.59 | 0.36 | 54.1 |
 | XGBoost | 3.97 | 8.61 | 0.20 | 25.7 |
 | Persistence | 4.00 | 7.22 | 0.03 | 60.0 |
 | Chronos-Bolt zero-shot | 4.26 | 7.94 | 0.32 | 56.4 |
 | Historical average | 5.59 | 19.68 | 0.14 | 48.1 |
 
 Reading: on the aggregate column the trained models are within 0.2 mph of each other; in congestion the spread opens
-to 1.1 mph and against the zero-shot model to 2.5 mph. STAEformer flags two onsets in three, Chronos-Bolt one in
-three, persistence almost none. Chronos-Bolt does not beat persistence on aggregate MAE at 15 minutes (a negative
+to 1.1 mph and against the zero-shot models to 1.7–2.5 mph. STAEformer flags two onsets in three, Chronos-2 and
+Chronos-Bolt one in three, persistence almost none. Chronos-2's multivariate mode (all 80 roads as one input) beats its
+univariate mode and persistence on every column, and still trails every trained model. Chronos-Bolt does not beat persistence on aggregate MAE at 15 minutes (a negative
 result, kept) yet detects ten times more onsets than persistence. Neither protocol alone tells the story. DCRNN joins
 this table when its reproduction lands; the page `/lab/models` → Onset serves it from the run file.
 
@@ -241,7 +244,7 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 
 - Protocol B has been run on an 80-node METR-LA subsample with 120 consecutive windows, one seed; PEMS-BAY and
   more seeds are next, so the onset numbers are a first block, not a final estimate.
-- Chronos-Bolt was evaluated, not Chronos-2; the baseline paper's model is the next zero-shot run.
+- Chronos-2 and TimesFM 2.5 are evaluated under Protocol B only; their Protocol A rows (full test split) and Moirai / Time-MoE are pending.
 - OpenCity's pre-training corpus includes METR-LA and PEMS-BAY, so its numbers there are not zero-shot; only the four
   held-out cities are reported.
 - The learned model does not yet beat persistence on the recorded Dhaka corridor at 15 minutes; the corridor has six
