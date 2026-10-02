@@ -13,6 +13,7 @@ source of truth; our adapters translate, never alter. Every pin is a commit.
 ## Forecasting
 | Paper | Venue | Repo @ pin | Used for |
 |---|---|---|---|
+| (full catalogue and phase order: `TRAFFIC_SOTA_PAPERS.md`) | | | |
 | Graph WaveNet for Deep Spatial-Temporal Graph Modeling | IJCAI 2019 | BasicTS legacy baselines @4c3e2d37 (GestaltCogTeam/BasicTS) | in-loop forecaster (+5/10/15 min); official training pipeline, z-score scaler; test log + checkpoint SHA in artifacts/gates/FORECAST_PASS.json |
 | BasicTS benchmark suite | TKDE 2024 | @c2bb6e31 | training/eval harness (DCRNN/STID/STAEformer floors also run) |
 
