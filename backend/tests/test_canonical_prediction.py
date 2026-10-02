@@ -149,3 +149,14 @@ def test_cloud_configuration_check_uses_public_credential_loader(monkeypatch):
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setattr(credentials, "load", lambda _: "")
     assert prediction_jobs._aws_env() is None
+
+
+def test_aws_job_script_applies_the_same_python312_fix_as_the_local_path():
+    """DCRNN's official config calls random.randint with float bounds; Python >= 3.10 raises. The local
+    trainer patches it to integer bounds; the AWS job script must do the same or the cloud run dies at import
+    (job dcrnn-metr-la, 2026-10-02, died in six minutes)."""
+    from app.forecasting.training.aws import scripts
+    from app.forecasting.training import basicts_train
+    import inspect
+    assert "random.randint(-1000000, 1000000)" in scripts.BENCHMARK_SCRIPT if hasattr(scripts, "BENCHMARK_SCRIPT") else "random.randint(-1000000, 1000000)" in inspect.getsource(scripts)
+    assert "random.randint(-1000000, 1000000)" in inspect.getsource(basicts_train)

@@ -55,6 +55,9 @@ for D in $DATASETS; do for M in $MODELS; do
   sed -i "s/^NUM_EPOCHS = .*/NUM_EPOCHS = $EPOCHS/" $CFG || true
   # evaluate the 5-minute horizon as well (official default is [3, 6, 12] = 15/30/60 min)
   sed -i "s/^CFG.EVAL.HORIZONS = .*/CFG.EVAL.HORIZONS = [1, 3, 6, 12]/" $CFG || true
+  # DCRNN's official config calls random.randint with float bounds (-1e6, 1e6); Python >= 3.10 raises
+  # TypeError. Same call with integer bounds; the value is a throwaway seed and nothing else changes.
+  sed -i "s/random.randint(-1e6, 1e6)/random.randint(-1000000, 1000000)/" $CFG || true
   echo "=== TRAIN $M $D ==="
   timeout 10800 $PY experiments/train.py -c $CFG -g 0 2>&1 | tee /tmp/${M}_${D}.log
   aws s3 cp /tmp/${M}_${D}.log s3://$BUCKET/jobs/$NAME/logs/ || true
