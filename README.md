@@ -12,6 +12,7 @@ UNDERSTAND → MODEL → PREDICT → PROVE FEASIBILITY → PLAN → ACT → MONI
 |---|---|
 | The frozen problem, entities and hypothesis | [`docs/PROBLEM.md`](docs/PROBLEM.md) |
 | The 31-phase plan and its packages | [`docs/PHASES.md`](docs/PHASES.md) · [`docs/ROADMAP.md`](docs/ROADMAP.md) (status and phase log) |
+| The master plan: workflow, all features, all 55 papers with official code, build order | [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md) |
 | How each step is built the production way (pattern copied, package, AWS home, evidence, test) | [`docs/PRODUCTION_WORKFLOW.md`](docs/PRODUCTION_WORKFLOW.md) |
 | What exists, mapped to code and tests | [`docs/FEATURE_CODE_MAP.md`](docs/FEATURE_CODE_MAP.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
 | Data model (13 relational tables) | [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md) |
