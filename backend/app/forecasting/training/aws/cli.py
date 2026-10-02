@@ -17,6 +17,7 @@ def parser(doc: str = "") -> argparse.ArgumentParser:
     p.add_argument("--collect", action="store_true")
     p.add_argument("--collect-checkpoints", action="store_true", help="download trained .pt artefacts")
     p.add_argument("--terminate", action="store_true")
+    p.add_argument("--finish", action="store_true", help="after DONE: collect the row and checkpoint, score Protocol B and conformal")
     p.add_argument("--models", default="STID,GWNet")
     p.add_argument("--datasets", default="METR-LA")
     p.add_argument("--epochs", type=int, default=50)
@@ -47,7 +48,7 @@ def main(doc: str = "") -> int:
     if a.city_dataset and a.launch:
         return city_launch(a)
     for flag, fn in (("plan", benchmark.plan), ("launch", benchmark.launch), ("status", benchmark.status),
-                     ("collect", benchmark.collect), ("collect_checkpoints", benchmark.collect_checkpoints), ("terminate", benchmark.terminate)):
+                     ("collect", benchmark.collect), ("collect_checkpoints", benchmark.collect_checkpoints), ("finish", benchmark.finish), ("terminate", benchmark.terminate)):
         if getattr(a, flag):
             return fn(a, job)
     return benchmark.plan(a, job)

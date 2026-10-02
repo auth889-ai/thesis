@@ -124,3 +124,34 @@ def terminate(_a, job: str) -> int:
         aws("ec2", "terminate-instances", "--instance-ids", i["id"])
         print("terminated", i["id"])
     return 0
+
+
+def finish(a, job: str) -> int:
+    """One command after a job's DONE marker: the log becomes a leaderboard row, the checkpoint comes down and
+    is scored under Protocol B on the persisted test and validation blocks, and the conformal layer is re-run.
+    Every step is the same command a reviewer would run by hand; this only runs them in order."""
+    import subprocess
+    import sys
+    rc = collect(a, job)
+    if rc:
+        return rc
+    collect_checkpoints(a, job)
+    py = [sys.executable, "-m", "app.forecasting.evaluation.evaluate_models"]
+    for ds in a.datasets.split(","):
+        ds = ds.strip()
+        if not ds:
+            continue
+        for region in ("val", "test"):
+            staged = RESULTS / "protocol_b" / f"_stage_{ds}_{region}_checkpoints.npz"
+            block = RESULTS / "protocol_b" / f"{ds}_{region}_w120_n80_s11.npz"
+            if not block.exists():
+                print(f"[finish] no persisted {region} block for {ds}; run Protocol B once with --region {region} first")
+                continue
+            subprocess.run(py + ["--stage", "checkpoints", "--dataset", ds, "--windows", "120", "--seed", "11", "--max-nodes", "80",
+                                 "--region", region, "--stage-out", str(staged)], check=True, cwd=REPO)
+            subprocess.run(py + ["--dataset", ds, "--windows", "120", "--seed", "11", "--max-nodes", "80", "--region", region, "--merge", str(staged)],
+                           check=True, cwd=REPO)
+            staged.unlink(missing_ok=True)
+        subprocess.run([sys.executable, "-m", "app.forecasting.evaluation.conformal", "--dataset", ds], check=True, cwd=REPO)
+    print(f"[finish] {job}: leaderboard, checkpoints, Protocol B and conformal rows updated")
+    return 0

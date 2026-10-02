@@ -42,8 +42,8 @@ from app.paths import REPO
 sys.path.insert(0, str(REPO))
 BTS = Path.home() / ".dhakaflow/upstream/BasicTS_legacy"
 CARDS = REPO / "results/forecasting/trained"
-ARCHS = {"STID": "STID", "GWNet": "GWNet", "STAEformer": "STAEformer", "DCRNN": "DCRNN"}   # app name -> baselines/<dir>
-ARCH_CLASS = {"STID": "STID", "GWNet": "GraphWaveNet", "STAEformer": "STAEformer", "DCRNN": "DCRNN"}
+ARCHS = {"STID": "STID", "GWNet": "GWNet", "STAEformer": "STAEformer", "DCRNN": "DCRNN", "D2STGNN": "D2STGNN", "MegaCRN": "MegaCRN"}   # app name -> baselines/<dir>
+ARCH_CLASS = {"STID": "STID", "GWNet": "GraphWaveNet", "STAEformer": "STAEformer", "DCRNN": "DCRNN", "D2STGNN": "D2STGNN", "MegaCRN": "MegaCRN"}
 ARCH_PAPER = {"STID": "Shao et al. 2022 (CIKM)", "GWNet": "Wu et al. 2019 (IJCAI)", "STAEformer": "Liu et al. 2023 (CIKM)",
               "DCRNN": "Li et al. 2018 (ICLR)"}
 MIN_STEPS = 240                                             # 10 % validation split must hold one 12+12 window

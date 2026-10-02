@@ -219,3 +219,17 @@ def test_protocol_b_merge_refuses_a_stage_scored_on_different_windows(tmp_path, 
     np.savez_compressed(good, truth=np.ones((3, 12, 4)), starts=np.array([10, 11, 12]), pred_m=np.ones((3, 12, 4)))
     assert em.merge("X", "val", 3, 4, 1, [good]) is None                      # the validation block is never a comparison record
     assert "pred_m" in np.load(tmp_path / "protocol_b/X_val_w3_n4_s1.npz").files
+
+
+def test_finish_runs_the_same_commands_a_reviewer_would(monkeypatch, tmp_path):
+    """`--finish` is a sequence of the public commands, in order; no private scoring path."""
+    import inspect
+    from app.forecasting.training.aws import benchmark, cli
+    src = inspect.getsource(benchmark.finish)
+    for must in ("collect(a, job)", "collect_checkpoints(a, job)", '"--stage", "checkpoints"', '"--merge"', "app.forecasting.evaluation.conformal"):
+        assert must in src, must
+    assert "--finish" in inspect.getsource(cli.parser)
+    from app.forecasting.training import basicts_train
+    from app.forecasting.operations import model_registry
+    for arch in ("D2STGNN", "MegaCRN"):
+        assert arch in basicts_train.ARCHS and arch in model_registry.TRAINED

@@ -8,6 +8,8 @@ export const FAMILY = [
   {key: "STID", name: "STID", kind: "trained", what: "MLP with spatial and temporal identity embeddings"},
   {key: "STAEformer", name: "STAEformer", kind: "trained", what: "transformer with adaptive embeddings"},
   {key: "DCRNN", name: "DCRNN", kind: "trained", what: "diffusion convolution recurrent network"},
+  {key: "D2STGNN", name: "D2STGNN", kind: "trained", what: "decoupled diffusion and inherent signals"},
+  {key: "MegaCRN", name: "MegaCRN", kind: "trained", what: "meta-graph memory, robust to non-stationarity"},
   {key: "Chronos-Bolt", name: "Chronos", kind: "pretrained", what: "Amazon's pretrained time-series model (zero-shot)"},
   {key: "OpenCity-plus", name: "OpenCity", kind: "pretrained", what: "pretrained spatio-temporal foundation model"},
   {key: "persistence", name: "Persistence", kind: "baseline", what: "\"no change\": the next hour equals now"},

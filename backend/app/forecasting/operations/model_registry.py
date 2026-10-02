@@ -28,10 +28,10 @@ from app import evidence_paths as config
 
 sys.path.insert(0, str(config.REPO))
 
-TRAINED = ["STID", "GWNet", "STAEformer", "DCRNN"]
+TRAINED = ["STID", "GWNet", "STAEformer", "DCRNN", "D2STGNN", "MegaCRN"]
 PRETRAINED = ["OpenCity-plus", "Chronos-Bolt"]
 RESEARCH = ["XGBoost", "RandomForest", "persistence", "historical_average"]
-LABEL = {"STID": "STID", "GWNet": "Graph WaveNet", "STAEformer": "STAEformer", "DCRNN": "DCRNN", "OpenCity-plus": "OpenCity-plus",
+LABEL = {"STID": "STID", "GWNet": "Graph WaveNet", "STAEformer": "STAEformer", "DCRNN": "DCRNN", "D2STGNN": "D2STGNN", "MegaCRN": "MegaCRN", "OpenCity-plus": "OpenCity-plus",
          "Chronos-Bolt": "Chronos-Bolt", "XGBoost": "XGBoost", "RandomForest": "Random Forest", "persistence": "Persistence",
          "historical_average": "Historical average"}
 
