@@ -82,6 +82,7 @@ window of a congested run. Sensor outages (0.0) are excluded from every metric.
 | STID (trained) | 3.13 | 6.61 | 0.52 | 48.9 |
 | Chronos-2 zero-shot, multivariate | 3.68 | 7.21 | 0.35 | 54.1 |
 | Chronos-2 zero-shot, univariate | 3.92 | 7.59 | 0.36 | 54.1 |
+| TimesFM 2.5 zero-shot | 3.91 | 8.49 | 0.28 | 51.4 |
 | XGBoost | 3.97 | 8.61 | 0.20 | 25.7 |
 | Persistence | 4.00 | 7.22 | 0.03 | 60.0 |
 | Chronos-Bolt zero-shot | 4.26 | 7.94 | 0.32 | 56.4 |
@@ -106,6 +107,10 @@ prediction time; one per regime the model itself predicts at the horizon. Covera
 | STAEformer | predicted-regime | 0.90 | 0.90 | 0.90 | 0.50 |
 | Graph WaveNet | global | 0.89 | 0.92 | 0.75 | 0.33 |
 | Graph WaveNet | predicted-regime | 0.90 | 0.90 | 0.88 | 0.41 |
+| Chronos-2 (univariate) | global | 0.88 | 0.91 | 0.71 | 0.21 |
+| Chronos-2 (univariate) | predicted-regime | 0.90 | 0.90 | 0.86 | 0.24 |
+| TimesFM 2.5 | global | 0.88 | 0.92 | 0.67 | 0.17 |
+| TimesFM 2.5 | predicted-regime | 0.90 | 0.92 | 0.81 | 0.21 |
 | Chronos-Bolt | global | 0.88 | 0.92 | 0.68 | 0.21 |
 | Chronos-Bolt | predicted-regime | 0.88 | 0.89 | 0.83 | 0.20 |
 | Persistence | global | 0.89 | 0.92 | 0.74 | 0.20 |
@@ -245,7 +250,8 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 
 - Protocol B has been run on an 80-node METR-LA subsample with 120 consecutive windows, one seed; PEMS-BAY and
   more seeds are next, so the onset numbers are a first block, not a final estimate.
-- Chronos-2 and TimesFM 2.5 are evaluated under Protocol B only; their Protocol A rows (full test split) and Moirai / Time-MoE are pending.
+- Chronos-2 and TimesFM 2.5 are evaluated under Protocol B only (one block, one seed); their Protocol A rows on the full
+  test split, and Moirai / Time-MoE, are pending. TimesFM's outages are forward-filled inside the window (it takes dense input).
 - OpenCity's pre-training corpus includes METR-LA and PEMS-BAY, so its numbers there are not zero-shot; only the four
   held-out cities are reported.
 - The learned model does not yet beat persistence on the recorded Dhaka corridor at 15 minutes; the corridor has six
@@ -261,7 +267,8 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 - [ ] P3–P7 D2STGNN, MegaCRN, STD-MAE, HimNet, BigST, PatchSTG, STGformer
 - [x] P8a regime-aware conformal intervals (MAPIE) on every Protocol B model, three calibrators, the transition result
 - [ ] P8b departure advice from the calibrated lower bound
-- [ ] P9 Chronos-2, TimesFM, Moirai, Time-MoE zero-shot; reproduce the baseline paper's numbers
+- [x] P9a Chronos-2 (univariate and multivariate) and TimesFM 2.5 zero-shot under Protocol B with conformal rows
+- [ ] P9b Moirai, Time-MoE; Protocol A rows on the full test split; reproduce the baseline paper's numbers
 - [ ] P10–P12 alerts, cross-city to Dhaka with UniST and OpenCity, ONNX serving and twin re-run
 - [ ] Large-scale run: best supervised and best foundation model over all 8,600 LargeST sensors and thirty live cities for fourteen days; forecasts and regime labels published as Parquet with a report
 - [x] Probes: the phone as the sensor (signature feature S1), snapped with Amazon Location, H3 cells, relational tables

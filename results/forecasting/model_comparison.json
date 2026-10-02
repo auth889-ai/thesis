@@ -1,7 +1,7 @@
 [
  {
   "dataset": "METR-LA",
-  "generated_utc": "2026-10-02T21:46:01.094126+00:00",
+  "generated_utc": "2026-10-02T22:20:37.874173+00:00",
   "protocol": {
    "windows": 120,
    "context_steps": 96,
@@ -27,7 +27,8 @@
    "isolation": "each model family runs in its own process: torch and the tree libraries deadlock when they share an interpreter",
    "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless",
    "merged_stages": [
-    "c2_test.npz"
+    "c2_test.npz",
+    "tfm_test.npz"
    ]
   },
   "nodes": 80,
@@ -639,6 +640,67 @@
      "missed": 98,
      "detection_rate": 0.351,
      "mean_lead_min": 54.15,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "timesfm": {
+    "horizons": {
+     "5": {
+      "mae": 2.8639,
+      "rmse": 5.0872,
+      "mape_pct": 7.771,
+      "congestion_mae": 5.4839,
+      "freeflow_mae": 2.308,
+      "congestion_precision": 0.9026,
+      "congestion_recall": 0.8876,
+      "congestion_f1": 0.895,
+      "n_observed": 9249,
+      "n_congested": 1619
+     },
+     "15": {
+      "mae": 3.9119,
+      "rmse": 7.4763,
+      "mape_pct": 11.257,
+      "congestion_mae": 8.4877,
+      "freeflow_mae": 2.9631,
+      "congestion_precision": 0.8334,
+      "congestion_recall": 0.7999,
+      "congestion_f1": 0.8163,
+      "n_observed": 9253,
+      "n_congested": 1589
+     },
+     "30": {
+      "mae": 4.9991,
+      "rmse": 9.6462,
+      "mape_pct": 14.996,
+      "congestion_mae": 11.5377,
+      "freeflow_mae": 3.6925,
+      "congestion_precision": 0.7495,
+      "congestion_recall": 0.7043,
+      "congestion_f1": 0.7262,
+      "n_observed": 9259,
+      "n_congested": 1542
+     },
+     "60": {
+      "mae": 6.5428,
+      "rmse": 12.1913,
+      "mape_pct": 19.147,
+      "congestion_mae": 15.8823,
+      "freeflow_mae": 4.8446,
+      "congestion_precision": 0.6167,
+      "congestion_recall": 0.5795,
+      "congestion_f1": 0.5975,
+      "n_observed": 9275,
+      "n_congested": 1427
+     }
+    },
+    "onset_lead": {
+     "events": 151,
+     "warned": 43,
+     "missed": 108,
+     "detection_rate": 0.2848,
+     "mean_lead_min": 51.4,
      "median_lead_min": 60.0,
      "max_possible_lead_min": 60
     }
