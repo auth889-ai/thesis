@@ -16,7 +16,7 @@ T = datetime(2026, 10, 2, 3, 0, tzinfo=timezone.utc)                    # 09:00 
 def fresh_db(tmp_path, monkeypatch):
     url = f"sqlite:///{tmp_path / 'lifeos.sqlite'}"
     monkeypatch.setenv("LIFEOS_DATABASE_URL", url)
-    assert db.init(url) == "0001_lifeos_core"
+    assert db.init(url) == "0002_probes"                  # the current head; probes joined the chain on 2026-10-03
 
 
 def test_a_commitment_must_be_coherent():
@@ -59,7 +59,7 @@ def test_every_entity_round_trips_through_the_store():
         assert [e.kind for e in repo.events_since(s, T - timedelta(days=1), "eva")] == [EventKind.CALENDAR_CHANGED]
         eva = repo.get(s, "person", "eva"); assert eva.home.lat == 23.8 and eva.home.kind == "home"
         from sqlalchemy import text
-        assert [r[0] for r in s.execute(text("select name from sqlite_master where type='table' order by name"))] == ["actions", "alembic_version", "commitment_dependencies", "commitment_requirements", "commitments", "constraint_params", "constraint_targets", "constraints", "events", "outcomes", "persons", "places", "travel_edges"]
+        assert [r[0] for r in s.execute(text("select name from sqlite_master where type='table' order by name"))] == ["actions", "alembic_version", "commitment_dependencies", "commitment_requirements", "commitments", "constraint_params", "constraint_targets", "constraints", "events", "outcomes", "persons", "places", "probe_cells", "probe_points", "travel_edges"]
         assert s.execute(text("select item from commitment_requirements where commitment_id='c1'")).fetchall() == []
         assert s.execute(text("select depends_on_id from commitment_dependencies where commitment_id='c2'")).fetchall() == [("c1",)]
         assert s.execute(text("select key, value from constraint_params where constraint_id='k1'")).fetchall() == [("rain_mm", "12")]
@@ -69,7 +69,7 @@ def test_every_entity_round_trips_through_the_store():
 
 def test_the_store_is_rebuilt_from_the_migration_and_is_idempotent(tmp_path):
     url = f"sqlite:///{tmp_path / 'again.sqlite'}"
-    assert db.init(url) == "0001_lifeos_core" and db.init(url) == "0001_lifeos_core"
+    assert db.init(url) == "0002_probes" and db.init(url) == "0002_probes"      # idempotent at the current head
     with db.session(url) as s:
         assert repo.list_for(s, "commitment", "nobody") == []
 

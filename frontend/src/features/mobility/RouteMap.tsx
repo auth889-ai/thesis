@@ -3,14 +3,18 @@ import {useEffect} from "react";
 
 import {MapView, maplibregl, useMapInstance, whenStyled} from "@/components/MapView";
 import {fc, line} from "@/lib/basemap";
+import {speedColour} from "./probe";
 import {CAT_COLOUR, ROUTE_COLOUR, type TripResult} from "./types";
 
 const toLngLat = (c: [number, number][]) => c.map(([lat, lng]) => [lng, lat]);
 
 /** Draws the analysed trip: traffic-coloured segments underneath, the routes on top (recommended last), A and B pins. */
-export function RouteMap({result, highlight}: {result: TripResult | null; highlight?: number | null}) {
+export type ProbeCell = {cell: string; lat: number; lng: number; n_points: number; n_devices: number; mean_speed_kmh: number | null};
+
+export function RouteMap({result, highlight, cells}: {result: TripResult | null; highlight?: number | null; cells?: ProbeCell[]}) {
   const {map, onReady} = useMapInstance();
   useEffect(() => { if (map) whenStyled(map, () => draw(map, result)); }, [map, result]);
+  useEffect(() => { if (map) whenStyled(map, () => drawCells(map, cells ?? [])); }, [map, cells]);
   useEffect(() => {
     if (!map || !result) return;
     for (const c of result.routes) if (map.getLayer(`route-${c.key}`)) map.setPaintProperty(`route-${c.key}`, "line-opacity", highlight == null || c.index === highlight ? (c.recommended ? 0.95 : 0.8) : 0.3);
@@ -46,4 +50,14 @@ function draw(map: MLMap, r: TripResult | null) {
     markers.push(new maplibregl.Marker({element: el}).setLngLat([pt.lng, pt.lat]).addTo(map)); b.extend([pt.lng, pt.lat]);
   }
   if (!b.isEmpty()) map.fitBounds(b, {padding: 60, maxZoom: 14.5, duration: 600});
+}
+
+/** Probe cells: one circle per road-direction cell, coloured by its measured speed, sized by how many fixes it rests on. */
+function drawCells(map: MLMap, cells: ProbeCell[]) {
+  const id = "probe-cells";
+  const data = fc(cells.map((c) => ({type: "Feature" as const, properties: {colour: speedColour(c.mean_speed_kmh), r: Math.min(12, 4 + c.n_points), label: `${c.mean_speed_kmh ?? "–"} km/h · ${c.n_devices} device(s)`}, geometry: {type: "Point" as const, coordinates: [c.lng, c.lat]}})));
+  if (!map.getSource(id)) {
+    map.addSource(id, {type: "geojson", data});
+    map.addLayer({id, type: "circle", source: id, paint: {"circle-color": ["get", "colour"], "circle-radius": ["get", "r"], "circle-opacity": 0.85, "circle-stroke-color": "#fff", "circle-stroke-width": 1}});
+  } else (map.getSource(id) as maplibregl.GeoJSONSource).setData(data);
 }

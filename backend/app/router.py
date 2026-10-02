@@ -11,6 +11,7 @@ from app.lifeos import router as lifeos_router
 from app.lifeos.compiler import router as compiler_router
 from app.networking import router as networking_router
 from app.platform import router as platform_router
+from app.probes import router as probes_router
 from app.profile import router as profile_router
 from app.protocols.routers import experiments, live_reference, panels, references, research, stress
 from app.routing import router as routing_router
@@ -18,6 +19,6 @@ from app.transit import router as transit_router
 from app.twin import router as twin_router
 
 api_router = APIRouter()
-for module in (platform_router, profile_router, lifeos_router, compiler_router, data_router, commute_router, transit_router, agent_router, calendar_router, plan_router, predictions, training, model_prototypes, onset, routing_router, twin_router, networking_router,
+for module in (platform_router, profile_router, lifeos_router, compiler_router, data_router, commute_router, transit_router, agent_router, calendar_router, plan_router, probes_router, predictions, training, model_prototypes, onset, routing_router, twin_router, networking_router,
                experiments, stress, research, panels, live_reference, references):
     api_router.include_router(module.router)

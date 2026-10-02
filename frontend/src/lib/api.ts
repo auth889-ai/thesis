@@ -51,6 +51,9 @@ export const api = {
   exportUrl: (user_id = "demo") => `/api/you/export?${q({user_id})}`,
   erase: (user_id: string) => del(`/api/you?${q({user_id, confirm: user_id})}`),
   // mobility
+  postProbes: (body: {device_id: string; city: string; points: unknown[]}) => post("/api/probes", body),
+  probeCells: (city: string, minutes = 30) => get<{city: string; cells: any[]}>(`/api/probes/cells?${q({city, minutes})}`),
+  probeStatus: (city: string) => get(`/api/probes/status?${q({city})}`),
   places: (city = "dhaka", search = "") => get(`/api/places?${q({city, q: search})}`),
   cities: () => get("/api/operate/cities"),
   models: (city: string) => get(`/api/operate/models?${q({city})}`),

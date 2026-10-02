@@ -1,9 +1,13 @@
+import {useQuery} from "@tanstack/react-query";
 import {useCallback, useState} from "react";
 
 import {PhotoCard} from "@/components/PhotoCard";
 import {Steps} from "@/components/Steps";
 import {Card, ErrorNote} from "@/components/ui";
+import {api} from "@/lib/api";
+import {stableUserId, useProfile} from "@/lib/profile";
 import {CommutePlanner} from "./CommutePlanner";
+import {ProbePanel} from "./ProbePanel";
 import {RouteCards} from "./RouteCards";
 import {RouteMap} from "./RouteMap";
 import {TransitCard} from "./TransitCard";
@@ -18,6 +22,9 @@ export function MobilityPage() {
   const [highlight, setHighlight] = useState<number | null>(null);
   const onChange = useCallback((f: TripFields) => setFields(f), []);
   const r = analysis.data ?? null;
+  const profile = useProfile(stableUserId());
+  const city = fields?.city ?? (profile.data as any)?.city ?? "dhaka";
+  const probeCells = useQuery({queryKey: ["probe-cells", city], queryFn: () => api.probeCells(city, 30), refetchInterval: 30000});
   return (
     <div className="stack">
       <Card title="Where to?" sub="traffic now, traffic at departure, the best route, and when to leave">
@@ -27,12 +34,13 @@ export function MobilityPage() {
       </Card>
       <div className={r ? "grid wide" : "stack compact-map"}>
         <Card title={r ? `${r.origin.label ?? "A"} → ${r.destination.label ?? "B"}` : "Your city"} sub={r ? `${r.routes.length} routes · horizon +${r.horizon_min} min` : "the routes are drawn here once a trip is analysed"}>
-          <RouteMap result={r} highlight={highlight} />
+          <RouteMap result={r} highlight={highlight} cells={probeCells.data?.cells ?? []} />
         </Card>
         {r && <div className="stack"><Card title="By road" sub="now, at departure, and why one is recommended"><RouteCards r={r} onPick={setHighlight} /></Card>
           {fields && <TransitCard trip={{city: fields.city, origin: fields.origin, destination: fields.destination}} roadEtaS={r.current.eta_s} />}</div>}
       </div>
       {fields && <CommutePlanner trip={{city: fields.city, origin: fields.origin, destination: fields.destination}} />}
+      <Card title="Your phone is the sensor" sub={`live cells measured by people moving through ${city}`}><ProbePanel city={city} /></Card>
       <div className="phototiles">
         <PhotoCard photo="aerial" title="Ask the assistant" text={'"Be there by nine, remind me when to leave."'} to="/today" />
         <PhotoCard photo="metroCar" title="The city an hour ahead" text="Where congestion forms next, on the map." to="/city" />

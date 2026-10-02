@@ -216,3 +216,11 @@ def init(db_url: str | None = None) -> str:
 
 def session(db_url: str | None = None) -> Session:
     return sessionmaker(bind=engine(db_url), expire_on_commit=False, future=True)()
+
+
+def _register_domains() -> None:
+    """Other domains' tables live on this metadata so one migration chain owns the database."""
+    import app.probes.db  # noqa: F401
+
+
+_register_domains()
