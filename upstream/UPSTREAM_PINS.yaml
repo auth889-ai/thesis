@@ -141,9 +141,13 @@ repos:
     verified: "2026-08-14"
     status: FETCHED
     venue: ICLR 2018
+    license: MIT             # read from LICENSE at 602afd9d on 2026-10-03
     note: TensorFlow original. If the TF1 environment proves unreproducible, the
           BasicTS DCRNN implementation is the fallback and the substitution is
           recorded in the REPRODUCTION_PASS record — never silently swapped.
+          2026-10-03 (phase T-P1): the BasicTS-legacy-baselines DCRNN config at
+          4c3e2d37 is what runs (job dcrnn-metr-la); the TF1 original stays the
+          algorithmic reference. Substitution recorded here, not silent.
 
   - name: chronos-forecasting
     subsystem: forecasting
