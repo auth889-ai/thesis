@@ -167,7 +167,7 @@ def test_protocol_b_scores_the_trained_checkpoints_with_the_official_architectur
     pinned harness's config, never a local re-implementation; names must match the leaderboard's."""
     import inspect
     from app.forecasting.evaluation import checkpoint_stage, evaluate_models
-    assert checkpoint_stage.ARCH == {"GraphWaveNet": "GWNet", "STID": "STID", "STAEformer": "STAEformer", "DCRNN": "DCRNN"}
+    assert checkpoint_stage.ARCH == {"GraphWaveNet": "GWNet", "STID": "STID", "STAEformer": "STAEformer", "DCRNN": "DCRNN", "D2STGNN": "D2STGNN", "MegaCRN": "MegaCRN"}
     src = inspect.getsource(checkpoint_stage)
     assert "load_official_cfg" in src and "find_checkpoints" in src
     assert "the harness data file and the evaluation data file disagree" in src   # the timeline check stays

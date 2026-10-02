@@ -59,7 +59,9 @@ for D in $DATASETS; do for M in $MODELS; do
   # TypeError. Same call with integer bounds; the value is a throwaway seed and nothing else changes.
   sed -i "s/random.randint(-1e6, 1e6)/random.randint(-1000000, 1000000)/" $CFG || true
   echo "=== TRAIN $M $D ==="
-  timeout 10800 $PY experiments/train.py -c $CFG -g 0 2>&1 | tee /tmp/${M}_${D}.log
+  # per-model cap follows --max-hours (the watchdog), minus half an hour for the uploads; the old fixed
+  # 3-hour cap would have killed a 100-epoch recurrent model before its final test evaluation
+  timeout $((@MAXH@ * 3600 - 1800)) $PY experiments/train.py -c $CFG -g 0 2>&1 | tee /tmp/${M}_${D}.log
   aws s3 cp /tmp/${M}_${D}.log s3://$BUCKET/jobs/$NAME/logs/ || true
   # the checkpoint IS the result: without it nothing can be re-run or served for inference
   aws s3 sync checkpoints/ s3://$BUCKET/jobs/$NAME/checkpoints/ \

@@ -17,7 +17,7 @@ import numpy as np
 from app.forecasting.infer_from_checkpoint import BTS, find_checkpoints, load_official_cfg
 
 # checkpoint directory (the harness's class name) -> baselines/<dir> and the app's model name
-ARCH = {"GraphWaveNet": "GWNet", "STID": "STID", "STAEformer": "STAEformer", "DCRNN": "DCRNN"}
+ARCH = {"GraphWaveNet": "GWNet", "STID": "STID", "STAEformer": "STAEformer", "DCRNN": "DCRNN", "D2STGNN": "D2STGNN", "MegaCRN": "MegaCRN"}
 BATCH = 32
 
 
