@@ -1,249 +1,254 @@
-# LIFE OS × TrafficTwin
+# TrafficTwin
 
-**Can uncertainty-aware predictive mobility improve reliable access to time-critical commitments — and can an agent plan a person's day without ever inventing a number?**
+**Do zero-shot time-series foundation models beat purpose-trained spatio-temporal graph networks for road traffic — and when does the evaluation protocol matter more than the model?**
 
-Say what your day holds. LIFE OS compiles it into commitments, builds your Life Twin, asks the roads and the calendar whether the day can physically work, plans the departures, asks before anything it cannot undo, watches for change, and records what actually happened. TrafficTwin is the engine underneath: it predicts mobility and its uncertainty. AccessTwin decides whether a commitment is reachable. Nothing on a page is typed in.
+Road-traffic speed forecasting on sensor networks, with every model run from its official code and scored under two
+protocols: the aggregate protocol every paper reports, and a regime-stratified protocol that scores free flow, the
+transition into congestion, and congestion separately. The result is served as a web app: a forecast map for any
+city, a leaderboard of reproduced papers, calibrated uncertainty bands, and departure advice with a probability.
 
-```
-UNDERSTAND → MODEL → PREDICT → PROVE FEASIBILITY → PLAN → ACT → MONITOR → REPAIR → VERIFY → LEARN
-```
+This repository covers the arc from controlled reproduction (Protocol A: the papers' own split, four models reproduced
+within 2 %) to the question the papers do not ask (Protocol B: the same models at congestion onset) to deployment
+(the served forecaster behind a map, an assistant and Alexa, with a SUMO digital twin that measures whether the
+advice helps the network).
 
 | | |
 |---|---|
-| The frozen problem, entities and hypothesis | [`docs/PROBLEM.md`](docs/PROBLEM.md) |
-| The 31-phase plan and its packages | [`docs/PHASES.md`](docs/PHASES.md) · [`docs/ROADMAP.md`](docs/ROADMAP.md) (status and phase log) |
-| The master plan: workflow, all features, all 55 papers with official code, build order | [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md) |
-| How each step is built the production way (pattern copied, package, AWS home, evidence, test) | [`docs/PRODUCTION_WORKFLOW.md`](docs/PRODUCTION_WORKFLOW.md) |
-| What exists, mapped to code and tests | [`docs/FEATURE_CODE_MAP.md`](docs/FEATURE_CODE_MAP.md) · [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) |
-| Data model (13 relational tables) | [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md) |
-| What was studied and borrowed, with licences | [`docs/REFERENCE_IMPLEMENTATIONS.md`](docs/REFERENCE_IMPLEMENTATIONS.md) · [`docs/RESEARCH_PIXY_BLACKBOX.md`](docs/RESEARCH_PIXY_BLACKBOX.md) · [`docs/THIRD_PARTY_LICENSES.md`](docs/THIRD_PARTY_LICENSES.md) |
-| Research contract and metrics | [`docs/EXPERIMENT_PROTOCOL.md`](docs/EXPERIMENT_PROTOCOL.md) |
-| What was tried and dropped | [`docs/GRAVEYARD.md`](docs/GRAVEYARD.md) |
-| Next phase, designed and awaiting approval | [`docs/PHASE1_DESIGN.md`](docs/PHASE1_DESIGN.md) |
+| Baseline paper | Yanes-Pulido, J. and Rodrigues, F. (2026). *Time Series Foundation Models as Strong Baselines in Transportation.* arXiv:2602.24238 |
+| The protocol question | Reyes et al. (2026). *Do Time Series Foundation Model Benchmarks Hide Regime-Dependent Failures? Evidence from Traffic Speed Forecasting.* arXiv:2606.18367 |
+| Reproduction protocol | DCRNN, Li et al. (ICLR 2018): chronological 70/10/20, 12 steps in, horizons 15/30/60 min, observed entries only |
+| Master plan (55 papers with official code, build order) | [`docs/MASTER_PLAN.md`](docs/MASTER_PLAN.md) |
+| Results, machine-readable | [`results/forecasting/`](results/forecasting/) (`trained_results.csv`, `model_comparison.json`, `opencity_crosscity.md`) |
 
 ## Contents
 
-[What it does](#what-it-does) · [Runs without a key](#runs-without-a-key) · [Setup](#setup) · [System architecture](#system-architecture) · [The core loop and its guarantees](#the-core-loop-and-its-guarantees) · [API endpoints](#api-endpoints) · [Database structure](#database-structure) · [Configuration](#configuration) · [Tests](#tests) · [Findings so far](#findings-so-far) · [How this maps to the references](#how-this-maps-to-the-references) · [Known gaps](#known-gaps) · [Planned work](#planned-work) · [Citation](#citation)
+[Why this project exists](#why-this-project-exists) · [Findings](#findings) · [Experimental design](#experimental-design) · [Protocols](#protocols) · [Deployment: the web app](#deployment-the-web-app) · [Data and models](#data-and-models) · [Repository layout](#repository-layout) · [Setup](#setup) · [Reproduce a row](#reproduce-a-row) · [Tests](#tests) · [Documentation](#documentation) · [Limitations](#limitations) · [Planned work](#planned-work) · [Citation](#citation)
 
-## What it does
+## Why this project exists
 
-| # | Feature | Where it lives | Status |
-|---|---|---|---|
-| 1 | Commitment compiler — text or an e-mail line becomes a validated Commitment (type, when, where, requirements) by rules or by the model | `backend/app/lifeos/compiler/` | built, evaluated |
-| 2 | The seven contracts and their relational store — Person, Commitment, Constraint, TravelEdge, Outcome, Action, Event | `backend/app/lifeos/{entities,db,repo}.py`, `backend/alembic/` | built |
-| 3 | Person profile — zone, city, home, work, on-time target; the city found from the browser's location | `backend/app/profile/` | built |
-| 4 | Day timeline, Life Twin snapshot, feasibility grades, conflicts with fixes | `backend/app/plan/{day,life_twin,feasibility,conflicts}.py` | built (pre-plan; replaced by the OR-Tools check in the next phase) |
-| 5 | Departure planning with an empirical on-time probability where recorded corridor history exists | `backend/app/commute/` | built; real only for Dhaka corridors |
-| 6 | Live routes for any city; transit from OpenStreetMap and a published timetable | `backend/app/data/live_providers/`, `backend/app/transit/` | built |
-| 7 | The agent — proposal before start, ReAct loop on Bedrock, typed permissions, exact-action approvals, standing rules, hash-chained audit with signed checkpoints, durable worker with lease and restart recovery, cancel | `backend/app/agent/` | built |
-| 8 | Memory, calendar import (ICS), tasks, reminders, notifications, outcomes and personal calibration, export and erasure | `backend/app/agent/{memory,you}.py`, `backend/app/calendar/`, `backend/app/plan/{notifications,outcomes}.py` | built |
-| 9 | MCP server exposing the same tools to Alexa+ and any MCP client | `backend/app/mcp/` | built |
-| 10 | Consumer web app — Today, Plan, Goals, Messages, Map, City, Settings | `frontend/src/features/` | built |
-| 11 | Research lab — evidence, control room, models, references, system | `frontend/src/features/{results,twin,forecast,references,system}` | built |
-| 12 | TrafficTwin research engine — BasicTS training, held-out validation, SUMO closed loop with a simulated V2X channel, oracle-first protocol | `backend/app/{forecasting,routing,twin,networking,control,protocols}/` | built; see findings |
-| 13 | OR-Tools feasibility with an independent verifier, seeded fixture, receipt | `backend/app/lifeos/{twin,travel,feasibility}/` | designed, not started ([`docs/PHASE1_DESIGN.md`](docs/PHASE1_DESIGN.md)) |
+Traffic forecasting papers report one number: mean error over every five-minute window of a test month. Most of those
+windows are free flow, where persistence is already good. The windows a traveller cares about are the few where a
+road tips from 60 mph to 20, and a 2026 study found that there the error triples and a "90 %" interval covers about
+half the outcomes. At the same time, general time-series foundation models (Chronos-2, TimesFM) now match or beat
+purpose-trained graph networks on the aggregate number without seeing the city.
 
-## Runs without a key
+Two questions matter in practice, and this repo treats them as separate jobs:
 
-The compiler's rules path, the feasibility grades, the conflicts, the day timeline, the transit planner on a given line, the contracts, the store and the whole test suite run with no key, no network and no model. The language model (Amazon Bedrock) is an enhancement wherever it appears: the compiler falls back to rules and says so in `path`; the agent reports the reason when no model is reachable. Live routes need Amazon Location credentials; without them the local SUMO router answers for the frozen Dhaka network and labels itself.
+| Job | Question | Baseline it replaces |
+|---|---|---|
+| Forecasting | What is the speed on this road 15, 30, 60 minutes from now? | Graph networks trained per city (DCRNN, Graph WaveNet, STID, STAEformer) |
+| Onset detection | Is this road about to enter congestion, and how early can we say so with an honest interval? | Persistence and historical average, the only baselines papers report for this |
+
+The core hypothesis: **foundation models win the aggregate protocol and lose the regime protocol, and regime-aware
+conformal calibration repairs the interval without giving back the aggregate gain.** Hence two protocols that share
+the same models, data and horizons but differ in which windows are scored, and a rule that A and B are never averaged.
+
+Models run so far: Graph WaveNet, STID, STAEformer (official BasicTS configs, trained on AWS GPUs), OpenCity-plus
+(released weights, authors' commands), Chronos-Bolt (released weights). Nothing is re-implemented.
+
+## Findings
+
+Scores are MAE in mph on held-out test windows (lower is better). Protocol A numbers are compared with the published
+rows of the same model on the same dataset; Protocol B numbers have no published counterpart, which is the point.
+
+### Protocol A — reproduction (the papers' split)
+
+| Model | Dataset | Ours 15 / 30 / 60 min | Published | Gap |
+|---|---|---|---|---|
+| Graph WaveNet | METR-LA | 2.72 / 3.11 / 3.59 | 2.69 / 3.07 / 3.53 | +1.1 / +1.3 / +1.8 % |
+| Graph WaveNet | PEMS-BAY | 1.31 / 1.64 / 1.95 | 1.30 / 1.63 / 1.95 | +0.6 / +0.5 / −0.2 % |
+| STID | METR-LA | 2.82 / 3.21 / 3.59 | 2.82 / 3.19 / 3.55 | 0.0 / +0.7 / +1.2 % |
+| STID | PEMS-BAY | 1.32 / 1.64 / 1.92 | 1.31 / 1.64 / 1.91 | +0.6 / 0.0 / +0.5 % |
+| STAEformer | METR-LA | 2.67 / 2.98 / 3.35 | 2.65 / 2.97 / 3.34 | +0.9 / +0.5 / +0.3 % |
+| OpenCity-plus zero-shot | PEMS07M (held out of its pre-training) | 4.50 (12-step) | 4.50 | 0.0 % |
+| OpenCity-plus zero-shot | TrafficSH (held out) | 0.55 | 0.55 | 0.0 % |
+
+Protocol check: our historical-average floor on METR-LA is 4.19 MAE against the DCRNN paper's 4.16 (0.7 %), so the
+split, masking and metric are the papers' own. Every row above was trained or evaluated on AWS (g4dn / g5, Tesla T4)
+with the official config unmodified except epochs and horizons; checkpoint SHA-256 and the log path sit beside each
+row in `results/forecasting/trained_results.csv`.
+
+Reading: the pipeline reproduces the field. That is the precondition for Protocol B meaning anything.
+
+### Protocol B — regime-stratified (80-node METR-LA block, 120 contiguous test windows, 96-step context)
+
+Congestion is below 0.6 × the node's free-flow speed (85th percentile of its training values). Onset is the first
+window of a congested run. Sensor outages (0.0) are excluded from every metric.
+
+| Model | MAE@15 all | MAE@15 congested | Onset detection rate | Mean lead (min) |
+|---|---|---|---|---|
+| Persistence | 4.00 | 7.22 | 0.03 | 60.0 |
+| Historical average | 5.59 | 19.68 | 0.14 | 48.1 |
+| XGBoost | 3.97 | 8.61 | 0.20 | 25.7 |
+| Chronos-Bolt zero-shot | 4.26 | 7.94 | 0.32 | 56.4 |
+
+Reading: on the aggregate column the four are within a mile per hour of each other; on the congested column the
+spread is 12 mph. Chronos-Bolt does not beat persistence on aggregate MAE at 15 minutes (a negative result, kept),
+yet detects ten times more onsets than persistence. Neither protocol alone tells the story. The trained graph
+networks are scored on Protocol B in the next phase, which is why their B rows are absent rather than estimated.
+
+### What to take away
+
+- Reproduction is solved: four models within 2 % of their papers, two foundation-model evaluations exact.
+- Aggregate MAE is nearly blind to the congested regime; the regime column is where models separate.
+- A model can lose on aggregate and win on onset. Calibrated intervals per regime are the missing piece and the
+  method chapter (Phase P8).
+
+## Experimental design
+
+| | Forecasting | Onset detection |
+|---|---|---|
+| Task | speed at +15 / +30 / +60 min per sensor | first congested window per sensor, lead time, interval coverage at the transition |
+| Baselines | DCRNN, Graph WaveNet, STID, STAEformer, persistence, historical average | persistence, historical average |
+| This work | the same models plus D2STGNN, MegaCRN, STD-MAE, HimNet, BigST, PatchSTG, STGformer, OpenCity, UniST, Chronos-2, TimesFM, Moirai, Time-MoE, each from official code | the same models under Protocol B, then MAPIE conformal intervals calibrated per regime |
+| Metric | MAE, RMSE, MAPE on observed entries | congested-regime MAE, onset detection rate, mean lead, 90 %-interval coverage at onset |
+
+Models are trained per dataset. Datasets: METR-LA (207 sensors), PEMS-BAY (325), PEMS04 / PEMS08 (flow),
+LargeST-SD (716) and GLA (3,834), and the project's own recorded Dhaka corridor (5-minute bins, no training on
+Google-Routes history by rule).
+
+## Protocols
+
+| Protocol | Windows scored | Status |
+|---|---|---|
+| A — aggregate | every test window, as in the papers | GWNet, STID, STAEformer, OpenCity, Chronos-Bolt complete |
+| B — regime-stratified | free-flow, onset and congested windows separately; detection and lead | floors, XGBoost and Chronos-Bolt complete; trained models next |
+| Deployment | the served model behind the map for any city, outcomes recorded, weekly recalibration | serving exists for GWNet; conformal bands and departure advice pending |
+
+Protocol B uses an 80-node subsample and a contiguous block so onset transitions are real, not shuffled. That is a
+deliberate departure from A and the two are never averaged.
+
+## Deployment: the web app
+
+The controlled experiments answer "how accurate, and where". The app answers "what happens when a person uses it".
+Every number on a page is read from a model run, a dataset or an API; the structure test fails if a page hardcodes one.
+
+| Page | What it shows | Backed by |
+|---|---|---|
+| Forecast map | every sensor of a dataset at a chosen moment, 15 / 30 / 60 min ahead, model selector; fresh inference per request from a hash-verified checkpoint | `GET /api/forecast-map/{dataset}` |
+| Leaderboard | each reproduced paper, our number, the published number, the gap | `results/forecasting/trained_results.csv` |
+| City | live roads for any city through Amazon Location, labelled live / typical / recorded with data age | `backend/app/data/live_providers/` |
+| Train | pick model and dataset, launch on AWS, watch the log, the result registers itself | `POST /api/train` |
+| Twin | the forecast fed into SUMO on the frozen Dhaka corridor; vehicle-hours with and without advice | `backend/app/twin/`, `results/current/closed_loop/` |
+| Assistant · Alexa | questions answered from the same forecast API, over Bedrock and the MCP server at `/mcp` | `backend/app/agent/`, `backend/app/mcp/` |
+| Evidence | checkpoint hashes, logs, the protocol check | `/lab/evidence` |
+
+Pending pages, each tied to a phase in the master plan: onset page (P2), calibrated bands and departure advice (P8),
+zero-shot upload for any city (P9), alerts (P10), cross-city page (P11).
+
+## Data and models
+
+Datasets and checkpoints are not stored in git.
+
+| Item | Where | Note |
+|---|---|---|
+| METR-LA, PEMS-BAY | `liyaguang/DCRNN` release files, fetched by `app.data` | the canonical files, protocol validated |
+| PEMS03/04/07/08, LargeST | BasicTS and LargeST releases | LargeST data is CC BY-NC 4.0 |
+| Trained checkpoints | S3 and `results/forecasting/checkpoints/` | SHA-256 recorded per row |
+| Foundation weights | Hugging Face: OpenCity-plus, Chronos, TimesFM | used as released |
+| Official code | pinned in `upstream/UPSTREAM_PINS.yaml`, fetched into an external workspace, never committed, never modified | licence read at pin time |
+
+## Repository layout
+
+```
+backend/app/forecasting/        training (BasicTS adapter, AWS launcher), evaluation (protocols A and B), live, opencity, serving
+backend/app/data/               datasets, live providers (Amazon Location first), recorder
+backend/app/{routing,twin,control,networking,protocols}/   SUMO twin, V2X channel, closed loop
+backend/app/{agent,mcp,lifeos,plan,commute,transit,profile}/   the assistant, Alexa surface, person-side planning
+frontend/src/features/          forecast, results, twin, mobility, today, plan, assistant, you, references, system
+results/forecasting/            trained_results.csv, benchmark_floors.md, model_comparison.{md,json}, opencity_crosscity.md, logs
+docs/                           MASTER_PLAN.md, TRAFFIC_PHASES.md, TRAFFIC_SOTA_PAPERS.md, TRAFFIC_FULL_SCOPE.md, EXPERIMENT_PROTOCOL.md, GRAVEYARD.md
+upstream/UPSTREAM_PINS.yaml     every official repository, commit and licence
+```
 
 ## Setup
 
 ```bash
 pip install -r backend/requirements.txt
-python -m spacy download en_core_web_sm
 PYTHONPATH=backend python -m uvicorn app.main:app --app-dir backend --port 8000     # API + built web app + /mcp
+cd frontend && npm install && npm run build
 ```
+
+Keys live only in `.env` (names only, never printed): `AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_REGION`,
+`BEDROCK_REGION`, `AWS_LOCATION_REGION`. Without them the app serves recorded data and says so; no Google key is needed.
+GPU is required for training (AWS g4dn / g5 through the launcher, or Colab); evaluation and the app run on CPU.
+
+## Reproduce a row
 
 ```bash
-cd frontend && npm install && npm run build      # the API serves frontend/dist with an SPA fallback
-cd frontend && npm run dev                       # or a dev server on :5173 proxying /api
+# Protocol A, one model, official config unmodified except epochs/horizons
+python -m app.forecasting.training.aws_train --launch --model GWNet --dataset METR-LA   # then --collect
+# Protocol B, every model with a checkpoint or released weights
+python -m app.forecasting.evaluation.evaluate_models --all
 ```
 
-Keys live only in `.env` (names in [Configuration](#configuration); values are never printed or committed). On start the core store is migrated to head (`alembic upgrade head` through `app.lifeos.db.init`).
-
-## System architecture
-
-```
-                     POST /api/agent/goals (start=false)             POST /api/lifeos/compile
-                              │                                               │
-   ┌──────────────────────────▼───────────────────────┐   ┌───────────────────▼──────────────────────────┐
-   │ agent/intent.py   the goal read into a record     │   │ lifeos/compiler/rules.py    day+clock patterns,│
-   │ agent/router.py   proposal shown, nothing runs    │   │   dateparser, spaCy places, rapidfuzz snapping │
-   └──────────────────────────┬───────────────────────┘   │ lifeos/compiler/model.py    Bedrock fills the  │
-              /start          │                            │   contract; Pydantic validates; rules stand in │
-   ┌──────────────────────────▼───────────────────────┐   └───────────────────┬──────────────────────────┘
-   │ agent/worker.py   lease, heartbeat, reaper        │                       ▼
-   │ agent/orchestrator.py  thought → one tool → obs.  │   ┌──────────────────────────────────────────────┐
-   │ agent/permissions.py   allow / ask / refuse       │   │ lifeos/entities.py  the seven contracts       │
-   │ agent/approvals.py     exact-action, expiry, rules│   │ lifeos/db.py + alembic/  13 relational tables │
-   │ agent/audit.py         hash chain + signed ckpts  │   │ lifeos/repo.py       reads and writes         │
-   └──────────────────────────┬───────────────────────┘   └──────────────────────────────────────────────┘
-                              ▼ tools (agent/tools.py, domain TOOL_SPECS)
-   ┌─────────────────┬─────────────────┬───────────────────┬──────────────────┬───────────────────────────┐
-   │ commute/service │ plan/{day,      │ calendar/         │ agent/memory     │ plan/{whatif,outcomes,    │
-   │ recorded bands, │ life_twin,      │ ics reader, store,│ facts by kind,   │ notifications, monitor}   │
-   │ on-time prob.   │ feasibility,    │ overlap predicate │ recall to prompt │ what-if, calibration,     │
-   │                 │ conflicts}      │                   │                  │ watch every 300 s         │
-   └────────┬────────┴─────────────────┴───────────────────┴──────────────────┴───────────────────────────┘
-            ▼
-   ┌────────────────────────────────────────────────────────────────────────────────────────────────────┐
-   │ TrafficTwin   data/live_providers (Amazon Location → Google → local SUMO router)  · transit/ (OSM)  │
-   │               forecasting/ (BasicTS, Chronos, OpenCity) · routing/ · twin/ (SUMO) · networking/ (V2X)│
-   └────────────────────────────────────────────────────────────────────────────────────────────────────┘
-   authoritative: results/live/lifeos.sqlite (13 tables) · pre-plan stores: agent, calendar, memory, notifications, outcomes (SQLite each)
-   derived and rebuildable: goal proposals, day timelines, feasibility reports, notifications
-```
-
-Every step of a goal is written to the audit log before and after it runs; a goal left running by a killed process is recovered at the next start with its in-flight call marked interrupted; a paused approval is bound to the hash of its exact arguments and expires after 30 minutes.
-
-## The core loop and its guarantees
-
-```
-Goal → Context → Life Twin → Feasibility → TrafficTwin → Plan → Permission → Tools → Action → Monitor → Replan → Outcome → Memory/Audit
-```
-
-Four properties the code enforces rather than the prompt:
-
-1. **No invented facts.** Tool results are the only source of numbers; a travel edge carries the provider that produced it and whether it was live, typical, recorded or static; the model's output validates through the contracts or is discarded.
-2. **Nothing consequential without permission.** Irreversible and external actions pause; the approval names the exact action; a changed action is not approved; money is refused.
-3. **Every decision is verifiable.** The audit log is hash-chained and periodically signed by the server; `GET /api/agent/audit` returns the chain check with each read.
-4. **Every answer states its provenance.** Recorded is labelled recorded, simulated is labelled simulated, a deployment default says "deployment default".
-
-## API endpoints
-
-Interactive docs at `/api/docs`. 147 routes; the LIFE OS ones:
-
-| Method | Path | Purpose |
-|---|---|---|
-| POST | `/api/lifeos/compile` | text → validated Commitment (rules or model), optional save |
-| PUT | `/api/lifeos/{persons,commitments,constraints,travel-edges,outcomes,actions,events}` | create or replace one entity |
-| GET · DELETE | `/api/lifeos/{kind}/{id}` · `/api/lifeos/{kind}?person_id=` | read, list (commitments by deadline window, events since), delete |
-| GET | `/api/lifeos/schema` | JSON Schema of every contract |
-| GET · PUT · POST | `/api/profile` · `/api/profile/locate` | who and where; the city at a point |
-| POST | `/api/agent/goals` · `/{id}/start` · `/{id}/approve` · `/{id}/answer` · `/{id}/cancel` | propose, start, approve an exact action, answer a question, stop |
-| GET | `/api/agent/goals` · `/{id}` · `/{id}/related` · `/api/agent/worker` | goals, one goal, what it created, the runner |
-| GET · POST · DELETE | `/api/agent/approvals/rules` | standing decisions per tool |
-| GET · DELETE | `/api/agent/memory` | what the assistant remembers; forget |
-| GET | `/api/agent/audit` · `/api/agent/tools` · `/api/agent/tasks` | the verified log, the tool registry and policy, tasks and reminders |
-| GET · POST | `/api/plan/day` · `/api/plan/twin` · `/api/plan/whatif` · `/api/plan/check` | timeline with departures, the Life Twin snapshot with grades and conflicts, a what-if, a monitor tick |
-| GET · POST | `/api/notifications` · `/read` · `/api/outcomes` | the watch's messages; actual arrivals |
-| POST · GET | `/api/calendar/import` · `/api/calendar/events` | ICS file or URL; events |
-| POST · GET | `/api/commute/plan` · `/api/commute/profile` · `/api/transit/plan` · `/api/transit/lines` | leave-when, corridor profile, rail option |
-| GET · DELETE | `/api/you/export` · `/api/you?confirm=<id>` | everything held about a person; erase it |
-| — | `/mcp` | the same tools over the Model Context Protocol |
-
-## Database structure
-
-`results/live/lifeos.sqlite`, thirteen relational tables created by Alembic, foreign keys enforced, timestamps stored in UTC and read back aware. PostgreSQL by URL (`LIFEOS_DATABASE_URL`). Diagram and rules in [`docs/DATA_MODEL.md`](docs/DATA_MODEL.md).
-
-```
-persons ──< places ──< commitments ──< commitment_requirements
-   │            │            └──────< commitment_dependencies
-   │            │            └──────< outcomes
-   │            └──< travel_edges (origin, destination)
-   ├──< constraints ──< constraint_params, constraint_targets
-   ├──< actions        (arguments, result as JSON by nature)
-   └──< events         (payload as JSON by nature)
-```
-
-The stores written before the plan (goals, tasks, reminders, commutes, approval rules, leases; calendar; memory; notifications; outcomes; profiles) are separate SQLite files and move onto these tables in Phase 2 of the plan.
-
-## Configuration
-
-Everything has a working default; keys are read from the environment first, then `.env`.
-
-| Variable | Default | What it does |
-|---|---|---|
-| `LIFEOS_DATABASE_URL` | `sqlite:///results/live/lifeos.sqlite` | the core store; any SQLAlchemy URL |
-| `TRAFFICTWIN_DEFAULT_CITY` · `TRAFFICTWIN_DEFAULT_TZ` | `Dhaka` · `Asia/Dhaka` | used only for a person with no profile, and labelled as such |
-| `TRAFFICTWIN_AGENT_MODEL` | first available of Claude Haiku 4.5, Nova Lite | the Bedrock model |
-| `AWS_ACCESS_KEY_ID` · `AWS_SECRET_ACCESS_KEY` · `AWS_SESSION_TOKEN` · `AWS_REGION` · `BEDROCK_REGION` · `AWS_LOCATION_REGION` | (empty) | Bedrock and Amazon Location; without them the model path and live routes are unavailable and say so |
-| `SNS_TOPIC_ARN` · `SNS_REGION` | (empty) | notifications by SNS; otherwise stored only |
-| `AUDIT_SIGNING_KEY` | a server-generated key file | signs audit checkpoints |
-| `GOOGLE_MAPS_API_KEY` · `GOOGLE_ROUTES_DAILY_CAP` | (empty) · cap | the fallback route provider; never a training target |
-| `DHAKAFLOW_NO_OBSERVATORY` | unset | set in tests: no live sampling, no monitor, no worker reaper |
-| `SUMO_HOME` · `MOSAIC_HOME` · `DHAKAFLOW_WORKSPACE` | — | the simulator, the V2X reference runs, the external workspace of pinned upstream code |
+Each run writes its row, log path and checkpoint hash into `results/forecasting/`; the leaderboard page reads that file.
 
 ## Tests
 
 ```bash
-PYTHONPATH=backend python -m pytest -q --ignore=backend/tests/test_frontend_e2e.py     # 592 passed, 5 skipped, about 2 min, no key, no network
+PYTHONPATH=backend python -m pytest -q --ignore=backend/tests/test_frontend_e2e.py     # 592 passed, 5 skipped, no key, no network
 cd frontend && npx vitest run                                                          # 27 passed
 ```
 
-The suite fakes only the language model (`Scripted` turns) and, in a few tests, the routing provider. Stores, migrations, the permission engine, the audit chain, the worker's lease and recovery, the compiler's rules, feasibility, conflicts and the HTTP surface all run for real against temporary databases.
+The research tests pin what matters: fresh inference per request with checkpoint verification, frozen protocols, a real
+SUMO run, the model gate, and an anti-hardcode test that fails when an input stops changing an output.
 
-| File | Covers | Phase |
-|---|---|---|
-| `test_lifeos_core.py` | the seven contracts, the relational round trip, foreign keys, migration rebuild, HTTP | P0 |
-| `test_compiler.py` | rules path fields, deadline vs fixed, relative days, refusal without a time, validated model path and fallback, the person's zone, HTTP | P1 |
-| `test_profile.py` · `test_you.py` | zone, city, home and target read everywhere; export and erasure of one person only | pre-plan |
-| `test_agent.py` · `test_approvals.py` · `test_worker.py` | the loop on a scripted model, every approval rejection path, standing rules, signed checkpoints, lease, cancel, restart recovery | pre-plan (P13–P14 pattern) |
-| `test_feasibility.py` · `test_conflicts.py` · `test_life_twin.py` · `test_life.py` | grades from the distribution, conflicts with fixes, the snapshot, calendar import, memory, timeline, monitor | pre-plan |
-| `test_commute.py` · `test_transit.py` · `test_amazon_location.py` | the planner's honest labels, rail legs on a given line, provider record shape and coverage flag | pre-plan |
-| `test_mcp.py` · `test_api.py` · `test_structure_migration.py` · `test_anti_hardcode.py` | the protocol, every page's endpoint shape, the 147-route fixture and file-size rules, inputs must change outputs | platform |
-| `test_canonical_prediction.py` · `test_scientific_execution.py` · `test_live_twin.py` · `test_twin_test.py` · `test_model_registry.py` · `test_research_status.py` · `test_route_opt.py` · `test_user_datasets.py` · `test_configuration_boundaries.py` | the research engine: fresh inference per request, frozen protocols, a real SUMO run, the model gate, computed research gates | TrafficTwin |
+## Documentation
 
-## Findings so far
+| Document | Purpose |
+|---|---|
+| `docs/MASTER_PLAN.md` | the workflow, all features, all 55 papers with official code and licence, build order |
+| `docs/TRAFFIC_PHASES.md` | one paper per phase, reproduction target, the web feature it delivers |
+| `docs/TRAFFIC_SOTA_PAPERS.md` | the prediction catalogue in tiers and the regime-transition gap |
+| `docs/TRAFFIC_FULL_SCOPE.md` | the other six pillars of road traffic (sense, estimate, detect, control, advise, verify) |
+| `docs/EXPERIMENT_PROTOCOL.md` | the frozen research contract and metrics |
+| `docs/GRAVEYARD.md` | what was tried and dropped, with the reason |
+| `results/forecasting/benchmark_floors.md` | the floors and the protocol check against the papers |
 
-Numbers come from committed run files; each carries its caveat.
+## Limitations
 
-| Finding | Number | Where | Caveat |
-|---|---|---|---|
-| The commitment compiler's rules path on the evaluation set | type, when, location, requirements, flexibility, duration all 1.000; 4/4 sentences without a time refused | `results/lifeos/compiler.json` on `data/lifeos/commitments.jsonl` | 760 of 789 rows are templated and prove the patterns; the 25 hand-written rows are the honest part; the set must grow with real sentences |
-| The model path, live | English interview sentence compiled with requirements; a Bangla hospital sentence to 09:00 Dhaka the next day; "Dinner with Rafi tomorrow" reported as missing its time | roadmap phase log P1 | three sentences, not an evaluation |
-| Feasibility grading with the real planner | Viva at Shahbagh → dentist at Uttara, 20-minute gap: impossible (journey about 24 min, leave 12 min before the end); dentist → Farmgate two hours later: feasible | roadmap log 3.1 | the probability behind the grade exists only where recorded Dhaka corridor history exists |
-| The closed-loop digital twin | perfect information beats reactive routing by −1.83 % vehicle-hours on the frozen corridor; the learned forecast does not yet beat no advice | `docs/WORKFLOW.md`, `results/current/closed_loop/` | one corridor; the ceiling is about 2 %, so gains must come from coverage, not a better model. A negative result, kept. |
-| Restart recovery | a goal killed with `kill -9` 1.5 s after submit finished after restart with audit kinds intent, interrupted, decision, result, decision, result, summary and an intact chain | roadmap log P1 (agent) | one live run |
-
-## How this maps to the references
-
-Full traceability in [`docs/REFERENCE_IMPLEMENTATIONS.md`](docs/REFERENCE_IMPLEMENTATIONS.md). In summary:
-
-| Reference | Taken | Deliberate substitution |
-|---|---|---|
-| tahodev/openmuse (MIT) | exact-action approval with expiry; signed audit checkpoints | re-implemented on our permission engine; no code |
-| openai/openai-agents-python (MIT) | `needs_approval` predicates, always-approve/reject, rejection message; structured output through a forced tool | Bedrock instead of OpenAI; the goal document is the run state |
-| CopilotKit/openmuse (MIT) | lease-owned task worker, plan visible before it runs | Python thread and SQLite lease rows |
-| alejandro-publius/blackbox-datahub (Apache-2.0) | facts vs hypotheses vs actions, evidence gate, verification by full re-check, healthy control, bad-repair rejection, keyless judge check | applied to commitments and a solver instead of pipelines and a warehouse (next phase) |
-| bitanath/pixy (Apache-2.0) | benchmark-first with a correctness column, profiling before optimising, graveyard, local privacy processing | patterns only |
-| Namma Commute, Conveyal R5, the reliable-path literature (SPOTAR) | quantile plus conformal departure design; percentile accessibility; P(arrive before deadline) | later phases |
-| Graph WaveNet, DCRNN, STID, STAEformer via BasicTS (Apache-2.0) | trained one at a time with the official harness | STAEformer and UniST have no licence file: read and benchmarked, never copied |
-
-## Known gaps
-
-- The on-time probability is empirical and exists only where recorded corridor history exists; elsewhere the risk card says "no estimate for this city yet". Calibrated intervals are Phases 9–10 of the plan.
-- The feasibility check reads the commute planner, not travel edges from the store; the OR-Tools check with an independent verifier is designed and not started.
-- No sign-in. One generated identity per browser; accounts come with the systems block.
-- The monitor polls every five minutes and can flip a departure between two routes on successive checks; hysteresis belongs to the event-driven monitor.
-- The compiler's rules path is English; Bangla goes to the model path.
-- Mail and files are not connected; the calendar is ICS only.
-- Eleven research modules exceed the 400-line rule and are split only when a phase touches them.
-- Dhaka has no official GTFS feed, so transit there uses OpenStreetMap stops and the published metro timetable.
+- Protocol B has been run on an 80-node METR-LA subsample with 120 windows; the trained graph networks are not yet
+  on it, so the headline comparison is pending, not estimated.
+- Chronos-Bolt was evaluated, not Chronos-2; the baseline paper's model is the next zero-shot run.
+- OpenCity's pre-training corpus includes METR-LA and PEMS-BAY, so its numbers there are not zero-shot; only the four
+  held-out cities are reported.
+- The learned model does not yet beat persistence on the recorded Dhaka corridor at 15 minutes; the corridor has six
+  days of data. Reported, not hidden.
+- The closed-loop twin shows a −1.83 % vehicle-hours ceiling on one corridor; gains must come from coverage, not accuracy.
+- No sign-in yet; one identity per browser.
 
 ## Planned work
 
-The plan in [`docs/PHASES.md`](docs/PHASES.md), six blocks, one phase at a time, each with its exit condition, tests, artifacts and commit:
-
-- [x] Block A · P0 contracts and store · P1 compiler
-- [ ] Block A · P1' OR-Tools feasibility with an independent verifier, seeded fixture, receipt, judge check ([`docs/PHASE1_DESIGN.md`](docs/PHASE1_DESIGN.md), awaiting approval)
-- [ ] Block A · Life Twin on the store · real routing (Valhalla, OpenTripPlanner)
-- [ ] Block B · weather · baselines · Graph WaveNet · uncertainty (MAPIE) · AccessTwin
-- [ ] Block C · personal ML · risk engine · agent over mature tools · connectors · repair engine
-- [ ] Block D · event bus · jobs · serving · observability
-- [ ] Block E · SUMO · MATSim · ns-3/MOSAIC · edge · Flower · R5 · what-if
-- [ ] Block F · six consumer pages · research lab · Alexa+
+- [x] Protocol A: Graph WaveNet, STID, STAEformer within 2 %; OpenCity exact on held-out cities; Chronos-Bolt
+- [x] Protocol B: floors, XGBoost, Chronos-Bolt on the 80-node block
+- [ ] P1 DCRNN (official BasicTS config) · P2 Protocol B on every trained model
+- [ ] P3–P7 D2STGNN, MegaCRN, STD-MAE, HimNet, BigST, PatchSTG, STGformer
+- [ ] P8 regime-aware conformal intervals (MAPIE) and departure advice
+- [ ] P9 Chronos-2, TimesFM, Moirai, Time-MoE zero-shot; reproduce the baseline paper's numbers
+- [ ] P10–P12 alerts, cross-city to Dhaka with UniST and OpenCity, ONNX serving and twin re-run
+- [ ] Large-scale run: best supervised and best foundation model over all 8,600 LargeST sensors and thirty live cities for fourteen days; forecasts and regime labels published as Parquet with a report
+- [ ] Other pillars of road traffic (imputation, incident detection, signal control, map matching) per `docs/TRAFFIC_FULL_SCOPE.md`
 
 ## Citation
 
 ```bibtex
-@misc{lifeos-traffictwin-2026,
-  title  = {LIFE OS x TrafficTwin: uncertainty-aware multimodal reachability and closed-loop replanning for time-critical commitments},
+@misc{traffictwin-2026,
+  title  = {TrafficTwin: foundation models versus purpose-trained graph networks for road traffic, under aggregate and regime-stratified protocols},
   author = {Jannatul Ferdouse},
   year   = {2026},
-  note   = {Islamic University of Technology; code and evidence at this repository}
+  note   = {Islamic University of Technology; official implementations reproduced; code and evidence at this repository}
+}
+@article{yanespulido2026tsfm,
+  title  = {Time Series Foundation Models as Strong Baselines in Transportation},
+  author = {Yanes-Pulido, Javier and Rodrigues, Filipe},
+  year   = {2026}, eprint = {2602.24238}, archivePrefix = {arXiv}
+}
+@inproceedings{li2018dcrnn,
+  title  = {Diffusion Convolutional Recurrent Neural Network: Data-Driven Traffic Forecasting},
+  author = {Li, Yaguang and Yu, Rose and Shahabi, Cyrus and Liu, Yan},
+  booktitle = {ICLR}, year = {2018}
 }
 ```
 
-Licence: MIT (see `LICENSE`). Photographs by Unsplash photographers, credited in `frontend/public/photos/ATTRIBUTION.md`.
+Licence: MIT (see `LICENSE`). Official research code is pinned and fetched, never vendored; licences in `docs/THIRD_PARTY_LICENSES.md`.
