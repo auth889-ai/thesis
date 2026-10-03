@@ -280,7 +280,7 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 - [x] P8a regime-aware conformal intervals (MAPIE) on every Protocol B model, three calibrators, the transition result
 - [ ] P8b departure advice from the calibrated lower bound
 - [x] P9a Chronos-2 (univariate and multivariate) and TimesFM 2.5 zero-shot under Protocol B with conformal rows
-- [ ] P9b Moirai, Time-MoE; Protocol A rows on the full test split; reproduce the baseline paper's numbers
+- [ ] P9b Moirai (needs its own environment on the GPU machine) and Time-MoE (upstream generation code broken against current transformers; see `docs/GRAVEYARD.md`); Protocol A rows on the full test split
 - [ ] P10–P12 alerts, cross-city to Dhaka with UniST and OpenCity, ONNX serving and twin re-run
 - [ ] Large-scale run: best supervised and best foundation model over all 8,600 LargeST sensors and thirty live cities for fourteen days; forecasts and regime labels published as Parquet with a report
 - [x] Probes: the phone as the sensor (signature feature S1), snapped with Amazon Location, H3 cells, relational tables

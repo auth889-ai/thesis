@@ -11,3 +11,18 @@ The habit from Pixy: a project that records its failures is easier to trust. One
 | 2026-09-29 | the day monitor's 5-minute change threshold | a departure flipped earlier and later between two routes on successive checks: 44 notifications in a morning | hysteresis planned in the event-driven monitor (P17); logged as debt |
 | 2026-09-29 | "at X in Y" place detection with a capitalised-word regex only | a saved place typed in lower case ("at ucla") was missed | fuzzy match of the "at" phrase against saved places, case-folded |
 | 2026-09-29 | a lease that expires by clock only | a goal stranded up to 120 s after a `kill -9` because the dead worker's lease looked alive | a dead-process check on the same host plus a reaper every 30 s (`669b90a7`) |
+
+### Time-MoE (ICLR 2025) zero-shot under Protocol B — blocked, 2026-10-03
+
+`Maple728/TimeMoE-50M` loads through `transformers` with `trust_remote_code`, but its remote generation code targets
+an older `transformers`: `generate` fails on `DynamicCache.seen_tokens`; with `use_cache=False` it fails on
+`_extract_past_from_model_output`, and the released weights are bfloat16 against float32 inputs. Re-implementing its
+decoding loop would mean writing model code, which the policy forbids. Left out of the table rather than run through a
+local rewrite; the row returns when the upstream code is updated or a pinned older environment is justified.
+
+### Moirai 2 (uni2ts 2.0.0) zero-shot under Protocol B — blocked, 2026-10-03
+
+`uni2ts` pins `numpy~=1.26`, `scipy~=1.11`, `gluonts~=0.14`, `torch<2.5`; this workspace runs numpy 2.x and torch
+2.13 for Chronos-2, TimesFM 2.5 and the BasicTS checkpoints, and numpy 1.26 has no wheel for this Python. Running Moirai
+would need a second, older environment on the GPU machine; the row is deferred to the AWS job (where an isolated
+environment is cheap) rather than forced onto the laptop.
