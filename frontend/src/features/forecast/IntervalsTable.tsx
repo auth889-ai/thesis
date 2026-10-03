@@ -5,7 +5,7 @@ import {api} from "@/lib/api";
 import {modelName} from "./model";
 
 type Row = Record<string, any> & {model: string; horizon_min: number};
-type Run = {dataset: string; level: number; protocol: Record<string, string | number>; rows: Row[]; source: string; regenerate: string};
+type Run = {dataset: string; level: number; nodes?: number; seeds?: number[]; protocol: Record<string, any>; rows: Row[]; source: string; regenerate: string};
 const CAL = [["global", "global"], ["regime_aware", "regime-aware"], ["predicted_regime", "predicted-regime"]] as const;
 const NAME: Record<string, string> = {chronos: "Chronos-Bolt", chronos2: "Chronos-2", chronos2_mv: "Chronos-2 (multivariate)", timesfm: "TimesFM 2.5", xgboost: "XGBoost", random_forest: "Random forest"};
 const pct = (v: number | null | undefined) => (v == null ? "–" : `${Math.round(v * 100)} %`);
@@ -21,7 +21,7 @@ export function IntervalsTable({datasetName}: {datasetName: string}) {
   return (
     <div className="stack">
       <h3>Are the {Math.round(run.level * 100)} % intervals honest where it matters?</h3>
-      <p>Calibrated on the {run.protocol.calibration}, scored on the {run.protocol.scored}, with MAPIE. Three calibrators: one quantile for everything; one per regime observed now; one per regime the model itself predicts. Coverage at 15 minutes, by where the truth landed. The transition column is the jam forming after a free-flowing context.</p>
+      <p>Calibrated on the {run.protocol.calibration}, scored on the {run.protocol.scored}, with MAPIE{run.seeds && run.seeds.length > 1 ? `, ${run.nodes} roads, mean over ${run.seeds.length} seeds` : ""}. Three calibrators: one quantile for everything; one per regime observed now; one per regime the model itself predicts. Coverage at 15 minutes, by where the truth landed. The transition column is the jam forming after a free-flowing context.</p>
       <Table
         head={["Model", "Calibrator", "All", "Free flow", "Congested", "Transition", "Width (mph)"]}
         rows={rows.flatMap((r) => CAL.map(([k, label], i) => [

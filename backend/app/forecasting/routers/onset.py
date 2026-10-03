@@ -59,14 +59,16 @@ def conformal(dataset: str | None = None):
     transition. Read from the committed run file."""
     if not CONFORMAL.exists():
         raise HTTPException(503, "no conformal run yet: python -m app.forecasting.evaluation.conformal --dataset <name>")
+    from app.forecasting.evaluation.conformal import summary
     runs = json.loads(CONFORMAL.read_text())
+    names = sorted({r["dataset"] for r in runs})
     if dataset:
         key = dataset.replace("_", "-").upper()
-        runs = [r for r in runs if r["dataset"].upper() == key]
-        if not runs:
+        names = [n for n in names if n.upper() == key]
+        if not names:
             raise HTTPException(404, f"no conformal run for {dataset}")
-    return {"datasets": [{**r, "source": "results/forecasting/conformal.json",
-                          "regenerate": "python -m app.forecasting.evaluation.conformal --dataset <name>"} for r in runs]}
+    return {"datasets": [{**summary(n), "source": "results/forecasting/conformal.json",
+                          "regenerate": "python -m app.forecasting.evaluation.conformal --dataset <name> --nodes 207 --seed <s>"} for n in names]}
 
 
 @router.get("/api/protocol-b/departure", tags=["predict"])

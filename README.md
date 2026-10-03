@@ -75,56 +75,51 @@ row in `results/forecasting/trained_results.csv`.
 
 Reading: the pipeline reproduces the field. That is the precondition for Protocol B meaning anything.
 
-### Protocol B — regime-stratified (80-node METR-LA block, 120 contiguous test windows, 96-step context)
+### Protocol B — regime-stratified (METR-LA, all 207 roads, 120 consecutive test windows, 96-step context, three seeds)
 
-Congestion is below 0.6 × the node's free-flow speed (85th percentile of its training values). Onset is the first
-window of a congested run. Sensor outages (0.0) are excluded from every metric.
+Congestion is below 0.6 × the road's free-flow speed (85th percentile of its training values). Onset is the first
+window of a congested run. Sensor outages (0.0) are excluded from every metric. Mean ± standard deviation over seeds
+11, 23 and 37, each a different contiguous block of the test region.
 
 | Model | MAE@15 all | MAE@15 congested | Onset detection rate | Mean lead (min) |
 |---|---|---|---|---|
-| MegaCRN (trained) | 2.83 | 5.19 | 0.71 | 49.1 |
-| DCRNN (trained) | 2.92 | 5.54 | 0.69 | 50.6 |
-| STAEformer (trained) | 2.93 | 5.49 | 0.66 | 50.8 |
-| Graph WaveNet (trained) | 3.04 | 5.88 | 0.58 | 48.7 |
-| STID (trained) | 3.13 | 6.61 | 0.52 | 48.9 |
-| Chronos-2 zero-shot, multivariate | 3.68 | 7.21 | 0.35 | 54.1 |
-| Chronos-2 zero-shot, univariate | 3.92 | 7.59 | 0.36 | 54.1 |
-| TimesFM 2.5 zero-shot | 3.91 | 8.49 | 0.28 | 51.4 |
-| XGBoost | 3.97 | 8.61 | 0.20 | 25.7 |
-| Persistence | 4.00 | 7.22 | 0.03 | 60.0 |
-| Chronos-Bolt zero-shot | 4.26 | 7.94 | 0.32 | 56.4 |
-| Historical average | 5.59 | 19.68 | 0.14 | 48.1 |
+| MegaCRN (trained) | 2.99 ± 0.20 | 5.77 ± 0.61 | 0.69 ± 0.01 | 48.5 |
+| DCRNN (trained) | 3.05 ± 0.23 | 5.97 ± 0.68 | 0.64 ± 0.02 | 49.6 |
+| STAEformer (trained) | 3.06 ± 0.17 | 6.11 ± 0.72 | 0.60 ± 0.01 | 53.1 |
+| Graph WaveNet (trained) | 3.18 ± 0.27 | 6.60 ± 0.79 | 0.54 ± 0.02 | 50.2 |
+| STID (trained) | 3.29 ± 0.26 | 7.26 ± 0.81 | 0.45 ± 0.04 | 53.5 |
+| Chronos-2 zero-shot, multivariate | 3.72 ± 0.20 | 7.49 ± 1.08 | 0.31 ± 0.07 | 46.3 |
+| Chronos-2 zero-shot, univariate | 3.91 ± 0.17 | 7.97 ± 1.18 | 0.31 ± 0.07 | 46.9 |
+| XGBoost | 4.02 ± 0.30 | 8.58 ± 0.61 | 0.26 ± 0.03 | 30.5 |
+| Persistence | 4.03 ± 0.26 | 7.43 ± 0.71 | 0.04 ± 0.04 | 60.0 |
+| Historical average | 5.71 ± 0.53 | 17.96 ± 0.73 | 0.17 ± 0.03 | 53.4 |
 
-Reading: on the aggregate column the trained models are within 0.2 mph of each other; in congestion the spread opens
-to 1.1 mph and against the zero-shot models to 1.7–2.5 mph. MegaCRN and DCRNN flag about seven onsets in ten, STAEformer
-two in three, Chronos-2 and Chronos-Bolt one in three, persistence almost none. Chronos-2's multivariate mode (all 80 roads as one input) beats its
-univariate mode and persistence on every column, and still trails every trained model. Chronos-Bolt does not beat persistence on aggregate MAE at 15 minutes (a negative
-result, kept) yet detects ten times more onsets than persistence. Neither protocol alone tells the story. DCRNN joins
-this table when its reproduction lands; the page `/lab/models` → Onset serves it from the run file.
+Reading: on the aggregate column the trained models sit within 0.3 mph of each other; in congestion the spread opens
+and against the zero-shot models reaches 1.7 mph. The onset column separates the families by a factor of two with
+seed spread of one or two points: MegaCRN and DCRNN catch two onsets in three, Chronos-2 one in three, persistence
+almost none. Chronos-2's multivariate mode beats its univariate mode and persistence on aggregate and still trails
+every trained model on every column. The 80-road single-seed block reported earlier gave the same ordering. TimesFM
+and Chronos-Bolt were scored on that block only (28 % and 32 % of onsets). The page `/lab/models` → Onset serves the
+cross-seed table with the spread.
 
-### Calibrated intervals per regime (METR-LA, 90 % level, calibrated on the validation block, scored on the test block)
+### Calibrated intervals per regime (METR-LA, all 207 roads, three seeds, 90 % level, calibrated on the validation block, scored on the test block)
 
 Three MAPIE split-conformal calibrators on each model's point forecast: one global quantile; one per regime observed at
-prediction time; one per regime the model itself predicts at the horizon. Coverage at 15 minutes, by where the truth landed.
+prediction time; one per regime the model itself predicts at the horizon. Coverage at 15 minutes, by where the truth landed;
+the transition column carries the seed spread.
 
 | Model | Calibrator | All | Free flow | Congested | Transition into congestion |
 |---|---|---|---|---|---|
-| MegaCRN | global | 0.89 | 0.92 | 0.78 | 0.45 |
-| MegaCRN | predicted-regime | 0.91 | 0.91 | 0.91 | 0.55 |
-| DCRNN | global | 0.89 | 0.92 | 0.77 | 0.42 |
-| DCRNN | predicted-regime | 0.91 | 0.91 | 0.90 | 0.52 |
-| STAEformer | global | 0.89 | 0.91 | 0.77 | 0.39 |
-| STAEformer | regime-aware | 0.91 | 0.91 | 0.88 | 0.33 |
-| STAEformer | predicted-regime | 0.90 | 0.90 | 0.90 | 0.50 |
-| Graph WaveNet | global | 0.89 | 0.92 | 0.75 | 0.33 |
-| Graph WaveNet | predicted-regime | 0.90 | 0.90 | 0.88 | 0.41 |
-| Chronos-2 (univariate) | global | 0.88 | 0.91 | 0.71 | 0.21 |
-| Chronos-2 (univariate) | predicted-regime | 0.90 | 0.90 | 0.86 | 0.24 |
-| TimesFM 2.5 | global | 0.88 | 0.92 | 0.67 | 0.17 |
-| TimesFM 2.5 | predicted-regime | 0.90 | 0.92 | 0.81 | 0.21 |
-| Chronos-Bolt | global | 0.88 | 0.92 | 0.68 | 0.21 |
-| Chronos-Bolt | predicted-regime | 0.88 | 0.89 | 0.83 | 0.20 |
-| Persistence | global | 0.89 | 0.92 | 0.74 | 0.20 |
+| MegaCRN | global | 0.90 | 0.93 | 0.78 | 0.45 ± 0.01 |
+| MegaCRN | regime-aware | 0.91 | 0.92 | 0.86 | 0.39 ± 0.01 |
+| MegaCRN | predicted-regime | 0.91 | 0.92 | 0.87 | 0.52 ± 0.03 |
+| DCRNN | global | 0.90 | 0.93 | 0.78 | 0.43 ± 0.02 |
+| DCRNN | predicted-regime | 0.91 | 0.92 | 0.87 | 0.50 ± 0.04 |
+| STAEformer | global | 0.90 | 0.93 | 0.78 | 0.40 ± 0.02 |
+| STAEformer | predicted-regime | 0.91 | 0.92 | 0.86 | 0.46 ± 0.04 |
+| Chronos-2 (multivariate) | global | 0.90 | 0.93 | 0.75 | 0.23 ± 0.02 |
+| Chronos-2 (multivariate) | predicted-regime | 0.91 | 0.92 | 0.84 | 0.25 ± 0.05 |
+| Persistence | global | 0.90 | 0.93 | 0.77 | 0.23 ± 0.03 |
 
 Reading: a "90 %" interval reported the usual way is a 92 % interval in free flow and a 20 to 39 % interval at the moment a
 jam forms. Conditioning on the regime observed now repairs congestion (0.77 → 0.88) and makes the transition *worse*
@@ -263,8 +258,8 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 
 ## Limitations
 
-- Protocol B has been run on an 80-node METR-LA subsample with 120 consecutive windows, one seed; PEMS-BAY and
-  more seeds are next, so the onset numbers are a first block, not a final estimate.
+- Protocol B is three seeds on all 207 METR-LA roads; PEMS-BAY has one seed with GWNet and STID only, and PEMS04 is
+  pending, so the family claim rests on one city.
 - Chronos-2 and TimesFM 2.5 are evaluated under Protocol B only (one block, one seed); their Protocol A rows on the full
   test split, and Moirai / Time-MoE, are pending. TimesFM's outages are forward-filled inside the window (it takes dense input).
 - OpenCity's pre-training corpus includes METR-LA and PEMS-BAY, so its numbers there are not zero-shot; only the four

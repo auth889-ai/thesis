@@ -54,8 +54,9 @@ def corridor(src: str, dst: str) -> list[tuple[str, str, float]]:
 def half_width(model: str, horizon_min: int, congested: bool) -> float | None:
     if not CONFORMAL.exists():
         return None
-    runs = [r for r in json.loads(CONFORMAL.read_text()) if r["dataset"] == "METR-LA"]
-    rows = [w for w in runs[0]["rows"] if w["model"] == model] if runs else []
+    from app.forecasting.evaluation.conformal import summary
+    s = summary("METR-LA")
+    rows = [w for w in s["rows"] if w["model"] == model] if s else []
     if not rows:
         return None
     h = min((w["horizon_min"] for w in rows), key=lambda x: abs(x - horizon_min))

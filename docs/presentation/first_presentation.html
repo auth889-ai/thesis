@@ -133,25 +133,25 @@ ol,ul{padding-left:20px;margin:0}
   <div class="text">
     <div class="eyebrow">6 · The onset scorecard, Protocol B</div>
     <h2>At the moment a jam forms, the models separate by a factor of twenty.</h2>
-    <p>120 consecutive test windows on 80 roads, context 96 steps, one seed. Aggregate error at 15 minutes spans 2.8 to 5.6 mph; onset detection spans 3 % to 71 %.</p>
+    <p>120 consecutive test windows on all 207 roads, context 96 steps, three seeds on three different test blocks, mean ± spread. Aggregate error at 15 minutes spans 3.0 to 5.7 mph; onset detection spans 4 % to 69 %.</p>
   </div>
   <div class="fig">
     <svg viewBox="0 0 980 400" role="img" aria-label="Onset detection rate per model">
       <g transform="translate(200,10)">
         <line class="axis" x1="0" y1="0" x2="0" y2="372"/>
         <g font-size="12">
-          <text x="-10" y="18" text-anchor="end">MegaCRN</text><rect x="0" y="6" width="497" height="18" fill="var(--free)"/><text x="505" y="19">71 % · 49 min lead · congested MAE 5.19</text>
-          <text x="-10" y="46" text-anchor="end">DCRNN</text><rect x="0" y="34" width="483" height="18" fill="var(--free)"/><text x="491" y="47">69 % · 51 min · 5.54</text>
-          <text x="-10" y="74" text-anchor="end">STAEformer</text><rect x="0" y="62" width="462" height="18" fill="var(--free)"/><text x="470" y="75">66 % · 51 min · 5.49</text>
-          <text x="-10" y="102" text-anchor="end">Graph WaveNet</text><rect x="0" y="90" width="406" height="18" fill="var(--free)"/><text x="414" y="103">58 % · 49 min · 5.88</text>
-          <text x="-10" y="130" text-anchor="end">STID</text><rect x="0" y="118" width="364" height="18" fill="var(--free)"/><text x="372" y="131">52 % · 49 min · 6.61</text>
-          <text x="-10" y="158" text-anchor="end">Chronos-2, univariate</text><rect x="0" y="146" width="252" height="18" fill="var(--accent)"/><text x="260" y="159">36 % · 54 min · 7.59</text>
-          <text x="-10" y="186" text-anchor="end">Chronos-2, multivariate</text><rect x="0" y="174" width="245" height="18" fill="var(--accent)"/><text x="253" y="187">35 % · 54 min · 7.21</text>
-          <text x="-10" y="214" text-anchor="end">Chronos-Bolt</text><rect x="0" y="202" width="224" height="18" fill="var(--accent)"/><text x="232" y="215">32 % · 56 min · 7.94</text>
-          <text x="-10" y="242" text-anchor="end">TimesFM 2.5</text><rect x="0" y="230" width="196" height="18" fill="var(--accent)"/><text x="204" y="243">28 % · 51 min · 8.49</text>
-          <text x="-10" y="270" text-anchor="end">XGBoost</text><rect x="0" y="258" width="140" height="18" fill="var(--muted)"/><text x="148" y="271">20 % · 26 min · 8.61</text>
-          <text x="-10" y="298" text-anchor="end">Historical average</text><rect x="0" y="286" width="98" height="18" fill="var(--muted)"/><text x="106" y="299">14 % · 48 min · 19.68</text>
-          <text x="-10" y="326" text-anchor="end">Persistence</text><rect x="0" y="314" width="21" height="18" fill="var(--muted)"/><text x="29" y="327">3 % · 60 min · 7.22</text>
+          <text x="-10" y="18" text-anchor="end">MegaCRN</text><rect x="0" y="6" width="483" height="18" fill="var(--free)"/><text x="491" y="19">69 ± 1 % · 49 min lead · congested MAE 5.77</text>
+          <text x="-10" y="46" text-anchor="end">DCRNN</text><rect x="0" y="34" width="448" height="18" fill="var(--free)"/><text x="456" y="47">64 ± 2 % · 50 min · 5.97</text>
+          <text x="-10" y="74" text-anchor="end">STAEformer</text><rect x="0" y="62" width="420" height="18" fill="var(--free)"/><text x="428" y="75">60 ± 1 % · 53 min · 6.11</text>
+          <text x="-10" y="102" text-anchor="end">Graph WaveNet</text><rect x="0" y="90" width="378" height="18" fill="var(--free)"/><text x="386" y="103">54 ± 2 % · 50 min · 6.60</text>
+          <text x="-10" y="130" text-anchor="end">STID</text><rect x="0" y="118" width="315" height="18" fill="var(--free)"/><text x="323" y="131">45 ± 4 % · 54 min · 7.26</text>
+          <text x="-10" y="158" text-anchor="end">Chronos-2, univariate</text><rect x="0" y="146" width="217" height="18" fill="var(--accent)"/><text x="225" y="159">31 ± 7 % · 47 min · 7.97</text>
+          <text x="-10" y="186" text-anchor="end">Chronos-2, multivariate</text><rect x="0" y="174" width="217" height="18" fill="var(--accent)"/><text x="225" y="187">31 ± 7 % · 46 min · 7.49</text>
+          <text x="-10" y="214" text-anchor="end">Chronos-Bolt</text><rect x="0" y="202" width="224" height="18" fill="var(--accent)"/><text x="232" y="215">32 % · 56 min · 7.94 (80-road block, one seed)</text>
+          <text x="-10" y="242" text-anchor="end">TimesFM 2.5</text><rect x="0" y="230" width="196" height="18" fill="var(--accent)"/><text x="204" y="243">28 % · 51 min · 8.49 (80-road block, one seed)</text>
+          <text x="-10" y="270" text-anchor="end">XGBoost</text><rect x="0" y="258" width="182" height="18" fill="var(--muted)"/><text x="190" y="271">26 ± 3 % · 31 min · 8.58</text>
+          <text x="-10" y="298" text-anchor="end">Historical average</text><rect x="0" y="286" width="119" height="18" fill="var(--muted)"/><text x="127" y="299">17 ± 3 % · 53 min · 17.96</text>
+          <text x="-10" y="326" text-anchor="end">Persistence</text><rect x="0" y="314" width="28" height="18" fill="var(--muted)"/><text x="36" y="327">4 ± 4 % · 60 min · 7.43</text>
         </g>
         <line class="axis" x1="0" y1="350" x2="700" y2="350"/>
         <text x="0" y="368">0 %</text><text x="350" y="368" text-anchor="middle">50 %</text><text x="700" y="368" text-anchor="end">100 % of onsets detected</text>
@@ -165,15 +165,15 @@ ol,ul{padding-left:20px;margin:0}
   <div class="text">
     <div class="eyebrow">7 · The family result</div>
     <h2>Every purpose-trained model beats every zero-shot model on every column.</h2>
-    <p>Chronos-2 in its multivariate mode, all eighty roads as one input, is the best zero-shot row and beats persistence and Chronos-Bolt on aggregate; it still trails the weakest trained graph model in congestion and catches half as many onsets. The recurrent models with a learned memory of patterns, MegaCRN and DCRNN, see the jam first.</p>
+    <p>Chronos-2 in its multivariate mode, all roads as one input, is the best zero-shot row and beats persistence and Chronos-Bolt on aggregate; it still trails the weakest trained graph model in congestion and catches half as many onsets. The recurrent models with a learned memory of patterns, MegaCRN and DCRNN, see the jam first.</p>
   </div>
   <div class="fig">
     <table><tr><th>Family</th><th class="n">MAE@15 all</th><th class="n">MAE@15 congested</th><th class="n">onsets</th></tr>
-      <tr><td class="free">Trained, best (MegaCRN)</td><td class="n">2.83</td><td class="n">5.19</td><td class="n">71 %</td></tr>
-      <tr><td class="free">Trained, weakest (STID)</td><td class="n">3.13</td><td class="n">6.61</td><td class="n">52 %</td></tr>
-      <tr><td class="acc">Zero-shot, best (Chronos-2 mv)</td><td class="n">3.68</td><td class="n">7.21</td><td class="n">35 %</td></tr>
-      <tr><td class="acc">Zero-shot, weakest (TimesFM 2.5)</td><td class="n">3.91</td><td class="n">8.49</td><td class="n">28 %</td></tr>
-      <tr><td>Persistence</td><td class="n">4.00</td><td class="n">7.22</td><td class="n">3 %</td></tr></table>
+      <tr><td class="free">Trained, best (MegaCRN)</td><td class="n">2.99</td><td class="n">5.77</td><td class="n">69 %</td></tr>
+      <tr><td class="free">Trained, weakest (STID)</td><td class="n">3.29</td><td class="n">7.26</td><td class="n">45 %</td></tr>
+      <tr><td class="acc">Zero-shot, best (Chronos-2 mv)</td><td class="n">3.72</td><td class="n">7.49</td><td class="n">31 %</td></tr>
+      <tr><td class="acc">Zero-shot, weakest (TimesFM 2.5, 80-road block)</td><td class="n">3.91</td><td class="n">8.49</td><td class="n">28 %</td></tr>
+      <tr><td>Persistence</td><td class="n">4.03</td><td class="n">7.43</td><td class="n">4 %</td></tr></table>
   </div>
 </section>
 
@@ -189,25 +189,25 @@ ol,ul{padding-left:20px;margin:0}
         <line class="axis" x1="0" y1="0" x2="0" y2="170"/>
         <line x1="630" y1="0" x2="630" y2="170" stroke="var(--accent)" stroke-dasharray="4 4"/><text x="636" y="12">target 90 %</text>
         <g>
-          <text x="-10" y="30" text-anchor="end">MegaCRN</text><line x1="315" y1="26" x2="385" y2="26" stroke="var(--line)" stroke-width="6"/><circle cx="315" cy="26" r="7" fill="var(--muted)"/><circle cx="259" cy="26" r="5" fill="var(--cong)"/><circle cx="385" cy="26" r="7" fill="var(--free)"/><text x="400" y="30">45 → 37 → 55 %</text>
-          <text x="-10" y="66" text-anchor="end">DCRNN</text><line x1="294" y1="62" x2="364" y2="62" stroke="var(--line)" stroke-width="6"/><circle cx="294" cy="62" r="7" fill="var(--muted)"/><circle cx="259" cy="62" r="5" fill="var(--cong)"/><circle cx="364" cy="62" r="7" fill="var(--free)"/><text x="379" y="66">42 → 37 → 52 %</text>
-          <text x="-10" y="102" text-anchor="end">STAEformer</text><line x1="273" y1="98" x2="350" y2="98" stroke="var(--line)" stroke-width="6"/><circle cx="273" cy="98" r="7" fill="var(--muted)"/><circle cx="231" cy="98" r="5" fill="var(--cong)"/><circle cx="350" cy="98" r="7" fill="var(--free)"/><text x="365" y="102">39 → 33 → 50 %</text>
-          <text x="-10" y="138" text-anchor="end">Chronos-2 mv</text><line x1="147" y1="134" x2="161" y2="134" stroke="var(--line)" stroke-width="6"/><circle cx="147" cy="134" r="7" fill="var(--muted)"/><circle cx="105" cy="134" r="5" fill="var(--cong)"/><circle cx="161" cy="134" r="7" fill="var(--free)"/><text x="176" y="138">21 → 15 → 23 %</text>
-          <text x="-10" y="174" text-anchor="end">Persistence</text><circle cx="140" cy="170" r="7" fill="var(--muted)"/><circle cx="112" cy="170" r="5" fill="var(--cong)"/><circle cx="112" cy="170" r="7" fill="var(--free)" opacity=".6"/><text x="155" y="174">20 → 16 → 16 %</text>
+          <text x="-10" y="30" text-anchor="end">MegaCRN</text><line x1="315" y1="26" x2="385" y2="26" stroke="var(--line)" stroke-width="6"/><circle cx="315" cy="26" r="7" fill="var(--muted)"/><circle cx="259" cy="26" r="5" fill="var(--cong)"/><circle cx="385" cy="26" r="7" fill="var(--free)"/><text x="400" y="30">45 → 39 → 52 ± 3 %</text>
+          <text x="-10" y="66" text-anchor="end">DCRNN</text><line x1="294" y1="62" x2="364" y2="62" stroke="var(--line)" stroke-width="6"/><circle cx="294" cy="62" r="7" fill="var(--muted)"/><circle cx="259" cy="62" r="5" fill="var(--cong)"/><circle cx="364" cy="62" r="7" fill="var(--free)"/><text x="379" y="66">43 → 38 → 50 ± 4 %</text>
+          <text x="-10" y="102" text-anchor="end">STAEformer</text><line x1="273" y1="98" x2="350" y2="98" stroke="var(--line)" stroke-width="6"/><circle cx="273" cy="98" r="7" fill="var(--muted)"/><circle cx="231" cy="98" r="5" fill="var(--cong)"/><circle cx="350" cy="98" r="7" fill="var(--free)"/><text x="365" y="102">40 → 35 → 46 ± 4 %</text>
+          <text x="-10" y="138" text-anchor="end">Chronos-2 mv</text><line x1="147" y1="134" x2="161" y2="134" stroke="var(--line)" stroke-width="6"/><circle cx="147" cy="134" r="7" fill="var(--muted)"/><circle cx="105" cy="134" r="5" fill="var(--cong)"/><circle cx="161" cy="134" r="7" fill="var(--free)"/><text x="176" y="138">23 → 18 → 25 ± 5 %</text>
+          <text x="-10" y="174" text-anchor="end">Persistence</text><circle cx="140" cy="170" r="7" fill="var(--muted)"/><circle cx="112" cy="170" r="5" fill="var(--cong)"/><circle cx="112" cy="170" r="7" fill="var(--free)" opacity=".6"/><text x="155" y="174">23 → 18 → 18 %</text>
         </g>
         <line class="axis" x1="0" y1="190" x2="700" y2="190"/>
         <text x="0" y="208">0 %</text><text x="350" y="208" text-anchor="middle">50 %</text><text x="700" y="208" text-anchor="end">100 % covered at the transition</text>
       </g>
     </svg>
-    <p class="note"><span style="color:var(--muted)">●</span> global &nbsp; <span class="cong">●</span> regime observed now &nbsp; <span class="free">●</span> regime the model predicts. Coverage at 15 minutes on the windows where free flow turns into congestion. Overall coverage of every row is 0.88 to 0.91; in congestion the predicted-regime calibrator reaches 0.90.</p>
+    <p class="note"><span style="color:var(--muted)">●</span> global &nbsp; <span class="cong">●</span> regime observed now &nbsp; <span class="free">●</span> regime the model predicts. Coverage at 15 minutes on the windows where free flow turns into congestion, all 207 roads, mean over three seeds with the spread on the last point. Overall coverage of every row is 0.90; in congestion the predicted-regime calibrator reaches 0.86 to 0.87.</p>
   </div>
 </section>
 
 <section class="slide" id="s10">
   <div class="text">
     <div class="eyebrow">9 · What the method can and cannot fix</div>
-    <h2>Conditioning on the regime the model predicts repairs congestion fully and recovers half the transition gap.</h2>
-    <p>Conditioning on the regime observed now makes transitions worse, because at a transition the observed regime is still free flow. Conditioning on the model's own forecast lifts STAEformer from 39 % to 50 % at 15 minutes and 61 % to 70 % at 60 minutes, and no calibrator reaches 90 % there. The transition is a forecasting problem, not a calibration problem: an interval can only be honest about a jam the model has some signal of.</p>
+    <h2>Conditioning on the regime the model predicts repairs most of congestion and recovers a fifth of the transition gap.</h2>
+    <p>Conditioning on the regime observed now makes transitions worse, because at a transition the observed regime is still free flow. Conditioning on the model's own forecast lifts MegaCRN from 45 % to 52 % at 15 minutes over three seeds, and no calibrator reaches 90 % there. The transition is a forecasting problem, not a calibration problem: an interval can only be honest about a jam the model has some signal of.</p>
   </div>
   <div class="fig">
     <table><tr><th>STAEformer, 15 min</th><th class="n">all</th><th class="n">free</th><th class="n">congested</th><th class="n">transition</th></tr>
@@ -270,10 +270,10 @@ ol,ul{padding-left:20px;margin:0}
   <div class="fig">
     <div class="kpis">
       <div class="kpi"><div class="v">5 + 3</div><div class="l">trained and zero-shot models reproduced</div></div>
-      <div class="kpi"><div class="v">71 %</div><div class="l">of onsets caught by the best model; 3 % by persistence</div></div>
-      <div class="kpi"><div class="v">0.39 → 0.50</div><div class="l">transition coverage, global → predicted regime</div></div>
+      <div class="kpi"><div class="v">69 %</div><div class="l">of onsets caught by the best model; 4 % by persistence; three seeds, 207 roads</div></div>
+      <div class="kpi"><div class="v">0.45 → 0.52</div><div class="l">transition coverage, global → predicted regime</div></div>
     </div>
-    <p class="note">Caveats stated with every number: one METR-LA block and one seed for Protocol B; MegaCRN 4.4 % off its authors' row at 15 min; imputation under a laptop budget; Time-MoE and Moirai blocked by their upstream environments.</p>
+    <p class="note">Caveats stated with every number: Protocol B is three seeds on one city; MegaCRN 4.4 % off its authors' row at 15 min; imputation under a laptop budget; Time-MoE and Moirai blocked by their upstream environments.</p>
   </div>
 </section>
 </div>

@@ -132,18 +132,55 @@ def run(dataset: str, windows: int = 120, nodes: int = 80, seed: int = 11) -> di
             "rows": rows}
 
 
+def _key(r: dict) -> str:
+    p = r.get("protocol", {})
+    return f"{r['dataset']}|n{p.get('nodes')}|s{p.get('seed')}"
+
+
+def summary(dataset: str) -> dict | None:
+    """Mean and spread of every coverage and width across the seeds run with the most-run roads count."""
+    path = OUT / "conformal.json"
+    if not path.exists():
+        return None
+    runs = [r for r in json.loads(path.read_text()) if r["dataset"] == dataset]
+    if not runs:
+        return None
+    counts = {}
+    for r in runs:
+        counts[r["protocol"].get("nodes")] = counts.get(r["protocol"].get("nodes"), 0) + 1
+    nodes = max(counts, key=counts.get)
+    runs = [r for r in runs if r["protocol"].get("nodes") == nodes]
+    rows = {}
+    for r in runs:
+        for w in r["rows"]:
+            k = (w["model"], w["horizon_min"])
+            rows.setdefault(k, []).append(w)
+    out = []
+    for (model, h), ws in sorted(rows.items()):
+        agg = {"model": model, "horizon_min": h, "n_seeds": len(ws), "level": ws[0]["level"], "quantiles": ws[0].get("quantiles")}
+        keys = [k for k in ws[0] if ("coverage" in k or "width" in k or k.startswith("n_"))]
+        for k in keys:
+            vals = [w[k] for w in ws if isinstance(w.get(k), (int, float))]
+            if vals:
+                agg[k] = round(float(np.mean(vals)), 4)
+                agg[k + "_std"] = round(float(np.std(vals)), 4)
+        out.append(agg)
+    return {"dataset": dataset, "level": runs[0]["level"], "nodes": nodes, "seeds": sorted(r["protocol"]["seed"] for r in runs),
+            "protocol": {**runs[0]["protocol"], "seeds": sorted(r["protocol"]["seed"] for r in runs)}, "rows": out}
+
+
 def write(rec: dict) -> None:
     path = OUT / "conformal.json"
     prior = json.loads(path.read_text()) if path.exists() else []
-    by = {r["dataset"]: r for r in prior}
-    by[rec["dataset"]] = rec
-    allr = sorted(by.values(), key=lambda r: r["dataset"])
+    by = {_key(r): r for r in prior}
+    by[_key(rec)] = rec
+    allr = sorted(by.values(), key=_key)
     path.write_text(json.dumps(allr, indent=1))
     L = ["# Conformal intervals per regime — calibrated on the validation block, scored on the test block\n",
          f"Level {LEVEL:.0%}. `global` is one quantile for all windows; `regime_aware` is one per regime known at prediction time. "
          "Coverage is reported on all test windows, in free flow, in congestion, and at the transition into congestion.\n"]
     for r in allr:
-        L += [f"\n## {r['dataset']}\n", "Each cell: global → regime-aware → predicted-regime.\n",
+        L += [f"\n## {r['dataset']} — {r['protocol'].get('nodes')} roads, seed {r['protocol'].get('seed')}\n", "Each cell: global → regime-aware → predicted-regime.\n",
               "| model | h | cov all | cov free | cov congested | cov transition | width all | n transition |", "|---|---|---|---|---|---|---|---|"]
         for w in r["rows"]:
             c = lambda k: " → ".join(str(w.get(f"{l}_coverage_{k}")) for l in ("global", "regime_aware", "predicted_regime"))
