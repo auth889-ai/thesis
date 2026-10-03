@@ -306,3 +306,14 @@ def test_observatory_samples_through_the_selected_provider_not_google_by_name():
     from app.data.live_providers import observatory as obs
     src = inspect.getsource(obs.Observatory.sample)
     assert "live import provider" in src and "google_routes import service" not in src
+
+
+def test_city_page_dataset_list_hides_uploads_and_a_too_short_dataset_is_a_422_not_a_crash(client):
+    """The City page lists live cities and benchmarks only; a person's uploads belong to the Lab. A dataset the harness
+    cannot split answers with a reason, not a 500 (a 100-step test upload crashed the page on 2026-10-04)."""
+    ids = [d["id"] for d in client.get("/api/predict-lab/datasets?uploads=false").json()["datasets"]]
+    assert ids and not any(i.startswith("user:") for i in ids) and "METR_LA" in ids
+    all_ids = [d["id"] for d in client.get("/api/predict-lab/datasets").json()["datasets"]]
+    assert set(ids) <= set(all_ids)
+    r = client.get("/api/forecast-map/user%3Atest_town?as_of=latest")
+    assert r.status_code in (404, 422, 503) and r.status_code != 500

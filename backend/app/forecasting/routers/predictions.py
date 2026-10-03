@@ -170,6 +170,8 @@ def forecast_map_network(dataset: str, as_of: str | None = None, model: str | No
         raise HTTPException(422, str(ex))
     except (FileNotFoundError, RuntimeError) as ex:
         raise HTTPException(503, str(ex))
+    except SystemExit as ex:                                        # the harness refuses a dataset too short to split
+        raise HTTPException(422, str(ex))
 
 
 @router.get("/api/forecast-map/{dataset}/road", tags=["predict"])
@@ -180,3 +182,5 @@ def forecast_map_road(dataset: str, node: str, as_of: str | None = None, models:
         return forecast_map.road(dataset, node, as_of, tuple(m for m in models.split(",") if m))
     except (KeyError, ValueError) as ex:
         raise HTTPException(404, str(ex))
+    except SystemExit as ex:
+        raise HTTPException(422, str(ex))

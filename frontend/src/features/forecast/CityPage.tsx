@@ -14,7 +14,7 @@ const DHAKA: [number, number] = [90.395, 23.755];
 /** CITY: the person's city an hour ahead. A city with observed corridors shows them; a city with a sensor network shows every measured road. */
 export function CityPage() {
   const cities = useQuery({queryKey: ["cities"], queryFn: () => api.cities() as Promise<{cities: {id: string; label: string; forecast?: boolean; dataset?: string}[]}>, staleTime: 60_000});
-  const datasets = useDatasets();
+  const datasets = useDatasets(false);                 // live cities and benchmarks; uploads live in the Lab
   const [key, setKey] = useState<string | null>(() => { try { return localStorage.getItem("tt.cityView"); } catch { return null; } });
   if (!cities.data || !datasets.data) return <Loading what="loading the cities" />;
   const choices: CityChoice[] = [

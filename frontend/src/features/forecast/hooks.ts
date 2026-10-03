@@ -5,8 +5,8 @@ import type {Dataset, Network, RoadForecast} from "./model";
 
 const order = (x: Dataset) => (x.scientific ? -1 : x.user ? 0 : x.live ? 1 : 2);
 
-export function useDatasets() {
-  return useQuery({queryKey: ["predict", "datasets"], queryFn: async () => { const d = await api.datasets(); return ((d.datasets ?? []) as Dataset[]).sort((a, b) => order(a) - order(b)); }, staleTime: 60_000});
+export function useDatasets(uploads = true) {
+  return useQuery({queryKey: ["predict", "datasets", uploads], queryFn: () => api.datasets(uploads) as Promise<{datasets: Dataset[]}>, select: (r) => r.datasets, staleTime: 60_000});
 }
 
 /** The whole-network forecast: every sensor and every mapped road at NOW / +15 / +30 / +60. */

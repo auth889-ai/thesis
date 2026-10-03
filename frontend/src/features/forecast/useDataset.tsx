@@ -5,9 +5,9 @@ import {useDatasets} from "./hooks";
 import type {Dataset} from "./model";
 
 /** The chosen dataset (default: the scientific one), the moment (latest or a held-out index), and a refresh after training or upload. */
-export function useDataset() {
+export function useDataset(uploads = true) {
   const qc = useQueryClient();
-  const datasets = useDatasets();
+  const datasets = useDatasets(uploads);
   const [dsId, setDsId] = useState<string | null>(null);
   const ds: Dataset | null = datasets.data?.find((d) => d.id === dsId) ?? datasets.data?.find((d) => d.scientific) ?? datasets.data?.[0] ?? null;
   const [mode, setMode] = useState<"latest" | "replay">("latest");

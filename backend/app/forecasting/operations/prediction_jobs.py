@@ -72,7 +72,8 @@ def _with_trained(ds: list[dict]) -> list[dict]:
     return ds
 
 
-def datasets() -> list[dict]:
+def datasets(include_uploads: bool = True) -> list[dict]:
+    """Live cities first, then the benchmarks; a person's uploads only where they are managed (the Lab's Data tab)."""
     from app.forecasting.opencity import opencity_predict as op
     out = op.local_datasets()
     live = _live_datasets()
@@ -84,11 +85,12 @@ def datasets() -> list[dict]:
     from app.data import uploads as user_datasets
     from app.forecasting.operations import scientific_prediction
     meta, values = scientific_prediction.series()
-    canonical = {"id": "METR_LA", "name": "METR-LA - frozen scientific model", "nodes": values.shape[1],
+    canonical = {"id": "METR_LA", "name": "Los Angeles — METR-LA (207 loop detectors, 2012)", "nodes": values.shape[1],
                  "steps": len(values), "interval_min": 5, "quantity": "speed mph",
                  "models": ["GWNet", "persistence"], "trainable": False, "scientific": True,
                  "node_names": meta["nodes"], "start_utc": meta["first_utc"]}
-    return [canonical] + _with_trained(user_datasets.datasets() + live + [d for d in out if d["id"] != "METR_LA"])
+    uploads = user_datasets.datasets() if include_uploads else []
+    return _with_trained(live) + [canonical] + _with_trained([d for d in out if d["id"] != "METR_LA"] + uploads)
 
 
 def _series(dataset: str, region: int, n_nodes: int):

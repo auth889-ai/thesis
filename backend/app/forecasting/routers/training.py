@@ -9,9 +9,10 @@ router = APIRouter()
 
 
 @router.get("/api/predict-lab/datasets", tags=["predict"])
-def predict_lab_datasets():
-    """Real datasets present locally and the models that can serve each."""
-    return {"datasets": predict_lab.datasets()}
+def predict_lab_datasets(uploads: bool = True):
+    """Real datasets present locally and the models that can serve each: live cities, then benchmarks; `uploads=false`
+    leaves out a person's own uploads (the City page), which the Lab's Data tab lists."""
+    return {"datasets": predict_lab.datasets(include_uploads=uploads)}
 
 
 @router.post("/api/predict-lab/upload", tags=["predict"])

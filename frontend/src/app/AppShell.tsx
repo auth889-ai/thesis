@@ -17,7 +17,7 @@ export function AppShell() {
   const health = useQuery({queryKey: ["health"], queryFn: api.health, refetchInterval: 30_000});
   const profile = useProfile(USER_ID);
   const p = profile.data;
-  const chip = p ? `${p.city} · ${new Date(p.local_time).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", timeZone: p.timezone})}` : null;
+  const chip = p && p.source === "person" ? `${p.city} · ${new Date(p.local_time).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit", timeZone: p.timezone})}` : null;   // a deployment default is not your city
   return (
     <div className="shell">
       <div className="sheet side">

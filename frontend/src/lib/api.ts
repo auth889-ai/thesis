@@ -63,7 +63,7 @@ export const api = {
   routeOptimize: (analysis_run_id: string) => post("/api/route/optimize", {analysis_run_id}),
   transitPlan: (body: {city: string; origin: string; destination: string; depart_at?: string}) => post("/api/transit/plan", body),
   // forecast
-  datasets: () => get("/api/predict-lab/datasets"),
+  datasets: (uploads = true) => get(`/api/predict-lab/datasets?${q({uploads})}`),
   forecastNetwork: (ds: string, asOf: string | number = "latest") => get(`/api/forecast-map/${encodeURIComponent(ds)}?${q({as_of: asOf})}`),
   forecastRoad: (ds: string, node: string, asOf: string | number = "latest", models = "GWNet,persistence") => get(`/api/forecast-map/${encodeURIComponent(ds)}/road?${q({node, as_of: asOf, models})}`),
   registry: (scope: string) => get(`/api/registry?${q({scope})}`),
