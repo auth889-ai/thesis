@@ -194,7 +194,7 @@ def test_prediction_lab_lists_real_datasets_and_runs_the_floor(client):
         pytest.skip("OpenCity datasets not present")
     metr = next(x for x in d if x["id"] == "METR_LA")
     assert metr["nodes"] == 207 and metr["scientific"] is True
-    assert metr["models"] == ["GWNet", "persistence"]
+    assert metr["models"][0] == "GWNet" and metr["models"][-1] == "persistence" and {"DCRNN", "STAEformer", "STID"} <= set(metr["models"])   # every reproduced checkpoint serves the benchmark
     j = client.post("/api/predict-lab/run", json={"dataset": "METR_LA", "model": "persistence", "region": 3, "as_of": 20000}).json()
     for _ in range(300):
         s = client.get(f"/api/predict-lab/{j['job']}").json()

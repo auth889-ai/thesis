@@ -87,9 +87,11 @@ def datasets(include_uploads: bool = True) -> list[dict]:
     from app.data import uploads as user_datasets
     from app.forecasting.operations import scientific_prediction
     meta, values = scientific_prediction.series()
+    from app.forecasting.operations import served_checkpoints
+    served = sorted(served_checkpoints.available("METR-LA"))                  # every reproduced checkpoint serves the benchmark map
     canonical = {"id": "METR_LA", "name": "Los Angeles — METR-LA (207 loop detectors, 2012)", "nodes": values.shape[1],
                  "steps": len(values), "interval_min": 5, "quantity": "speed mph",
-                 "models": ["GWNet", "persistence"], "trainable": False, "scientific": True,
+                 "models": ["GWNet"] + [m for m in served if m != "GWNet"] + ["persistence"], "trainable": False, "scientific": True,
                  "node_names": meta["nodes"], "start_utc": meta["first_utc"]}
     uploads = user_datasets.datasets() if include_uploads else []
     return _with_trained(live) + [canonical] + _with_trained([d for d in out if d["id"] != "METR_LA"] + uploads)

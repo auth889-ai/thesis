@@ -86,11 +86,12 @@ function tableRows(ds: Dataset, reg: any, trainedList: any[]) {
   const items: Record<string, any> = {}; for (const g of reg.groups ?? []) for (const e of g.items) if (e.model !== "auto") items[e.model] = {...e, group: g.key};
   const trained: Record<string, any> = {}; for (const t of trainedList) if (t.dataset === ds.id) trained[t.arch] = t;
   const auto = reg.forecast?.model; const have = new Set((ds.models ?? []).map((m) => m.split(" ·")[0]));
-  return FAMILY.filter((f) => !ds.scientific || ["GWNet", "persistence"].includes(f.key)).map((f) => {
+  // a benchmark lists every model the registry serves on it (the reproduced checkpoints and the baselines); a city lists the family
+  return FAMILY.filter((f) => !ds.scientific || f.key in items || f.key === "persistence").map((f) => {
     const e = items[f.key] ?? {}; const t = trained[f.key];
-    const mae = t?.test_metrics?.horizon_3?.MAE ?? (f.key === "GWNet" ? reg.forecast_contract?.metrics?.["+15"]?.MAE : null), pe = t?.persistence_test?.horizon_3?.MAE ?? null;
+    const mae = t?.test_metrics?.horizon_3?.MAE ?? (f.key === "GWNet" ? reg.forecast_contract?.metrics?.["+15"]?.MAE : null) ?? e.validation_MAE ?? null, pe = t?.persistence_test?.horizon_3?.MAE ?? null;
     const skill = e.test_skill ?? (mae != null && pe ? 1 - mae / pe : null);
-    const validated = e.status === "VALIDATED" || (e.gates?.beats_val && e.gates?.verified && f.kind === "trained");
+    const validated = e.status === "VALIDATED" || e.status === "PROTOCOL_B_SCORED" || (e.gates?.beats_val && e.gates?.verified && f.kind === "trained");
     const eligible = e.trust === "ROUTING_ELIGIBLE" || (e.eligible === true && f.kind === "trained"); const canRun = e.can_forecast || have.has(f.key) || f.key === "persistence";
     return {f, e, status: f.kind === "trained" ? (e.trained ? "trained" : "not trained") : f.kind, validated, eligible, mae, skill, valMae: e.validation_MAE ?? null, canRun, auto: auto === f.key, reason: e.reason ?? e.trust_message};
   }).sort((a, b) => Number(b.auto) - Number(a.auto) || Number(b.eligible) - Number(a.eligible) || Number(b.validated) - Number(a.validated) || (b.skill ?? -9) - (a.skill ?? -9));
