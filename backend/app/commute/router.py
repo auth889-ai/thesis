@@ -1,4 +1,4 @@
-"""Commute routes: plan a departure for a target arrival; the recorded time-of-day profile of a corridor."""
+"""Commute routes: plan a departure for a target arrival from the city's own observed history; a corridor's profile; watch a route."""
 from __future__ import annotations
 
 from datetime import datetime
@@ -26,9 +26,18 @@ def commute_plan(req: CommutePlanRequest):
 
 
 @router.get("/api/commute/profile", tags=["commute"])
-def commute_profile(corridor: str = "farmgate_to_shahbagh"):
-    """The recorded congestion profile of one corridor by local time of day (TYPICAL_RECORDED, never live)."""
-    p = service.profile(corridor)
+def commute_profile(corridor: str = "farmgate_to_shahbagh", city: str = "dhaka", tz_offset_h: float = 6.0):
+    """One corridor's own time-of-day profile from the city's observed history (OWN_OBSERVED, never Google-derived)."""
+    p = service.profile(corridor, city, tz_offset_h)
     if not any(s["samples"] for s in p["slots"]):
-        raise HTTPException(404, f"no recorded history for corridor {corridor}")
+        raise HTTPException(404, f"no own readings for corridor {corridor} in {city} yet")
     return p
+
+
+@router.post("/api/commute/watch", tags=["commute"])
+def commute_watch(payload: dict):
+    """Watch a route: it becomes an observed corridor of its city and the recorder samples it every five minutes."""
+    try:
+        return service.watch_route(payload.get("city", ""), payload.get("origin", ""), payload.get("destination", ""))
+    except (ValueError, LookupError) as exc:
+        raise HTTPException(422, str(exc))

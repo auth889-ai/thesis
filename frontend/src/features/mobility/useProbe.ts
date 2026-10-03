@@ -1,3 +1,4 @@
+import {useQueryClient} from "@tanstack/react-query";
 import {useCallback, useEffect, useRef, useState} from "react";
 
 import {api} from "@/lib/api";
@@ -9,6 +10,7 @@ export type ProbeState = {on: boolean; sent: number; accepted: number; cells: nu
 /** Share this phone's position with the city: watchPosition → buffer → one POST every 15 s or 20 fixes. */
 export function useProbe(city: string) {
   const [state, setState] = useState<ProbeState>({on: false, sent: 0, accepted: 0, cells: 0, last: null, snapper: null, error: null});
+  const qc = useQueryClient();
   const buf = useRef<Fix[]>([]), lastFlush = useRef(0), watch = useRef<number | null>(null), timer = useRef<number | null>(null);
 
   const flush = useCallback(async () => {
@@ -18,6 +20,7 @@ export function useProbe(city: string) {
     try {
       const r: any = await api.postProbes({device_id: stableUserId(), city, points});
       setState((s) => ({...s, sent: s.sent + points.length, accepted: s.accepted + (r.accepted ?? 0), cells: s.cells + (r.cells_updated ?? 0), snapper: r.snapper ?? s.snapper, error: null}));
+      void qc.invalidateQueries({queryKey: ["probe-status", city]}); void qc.invalidateQueries({queryKey: ["probe-cells", city]});
     } catch (e: any) { setState((s) => ({...s, error: e?.message ?? "could not send"})); }
   }, [city]);
 

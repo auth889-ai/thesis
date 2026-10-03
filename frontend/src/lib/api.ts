@@ -58,6 +58,7 @@ export const api = {
   cities: () => get("/api/operate/cities"),
   models: (city: string) => get(`/api/operate/models?${q({city})}`),
   commutePlan: (body: Json) => post("/api/commute/plan", body),
+  commuteWatch: (body: {city: string; origin: string; destination: string}) => post("/api/commute/watch", body),
   analyzeStart: (body: Json) => post<{job: string}>("/api/analyze", body),
   analyzeStatus: (job: string) => get(`/api/analyze/${encodeURIComponent(job)}`),
   routeOptimize: (analysis_run_id: string) => post("/api/route/optimize", {analysis_run_id}),

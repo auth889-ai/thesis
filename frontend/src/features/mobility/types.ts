@@ -2,7 +2,8 @@
 export type Place = {label?: string; lat: number; lng: number};
 
 export type CommuteOption = {route: string; covered: boolean; expected_s: number; on_time_probability: number | null; worst_corridor: string | null};
-export type CommutePlan = {
+export type Coverage = {city_id: string; watched: boolean; steps_own: number; corridors_touched: string[]; covered: boolean; samples: number; first_utc: string | null; last_utc: string | null; action: string | null};
+export type CommutePlan = {coverage?: Coverage; 
   city: string; arrive_by_local: string; now_utc: string; buffer_min: number; on_time_target: number; origin: Place; destination: Place;
   recommended: {depart_utc: string; depart_local: string; route: string; on_time_probability: number | null; expected_s: number; leave_in_min: number};
   routes: {key: string; description?: string; distance_m: number | null; static_s: number | null; corridors: string[]; now: CommuteOption; at_departure: CommuteOption}[];
