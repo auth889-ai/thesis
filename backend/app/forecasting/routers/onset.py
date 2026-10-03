@@ -59,3 +59,26 @@ def conformal(dataset: str | None = None):
             raise HTTPException(404, f"no conformal run for {dataset}")
     return {"datasets": [{**r, "source": "results/forecasting/conformal.json",
                           "regenerate": "python -m app.forecasting.evaluation.conformal --dataset <name>"} for r in runs]}
+
+
+@router.get("/api/protocol-b/departure", tags=["predict"])
+def departure(src: str, dst: str, as_of: int = 20000, model: str | None = None, deadline_min: int | None = None):
+    """Leave when? Shortest sensor corridor from `src` to `dst`, the served model's forecast per leg at the horizon the
+    traveller reaches it, the 90 % worst case from the calibrated half-widths, and the latest departure for a deadline."""
+    from app.forecasting.operations import departure as dep
+    try:
+        return dep.advise(src, dst, as_of, model, deadline_min)
+    except (ValueError, KeyError) as ex:
+        raise HTTPException(422, str(ex))
+    except Exception as ex:                                             # noqa: BLE001 - no path, unknown sensor
+        if "No path" in str(ex) or "not in G" in str(ex) or "NodeNotFound" in type(ex).__name__ or "NetworkXNoPath" in type(ex).__name__:
+            raise HTTPException(404, f"no corridor between {src} and {dst}: {ex}")
+        raise
+
+
+@router.get("/api/protocol-b/sensors", tags=["predict"])
+def sensors():
+    """The METR-LA sensors with their release coordinates, for picking a corridor."""
+    from app.forecasting.operations import departure as dep
+    _, _, locs = dep.sensor_graph()
+    return {"dataset": "METR-LA", "sensors": locs}

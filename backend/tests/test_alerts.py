@@ -70,3 +70,29 @@ def test_onset_now_runs_on_the_served_model(client):
     assert r.status_code == 200
     j = r.json()
     assert j["counts"]["roads"] > 150 and "train split" in j["rule"] and all(t["free_now"] for t in j["tipping"])
+
+
+def test_departure_advice_is_a_sum_over_the_corridor_with_calibrated_worst_case(monkeypatch):
+    """Legs are the shortest sensor path; worst case subtracts the stored half-width; the deadline rule is arithmetic."""
+    import numpy as np
+    from app.forecasting.operations import departure as d
+    g, _, _ = d.sensor_graph()
+    assert g.number_of_nodes() == 207 and g.number_of_edges() > 10000
+    monkeypatch.setattr(d, "half_width", lambda model, h, cong: 10.0)
+    now = np.full(207, 60.0); pred = np.full((12, 207), 60.0)
+    monkeypatch.setattr("app.forecasting.operations.scientific_prediction.forecast", lambda as_of, model=None: (now, pred, {"resolved_model": "fake", "checkpoint_sha256": "x"}))
+    r = d.advise("S0", "S40", 20000, "fake", deadline_min=30)
+    km = r["distance_km"]
+    assert abs(r["travel_min"] - km / 1.609344 / 60 * 60) < 0.2                   # 60 mph over the corridor
+    assert abs(r["travel_min_worst"] - km / 1.609344 / 50 * 60) < 0.2             # 60 - 10 mph worst case
+    assert r["latest_departure_min"] == round(30 - r["travel_min_worst"], 1) and "leave within" in r["advice"]
+    assert all(l["worst_speed_mph"] == 50.0 and l["regime"] == "free" for l in r["legs"])
+
+
+def test_departure_over_http_on_the_served_model(client):
+    r = client.get("/api/protocol-b/departure?src=S0&dst=S40&as_of=20000&model=GWNet&deadline_min=40")
+    assert r.status_code == 200
+    j = r.json()
+    assert j["legs"] and j["travel_min_worst"] >= j["travel_min"] and "advice" in j
+    assert client.get("/api/protocol-b/departure?src=S0&dst=S9999&as_of=20000").status_code in (404, 422)
+    assert client.get("/api/protocol-b/sensors").json()["sensors"][0]["node"] == "S0"

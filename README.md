@@ -184,9 +184,10 @@ Every number on a page is read from a model run, a dataset or an API; the struct
 | Onset | Protocol B: every model on the same windows, congested-regime error, onsets detected, mean lead | `GET /api/protocol-b/onset` |
 | Map → Your phone is the sensor | share your position while you move; fixes are snapped to the road with Amazon Location SnapToRoads, binned into 70 m road-direction cells every five minutes and drawn on the map with how many devices each rests on; device ids hashed, raw fixes purged after 24 h | `POST /api/probes`, `GET /api/probes/cells`, `GET /api/probes/status`; tables `probe_points`, `probe_cells` |
 
+| City → Leave when? | the shortest sensor corridor from the selected road, the served model's forecast per leg at the horizon reached, the 90 % worst case from the stored conformal half-widths, and the latest departure for a deadline | `GET /api/protocol-b/departure`, `GET /api/protocol-b/sensors` |
 | City → About to tip | roads the served model forecasts into congestion within the hour at this moment; watch one and be told when it happens, once per episode | `GET /api/protocol-b/onset-now`, `/api/watch/roads` |
 
-Pending pages, each tied to a phase in the master plan: departure advice (P8b),
+Pending pages, each tied to a phase in the master plan:
 zero-shot upload for any city (P9), alerts (P10), cross-city page (P11).
 
 ## Data and models
@@ -280,7 +281,7 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 - [x] P4 MegaCRN: 2.63 / 3.02 / 3.48 against 2.52 / 2.93 / 3.38; best onset detector so far (71%)
 - [ ] P3 D2STGNN (training on AWS) · P5–P7 STD-MAE, HimNet, BigST, PatchSTG, STGformer
 - [x] P8a regime-aware conformal intervals (MAPIE) on every Protocol B model, three calibrators, the transition result
-- [ ] P8b departure advice from the calibrated lower bound
+- [x] P8b departure advice on a sensor corridor from the calibrated half-widths
 - [x] P9a Chronos-2 (univariate and multivariate) and TimesFM 2.5 zero-shot under Protocol B with conformal rows
 - [ ] P9b Moirai (needs its own environment on the GPU machine) and Time-MoE (upstream generation code broken against current transformers; see `docs/GRAVEYARD.md`); Protocol A rows on the full test split
 - [x] P10 regime-aware alerts: roads about to tip at a moment, watches, hysteresis, one alert per episode

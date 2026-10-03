@@ -107,7 +107,15 @@ def run(dataset: str, windows: int = 120, nodes: int = 80, seed: int = 11) -> di
                 tsel = (pred_cong_te == cong).ravel()
                 lo_p[tsel], hi_p[tsel] = _interval(m, pt.ravel()[tsel])
             reg = _regimes(yt, lt, np.broadcast_to(thr, yt.shape))
-            row = {"model": name, "horizon_min": h_min, "level": LEVEL}
+            # the calibrated half-widths themselves (absolute score: interval = prediction +/- q), so the departure
+            # advice can reuse exactly the quantile that produced the coverage numbers above
+            def _q(hi, sel):
+                i = np.flatnonzero(sel & np.isfinite(hi))
+                return round(float(hi[i[0]] - pt.ravel()[i[0]]), 3) if len(i) else None
+            quantiles = {"global": round(float(hi_g[0] - pt.ravel()[0]), 3),
+                         "regime_aware": {"free": _q(hi_r, ~now_cong_te.ravel()), "congested": _q(hi_r, now_cong_te.ravel())},
+                         "predicted_regime": {"free": _q(hi_p, ~pred_cong_te.ravel()), "congested": _q(hi_p, pred_cong_te.ravel())}}
+            row = {"model": name, "horizon_min": h_min, "level": LEVEL, "quantiles": quantiles}
             for label, (lo, hi) in {"global": (lo_g, hi_g), "regime_aware": (lo_r, hi_r), "predicted_regime": (lo_p, hi_p)}.items():
                 lo2, hi2 = lo.reshape(yt.shape), hi.reshape(yt.shape)
                 for rname, mask in reg.items():
