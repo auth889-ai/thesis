@@ -20,6 +20,8 @@ def is_dhaka(city: str) -> bool:
 
 def city_id_for(city: str) -> str | None:
     """The registry id of a typed city name, if it is registered (no geocoding here)."""
+    if str(city or "").startswith("live:"):                 # the app's dataset id for a watched city
+        return str(city)[5:]
     if is_dhaka(city):
         return "dhaka"
     from app.data.cities import registry, slug

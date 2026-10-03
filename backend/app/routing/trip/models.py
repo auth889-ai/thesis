@@ -26,19 +26,18 @@ def models_for_city(city: str) -> list[dict]:
                             "trained": bool(e.get("trained")), "test_skill": e.get("test_skill"), "group": g.get("key")})
         return out
     try:
-        if is_dhaka(city):
-            from app.routing.forecast_costs import recorded_city_data
-            cd = recorded_city_data("dhaka")
-            cd = cd[0] if isinstance(cd, tuple) else cd
-        elif cid and obs_mod.observatory.readiness(cid)["steps_have"] >= 1:
+        # every city, Dhaka included, is served from its OWN observed history (Amazon Location derived speeds); the
+        # Google-derived recording is reference material and is never handed to a model
+        cid = cid or ("dhaka" if is_dhaka(city) else None)
+        if cid and obs_mod.observatory.own_history(cid)["steps_own"] >= 1:
             cd = obs_mod.observatory.city_data(cid)
         else:
-            return out + [{"model": m, "label": m, "available": False, "reasons": ["no history for this city yet"]}
-                          for m in ("OpenCity-plus", "Chronos-Bolt", "historical_average", "persistence")]
+            return out + [{"model": m, "label": m, "available": False, "reasons": ["no history of this city's own yet (the recorder is sampling)"]}
+                          for m in ("OpenCity-plus", "Chronos-2", "Chronos-Bolt", "historical_average", "persistence")]
         for m in available_for(cd):
             if m["model"].split("/")[0] in ("STAEformer", "GWNet", "STID"):
                 continue                                # benchmark-trained; not for a city's corridors
             out.append({"model": m["model"], "label": m["model"], "available": m["available"], "reasons": m.get("reasons", [])[:2]})
     except (Exception, SystemExit) as exc:              # noqa: BLE001 - the pipeline raises SystemExit for a missing recorded series
-        out.append({"model": "Chronos-Bolt", "label": "Chronos-Bolt", "available": False, "reasons": [f"no corridor history available: {exc}"[:200]]})
+        out.append({"model": "Chronos-2", "label": "Chronos-2", "available": False, "reasons": [f"no corridor history available: {exc}"[:200]]})
     return out
