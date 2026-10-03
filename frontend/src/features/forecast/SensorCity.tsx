@@ -8,6 +8,7 @@ import {useNetwork, useRoad} from "./hooks";
 import {Inspector} from "./Inspector";
 import {fmtT, HORIZONS, modelName, type Dataset, type Horizon} from "./model";
 import {NetworkMap} from "./NetworkMap";
+import {OnsetNow} from "./OnsetNow";
 import {RoadPanel} from "./RoadPanel";
 import {useDataset} from "./useDataset";
 import "./forecast.css";
@@ -55,6 +56,7 @@ export function SensorCity({ds}: {ds: Dataset}) {
         <Card title={<>What changes by <span className="muted">+{futureH} min</span></>}>{n ? <Inspector net={n} horizon={horizon} onSelect={setRoad} /> : <Loading what="waiting for the forecast" />}</Card>
       </div>
       <Card title="Selected road" right={<Link className="btn ghost small" to="/lab/models">How good is the model? →</Link>}>{n ? <RoadPanel net={n} node={road} asOf={asOf} /> : <Loading />}</Card>
+      <Card title="About to tip" sub="roads the model forecasts into congestion within the hour at this moment; watch one to be told"><OnsetNow dataset={ds.id} asOf={asOf} model={n?.model ?? null} onPick={setRoad} /></Card>
     </div>
   );
 }

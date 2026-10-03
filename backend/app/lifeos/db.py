@@ -221,6 +221,7 @@ def session(db_url: str | None = None) -> Session:
 def _register_domains() -> None:
     """Other domains' tables live on this metadata so one migration chain owns the database."""
     import app.probes.db  # noqa: F401
+    import app.alerts.db  # noqa: F401
 
 
 _register_domains()

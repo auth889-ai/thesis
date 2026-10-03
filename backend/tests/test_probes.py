@@ -12,7 +12,7 @@ def db(tmp_path, monkeypatch):
     url = f"sqlite:///{tmp_path}/probes.sqlite"
     monkeypatch.setenv("LIFEOS_DATABASE_URL", url)
     from app.lifeos import db as core
-    assert core.init(url) == "0002_probes"
+    assert core.init(url) == "0003_road_watches"
     return url
 
 
