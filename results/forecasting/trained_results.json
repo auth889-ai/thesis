@@ -1,8 +1,89 @@
 {
- "generated_utc": "2026-10-03T10:27:29.244155+00:00",
- "repo_git_sha": "2f80f8a1",
+ "generated_utc": "2026-10-03T19:28:08.317233+00:00",
+ "repo_git_sha": "51f4f42b",
  "reality": "REAL public benchmark datasets; official upstream configs; GPU-trained",
  "runs": [
+  {
+   "model": "D2STGNN",
+   "model_info": {},
+   "dataset": "METR-LA",
+   "dataset_info": {
+    "sensors": 207,
+    "bin_minutes": 5,
+    "source": "DCRNN release (Li et al., ICLR 2018)",
+    "note": "real loop detectors, Los Angeles"
+   },
+   "harness": {
+    "name": "BasicTS (legacy fair-comparison branch)",
+    "repo": "https://github.com/GestaltCogTeam/BasicTS",
+    "sha": "4c3e2d373c647667c2123e1591f2d79c229dfcc6",
+    "paper": "Shao et al., Exploring Progress in Multivariate Time Series Forecasting, TKDE 2024"
+   },
+   "config": "",
+   "epochs": 100,
+   "epochs_completed": 100,
+   "checkpoint": "checkpoints/D2STGNN/METR-LA_100_12_12/8f81695da1177d0e899c4472fd81bc3d/D2STGNN_best_val_MAE.pt",
+   "hardware": {
+    "provider": "AWS EC2",
+    "instance_type": "g4dn.xlarge",
+    "gpu": "Tesla T4",
+    "region": "us-east-1",
+    "ami": "ami-001972c501ec6b965",
+    "instance_id": "i-02f5a2a390e38dce4",
+    "launched_utc": "2026-10-03T10:21:54Z",
+    "matched_by": "dataset"
+   },
+   "mape_unit_note": "harness logs MAPE as a fraction; converted to percent here",
+   "log": "results/forecasting/aws_logs/D2STGNN_METR-LA.log",
+   "metrics_by_horizon_min": {
+    "5": {
+     "mae": 2.0842,
+     "rmse": 3.6273,
+     "mape_pct": 4.92,
+     "horizon_steps": 1,
+     "horizon_minutes": 5
+    },
+    "15": {
+     "mae": 2.5628,
+     "rmse": 4.9324,
+     "mape_pct": 6.510000000000001,
+     "horizon_steps": 3,
+     "horizon_minutes": 15,
+     "published_mae": 2.56,
+     "published_rmse": 4.88,
+     "published_mape_pct": 6.48,
+     "mae_diff_pct": 0.11,
+     "rmse_diff_pct": 1.07,
+     "mape_diff_pct": 0.46
+    },
+    "30": {
+     "mae": 2.9138,
+     "rmse": 5.954,
+     "mape_pct": 7.89,
+     "horizon_steps": 6,
+     "horizon_minutes": 30,
+     "published_mae": 2.9,
+     "published_rmse": 5.89,
+     "published_mape_pct": 7.78,
+     "mae_diff_pct": 0.48,
+     "rmse_diff_pct": 1.09,
+     "mape_diff_pct": 1.41
+    },
+    "60": {
+     "mae": 3.355,
+     "rmse": 7.0745,
+     "mape_pct": 9.6,
+     "horizon_steps": 12,
+     "horizon_minutes": 60,
+     "published_mae": 3.35,
+     "published_rmse": 7.03,
+     "published_mape_pct": 9.4,
+     "mae_diff_pct": 0.15,
+     "rmse_diff_pct": 0.63,
+     "mape_diff_pct": 2.13
+    }
+   }
+  },
   {
    "model": "DCRNN",
    "model_info": {
@@ -199,8 +280,8 @@
     "gpu": "Tesla T4",
     "region": "us-east-1",
     "ami": "ami-001972c501ec6b965",
-    "instance_id": "i-01efa553be2e2aec4",
-    "launched_utc": "2026-09-01T22:38:43Z",
+    "instance_id": "i-0b8b3f8b358287458",
+    "launched_utc": "2026-10-03T11:00:06Z",
     "matched_by": "dataset"
    },
    "mape_unit_note": "harness logs MAPE as a fraction; converted to percent here",
@@ -495,8 +576,8 @@
     "gpu": "Tesla T4",
     "region": "us-east-1",
     "ami": "ami-001972c501ec6b965",
-    "instance_id": "i-01efa553be2e2aec4",
-    "launched_utc": "2026-09-01T22:38:43Z",
+    "instance_id": "i-0b8b3f8b358287458",
+    "launched_utc": "2026-10-03T11:00:06Z",
     "matched_by": "dataset"
    },
    "mape_unit_note": "harness logs MAPE as a fraction; converted to percent here",

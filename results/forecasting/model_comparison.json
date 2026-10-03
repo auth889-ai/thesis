@@ -1,7 +1,7 @@
 [
  {
   "dataset": "METR-LA",
-  "generated_utc": "2026-10-03T19:05:54.215436+00:00",
+  "generated_utc": "2026-10-03T19:25:53.683254+00:00",
   "protocol": {
    "windows": 120,
    "context_steps": 96,
@@ -25,7 +25,10 @@
     "checkpoints": 13.1
    },
    "isolation": "each model family runs in its own process: torch and the tree libraries deadlock when they share an interpreter",
-   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless"
+   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless",
+   "merged_stages": [
+    "_stage_METR-LA_test_w120_n207_s11_checkpoints.npz"
+   ]
   },
   "nodes": 207,
   "timesteps": 34272,
@@ -700,12 +703,73 @@
      "median_lead_min": 60.0,
      "max_possible_lead_min": 60
     }
+   },
+   "D2STGNN": {
+    "horizons": {
+     "5": {
+      "mae": 2.2727,
+      "rmse": 3.8204,
+      "mape_pct": 5.917,
+      "congestion_mae": 3.6153,
+      "freeflow_mae": 1.9582,
+      "congestion_precision": 0.9287,
+      "congestion_recall": 0.933,
+      "congestion_f1": 0.9309,
+      "n_observed": 23910,
+      "n_congested": 4538
+     },
+     "15": {
+      "mae": 2.7732,
+      "rmse": 4.9928,
+      "mape_pct": 7.551,
+      "congestion_mae": 4.824,
+      "freeflow_mae": 2.3043,
+      "congestion_precision": 0.8981,
+      "congestion_recall": 0.911,
+      "congestion_f1": 0.9045,
+      "n_observed": 23918,
+      "n_congested": 4451
+     },
+     "30": {
+      "mae": 3.0826,
+      "rmse": 5.7869,
+      "mape_pct": 8.703,
+      "congestion_mae": 5.6146,
+      "freeflow_mae": 2.5239,
+      "congestion_precision": 0.8747,
+      "congestion_recall": 0.8957,
+      "congestion_f1": 0.8851,
+      "n_observed": 23929,
+      "n_congested": 4326
+     },
+     "60": {
+      "mae": 3.3004,
+      "rmse": 6.4281,
+      "mape_pct": 9.268,
+      "congestion_mae": 6.4266,
+      "freeflow_mae": 2.6758,
+      "congestion_precision": 0.8459,
+      "congestion_recall": 0.8802,
+      "congestion_f1": 0.8627,
+      "n_observed": 23960,
+      "n_congested": 3990
+     }
+    },
+    "onset_lead": {
+     "events": 386,
+     "warned": 269,
+     "missed": 117,
+     "detection_rate": 0.6969,
+     "mean_lead_min": 48.72,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
    }
   }
  },
  {
   "dataset": "METR-LA",
-  "generated_utc": "2026-10-03T19:08:59.155535+00:00",
+  "generated_utc": "2026-10-03T19:26:11.870600+00:00",
   "protocol": {
    "windows": 120,
    "context_steps": 96,
@@ -729,7 +793,10 @@
     "checkpoints": 12.7
    },
    "isolation": "each model family runs in its own process: torch and the tree libraries deadlock when they share an interpreter",
-   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless"
+   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless",
+   "merged_stages": [
+    "_stage_METR-LA_test_w120_n207_s23_checkpoints.npz"
+   ]
   },
   "nodes": 207,
   "timesteps": 34272,
@@ -1404,12 +1471,73 @@
      "median_lead_min": 60.0,
      "max_possible_lead_min": 60
     }
+   },
+   "D2STGNN": {
+    "horizons": {
+     "5": {
+      "mae": 2.4775,
+      "rmse": 4.5183,
+      "mape_pct": 7.658,
+      "congestion_mae": 4.0887,
+      "freeflow_mae": 1.9751,
+      "congestion_precision": 0.9276,
+      "congestion_recall": 0.9239,
+      "congestion_f1": 0.9257,
+      "n_observed": 20231,
+      "n_congested": 4809
+     },
+     "15": {
+      "mae": 3.2202,
+      "rmse": 6.1783,
+      "mape_pct": 10.285,
+      "congestion_mae": 5.8502,
+      "freeflow_mae": 2.3993,
+      "congestion_precision": 0.8911,
+      "congestion_recall": 0.8739,
+      "congestion_f1": 0.8824,
+      "n_observed": 20272,
+      "n_congested": 4822
+     },
+     "30": {
+      "mae": 3.5837,
+      "rmse": 6.94,
+      "mape_pct": 11.636,
+      "congestion_mae": 6.8893,
+      "freeflow_mae": 2.5566,
+      "congestion_precision": 0.8797,
+      "congestion_recall": 0.8456,
+      "congestion_f1": 0.8623,
+      "n_observed": 20328,
+      "n_congested": 4819
+     },
+     "60": {
+      "mae": 4.0306,
+      "rmse": 7.8658,
+      "mape_pct": 13.613,
+      "congestion_mae": 8.4497,
+      "freeflow_mae": 2.7056,
+      "congestion_precision": 0.8649,
+      "congestion_recall": 0.7916,
+      "congestion_f1": 0.8266,
+      "n_observed": 20445,
+      "n_congested": 4716
+     }
+    },
+    "onset_lead": {
+     "events": 508,
+     "warned": 332,
+     "missed": 176,
+     "detection_rate": 0.6535,
+     "mean_lead_min": 48.43,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
    }
   }
  },
  {
   "dataset": "METR-LA",
-  "generated_utc": "2026-10-03T19:11:59.970753+00:00",
+  "generated_utc": "2026-10-03T19:26:29.954213+00:00",
   "protocol": {
    "windows": 120,
    "context_steps": 96,
@@ -1433,7 +1561,10 @@
     "checkpoints": 12.2
    },
    "isolation": "each model family runs in its own process: torch and the tree libraries deadlock when they share an interpreter",
-   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless"
+   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless",
+   "merged_stages": [
+    "_stage_METR-LA_test_w120_n207_s37_checkpoints.npz"
+   ]
   },
   "nodes": 207,
   "timesteps": 34272,
@@ -2108,12 +2239,73 @@
      "median_lead_min": 60.0,
      "max_possible_lead_min": 60
     }
+   },
+   "D2STGNN": {
+    "horizons": {
+     "5": {
+      "mae": 2.1445,
+      "rmse": 3.7765,
+      "mape_pct": 5.238,
+      "congestion_mae": 4.2101,
+      "freeflow_mae": 1.788,
+      "congestion_precision": 0.8972,
+      "congestion_recall": 0.8985,
+      "congestion_f1": 0.8978,
+      "n_observed": 24421,
+      "n_congested": 3595
+     },
+     "15": {
+      "mae": 2.8209,
+      "rmse": 5.5825,
+      "mape_pct": 7.506,
+      "congestion_mae": 6.4054,
+      "freeflow_mae": 2.1757,
+      "congestion_precision": 0.8575,
+      "congestion_recall": 0.8403,
+      "congestion_f1": 0.8488,
+      "n_observed": 24418,
+      "n_congested": 3725
+     },
+     "30": {
+      "mae": 3.3873,
+      "rmse": 7.0133,
+      "mape_pct": 9.592,
+      "congestion_mae": 8.2258,
+      "freeflow_mae": 2.4559,
+      "congestion_precision": 0.8236,
+      "congestion_recall": 0.7833,
+      "congestion_f1": 0.803,
+      "n_observed": 24414,
+      "n_congested": 3941
+     },
+     "60": {
+      "mae": 4.0063,
+      "rmse": 8.2227,
+      "mape_pct": 12.125,
+      "congestion_mae": 9.5385,
+      "freeflow_mae": 2.7712,
+      "congestion_precision": 0.8275,
+      "congestion_recall": 0.7423,
+      "congestion_f1": 0.7826,
+      "n_observed": 24404,
+      "n_congested": 4454
+     }
+    },
+    "onset_lead": {
+     "events": 497,
+     "warned": 347,
+     "missed": 150,
+     "detection_rate": 0.6982,
+     "mean_lead_min": 50.81,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
    }
   }
  },
  {
   "dataset": "METR-LA",
-  "generated_utc": "2026-10-03T10:25:01.799759+00:00",
+  "generated_utc": "2026-10-03T19:26:45.296139+00:00",
   "protocol": {
    "windows": 120,
    "context_steps": 96,
@@ -2140,6 +2332,7 @@
    "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless",
    "merged_stages": [
     "_stage_METR-LA_test_checkpoints.npz",
+    "_stage_METR-LA_test_w120_n80_s11_checkpoints.npz",
     "c2_test.npz",
     "tfm_test.npz"
    ]
@@ -2936,6 +3129,67 @@
      "missed": 44,
      "detection_rate": 0.7086,
      "mean_lead_min": 49.11,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "D2STGNN": {
+    "horizons": {
+     "5": {
+      "mae": 2.2663,
+      "rmse": 3.8334,
+      "mape_pct": 5.759,
+      "congestion_mae": 3.796,
+      "freeflow_mae": 1.9417,
+      "congestion_precision": 0.9229,
+      "congestion_recall": 0.9246,
+      "congestion_f1": 0.9238,
+      "n_observed": 9249,
+      "n_congested": 1619
+     },
+     "15": {
+      "mae": 2.7727,
+      "rmse": 5.0084,
+      "mape_pct": 7.206,
+      "congestion_mae": 4.9639,
+      "freeflow_mae": 2.3184,
+      "congestion_precision": 0.8843,
+      "congestion_recall": 0.9043,
+      "congestion_f1": 0.8942,
+      "n_observed": 9253,
+      "n_congested": 1589
+     },
+     "30": {
+      "mae": 3.1112,
+      "rmse": 5.896,
+      "mape_pct": 8.478,
+      "congestion_mae": 5.8822,
+      "freeflow_mae": 2.5575,
+      "congestion_precision": 0.8574,
+      "congestion_recall": 0.8891,
+      "congestion_f1": 0.873,
+      "n_observed": 9259,
+      "n_congested": 1542
+     },
+     "60": {
+      "mae": 3.3579,
+      "rmse": 6.596,
+      "mape_pct": 9.224,
+      "congestion_mae": 6.7503,
+      "freeflow_mae": 2.7411,
+      "congestion_precision": 0.8259,
+      "congestion_recall": 0.8746,
+      "congestion_f1": 0.8496,
+      "n_observed": 9275,
+      "n_congested": 1427
+     }
+    },
+    "onset_lead": {
+     "events": 151,
+     "warned": 110,
+     "missed": 41,
+     "detection_rate": 0.7285,
+     "mean_lead_min": 48.18,
      "median_lead_min": 60.0,
      "max_possible_lead_min": 60
     }

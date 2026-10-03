@@ -4,6 +4,10 @@
 
 | model | dataset | horizon | MAE | published MAE | diff | RMSE | MAPE % | published MAPE % |
 |---|---|---|---|---|---|---|---|---|
+| D2STGNN | METR-LA | 5 min | 2.084 | – | – | 3.627 | 4.92 | – |
+| D2STGNN | METR-LA | 15 min | 2.563 | 2.56 | +0.1 % | 4.932 | 6.51 | 6.48 |
+| D2STGNN | METR-LA | 30 min | 2.914 | 2.90 | +0.5 % | 5.954 | 7.89 | 7.78 |
+| D2STGNN | METR-LA | 60 min | 3.355 | 3.35 | +0.1 % | 7.074 | 9.60 | 9.40 |
 | DCRNN | METR-LA | 5 min | 2.176 | – | – | 3.773 | 5.18 | – |
 | DCRNN | METR-LA | 15 min | 2.672 | 2.77 | -3.5 % | 5.176 | 6.86 | 7.30 |
 | DCRNN | METR-LA | 30 min | 3.078 | 3.15 | -2.3 % | 6.313 | 8.41 | 8.80 |

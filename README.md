@@ -43,7 +43,7 @@ The core hypothesis: **foundation models win the aggregate protocol and lose the
 conformal calibration repairs the interval without giving back the aggregate gain.** Hence two protocols that share
 the same models, data and horizons but differ in which windows are scored, and a rule that A and B are never averaged.
 
-Models run so far: DCRNN, Graph WaveNet, STID, STAEformer, MegaCRN (official BasicTS configs, trained on AWS GPUs),
+Models run so far: DCRNN, Graph WaveNet, STID, STAEformer, MegaCRN, D2STGNN (official BasicTS configs, trained on AWS GPUs),
 OpenCity-plus (released weights, authors' commands), Chronos-Bolt, Chronos-2, TimesFM 2.5 (released weights). Nothing is
 re-implemented.
 
@@ -57,6 +57,7 @@ rows of the same model on the same dataset; Protocol B numbers have no published
 | Model | Dataset | Ours 15 / 30 / 60 min | Published | Gap |
 |---|---|---|---|---|
 | DCRNN | METR-LA | 2.67 / 3.08 / 3.57 | 2.77 / 3.15 / 3.60 | -3.5 / -2.3 / -0.8 % |
+| D2STGNN | METR-LA | 2.56 / 2.91 / 3.36 | 2.56 / 2.90 / 3.35 | +0.1 / +0.5 / +0.1 % |
 | MegaCRN | METR-LA | 2.63 / 3.02 / 3.48 | 2.52 / 2.93 / 3.38 | +4.4 / +3.0 / +2.8 % |
 | Graph WaveNet | METR-LA | 2.72 / 3.11 / 3.59 | 2.69 / 3.07 / 3.53 | +1.1 / +1.3 / +1.8 % |
 | Graph WaveNet | PEMS-BAY | 1.31 / 1.64 / 1.95 | 1.30 / 1.63 / 1.95 | +0.6 / +0.5 / −0.2 % |
@@ -84,6 +85,7 @@ window of a congested run. Sensor outages (0.0) are excluded from every metric. 
 | Model | MAE@15 all | MAE@15 congested | Onset detection rate | Mean lead (min) |
 |---|---|---|---|---|
 | MegaCRN (trained) | 2.99 ± 0.20 | 5.77 ± 0.61 | 0.69 ± 0.01 | 48.5 |
+| D2STGNN (trained) | 2.94 ± 0.20 | 5.69 ± 0.66 | 0.68 ± 0.02 | 49.3 |
 | DCRNN (trained) | 3.05 ± 0.23 | 5.97 ± 0.68 | 0.64 ± 0.02 | 49.6 |
 | STAEformer (trained) | 3.06 ± 0.17 | 6.11 ± 0.72 | 0.60 ± 0.01 | 53.1 |
 | Graph WaveNet (trained) | 3.18 ± 0.27 | 6.60 ± 0.79 | 0.54 ± 0.02 | 50.2 |
@@ -96,7 +98,7 @@ window of a congested run. Sensor outages (0.0) are excluded from every metric. 
 
 Reading: on the aggregate column the trained models sit within 0.3 mph of each other; in congestion the spread opens
 and against the zero-shot models reaches 1.7 mph. The onset column separates the families by a factor of two with
-seed spread of one or two points: MegaCRN and DCRNN catch two onsets in three, Chronos-2 one in three, persistence
+seed spread of one or two points: MegaCRN, D2STGNN and DCRNN catch two onsets in three, Chronos-2 one in three, persistence
 almost none. Chronos-2's multivariate mode beats its univariate mode and persistence on aggregate and still trails
 every trained model on every column. The 80-road single-seed block reported earlier gave the same ordering. TimesFM
 and Chronos-Bolt were scored on that block only (28 % and 32 % of onsets). The page `/lab/models` → Onset serves the
@@ -113,6 +115,8 @@ the transition column carries the seed spread.
 | MegaCRN | global | 0.90 | 0.93 | 0.78 | 0.45 ± 0.01 |
 | MegaCRN | regime-aware | 0.91 | 0.92 | 0.86 | 0.39 ± 0.01 |
 | MegaCRN | predicted-regime | 0.91 | 0.92 | 0.87 | 0.52 ± 0.03 |
+| D2STGNN | global | 0.90 | 0.93 | 0.79 | 0.47 ± 0.03 |
+| D2STGNN | predicted-regime | 0.91 | 0.92 | 0.87 | 0.53 ± 0.04 |
 | DCRNN | global | 0.90 | 0.93 | 0.78 | 0.43 ± 0.02 |
 | DCRNN | predicted-regime | 0.91 | 0.92 | 0.87 | 0.50 ± 0.04 |
 | STAEformer | global | 0.90 | 0.93 | 0.78 | 0.40 ± 0.02 |
@@ -275,7 +279,8 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 - [x] Protocol B: floors, XGBoost, Chronos-Bolt, GWNet, STID, STAEformer on the 80-node block; the Onset page
 - [x] P1 DCRNN: 2.67 / 3.08 / 3.57 against 2.77 / 3.15 / 3.60, on AWS with the official config
 - [x] P4 MegaCRN: 2.63 / 3.02 / 3.48 against 2.52 / 2.93 / 3.38; best onset detector so far (71%)
-- [ ] P3 D2STGNN (training on AWS) · P5–P7 STD-MAE, HimNet, BigST, PatchSTG, STGformer
+- [x] P3 D2STGNN: 2.56 / 2.91 / 3.36 against 2.56 / 2.90 / 3.35, an exact reproduction; best congested error of the table
+- [ ] P5–P7 STD-MAE (job prepared), HimNet, BigST, PatchSTG, STGformer
 - [x] P8a regime-aware conformal intervals (MAPIE) on every Protocol B model, three calibrators, the transition result
 - [x] P8b departure advice on a sensor corridor from the calibrated half-widths
 - [x] P9a Chronos-2 (univariate and multivariate) and TimesFM 2.5 zero-shot under Protocol B with conformal rows

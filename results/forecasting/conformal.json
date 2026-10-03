@@ -1,7 +1,7 @@
 [
  {
   "dataset": "METR-LA",
-  "generated_utc": "2026-10-03T19:12:42.367059+00:00",
+  "generated_utc": "2026-10-03T19:27:48.620390+00:00",
   "level": 0.9,
   "protocol": {
    "calibration": "validation block",
@@ -14,6 +14,138 @@
    "method": "MAPIE SplitConformalRegressor, absolute conformity score, prefit identity estimator"
   },
   "rows": [
+   {
+    "model": "D2STGNN",
+    "horizon_min": 15,
+    "level": 0.9,
+    "quantiles": {
+     "global": 7.091,
+     "regime_aware": {
+      "free": 5.923,
+      "congested": 14.477
+     },
+     "predicted_regime": {
+      "free": 5.986,
+      "congested": 14.185
+     }
+    },
+    "global_coverage_all": 0.8993,
+    "global_width_all": 14.182,
+    "n_all": 23653,
+    "global_coverage_free_flow": 0.9203,
+    "global_width_free_flow": 14.182,
+    "n_free_flow": 19223,
+    "global_coverage_congested": 0.8081,
+    "global_width_congested": 14.182,
+    "n_congested": 4430,
+    "global_coverage_transition": 0.5118,
+    "global_width_transition": 14.182,
+    "n_transition": 553,
+    "regime_aware_coverage_all": 0.9105,
+    "regime_aware_width_all": 15.148,
+    "regime_aware_coverage_free_flow": 0.9127,
+    "regime_aware_width_free_flow": 12.458,
+    "regime_aware_coverage_congested": 0.9009,
+    "regime_aware_width_congested": 26.819,
+    "regime_aware_coverage_transition": 0.4087,
+    "regime_aware_width_transition": 11.846,
+    "predicted_regime_coverage_all": 0.9115,
+    "predicted_regime_width_all": 15.089,
+    "predicted_regime_coverage_free_flow": 0.9112,
+    "predicted_regime_width_free_flow": 12.362,
+    "predicted_regime_coverage_congested": 0.9126,
+    "predicted_regime_width_congested": 26.923,
+    "predicted_regime_coverage_transition": 0.5895,
+    "predicted_regime_width_transition": 21.105
+   },
+   {
+    "model": "D2STGNN",
+    "horizon_min": 30,
+    "level": 0.9,
+    "quantiles": {
+     "global": 8.211,
+     "regime_aware": {
+      "free": 6.705,
+      "congested": 19.834
+     },
+     "predicted_regime": {
+      "free": 6.828,
+      "congested": 19.617
+     }
+    },
+    "global_coverage_all": 0.911,
+    "global_width_all": 16.423,
+    "n_all": 23620,
+    "global_coverage_free_flow": 0.9339,
+    "global_width_free_flow": 16.423,
+    "n_free_flow": 19335,
+    "global_coverage_congested": 0.8075,
+    "global_width_congested": 16.423,
+    "n_congested": 4285,
+    "global_coverage_transition": 0.5782,
+    "global_width_transition": 16.423,
+    "n_transition": 697,
+    "regime_aware_coverage_all": 0.9183,
+    "regime_aware_width_all": 18.469,
+    "regime_aware_coverage_free_flow": 0.9219,
+    "regime_aware_width_free_flow": 14.717,
+    "regime_aware_coverage_congested": 0.9022,
+    "regime_aware_width_congested": 35.396,
+    "regime_aware_coverage_transition": 0.5136,
+    "regime_aware_width_transition": 13.41,
+    "predicted_regime_coverage_all": 0.919,
+    "predicted_regime_width_all": 18.413,
+    "predicted_regime_coverage_free_flow": 0.9207,
+    "predicted_regime_width_free_flow": 14.386,
+    "predicted_regime_coverage_congested": 0.9113,
+    "predicted_regime_width_congested": 36.584,
+    "predicted_regime_coverage_transition": 0.6872,
+    "predicted_regime_width_transition": 29.693
+   },
+   {
+    "model": "D2STGNN",
+    "horizon_min": 60,
+    "level": 0.9,
+    "quantiles": {
+     "global": 10.287,
+     "regime_aware": {
+      "free": 8.185,
+      "congested": 26.277
+     },
+     "predicted_regime": {
+      "free": 8.433,
+      "congested": 26.595
+     }
+    },
+    "global_coverage_all": 0.936,
+    "global_width_all": 20.575,
+    "n_all": 23591,
+    "global_coverage_free_flow": 0.9547,
+    "global_width_free_flow": 20.575,
+    "n_free_flow": 19655,
+    "global_coverage_congested": 0.8425,
+    "global_width_congested": 20.575,
+    "n_congested": 3936,
+    "global_coverage_transition": 0.6876,
+    "global_width_transition": 20.575,
+    "n_transition": 909,
+    "regime_aware_coverage_all": 0.9409,
+    "regime_aware_width_all": 23.321,
+    "regime_aware_coverage_free_flow": 0.95,
+    "regime_aware_width_free_flow": 19.14,
+    "regime_aware_coverage_congested": 0.8951,
+    "regime_aware_width_congested": 44.197,
+    "regime_aware_coverage_transition": 0.6271,
+    "regime_aware_width_transition": 16.369,
+    "predicted_regime_coverage_all": 0.9441,
+    "predicted_regime_width_all": 23.188,
+    "predicted_regime_coverage_free_flow": 0.9524,
+    "predicted_regime_width_free_flow": 18.03,
+    "predicted_regime_coverage_congested": 0.9027,
+    "predicted_regime_width_congested": 48.945,
+    "predicted_regime_coverage_transition": 0.7602,
+    "predicted_regime_width_transition": 42.92
+   },
    {
     "model": "DCRNN",
     "horizon_min": 15,
@@ -1470,7 +1602,7 @@
  },
  {
   "dataset": "METR-LA",
-  "generated_utc": "2026-10-03T19:12:43.364403+00:00",
+  "generated_utc": "2026-10-03T19:27:49.587768+00:00",
   "level": 0.9,
   "protocol": {
    "calibration": "validation block",
@@ -1483,6 +1615,138 @@
    "method": "MAPIE SplitConformalRegressor, absolute conformity score, prefit identity estimator"
   },
   "rows": [
+   {
+    "model": "D2STGNN",
+    "horizon_min": 15,
+    "level": 0.9,
+    "quantiles": {
+     "global": 6.408,
+     "regime_aware": {
+      "free": 5.778,
+      "congested": 11.844
+     },
+     "predicted_regime": {
+      "free": 5.802,
+      "congested": 11.184
+     }
+    },
+    "global_coverage_all": 0.8775,
+    "global_width_all": 12.816,
+    "n_all": 18948,
+    "global_coverage_free_flow": 0.9134,
+    "global_width_free_flow": 12.816,
+    "n_free_flow": 14404,
+    "global_coverage_congested": 0.7636,
+    "global_width_congested": 12.816,
+    "n_congested": 4544,
+    "global_coverage_transition": 0.4333,
+    "global_width_transition": 12.816,
+    "n_transition": 607,
+    "regime_aware_coverage_all": 0.9062,
+    "regime_aware_width_all": 14.472,
+    "regime_aware_coverage_free_flow": 0.9172,
+    "regime_aware_width_free_flow": 12.076,
+    "regime_aware_coverage_congested": 0.8713,
+    "regime_aware_width_congested": 22.068,
+    "regime_aware_coverage_transition": 0.3937,
+    "regime_aware_width_transition": 11.555,
+    "predicted_regime_coverage_all": 0.9052,
+    "predicted_regime_width_all": 14.188,
+    "predicted_regime_coverage_free_flow": 0.9143,
+    "predicted_regime_width_free_flow": 11.963,
+    "predicted_regime_coverage_congested": 0.8765,
+    "predicted_regime_width_congested": 21.243,
+    "predicted_regime_coverage_transition": 0.5239,
+    "predicted_regime_width_transition": 16.675
+   },
+   {
+    "model": "D2STGNN",
+    "horizon_min": 30,
+    "level": 0.9,
+    "quantiles": {
+     "global": 6.981,
+     "regime_aware": {
+      "free": 6.05,
+      "congested": 16.167
+     },
+     "predicted_regime": {
+      "free": 6.171,
+      "congested": 13.379
+     }
+    },
+    "global_coverage_all": 0.8768,
+    "global_width_all": 13.963,
+    "n_all": 17745,
+    "global_coverage_free_flow": 0.9178,
+    "global_width_free_flow": 13.963,
+    "n_free_flow": 13421,
+    "global_coverage_congested": 0.7495,
+    "global_width_congested": 13.963,
+    "n_congested": 4324,
+    "global_coverage_transition": 0.4549,
+    "global_width_transition": 13.963,
+    "n_transition": 721,
+    "regime_aware_coverage_all": 0.907,
+    "regime_aware_width_all": 17.025,
+    "regime_aware_coverage_free_flow": 0.9209,
+    "regime_aware_width_free_flow": 13.179,
+    "regime_aware_coverage_congested": 0.864,
+    "regime_aware_width_congested": 28.96,
+    "regime_aware_coverage_transition": 0.4119,
+    "regime_aware_width_transition": 12.1,
+    "predicted_regime_coverage_all": 0.9042,
+    "predicted_regime_width_all": 15.804,
+    "predicted_regime_coverage_free_flow": 0.9163,
+    "predicted_regime_width_free_flow": 12.854,
+    "predicted_regime_coverage_congested": 0.8666,
+    "predicted_regime_width_congested": 24.961,
+    "predicted_regime_coverage_transition": 0.5506,
+    "predicted_regime_width_transition": 19.96
+   },
+   {
+    "model": "D2STGNN",
+    "horizon_min": 60,
+    "level": 0.9,
+    "quantiles": {
+     "global": 7.926,
+     "regime_aware": {
+      "free": 6.803,
+      "congested": 21.771
+     },
+     "predicted_regime": {
+      "free": 6.937,
+      "congested": 17.692
+     }
+    },
+    "global_coverage_all": 0.878,
+    "global_width_all": 15.851,
+    "n_all": 16425,
+    "global_coverage_free_flow": 0.9242,
+    "global_width_free_flow": 15.851,
+    "n_free_flow": 12461,
+    "global_coverage_congested": 0.7328,
+    "global_width_congested": 15.851,
+    "n_congested": 3964,
+    "global_coverage_transition": 0.5491,
+    "global_width_transition": 15.851,
+    "n_transition": 978,
+    "regime_aware_coverage_all": 0.9113,
+    "regime_aware_width_all": 20.98,
+    "regime_aware_coverage_free_flow": 0.9348,
+    "regime_aware_width_free_flow": 16.153,
+    "regime_aware_coverage_congested": 0.8373,
+    "regime_aware_width_congested": 36.157,
+    "regime_aware_coverage_transition": 0.501,
+    "regime_aware_width_transition": 13.606,
+    "predicted_regime_coverage_all": 0.9047,
+    "predicted_regime_width_all": 18.78,
+    "predicted_regime_coverage_free_flow": 0.925,
+    "predicted_regime_width_free_flow": 14.696,
+    "predicted_regime_coverage_congested": 0.8408,
+    "predicted_regime_width_congested": 31.618,
+    "predicted_regime_coverage_transition": 0.6431,
+    "predicted_regime_width_transition": 26.939
+   },
    {
     "model": "DCRNN",
     "horizon_min": 15,
@@ -2939,7 +3203,7 @@
  },
  {
   "dataset": "METR-LA",
-  "generated_utc": "2026-10-03T19:12:01.063435+00:00",
+  "generated_utc": "2026-10-03T19:27:50.548039+00:00",
   "level": 0.9,
   "protocol": {
    "calibration": "validation block",
@@ -2952,6 +3216,138 @@
    "method": "MAPIE SplitConformalRegressor, absolute conformity score, prefit identity estimator"
   },
   "rows": [
+   {
+    "model": "D2STGNN",
+    "horizon_min": 15,
+    "level": 0.9,
+    "quantiles": {
+     "global": 8.557,
+     "regime_aware": {
+      "free": 7.04,
+      "congested": 12.221
+     },
+     "predicted_regime": {
+      "free": 7.078,
+      "congested": 12.076
+     }
+    },
+    "global_coverage_all": 0.9272,
+    "global_width_all": 17.114,
+    "n_all": 24385,
+    "global_coverage_free_flow": 0.9524,
+    "global_width_free_flow": 17.114,
+    "n_free_flow": 20664,
+    "global_coverage_congested": 0.7872,
+    "global_width_congested": 17.114,
+    "n_congested": 3721,
+    "global_coverage_transition": 0.4593,
+    "global_width_transition": 17.114,
+    "n_transition": 823,
+    "regime_aware_coverage_all": 0.9245,
+    "regime_aware_width_all": 15.58,
+    "regime_aware_coverage_free_flow": 0.9431,
+    "regime_aware_width_free_flow": 14.397,
+    "regime_aware_coverage_congested": 0.8216,
+    "regime_aware_width_congested": 22.15,
+    "regime_aware_coverage_transition": 0.3998,
+    "regime_aware_width_transition": 14.079,
+    "predicted_regime_coverage_all": 0.9253,
+    "predicted_regime_width_all": 15.647,
+    "predicted_regime_coverage_free_flow": 0.9422,
+    "predicted_regime_width_free_flow": 14.403,
+    "predicted_regime_coverage_congested": 0.8315,
+    "predicted_regime_width_congested": 22.553,
+    "predicted_regime_coverage_transition": 0.4848,
+    "predicted_regime_width_transition": 18.71
+   },
+   {
+    "model": "D2STGNN",
+    "horizon_min": 30,
+    "level": 0.9,
+    "quantiles": {
+     "global": 11.168,
+     "regime_aware": {
+      "free": 8.611,
+      "congested": 16.151
+     },
+     "predicted_regime": {
+      "free": 8.816,
+      "congested": 16.566
+     }
+    },
+    "global_coverage_all": 0.9311,
+    "global_width_all": 22.336,
+    "n_all": 24364,
+    "global_coverage_free_flow": 0.9589,
+    "global_width_free_flow": 22.336,
+    "n_free_flow": 20430,
+    "global_coverage_congested": 0.7867,
+    "global_width_congested": 22.336,
+    "n_congested": 3934,
+    "global_coverage_transition": 0.5201,
+    "global_width_transition": 22.336,
+    "n_transition": 1242,
+    "regime_aware_coverage_all": 0.924,
+    "regime_aware_width_all": 19.408,
+    "regime_aware_coverage_free_flow": 0.9492,
+    "regime_aware_width_free_flow": 17.842,
+    "regime_aware_coverage_congested": 0.7931,
+    "regime_aware_width_congested": 27.541,
+    "regime_aware_coverage_transition": 0.4509,
+    "regime_aware_width_transition": 17.222,
+    "predicted_regime_coverage_all": 0.9267,
+    "predicted_regime_width_all": 20.01,
+    "predicted_regime_coverage_free_flow": 0.9498,
+    "predicted_regime_width_free_flow": 18.129,
+    "predicted_regime_coverage_congested": 0.8071,
+    "predicted_regime_width_congested": 29.776,
+    "predicted_regime_coverage_transition": 0.5258,
+    "predicted_regime_width_transition": 24.821
+   },
+   {
+    "model": "D2STGNN",
+    "horizon_min": 60,
+    "level": 0.9,
+    "quantiles": {
+     "global": 15.389,
+     "regime_aware": {
+      "free": 11.89,
+      "congested": 22.278
+     },
+     "predicted_regime": {
+      "free": 11.45,
+      "congested": 25.392
+     }
+    },
+    "global_coverage_all": 0.9325,
+    "global_width_all": 30.779,
+    "n_all": 24348,
+    "global_coverage_free_flow": 0.9644,
+    "global_width_free_flow": 30.779,
+    "n_free_flow": 19906,
+    "global_coverage_congested": 0.7893,
+    "global_width_congested": 30.779,
+    "n_congested": 4442,
+    "global_coverage_transition": 0.6163,
+    "global_width_transition": 30.779,
+    "n_transition": 1965,
+    "regime_aware_coverage_all": 0.9273,
+    "regime_aware_width_all": 26.793,
+    "regime_aware_coverage_free_flow": 0.9599,
+    "regime_aware_width_free_flow": 24.88,
+    "regime_aware_coverage_congested": 0.7816,
+    "regime_aware_width_congested": 35.366,
+    "regime_aware_coverage_transition": 0.5664,
+    "regime_aware_width_transition": 23.78,
+    "predicted_regime_coverage_all": 0.9292,
+    "predicted_regime_width_all": 27.465,
+    "predicted_regime_coverage_free_flow": 0.9607,
+    "predicted_regime_width_free_flow": 23.865,
+    "predicted_regime_coverage_congested": 0.7879,
+    "predicted_regime_width_congested": 43.597,
+    "predicted_regime_coverage_transition": 0.6087,
+    "predicted_regime_width_transition": 37.63
+   },
    {
     "model": "DCRNN",
     "horizon_min": 15,
@@ -4408,7 +4804,7 @@
  },
  {
   "dataset": "METR-LA",
-  "generated_utc": "2026-10-03T19:12:44.225255+00:00",
+  "generated_utc": "2026-10-03T19:27:51.467068+00:00",
   "level": 0.9,
   "protocol": {
    "calibration": "validation block",
@@ -4421,6 +4817,138 @@
    "method": "MAPIE SplitConformalRegressor, absolute conformity score, prefit identity estimator"
   },
   "rows": [
+   {
+    "model": "D2STGNN",
+    "horizon_min": 15,
+    "level": 0.9,
+    "quantiles": {
+     "global": 6.949,
+     "regime_aware": {
+      "free": 5.834,
+      "congested": 15.304
+     },
+     "predicted_regime": {
+      "free": 5.961,
+      "congested": 14.904
+     }
+    },
+    "global_coverage_all": 0.8948,
+    "global_width_all": 13.898,
+    "n_all": 9143,
+    "global_coverage_free_flow": 0.9165,
+    "global_width_free_flow": 13.898,
+    "n_free_flow": 7573,
+    "global_coverage_congested": 0.7898,
+    "global_width_congested": 13.898,
+    "n_congested": 1570,
+    "global_coverage_transition": 0.5023,
+    "global_width_transition": 13.898,
+    "n_transition": 221,
+    "regime_aware_coverage_all": 0.9075,
+    "regime_aware_width_all": 15.038,
+    "regime_aware_coverage_free_flow": 0.9106,
+    "regime_aware_width_free_flow": 12.363,
+    "regime_aware_coverage_congested": 0.8924,
+    "regime_aware_width_congested": 27.941,
+    "regime_aware_coverage_transition": 0.3982,
+    "regime_aware_width_transition": 11.668,
+    "predicted_regime_coverage_all": 0.9101,
+    "predicted_regime_width_all": 15.069,
+    "predicted_regime_coverage_free_flow": 0.911,
+    "predicted_regime_width_free_flow": 12.364,
+    "predicted_regime_coverage_congested": 0.9057,
+    "predicted_regime_width_congested": 28.121,
+    "predicted_regime_coverage_transition": 0.5701,
+    "predicted_regime_width_transition": 21.876
+   },
+   {
+    "model": "D2STGNN",
+    "horizon_min": 30,
+    "level": 0.9,
+    "quantiles": {
+     "global": 7.895,
+     "regime_aware": {
+      "free": 6.541,
+      "congested": 22.169
+     },
+     "predicted_regime": {
+      "free": 6.727,
+      "congested": 22.412
+     }
+    },
+    "global_coverage_all": 0.9035,
+    "global_width_all": 15.791,
+    "n_all": 9126,
+    "global_coverage_free_flow": 0.9263,
+    "global_width_free_flow": 15.791,
+    "n_free_flow": 7622,
+    "global_coverage_congested": 0.7879,
+    "global_width_congested": 15.791,
+    "n_congested": 1504,
+    "global_coverage_transition": 0.5584,
+    "global_width_transition": 15.791,
+    "n_transition": 274,
+    "regime_aware_coverage_all": 0.9121,
+    "regime_aware_width_all": 18.623,
+    "regime_aware_coverage_free_flow": 0.9164,
+    "regime_aware_width_free_flow": 14.672,
+    "regime_aware_coverage_congested": 0.8903,
+    "regime_aware_width_congested": 38.643,
+    "regime_aware_coverage_transition": 0.4891,
+    "regime_aware_width_transition": 13.081,
+    "predicted_regime_coverage_all": 0.9158,
+    "predicted_regime_width_all": 18.834,
+    "predicted_regime_coverage_free_flow": 0.9185,
+    "predicted_regime_width_free_flow": 14.388,
+    "predicted_regime_coverage_congested": 0.9023,
+    "predicted_regime_width_congested": 41.362,
+    "predicted_regime_coverage_transition": 0.6752,
+    "predicted_regime_width_transition": 33.719
+   },
+   {
+    "model": "D2STGNN",
+    "horizon_min": 60,
+    "level": 0.9,
+    "quantiles": {
+     "global": 9.855,
+     "regime_aware": {
+      "free": 7.976,
+      "congested": 26.897
+     },
+     "predicted_regime": {
+      "free": 8.066,
+      "congested": 28.752
+     }
+    },
+    "global_coverage_all": 0.9296,
+    "global_width_all": 19.711,
+    "n_all": 9114,
+    "global_coverage_free_flow": 0.9486,
+    "global_width_free_flow": 19.711,
+    "n_free_flow": 7738,
+    "global_coverage_congested": 0.8227,
+    "global_width_congested": 19.711,
+    "n_congested": 1376,
+    "global_coverage_transition": 0.648,
+    "global_width_transition": 19.711,
+    "n_transition": 358,
+    "regime_aware_coverage_all": 0.9333,
+    "regime_aware_width_all": 22.628,
+    "regime_aware_coverage_free_flow": 0.9426,
+    "regime_aware_width_free_flow": 18.837,
+    "regime_aware_coverage_congested": 0.8808,
+    "regime_aware_width_congested": 43.948,
+    "regime_aware_coverage_transition": 0.5978,
+    "regime_aware_width_transition": 15.952,
+    "predicted_regime_coverage_all": 0.9349,
+    "predicted_regime_width_all": 22.787,
+    "predicted_regime_coverage_free_flow": 0.9424,
+    "predicted_regime_width_free_flow": 17.49,
+    "predicted_regime_coverage_congested": 0.8932,
+    "predicted_regime_width_congested": 52.573,
+    "predicted_regime_coverage_transition": 0.7374,
+    "predicted_regime_width_transition": 45.948
+   },
    {
     "model": "DCRNN",
     "horizon_min": 15,

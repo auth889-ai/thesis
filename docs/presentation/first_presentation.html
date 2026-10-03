@@ -113,12 +113,13 @@ ol,ul{padding-left:20px;margin:0}
 <section class="slide wide" id="s6">
   <div class="text">
     <div class="eyebrow">5 · Reproduction, Protocol A</div>
-    <h2>Five world-best models from their official code, on AWS GPUs, within a few percent of their papers.</h2>
+    <h2>Six world-best models from their official code, on AWS GPUs, within a few percent of their papers.</h2>
   </div>
   <div class="fig tablewrap">
     <table>
       <tr><th>Model</th><th>Venue</th><th class="n">Ours, MAE 15 / 30 / 60 min</th><th class="n">Published</th><th class="n">Gap</th></tr>
       <tr><td>DCRNN</td><td>ICLR 2018</td><td class="n">2.67 / 3.08 / 3.57</td><td class="n">2.77 / 3.15 / 3.60</td><td class="n">−3.5 / −2.3 / −0.8 %</td></tr>
+      <tr><td>D2STGNN</td><td>VLDB 2022</td><td class="n">2.56 / 2.91 / 3.36</td><td class="n">2.56 / 2.90 / 3.35</td><td class="n">+0.1 / +0.5 / +0.1 %</td></tr>
       <tr><td>Graph WaveNet</td><td>IJCAI 2019</td><td class="n">2.72 / 3.11 / 3.59</td><td class="n">2.69 / 3.07 / 3.53</td><td class="n">+1.1 / +1.3 / +1.8 %</td></tr>
       <tr><td>STID</td><td>CIKM 2022</td><td class="n">2.82 / 3.21 / 3.59</td><td class="n">2.82 / 3.19 / 3.55</td><td class="n">0.0 / +0.7 / +1.2 %</td></tr>
       <tr><td>STAEformer</td><td>CIKM 2023</td><td class="n">2.67 / 2.98 / 3.35</td><td class="n">2.65 / 2.97 / 3.34</td><td class="n">+0.9 / +0.5 / +0.3 %</td></tr>
@@ -136,25 +137,26 @@ ol,ul{padding-left:20px;margin:0}
     <p>120 consecutive test windows on all 207 roads, context 96 steps, three seeds on three different test blocks, mean ± spread. Aggregate error at 15 minutes spans 3.0 to 5.7 mph; onset detection spans 4 % to 69 %.</p>
   </div>
   <div class="fig">
-    <svg viewBox="0 0 980 400" role="img" aria-label="Onset detection rate per model">
+    <svg viewBox="0 0 980 420" role="img" aria-label="Onset detection rate per model">
       <g transform="translate(200,10)">
-        <line class="axis" x1="0" y1="0" x2="0" y2="372"/>
+        <line class="axis" x1="0" y1="0" x2="0" y2="402"/>
         <g font-size="12">
-          <text x="-10" y="18" text-anchor="end">MegaCRN</text><rect x="0" y="6" width="483" height="18" fill="var(--free)"/><text x="491" y="19">69 ± 1 % · 49 min lead · congested MAE 5.77</text>
-          <text x="-10" y="46" text-anchor="end">DCRNN</text><rect x="0" y="34" width="448" height="18" fill="var(--free)"/><text x="456" y="47">64 ± 2 % · 50 min · 5.97</text>
-          <text x="-10" y="74" text-anchor="end">STAEformer</text><rect x="0" y="62" width="420" height="18" fill="var(--free)"/><text x="428" y="75">60 ± 1 % · 53 min · 6.11</text>
-          <text x="-10" y="102" text-anchor="end">Graph WaveNet</text><rect x="0" y="90" width="378" height="18" fill="var(--free)"/><text x="386" y="103">54 ± 2 % · 50 min · 6.60</text>
-          <text x="-10" y="130" text-anchor="end">STID</text><rect x="0" y="118" width="315" height="18" fill="var(--free)"/><text x="323" y="131">45 ± 4 % · 54 min · 7.26</text>
-          <text x="-10" y="158" text-anchor="end">Chronos-2, univariate</text><rect x="0" y="146" width="217" height="18" fill="var(--accent)"/><text x="225" y="159">31 ± 7 % · 47 min · 7.97</text>
-          <text x="-10" y="186" text-anchor="end">Chronos-2, multivariate</text><rect x="0" y="174" width="217" height="18" fill="var(--accent)"/><text x="225" y="187">31 ± 7 % · 46 min · 7.49</text>
-          <text x="-10" y="214" text-anchor="end">Chronos-Bolt</text><rect x="0" y="202" width="224" height="18" fill="var(--accent)"/><text x="232" y="215">32 % · 56 min · 7.94 (80-road block, one seed)</text>
-          <text x="-10" y="242" text-anchor="end">TimesFM 2.5</text><rect x="0" y="230" width="196" height="18" fill="var(--accent)"/><text x="204" y="243">28 % · 51 min · 8.49 (80-road block, one seed)</text>
-          <text x="-10" y="270" text-anchor="end">XGBoost</text><rect x="0" y="258" width="182" height="18" fill="var(--muted)"/><text x="190" y="271">26 ± 3 % · 31 min · 8.58</text>
-          <text x="-10" y="298" text-anchor="end">Historical average</text><rect x="0" y="286" width="119" height="18" fill="var(--muted)"/><text x="127" y="299">17 ± 3 % · 53 min · 17.96</text>
-          <text x="-10" y="326" text-anchor="end">Persistence</text><rect x="0" y="314" width="28" height="18" fill="var(--muted)"/><text x="36" y="327">4 ± 4 % · 60 min · 7.43</text>
+          <text x="-10" y="18" text-anchor="end">MegaCRN</text><rect x="0" y="6" width="480" height="18" fill="var(--free)"/><text x="488" y="19">69 ± 1 % · 49 min lead · congested MAE 5.77</text>
+          <text x="-10" y="46" text-anchor="end">D2STGNN</text><rect x="0" y="34" width="478" height="18" fill="var(--free)"/><text x="486" y="47">68 ± 2 % · 49 min lead · congested MAE 5.69</text>
+          <text x="-10" y="74" text-anchor="end">DCRNN</text><rect x="0" y="62" width="446" height="18" fill="var(--free)"/><text x="454" y="75">64 ± 2 % · 50 min lead · congested MAE 5.97</text>
+          <text x="-10" y="102" text-anchor="end">STAEformer</text><rect x="0" y="90" width="419" height="18" fill="var(--free)"/><text x="427" y="103">60 ± 1 % · 53 min lead · congested MAE 6.11</text>
+          <text x="-10" y="130" text-anchor="end">Graph WaveNet</text><rect x="0" y="118" width="381" height="18" fill="var(--free)"/><text x="389" y="131">54 ± 2 % · 50 min lead · congested MAE 6.60</text>
+          <text x="-10" y="158" text-anchor="end">STID</text><rect x="0" y="146" width="312" height="18" fill="var(--free)"/><text x="320" y="159">45 ± 4 % · 53 min lead · congested MAE 7.26</text>
+          <text x="-10" y="186" text-anchor="end">Chronos-2, univariate</text><rect x="0" y="174" width="220" height="18" fill="var(--accent)"/><text x="228" y="187">31 ± 7 % · 47 min lead · congested MAE 7.97</text>
+          <text x="-10" y="214" text-anchor="end">Chronos-2, multivariate</text><rect x="0" y="202" width="214" height="18" fill="var(--accent)"/><text x="222" y="215">31 ± 7 % · 46 min lead · congested MAE 7.49</text>
+          <text x="-10" y="242" text-anchor="end">XGBoost</text><rect x="0" y="230" width="182" height="18" fill="var(--muted)"/><text x="190" y="243">26 ± 3 % · 30 min lead · congested MAE 8.58</text>
+          <text x="-10" y="270" text-anchor="end">Historical average</text><rect x="0" y="258" width="120" height="18" fill="var(--muted)"/><text x="128" y="271">17 ± 3 % · 53 min lead · congested MAE 17.96</text>
+          <text x="-10" y="298" text-anchor="end">Persistence</text><rect x="0" y="286" width="27" height="18" fill="var(--muted)"/><text x="35" y="299">4 ± 4 % · 60 min lead · congested MAE 7.43</text>
+          <text x="-10" y="326" text-anchor="end">Chronos-Bolt</text><rect x="0" y="314" width="224" height="18" fill="var(--accent)"/><text x="232" y="327">32 % · 56 min · 7.94 (80-road block, one seed)</text>
+          <text x="-10" y="354" text-anchor="end">TimesFM 2.5</text><rect x="0" y="342" width="196" height="18" fill="var(--accent)"/><text x="204" y="355">28 % · 51 min · 8.49 (80-road block, one seed)</text>
         </g>
-        <line class="axis" x1="0" y1="350" x2="700" y2="350"/>
-        <text x="0" y="368">0 %</text><text x="350" y="368" text-anchor="middle">50 %</text><text x="700" y="368" text-anchor="end">100 % of onsets detected</text>
+        <line class="axis" x1="0" y1="380" x2="700" y2="380"/>
+        <text x="0" y="398">0 %</text><text x="350" y="398" text-anchor="middle">50 %</text><text x="700" y="398" text-anchor="end">100 % of onsets detected</text>
       </g>
     </svg>
     <p class="note"><span class="free">■</span> trained on the city &nbsp; <span class="acc">■</span> zero-shot foundation model &nbsp; <span style="color:var(--muted)">■</span> classical baseline. Lead is the mean minutes between the first flagged window and the true onset.</p>
@@ -269,7 +271,7 @@ ol,ul{padding-left:20px;margin:0}
   </div>
   <div class="fig">
     <div class="kpis">
-      <div class="kpi"><div class="v">5 + 3</div><div class="l">trained and zero-shot models reproduced</div></div>
+      <div class="kpi"><div class="v">6 + 3</div><div class="l">trained and zero-shot models reproduced</div></div>
       <div class="kpi"><div class="v">69 %</div><div class="l">of onsets caught by the best model; 4 % by persistence; three seeds, 207 roads</div></div>
       <div class="kpi"><div class="v">0.45 → 0.52</div><div class="l">transition coverage, global → predicted regime</div></div>
     </div>

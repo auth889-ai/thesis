@@ -151,17 +151,27 @@ def finish(a, job: str) -> int:
         ds = ds.strip()
         if not ds:
             continue
-        for region in ("val", "test"):
-            staged = RESULTS / "protocol_b" / f"_stage_{ds}_{region}_checkpoints.npz"
-            block = RESULTS / "protocol_b" / f"{ds}_{region}_w120_n80_s11.npz"
-            if not block.exists():
-                print(f"[finish] no persisted {region} block for {ds}; run Protocol B once with --region {region} first")
+        # every persisted block of this dataset (each roads-count and test block that Protocol B has run) gets the new model
+        import re
+        blocks = sorted(RESULTS.glob(f"protocol_b/{ds}_*_w*_n*_s*.npz"))
+        if not blocks:
+            print(f"[finish] no persisted Protocol B block for {ds}; run evaluate_models once with --region val and --region test first")
+        seen = set()
+        for block in blocks:
+            m = re.match(rf"{re.escape(ds)}_(val|test)_w(\d+)_n(\d+)_s(\d+)\.npz", block.name)
+            if not m:
                 continue
-            subprocess.run(py + ["--stage", "checkpoints", "--dataset", ds, "--windows", "120", "--seed", "11", "--max-nodes", "80",
+            region, windows, nodes, seed = m.group(1), m.group(2), m.group(3), m.group(4)
+            full = len(__import__("app.forecasting.evaluation.evaluate_models", fromlist=["load"]).load(ds)[0])
+            max_nodes = "0" if int(nodes) >= full else nodes
+            staged = RESULTS / "protocol_b" / f"_stage_{block.stem}_checkpoints.npz"
+            subprocess.run(py + ["--stage", "checkpoints", "--dataset", ds, "--windows", windows, "--seed", seed, "--max-nodes", max_nodes,
                                  "--region", region, "--stage-out", str(staged)], check=True, cwd=REPO)
-            subprocess.run(py + ["--dataset", ds, "--windows", "120", "--seed", "11", "--max-nodes", "80", "--region", region, "--merge", str(staged)],
+            subprocess.run(py + ["--dataset", ds, "--windows", windows, "--seed", seed, "--max-nodes", max_nodes, "--region", region, "--merge", str(staged)],
                            check=True, cwd=REPO)
             staged.unlink(missing_ok=True)
-        subprocess.run([sys.executable, "-m", "app.forecasting.evaluation.conformal", "--dataset", ds], check=True, cwd=REPO)
+            seen.add((windows, nodes, seed))
+        for windows, nodes, seed in sorted(seen):
+            subprocess.run([sys.executable, "-m", "app.forecasting.evaluation.conformal", "--dataset", ds, "--windows", windows, "--nodes", nodes, "--seed", seed], check=True, cwd=REPO)
     print(f"[finish] {job}: leaderboard, checkpoints, Protocol B and conformal rows updated")
     return 0
