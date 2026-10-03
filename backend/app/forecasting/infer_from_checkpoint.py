@@ -77,7 +77,11 @@ def load_official_cfg(model_dir: str, dataset: str):
     cwd = os.getcwd()
     os.chdir(BTS)                                                  # (2) relative desc.json
     try:
-        spec.loader.exec_module(mod)
+        # executed from source so one line can be fixed IN MEMORY without touching the pinned file: DCRNN's
+        # config calls random.randint with float bounds, which Python >= 3.10 rejects (the AWS job script and
+        # the local trainer apply the same integer-bounds substitution; the value is a throwaway seed)
+        src = cfg_path.read_text().replace("random.randint(-1e6, 1e6)", "random.randint(-1000000, 1000000)")
+        exec(compile(src, str(cfg_path), "exec"), mod.__dict__)
     finally:
         os.chdir(cwd)
     return mod.CFG, cfg_path

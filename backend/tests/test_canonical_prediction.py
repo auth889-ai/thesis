@@ -233,3 +233,12 @@ def test_finish_runs_the_same_commands_a_reviewer_would(monkeypatch, tmp_path):
     from app.forecasting.operations import model_registry
     for arch in ("D2STGNN", "MegaCRN"):
         assert arch in basicts_train.ARCHS and arch in model_registry.TRAINED
+
+
+def test_checkpoint_stage_never_hands_a_model_the_future_speed():
+    """Models whose official forward takes future covariates (MegaCRN's time of day) get them; the speed
+    channel of that tensor is zeroed in the source, so the stage cannot leak the answer."""
+    import inspect
+    from app.forecasting.evaluation import checkpoint_stage
+    src = inspect.getsource(checkpoint_stage.predict_checkpoints)
+    assert "f[..., 0] = 0.0" in src and "future_data=torch.tensor(f)" in src

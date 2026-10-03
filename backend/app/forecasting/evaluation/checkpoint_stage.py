@@ -81,8 +81,12 @@ def predict_checkpoints(dataset: str, starts: np.ndarray, context: int, steps: i
             s_b = starts[b:b + BATCH]
             x = np.stack([np.array(raw[s + context - L:s + context], dtype="float32") for s in s_b])
             x[..., 0] = (x[..., 0] - mu) / sd
+            # known-in-advance covariates of the forecast window (time of day, day of week) for the models whose
+            # official forward takes them (MegaCRN); the speed channel is ZEROED so no model can read the future
+            f = np.stack([np.array(raw[s + context:s + context + H], dtype="float32") for s in s_b])
+            f[..., 0] = 0.0
             with torch.no_grad():
-                o = model(history_data=torch.tensor(x)[..., fwd], future_data=None, batch_seen=0, epoch=1, train=False)
+                o = model(history_data=torch.tensor(x)[..., fwd], future_data=torch.tensor(f), batch_seen=0, epoch=1, train=False)
             p = (o if isinstance(o, torch.Tensor) else o["prediction"]).numpy()[..., 0] * sd + mu   # (B, H, N)
             out[b:b + len(s_b)] = p[:, :steps][:, :, node_idx]
         preds[name] = out
