@@ -353,6 +353,21 @@ repos:
     why: Retrieval-augmented spatio-temporal forecasting; candidate for the
          corridor forecaster once a corridor history exists (never Google-derived).
 
+  - name: PatchSTG
+    subsystem: forecasting
+    url: https://github.com/LMissher/PatchSTG.git
+    ref: main
+    sha: 8b298b230227a304a082e05241c69dca3740a73d
+    verified: "2026-10-04"
+    status: FETCHED            # ~/.dhakaflow/upstream/PatchSTG; data + weights in PatchSTG_data from the authors' Drive
+    license: MIT               # read from LICENSE at 8b298b23 on 2026-10-04
+    paper: https://arxiv.org/abs/2412.09972
+    venue: KDD 2025
+    weights: authors' Google Drive (cpt/{sd,gba,gla,ca}_model), used as released
+    why: Current state of the art on LargeST (SD 716 / GBA 2352 / GLA 3834 / CA 8600 sensors);
+         irregular spatial patching makes attention tractable at 8,600 nodes. Run through
+         app.forecasting.training.patchstg_official, which imports the authors' Solver unchanged.
+
   - name: LargeST
     subsystem: forecasting
     url: https://github.com/liuxu77/LargeST.git
