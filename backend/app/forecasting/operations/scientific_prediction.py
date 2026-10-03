@@ -45,8 +45,20 @@ def forecast(as_of: int, model: str | None = None):
     model = model or "GWNet"
     if model in {"auto", "automatic"}:
         model = "GWNet"
+    from app.forecasting.operations import served_checkpoints
+    served = served_checkpoints.available("METR-LA")
+    if model not in {"GWNet", "persistence"} and model not in served:
+        raise ValueError(f"Scientific METR-LA supports persistence and the trained checkpoints {', '.join(sorted(set(served) | {'GWNet'}))}; not {model}")
     if model not in {"GWNet", "persistence"}:
-        raise ValueError("Scientific METR-LA supports GWNet and persistence only")
+        out = served_checkpoints.forecast(model, int(as_of))
+        info = {"resolved_model": model, "checkpoint_path": out["checkpoint_path"], "checkpoint_sha256": out["checkpoint_sha256"],
+                "as_of_index": int(as_of), "inference_seconds": out["inference_runtime_s"], "input_window_hash": out["input_window_hash"],
+                "raw_prediction_hash": out["raw_prediction_hash"], "prediction_cache_hit": False, "inference_recomputed": True,
+                "result_source": "FRESH_INFERENCE", "trust": "PROTOCOL_B_SCORED", "forecast_contract": {"model": model, "dataset": "METR-LA",
+                "checkpoint_path": out["checkpoint_path"], "checkpoint_sha256": out["checkpoint_sha256"], "leaderboard": out["leaderboard"],
+                "loader": "official config from the pinned harness (checkpoint_stage)"},
+                "nonfinite_values_replaced": out["nonfinite_values_replaced"], "data_scope": "PUBLIC_BENCHMARK_ONLY", "input_scope": "RECORDED_METR_LA"}
+        return out["now"], out["prediction"], info
     with _LOCK:
         service = ForecastService.metr_la_gwnet()
         if isinstance(as_of, bool) or not isinstance(as_of, (int, np.integer)) or not 12 <= as_of <= len(service.values):
@@ -85,9 +97,21 @@ def registry(scope: str) -> dict:
     baseline = {"model": "persistence", "label": "Persistence", "family": "baseline", "trained": False,
                 "eligible": False, "can_forecast": True, "status": "BASELINE", "test_skill": 0,
                 "reason": "Repeat the final observation; no learned checkpoint"}
+    from app.forecasting.operations import served_checkpoints
+    others = []
+    for name, rec in sorted(served_checkpoints.available("METR-LA").items()):
+        if name == "GWNet":
+            continue
+        row = served_checkpoints.leaderboard_row(name) or {}
+        m15 = ((row.get("metrics_by_horizon_min") or {}).get("15") or (row.get("metrics_by_horizon_min") or {}).get(15) or {})
+        others.append({"model": name, "label": {"STID": "STID", "STAEformer": "STAEformer", "DCRNN": "DCRNN", "D2STGNN": "D2STGNN", "MegaCRN": "MegaCRN"}.get(name, name),
+                       "family": "trained", "trained": True, "eligible": False, "can_forecast": True, "status": "PROTOCOL_B_SCORED",
+                       "trust": "PROTOCOL_B_SCORED", "checkpoint_path": rec["checkpoint_path"], "test_skill": None,
+                       "validation_MAE": m15.get("MAE") or m15.get("mae"),
+                       "reason": "official config reloaded from its best-validation checkpoint; leaderboard and onset rows on /lab/models"})
     return {"scope": scope, "automatic": "GWNet", "forecast": {"model": "GWNet"},
             "routing": {"eligible": False, "scope": "FROZEN_SCENARIO_ONLY"}, "forecast_contract": spec,
-            "groups": [{"key": "validated", "items": [entry]}, {"key": "baselines", "items": [baseline]}]}
+            "groups": [{"key": "validated", "items": [entry]}, {"key": "trained", "items": others}, {"key": "baselines", "items": [baseline]}]}
 
 
 def sensor_result(payload: dict, run_id: str) -> dict:

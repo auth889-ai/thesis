@@ -242,3 +242,22 @@ def test_checkpoint_stage_never_hands_a_model_the_future_speed():
     from app.forecasting.evaluation import checkpoint_stage
     src = inspect.getsource(checkpoint_stage.predict_checkpoints)
     assert "f[..., 0] = 0.0" in src and "future_data=torch.tensor(f)" in src
+
+
+def test_forecast_map_serves_every_trained_checkpoint_with_fresh_inference(client):
+    """Any architecture with a best-validation METR-LA checkpoint is selectable on the forecast map; the
+    answer carries a fresh forward pass, the checkpoint's SHA-256 and the loader it came through."""
+    from app.forecasting.operations import served_checkpoints as sc, scientific_prediction as sp
+    served = sc.available("METR-LA")
+    if not served:
+        pytest.skip("no trained checkpoints collected on this machine")
+    groups = {g["key"]: [i["model"] for i in g["items"]] for g in sp.registry("METR_LA")["groups"]}
+    assert set(groups["trained"]) == set(served) - {"GWNet"}
+    name = sorted(set(served) - {"GWNet"})[0]
+    now, pred, info = sp.forecast(20000, name)
+    assert pred.shape == (12, 207) and info["result_source"] == "FRESH_INFERENCE" and len(info["checkpoint_sha256"]) == 64
+    assert info["forecast_contract"]["loader"].startswith("official config")
+    r = client.get(f"/api/forecast-map/METR_LA/road?node=S3&as_of=20000&models={name},persistence")
+    assert r.status_code == 200
+    with pytest.raises(ValueError):
+        sp.forecast(20000, "NotAModel")

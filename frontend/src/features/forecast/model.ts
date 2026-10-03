@@ -15,7 +15,7 @@ export const FAMILY = [
   {key: "persistence", name: "Persistence", kind: "baseline", what: "\"no change\": the next hour equals now"},
   {key: "historical_average", name: "Historical Average", kind: "baseline", what: "the same weekday and time in the training data"},
 ] as const;
-export const COMPARE_SET = ["GWNet", "STID", "OpenCity-plus", "Chronos-Bolt", "persistence"];
+export const COMPARE_SET = ["MegaCRN", "DCRNN", "STAEformer", "GWNet", "STID", "D2STGNN", "OpenCity-plus", "Chronos-Bolt", "persistence"];
 export const modelName = (k: string | null | undefined) => FAMILY.find((f) => f.key === k)?.name ?? k ?? "model";
 
 export type State = "NORMAL" | "SLOW" | "TRAFFIC_JAM" | "UNKNOWN";
