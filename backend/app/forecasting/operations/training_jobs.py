@@ -95,8 +95,15 @@ def plan(dataset: str, arch: str, epochs: int, where: str | None) -> dict:
     ds = next((d for d in predict_lab.datasets() if d["id"] == dataset), None)
     if not ds:
         raise ValueError(f"unknown dataset {dataset}")
-    if not dataset.startswith("user:"):
-        raise ValueError("only uploaded / research datasets may train a model (live corridor history is Google-derived)")
+    if dataset.startswith("live:"):
+        from app.data.live_providers.observatory import observatory
+        from app.forecasting.training import basicts_train as bt
+        own = observatory.own_history(dataset.split(":", 1)[1])
+        if own["steps_own"] < bt.MIN_STEPS:
+            raise ValueError(f"{dataset} has {own['steps_own']} readings of its own derived history; training needs {bt.MIN_STEPS} "
+                             f"(about {round((bt.MIN_STEPS - own['steps_own']) * 5 / 60, 1)} more hours of sampling). Google-derived rows never count.")
+    elif not dataset.startswith("user:"):
+        raise ValueError("benchmarks come with published models; upload a city or watch a live one to train")
     est = bt.estimate_seconds(arch, ds["steps"], ds["nodes"], epochs) if arch not in RESEARCH_ARCHS else 10
     cloud_ok = predict_lab.cloud()["available"]
     if where in ("cpu", "local"):
@@ -278,6 +285,48 @@ def start(payload: dict) -> dict:
         _save(job)
     threading.Thread(target=_run, args=(job_id,), name=job_id, daemon=True).start()
     return {"job_id": job_id, "where": pl["where"], "plan": pl, "poll": f"/api/train/{job_id}"}
+
+
+ALL_ARCHS = ["GWNet", "STID", "STAEformer", "DCRNN", "MegaCRN", "D2STGNN"]
+_BATCHES: dict[str, dict] = {}
+
+
+def start_all(payload: dict) -> dict:
+    """Every official architecture on one dataset, one after another (one GPU worker at a time): the batch is a
+    list of ordinary jobs, each with its own record, trust gate and checkpoint."""
+    dataset, epochs, where = payload.get("dataset", ""), int(payload.get("epochs", 30)), payload.get("where")
+    archs = [a for a in (payload.get("archs") or ALL_ARCHS) if a in ALL_ARCHS]
+    plan(dataset, archs[0], epochs, where)                                   # the same refusals as a single job, before anything starts
+    batch_id = "batch_" + uuid.uuid4().hex[:8]
+    batch = {"batch_id": batch_id, "dataset": dataset, "epochs": epochs, "where": where, "created_utc": _now(),
+             "jobs": [{"arch": a, "job_id": None, "stage": "WAITING", "status": "waiting"} for a in archs]}
+    with _LOCK:
+        _BATCHES[batch_id] = batch
+
+    def run():
+        for entry in batch["jobs"]:
+            try:
+                r = start({"dataset": dataset, "arch": entry["arch"], "epochs": epochs, "where": where})
+            except ValueError as ex:
+                entry.update(stage="FAILED", status="failed", error=str(ex)); continue
+            entry.update(job_id=r["job_id"], stage="QUEUED", status="running")
+            while True:
+                j = get(entry["job_id"]) or {}
+                entry.update(stage=j.get("stage"), status=j.get("status"))
+                if j.get("status") in ("done", "failed", "cancelled"):
+                    break
+                time.sleep(10)
+    threading.Thread(target=run, name=batch_id, daemon=True).start()
+    return {"batch_id": batch_id, "archs": archs, "poll": f"/api/train/batch/{batch_id}"}
+
+
+def batch(batch_id: str) -> dict | None:
+    b = _BATCHES.get(batch_id)
+    if not b:
+        return None
+    out = dict(b); out["jobs"] = [dict(e) for e in b["jobs"]]
+    out["done"] = all(e["status"] in ("done", "failed", "cancelled") for e in out["jobs"])
+    return out
 
 
 def identity_for(job_id: str) -> dict | None:

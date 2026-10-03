@@ -29,10 +29,10 @@ from app import evidence_paths as config
 sys.path.insert(0, str(config.REPO))
 
 TRAINED = ["STID", "GWNet", "STAEformer", "DCRNN", "D2STGNN", "MegaCRN"]
-PRETRAINED = ["OpenCity-plus", "Chronos-Bolt"]
+PRETRAINED = ["OpenCity-plus", "Chronos-2", "Chronos-Bolt"]
 RESEARCH = ["XGBoost", "RandomForest", "persistence", "historical_average"]
 LABEL = {"STID": "STID", "GWNet": "Graph WaveNet", "STAEformer": "STAEformer", "DCRNN": "DCRNN", "D2STGNN": "D2STGNN", "MegaCRN": "MegaCRN", "OpenCity-plus": "OpenCity-plus",
-         "Chronos-Bolt": "Chronos-Bolt", "XGBoost": "XGBoost", "RandomForest": "Random Forest", "persistence": "Persistence",
+         "Chronos-Bolt": "Chronos-Bolt", "Chronos-2": "Chronos-2", "XGBoost": "XGBoost", "RandomForest": "Random Forest", "persistence": "Persistence",
          "historical_average": "Historical average"}
 
 
@@ -130,15 +130,15 @@ def registry(scope: str) -> dict:
             sampled = ev["validation"][m].get("sampled_windows"); full = ev["validation"][m].get("full_split", False)
             g = {"compatible": True, "data_quality": True, "verified": True, "beats_val": bool(beats_val),
                  "trust": bool(full) and skill is not None and skill >= te.MARGIN}
-            entries.append(_entry(m, "pretrained", g, validation_MAE=v.get("MAE"), test_skill=skill, checkpoint=("amazon/chronos-bolt-small" if m == "Chronos-Bolt" else "OpenCity-plus.pth"),
+            entries.append(_entry(m, "pretrained", g, validation_MAE=v.get("MAE"), test_skill=skill, checkpoint={"Chronos-Bolt": "amazon/chronos-bolt-small", "Chronos-2": "amazon/chronos-2"}.get(m, "OpenCity-plus.pth"),
                                   reason=None if full else f"scored on {sampled or '?'} sampled held-out windows — forecast only until scored on the whole split"))
         elif is_dataset:
             entries.append(_entry(m, "pretrained", {"compatible": True, "data_quality": True, "verified": True, "beats_val": False, "trust": False},
-                                  reason="not yet scored on this data (train any model to score the baselines)" if m == "Chronos-Bolt"
+                                  reason="not yet scored on this data (train any model to score the baselines)" if m in ("Chronos-Bolt", "Chronos-2")
                                   else "needs ≥ 9 roads and ≥ 288 five-minute steps; scored on the Prediction page"))
         else:
             entries.append(_entry(m, "pretrained", {"compatible": True, "data_quality": True, "verified": True, "beats_val": True, "trust": False},
-                                  reason="live corridors: prediction only, no held-out test (Google-derived history is never a test set)"))
+                                  reason="live corridors: prediction only until the city's own derived history is long enough to hold out a test split"))
     # research
     for m in RESEARCH:
         c = cards.get(m)
@@ -157,8 +157,8 @@ def registry(scope: str) -> dict:
     if not is_dataset:
         avail = _live_availability(scope)
         for e in entries:
-            if e["family"] == "pretrained" and e["model"] in avail:
-                ok, reasons = avail[e["model"]]
+            if e["family"] == "pretrained":
+                ok, reasons = avail.get(e["model"], (False, ["not registered for this city's history"]))   # unknown is unavailable, never assumed
                 e["gates"]["compatible"] = ok
                 e["can_forecast"] = ok
                 e["reason"] = None if ok else (reasons[0] if reasons else "cannot serve this history")

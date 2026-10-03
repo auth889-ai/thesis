@@ -119,3 +119,34 @@ def test_imputation_endpoint_serves_the_run_or_says_how_to_make_it(client):
     assert r.status_code in (200, 503)
     if r.status_code == 200:
         j = r.json(); assert "ImputeFormer" in j["results"] and j["published_point_missing_mae"]["ImputeFormer"] == 1.80
+
+
+def test_a_live_city_may_train_only_on_enough_of_its_own_derived_history(monkeypatch):
+    from app.forecasting.operations import training_jobs as tj, prediction_jobs as pj
+    from app.data.live_providers import observatory as obs
+    monkeypatch.setattr(pj, "datasets", lambda include_uploads=True: [{"id": "live:dhaka", "steps": 300, "nodes": 12, "models": []}])
+    monkeypatch.setattr(pj, "cloud", lambda: {"available": False})
+    monkeypatch.setattr(obs.observatory, "own_history", lambda city: {"steps_own": 53})
+    with pytest.raises(ValueError, match="Google-derived rows never count"):
+        tj.plan("live:dhaka", "GWNet", 10, None)
+    monkeypatch.setattr(obs.observatory, "own_history", lambda city: {"steps_own": 300})
+    assert tj.plan("live:dhaka", "GWNet", 10, None)["where"] == "local"
+
+
+def test_train_all_runs_the_architectures_one_after_another(monkeypatch):
+    import time
+    from app.forecasting.operations import training_jobs as tj
+    monkeypatch.setattr(tj, "plan", lambda *a, **k: {"where": "local"})
+    order, state = [], {}
+    def fake_start(payload):
+        jid = f"j_{payload['arch']}"; order.append(payload["arch"]); state[jid] = {"stage": "TRAINING", "status": "running"}; return {"job_id": jid}
+    monkeypatch.setattr(tj, "start", fake_start)
+    monkeypatch.setattr(tj, "get", lambda jid: state.get(jid))
+    monkeypatch.setattr(tj.time, "sleep", lambda s: [state.__setitem__(k, {"stage": "COMPLETE", "status": "done"}) for k in state])
+    r = tj.start_all({"dataset": "user:x", "epochs": 1, "archs": ["GWNet", "STID"]})
+    for _ in range(50):
+        b = tj.batch(r["batch_id"])
+        if b["done"]:
+            break
+        time.sleep(0.05)
+    assert order == ["GWNet", "STID"] and b["done"] and [e["status"] for e in b["jobs"]] == ["done", "done"]

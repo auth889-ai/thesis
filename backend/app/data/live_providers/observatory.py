@@ -61,6 +61,14 @@ class Observatory:
         c.execute("""CREATE TABLE IF NOT EXISTS samples (
             city TEXT NOT NULL, t REAL NOT NULL, utc TEXT NOT NULL, nodes TEXT NOT NULL,
             values_json TEXT NOT NULL, PRIMARY KEY (city, t))""")
+        cols = [r[1] for r in c.execute("PRAGMA table_info(samples)")]
+        if "provider" not in cols:
+            # which provider produced the row decides what the row may be used for: Google-derived history is never a
+            # training or test set (standing rule); our own Amazon Location derived speeds are. Rows before the sampler
+            # was pointed at the selected provider (2026-10-03 12:38 UTC) came through the Google provider.
+            c.execute("ALTER TABLE samples ADD COLUMN provider TEXT")
+            c.execute("UPDATE samples SET provider = CASE WHEN utc >= '2026-10-03T12:38:00' THEN 'amazon_location' ELSE 'google' END WHERE provider IS NULL")
+            c.commit()
         return c
 
     def _restore(self, city_id: str) -> None:
@@ -70,7 +78,7 @@ class Observatory:
         self._restored.add(city_id)
         try:
             with self._conn() as c:
-                rows = c.execute("SELECT t, utc, nodes, values_json FROM samples WHERE city=? "
+                rows = c.execute("SELECT t, utc, nodes, values_json, provider FROM samples WHERE city=? "
                                  "ORDER BY t DESC LIMIT ?", (city_id, self.capacity)).fetchall()
         except sqlite3.Error:
             return
@@ -79,18 +87,20 @@ class Observatory:
         rows.reverse()
         nodes = json.loads(rows[-1][2])
         d = self._rows.setdefault(city_id, deque(maxlen=self.capacity))
-        for t, utc, n, v in rows:
-            if json.loads(n) == nodes:
-                d.append({"t": float(t), "utc": utc, "v": [float("nan") if x is None else float(x)
-                                                         for x in json.loads(v)]})
+        for t, utc, n, v, prov in rows:
+            vals = json.loads(v)
+            if json.loads(n) != nodes or all(x is None for x in vals):      # a row with no value is a dead sampler, not a reading
+                continue
+            d.append({"t": float(t), "utc": utc, "provider": prov or "google",
+                      "v": [float("nan") if x is None else float(x) for x in vals]})
         self._nodes.setdefault(city_id, nodes)
 
     def _persist(self, city_id: str, row: dict, nodes: list[str]) -> None:
         try:
             with self._conn() as c:
-                c.execute("INSERT OR IGNORE INTO samples VALUES (?,?,?,?,?)",
+                c.execute("INSERT OR IGNORE INTO samples (city, t, utc, nodes, values_json, provider) VALUES (?,?,?,?,?,?)",
                           (city_id, row["t"], row["utc"], json.dumps(nodes),
-                           json.dumps([None if x != x else round(x, 4) for x in row["v"]])))
+                           json.dumps([None if x != x else round(x, 4) for x in row["v"]]), row.get("provider")))
         except sqlite3.Error:
             pass                                    # the in-memory window still works
 
@@ -163,7 +173,7 @@ class Observatory:
             dist, dur = c.get("distance_m"), c.get("duration_s")
             if dist and dur and dur > 0:
                 row[i] = dist / dur                  # m/s, derived by us
-        rec = {"t": time.time(), "utc": datetime.now(timezone.utc).isoformat(), "v": row}
+        rec = {"t": time.time(), "utc": datetime.now(timezone.utc).isoformat(), "v": row, "provider": getattr(service, "name", None) or snap.get("source")}
         with self._lock:
             self._restore(city_id)
             self._nodes.setdefault(city_id, ids)
@@ -179,6 +189,15 @@ class Observatory:
             rows = list(self._rows.get(city_id, []))
             nodes = list(self._nodes.get(city_id, []))
         return rows, nodes
+
+    def own_history(self, city_id: str = "dhaka") -> dict:
+        """How much of this city's history the project may learn from: rows with a value that came from our own
+        derived speeds (Amazon Location), never from the Google provider."""
+        rows, nodes = self.series(city_id)
+        own = [r for r in rows if r.get("provider") not in (None, "google") and any(x == x for x in r["v"])]
+        return {"city_id": city_id, "steps_own": len(own), "steps_total": len(rows), "nodes": len(nodes),
+                "first_own_utc": own[0]["utc"] if own else None, "last_own_utc": own[-1]["utc"] if own else None,
+                "rule": "training and test sets use own derived speeds only; Google-derived rows are excluded"}
 
     def liveness(self, city_id: str | None = None) -> dict:
         """When each watched city last got a sample that carried a value, and whether that is recent.

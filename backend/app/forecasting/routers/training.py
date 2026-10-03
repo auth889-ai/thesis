@@ -59,6 +59,25 @@ def train_create(payload: dict):
         return {"error": str(exc)}
 
 
+@router.post("/api/train/all", tags=["train"])
+def train_all(payload: dict):
+    """Train every official architecture on one dataset, one after another. Returns the batch id to poll."""
+    from app.forecasting.operations import training_jobs as train_jobs
+    try:
+        return train_jobs.start_all(payload or {})
+    except ValueError as exc:
+        return {"error": str(exc)}
+
+
+@router.get("/api/train/batch/{batch_id}", tags=["train"])
+def train_batch(batch_id: str):
+    from app.forecasting.operations import training_jobs as train_jobs
+    b = train_jobs.batch(batch_id)
+    if not b:
+        raise HTTPException(404, "no such batch")
+    return b
+
+
 @router.get("/api/train", tags=["train"])
 def train_list():
     from app.forecasting.operations import training_jobs as train_jobs

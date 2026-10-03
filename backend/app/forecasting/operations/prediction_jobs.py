@@ -38,6 +38,7 @@ def _live_datasets() -> list[dict]:
         if r["steps_have"] < 1:
             continue
         rows, nodes = obs_mod.observatory.series(cid)
+        own = obs_mod.observatory.own_history(cid)              # steps the city may be trained and tested on
         names = list(nodes)
         if cid == "dhaka":
             from app.data import reference_corridors as cz
@@ -48,10 +49,11 @@ def _live_datasets() -> list[dict]:
             names = [byid.get(n, {}).get("name", n) for n in nodes]
         out.append({"id": f"live:{cid}", "name": f"{cid.replace('_', ' ').title()} — live corridors ({len(nodes)}), sampled every 5 min",
                     "node_names": names,
-                    "nodes": len(nodes), "steps": r["steps_have"], "start_utc": rows[0]["utc"] if rows else None,
+                    "nodes": len(nodes), "steps": own["steps_own"], "steps_total": r["steps_have"], "own_history": own,
+                    "start_utc": own["first_own_utc"] or (rows[0]["utc"] if rows else None),
                     "interval_min": 5, "exposure": "HELD_OUT_ZERO_SHOT", "live": True,
                     "models": (["OpenCity-plus"] if r["steps_have"] >= 288 and len(nodes) >= 9 else [])
-                              + (["Chronos-Bolt"] if r["steps_have"] >= 8 else []) + ["persistence"]})
+                              + (["Chronos-2", "Chronos-Bolt"] if r["steps_have"] >= 8 else []) + ["persistence"]})
     return out
 
 

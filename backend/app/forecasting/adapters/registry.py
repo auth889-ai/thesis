@@ -12,7 +12,9 @@ from __future__ import annotations
 from app.forecasting.adapters.base import CityData, Forecast, ForecastAdapter, NotAvailable
 from app.forecasting.adapters.baselines import HistoricalAverageAdapter, PersistenceAdapter
 from app.forecasting.adapters.checkpoint_models import GraphWaveNetAdapter, STAEformerAdapter, STIDAdapter
-from app.forecasting.adapters.chronos_adapter import ChronosAdapter
+from app.forecasting.adapters.chronos_adapter import Chronos2Adapter, ChronosAdapter
+
+UNIVARIATE = {"Chronos-Bolt", "Chronos-2"}        # zero-shot per road: no graph needed
 from app.forecasting.adapters.opencity import OpenCityAdapter
 
 # Strongest first: a foundation model that transfers, then city-specific networks, then floors.
@@ -23,6 +25,7 @@ def all_adapters(dataset_hint: str | None = None) -> list[ForecastAdapter]:
     # cannot see the road network.
     return [OpenCityAdapter(),
             STAEformerAdapter(ds), GraphWaveNetAdapter(ds), STIDAdapter(ds),
+            Chronos2Adapter(),
             ChronosAdapter(),
             HistoricalAverageAdapter(), PersistenceAdapter()]
 
@@ -83,8 +86,8 @@ def select(city_data: CityData, requested: str | None = None,
         return decision
 
     spatio = [m for m in eligible if not m.get("is_baseline") and m.get("needs_graph") is not False
-              and m["model"] != "Chronos-Bolt"]
-    univariate = [m for m in eligible if m["model"] == "Chronos-Bolt"]
+              and m["model"] not in UNIVARIATE]
+    univariate = [m for m in eligible if m["model"] in UNIVARIATE]
     baselines = [m for m in eligible if m.get("is_baseline")]
 
     if spatio:
@@ -94,7 +97,7 @@ def select(city_data: CityData, requested: str | None = None,
     elif univariate:
         pick = univariate[0]
         blocked = [m["model"] for m in menu
-                   if not m["available"] and not m.get("is_baseline") and m["model"] != "Chronos-Bolt"]
+                   if not m["available"] and not m.get("is_baseline") and m["model"] not in UNIVARIATE]
         decision.update(selected_model=pick["model"], capability_gate=pick.get("gates"),
                         fallback=bool(blocked), fallback_from=blocked,
                         reason=("no spatio-temporal model can serve this city, but there is enough "

@@ -82,6 +82,8 @@ export const api = {
   cloud: () => get("/api/predict-lab/cloud"),
   upload: (form: FormData) => postForm("/api/predict-lab/upload", form),
   trainCreate: (body: Json) => post("/api/train", body),
+  trainAll: (body: Json) => post("/api/train/all", body),
+  trainBatch: (id: string) => get(`/api/train/batch/${encodeURIComponent(id)}`),
   trainStatus: (id: string) => get(`/api/train/${encodeURIComponent(id)}`),
   trainCancel: (id: string) => post(`/api/train/${encodeURIComponent(id)}/cancel`),
   // twin

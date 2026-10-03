@@ -57,8 +57,8 @@ def test_automatic_falls_back_when_nothing_passes(cards):
     r = mr.registry("user:y")
     # priority: an available pretrained forecast-only model outranks a trained model that failed its gate;
     # routing falls back; persistence is never presented as the AI forecast
-    assert r["forecast"]["model"] == "Chronos-Bolt" and r["forecast"]["status"] == "FORECAST_ONLY"
-    assert r["routing"]["policy"] == "REACTIVE_FALLBACK" and r["automatic"]["model"] == "Chronos-Bolt"
+    assert r["forecast"]["model"] in ("Chronos-2", "Chronos-Bolt") and r["forecast"]["status"] == "FORECAST_ONLY"   # unscored zero-shot models tie; the newest is first
+    assert r["routing"]["policy"] == "REACTIVE_FALLBACK" and r["automatic"]["model"] == r["forecast"]["model"]
     by = {e["model"]: e for g in r["groups"] for e in g["items"]}
     assert by["STID"]["status"] == "AVAILABLE" and by["STID"]["can_forecast"] is True     # still selectable manually, forecast-only
 
@@ -80,7 +80,7 @@ def test_live_city_scope_offers_no_trained_models(cards):
 
 def test_registry_endpoint(client):
     r = client.get("/api/registry?scope=user:does_not_exist").json()
-    assert r["scope"] == "user:does_not_exist" and r["forecast"]["model"] in ("Chronos-Bolt", "persistence")
+    assert r["scope"] == "user:does_not_exist" and r["forecast"]["model"] in ("Chronos-2", "Chronos-Bolt", "persistence")   # the newest released zero-shot model is the default
     assert [g["title"] for g in r["groups"]] == ["Recommended", "Available", "Validated on this city", "Pretrained", "Baselines", "Unavailable"]
     assert r["routing"]["policy"] == "REACTIVE_FALLBACK"
 

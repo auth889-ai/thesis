@@ -100,6 +100,8 @@ class ChronosAdapter(ForecastAdapter):
 
         q, _mean = self._pipeline().predict_quantiles(
             series, prediction_length=steps_needed, quantile_levels=QUANTILES)
+        if isinstance(q, list):                     # Chronos-2 returns one tensor per series, (1, steps, n_quantiles) or (steps, n_quantiles)
+            q = torch.stack([t[0] if t.ndim == 3 else t for t in q])
         q = q.detach().cpu().numpy()               # (n_series, steps, n_quantiles)
 
         values, lo, hi = {}, {}, {}
@@ -146,3 +148,12 @@ class ChronosAdapter(ForecastAdapter):
                   "why_available_here": ("serves cities with too few nodes for a graph model — availability, "
                                         "not validated accuracy for that city")})
         return d
+
+
+class Chronos2Adapter(ChronosAdapter):
+    """amazon/chronos-2 (2025), the released weights, through the same pipeline interface; univariate per road here
+    (the multivariate mode is scored under Protocol B in evaluation/foundation_stage.py)."""
+    name = "Chronos-2"
+
+    def __init__(self, device: str = "cpu"):
+        super().__init__("amazon/chronos-2", device)
