@@ -222,14 +222,14 @@ ol,ul{padding-left:20px;margin:0}
   <div class="text">
     <div class="eyebrow">10 · A city with few sensors</div>
     <h2>Dhaka has no loop detectors. Two answers: the phone, and imputation.</h2>
-    <p>The app turns a phone into a sensor: shared fixes are snapped to the road with Amazon Location, binned into 70-metre road-direction cells every five minutes, device ids hashed, raw fixes purged after a day. On the benchmark side, hiding a quarter of METR-LA's observed points and filling them back under the ImputeFormer paper's protocol validates the setup exactly, mean-fill 7.51 against the paper's 7.52, and shows how much a learned imputer buys under a laptop budget.</p>
+    <p>The app turns a phone into a sensor: shared fixes are snapped to the road with Amazon Location, binned into 70-metre road-direction cells every five minutes, device ids hashed, raw fixes purged after a day. On the benchmark side, hiding a quarter of METR-LA's observed points and filling them back under the ImputeFormer paper's protocol validates the setup exactly, mean-fill 7.51 against the paper's 7.52, and shows the learned imputer overtaking linear interpolation after 60 laptop epochs, with the paper's full budget still ahead.</p>
   </div>
   <div class="fig">
     <table><tr><th>Method</th><th class="n">MAE on hidden points</th><th class="n">paper</th></tr>
       <tr><td>mean fill</td><td class="n">7.51</td><td class="n">7.52</td></tr>
       <tr><td>last value carried</td><td class="n">2.93</td><td class="n">–</td></tr>
       <tr><td>linear interpolation</td><td class="n">2.48</td><td class="n">–</td></tr>
-      <tr><td>ImputeFormer, laptop budget</td><td class="n">3.55</td><td class="n">1.80 (300 × 300 batches)</td></tr></table>
+      <tr><td>ImputeFormer, 60 epochs on a laptop</td><td class="n">2.42</td><td class="n">1.80 (300 × 300 batches)</td></tr></table>
     <p class="note">Live check of the probe layer: a six-fix trace on Mirpur Road, six of six snapped, derived speed 30 km/h, four cells written.</p>
   </div>
 </section>

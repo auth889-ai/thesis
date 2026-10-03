@@ -182,6 +182,7 @@ Every number on a page is read from a model run, a dataset or an API; the struct
 | Evidence | checkpoint hashes, logs, the protocol check | `/lab/evidence` |
 
 | Onset | Protocol B: every model on the same windows, congested-regime error, onsets detected, mean lead | `GET /api/protocol-b/onset` |
+| Sparse | imputation under the ImputeFormer protocol: a quarter of observed points hidden, scored on those; mean, linear, last-value and ImputeFormer with the published rows | `GET /api/protocol-b/imputation` |
 | Map → Your phone is the sensor | share your position while you move; fixes are snapped to the road with Amazon Location SnapToRoads, binned into 70 m road-direction cells every five minutes and drawn on the map with how many devices each rests on; device ids hashed, raw fixes purged after 24 h | `POST /api/probes`, `GET /api/probes/cells`, `GET /api/probes/status`; tables `probe_points`, `probe_cells` |
 
 | City → Leave when? | the shortest sensor corridor from the selected road, the served model's forecast per leg at the horizon reached, the 90 % worst case from the stored conformal half-widths, and the latest departure for a deadline | `GET /api/protocol-b/departure`, `GET /api/protocol-b/sensors` |
@@ -289,6 +290,7 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 - [ ] P11 cross-city to Dhaka with UniST and OpenCity · P12b twin re-run with the new forecaster
 - [ ] Large-scale run: best supervised and best foundation model over all 8,600 LargeST sensors and thirty live cities for fourteen days; forecasts and regime labels published as Parquet with a report
 - [x] Probes: the phone as the sensor (signature feature S1), snapped with Amazon Location, H3 cells, relational tables
+- [x] Q1 Sparse sensing: ImputeFormer under its paper's 25 % point-missing protocol; mean fill 7.51 vs the paper's 7.52 validates the setup; 2.42 MAE after 60 laptop epochs against linear 2.48, last 2.93, the paper's 1.80 at 300 × 300 batches
 - [ ] Other pillars of road traffic (imputation, incident detection, signal control) per `docs/TRAFFIC_FULL_SCOPE.md`
 
 ## Citation

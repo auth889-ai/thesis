@@ -1,0 +1,60 @@
+{
+ "dataset": "METR-LA",
+ "generated_utc": "2026-10-03T14:31:03.067881+00:00",
+ "protocol": {
+  "window": 24,
+  "missing": "point, 25% of observed points, seed 42",
+  "split": "chronological 70/10/20 on non-overlapping windows",
+  "scored_on": "hidden points only; outages never scored",
+  "budget": "60 epochs on the laptop (paper: 300 x 300 batches)",
+  "windows": {
+   "train": 999,
+   "val": 143,
+   "test": 286
+  }
+ },
+ "published_point_missing_mae": {
+  "ImputeFormer": 1.8,
+  "SPIN": 1.93,
+  "GRIN": 1.91,
+  "mean": 7.52
+ },
+ "results": {
+  "mean": {
+   "mae": 7.5134,
+   "mape_pct": 24.786,
+   "points": 311875
+  },
+  "linear": {
+   "mae": 2.4793,
+   "mape_pct": 5.731,
+   "points": 311875
+  },
+  "last": {
+   "mae": 2.925,
+   "mape_pct": 6.83,
+   "points": 311875
+  },
+  "ImputeFormer": {
+   "mae": 2.4181,
+   "mape_pct": 6.023,
+   "points": 311875,
+   "device": "mps",
+   "fit_seconds": 2466.4,
+   "epochs": 60,
+   "config": {
+    "n_steps": 24,
+    "n_features": 207,
+    "n_layers": 3,
+    "d_input_embed": 32,
+    "d_learnable_embed": 96,
+    "d_proj": 8,
+    "d_ffn": 256,
+    "n_temporal_heads": 4,
+    "dropout": 0.1,
+    "batch_size": 32
+   },
+   "scaling": "z-score on the train split"
+  }
+ }
+}
