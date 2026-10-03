@@ -20,24 +20,32 @@ def onset(dataset: str | None = None):
     mean lead in minutes; the protocol block states the windows, context, threshold and seed."""
     if not FILE.exists():
         raise HTTPException(503, "no Protocol B run yet: python -m app.forecasting.evaluation.evaluate_models --all")
+    from app.forecasting.evaluation.evaluate_models import summary
     runs = json.loads(FILE.read_text())
+    names = sorted({r["dataset"] for r in runs})
     if dataset:
         key = dataset.replace("_", "-").upper()                 # the app's dataset id is METR_LA; the run file says METR-LA
-        runs = [r for r in runs if r["dataset"].upper() == key]
-        if not runs:
+        names = [n for n in names if n.upper() == key]
+        if not names:
             raise HTTPException(404, f"no Protocol B run for {dataset}")
     out = []
-    for r in runs:
+    for name in names:
+        s = summary(name)
         rows = []
-        for name, res in sorted(r["results"].items()):
-            h15, h60, ol = res["horizons"].get("15", res["horizons"].get(15, {})), res["horizons"].get("60", res["horizons"].get(60, {})), res["onset_lead"]
-            rows.append({"model": name, "mae_15": h15.get("mae"), "congestion_mae_15": h15.get("congestion_mae"),
-                         "congestion_f1_15": h15.get("congestion_f1"), "mae_60": h60.get("mae"),
-                         "onset_detection_rate": ol.get("detection_rate"), "mean_lead_min": ol.get("mean_lead_min")})
-        out.append({"dataset": r["dataset"], "generated_utc": r["generated_utc"], "nodes": r["nodes"],
-                    "protocol": r["protocol"], "rows": rows,
+        for model, agg in sorted(s["models"].items()):
+            h15, h60, ol = agg["horizons"].get("15", {}), agg["horizons"].get("60", {}), agg["onset_lead"]
+            g = lambda d, k: (d.get(k) or {}).get("mean")
+            sd = lambda d, k: (d.get(k) or {}).get("std")
+            rows.append({"model": model, "n_seeds": agg["n_seeds"], "mae_15": g(h15, "mae"), "mae_15_std": sd(h15, "mae"),
+                         "congestion_mae_15": g(h15, "congestion_mae"), "congestion_mae_15_std": sd(h15, "congestion_mae"),
+                         "congestion_f1_15": g(h15, "congestion_f1"), "mae_60": g(h60, "mae"),
+                         "onset_detection_rate": g(ol, "detection_rate"), "onset_detection_rate_std": sd(ol, "detection_rate"),
+                         "mean_lead_min": g(ol, "mean_lead_min")})
+        latest = max((r for r in runs if r["dataset"] == name), key=lambda r: r["generated_utc"])
+        out.append({"dataset": name, "generated_utc": latest["generated_utc"], "nodes": s["nodes"], "seeds": s["seeds"],
+                    "protocol": {**s["protocol"], "seeds": s["seeds"]}, "rows": rows,
                     "source": "results/forecasting/model_comparison.json",
-                    "regenerate": "python -m app.forecasting.evaluation.evaluate_models --dataset <name> --windows 120 --seed 11 --max-nodes 80"})
+                    "regenerate": "python -m app.forecasting.evaluation.evaluate_models --dataset <name> --windows 120 --seed <s> --max-nodes 0"})
     return {"datasets": out}
 
 

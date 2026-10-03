@@ -339,7 +339,7 @@ def stage(kind: str, dataset: str, n_windows: int, seed: int, chronos_model: str
 
 
 def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
-             skip_chronos: bool = False, max_nodes: int = 0, region: str = "test") -> dict:
+             skip_chronos: bool = False, max_nodes: int = 0, region: str = "test", zero_shot: str = "chronos,chronos2,timesfm") -> dict:
     import tempfile
     data = load(dataset)
     if max_nodes and data.shape[1] > max_nodes:
@@ -350,8 +350,8 @@ def evaluate(dataset: str, n_windows: int, seed: int, chronos_model: str,
     steps = max(HORIZONS_MIN) // BIN_MIN
 
     from app.forecasting.evaluation.checkpoint_stage import checkpoints_for
-    kinds = (["baselines", "trees"] + ([] if skip_chronos else ["chronos", "chronos2", "timesfm"])
-             + (["checkpoints"] if checkpoints_for(dataset) else []))
+    zs = [] if skip_chronos else [k.strip() for k in zero_shot.split(",") if k.strip()]
+    kinds = ["baselines", "trees"] + zs + (["checkpoints"] if checkpoints_for(dataset) else [])
     preds, truth, timings = {}, None, {}
     with tempfile.TemporaryDirectory() as td:
         for kind in kinds:
@@ -419,22 +419,67 @@ def merge(dataset: str, region: str, n_windows: int, max_nodes: int, seed: int, 
     truth, thr = base["truth"], base["threshold"]
     preds = {k[5:]: v for k, v in base.items() if k.startswith("pred_")}
     path = OUT / "model_comparison.json"
-    prior = {r["dataset"]: r for r in json.loads(path.read_text())} if path.exists() else {}
-    rec = prior.get(dataset) or {"dataset": dataset, "protocol": {}, "nodes": int(N), "timesteps": int(data.shape[0])}
+    prior = {_key(r): r for r in json.loads(path.read_text())} if path.exists() else {}
+    rec = prior.get(f"{dataset}|n{N}|s{seed}") or {"dataset": dataset, "protocol": {"seed": seed, "nodes_scored": int(N)}, "nodes": int(N), "timesteps": int(data.shape[0])}
     rec["results"] = {name: {"horizons": score(p, truth, thr), "onset_lead": onset_lead(p, truth, thr)} for name, p in preds.items()}
     rec["generated_utc"] = datetime.now(timezone.utc).isoformat()
     rec["protocol"]["merged_stages"] = sorted(set(rec["protocol"].get("merged_stages", [])) | {f.name for f in stage_files})
     return rec
 
 
+def _key(r: dict) -> str:
+    """One record per (dataset, roads scored, seed): several seeds of one dataset live side by side."""
+    p = r.get("protocol", {})
+    return f"{r['dataset']}|n{r.get('nodes', p.get('nodes_scored'))}|s{p.get('seed', 11)}"
+
+
+def summary(dataset: str, nodes: int | None = None) -> dict | None:
+    """Mean and standard deviation of every metric across the seeds run for a dataset (and roads scored)."""
+    path = OUT / "model_comparison.json"
+    if not path.exists():
+        return None
+    runs = [r for r in json.loads(path.read_text()) if r["dataset"] == dataset and (nodes is None or r.get("nodes") == nodes)]
+    if not runs:
+        return None
+    if nodes is None:                                              # the roads-scored count with the most seeds wins
+        counts = {}
+        for r in runs:
+            counts[r.get("nodes")] = counts.get(r.get("nodes"), 0) + 1
+        nodes = max(counts, key=counts.get)
+        runs = [r for r in runs if r.get("nodes") == nodes]
+    models = sorted(set().union(*(r["results"].keys() for r in runs)))
+    out = {}
+    for m in models:
+        rows = [r["results"][m] for r in runs if m in r["results"]]
+        agg = {"n_seeds": len(rows), "horizons": {}, "onset_lead": {}}
+        for h in ("5", "15", "30", "60"):
+            vals = {}
+            for row in rows:
+                hz = row["horizons"].get(h) or row["horizons"].get(int(h)) or {}
+                for k, v in hz.items():
+                    if isinstance(v, (int, float)):
+                        vals.setdefault(k, []).append(float(v))
+            if vals:
+                agg["horizons"][h] = {k: {"mean": round(float(np.mean(v)), 4), "std": round(float(np.std(v)), 4)} for k, v in vals.items()}
+        vals = {}
+        for row in rows:
+            for k, v in row["onset_lead"].items():
+                if isinstance(v, (int, float)):
+                    vals.setdefault(k, []).append(float(v))
+        agg["onset_lead"] = {k: {"mean": round(float(np.mean(v)), 4), "std": round(float(np.std(v)), 4)} for k, v in vals.items()}
+        out[m] = agg
+    seeds = sorted(r["protocol"].get("seed", 11) for r in runs)
+    return {"dataset": dataset, "nodes": nodes, "seeds": seeds, "windows": runs[0]["protocol"].get("windows"), "protocol": runs[0]["protocol"], "models": out}
+
+
 def write(records: list[dict]) -> None:
     OUT.mkdir(parents=True, exist_ok=True)
     path = OUT / "model_comparison.json"
     prior = json.loads(path.read_text()) if path.exists() else []
-    by = {r["dataset"]: r for r in prior if isinstance(r, dict)}
+    by = {_key(r): r for r in prior if isinstance(r, dict)}
     for r in records:
-        by[r["dataset"]] = r
-    allr = sorted(by.values(), key=lambda r: r["dataset"])
+        by[_key(r)] = r
+    allr = sorted(by.values(), key=_key)
     path.write_text(json.dumps(allr, indent=1))
 
     L = ["# Model comparison — one protocol, models that can be compared\n",
@@ -445,7 +490,7 @@ def write(records: list[dict]) -> None:
          "comparison this project keeps refusing to make.\n"]
     for r in allr:
         p = r["protocol"]
-        L += [f"\n## {r['dataset']} — {r['nodes']} nodes, {p['windows']} test windows\n",
+        L += [f"\n## {r['dataset']} — {r['nodes']} nodes, {p['windows']} test windows, seed {p.get('seed', 11)}\n",
               f"Context {p['context_steps']} steps; {p['split']}. Congestion: {p['congestion_threshold']}. "
               f"{p['missing']}.\n",
               "| model | MAE@15 | RMSE@15 | MAPE@15 | congestion MAE@15 | F1@15 | MAE@60 | onset detection | mean lead |",
@@ -477,6 +522,8 @@ def main() -> int:
                    help="deterministic node subsample; 0 uses every node")
     p.add_argument("--region", default="test", choices=["test", "val"],
                    help="score the test block (the comparison) or the validation block (conformal calibration)")
+    p.add_argument("--zero-shot", default="chronos,chronos2,timesfm",
+                   help="which zero-shot families to run (comma list of chronos, chronos2, timesfm); the seed sweep uses chronos2 only")
     p.add_argument("--merge", type=Path, nargs="*", default=None,
                    help="staged prediction files (--stage ... --stage-out) to add to the persisted block, then re-score")
     a = p.parse_args()
@@ -499,7 +546,7 @@ def main() -> int:
     out = []
     for ds in targets:
         print(f"[eval] {ds} …", flush=True)
-        r = evaluate(ds, a.windows, a.seed, a.chronos_model, a.skip_chronos, a.max_nodes, a.region)
+        r = evaluate(ds, a.windows, a.seed, a.chronos_model, a.skip_chronos, a.max_nodes, a.region, a.zero_shot)
         for name, res in sorted(r["results"].items()):
             h = res["horizons"].get(15, {})
             print(f"   {name:<20} MAE@15={h.get('mae'):<8} congMAE={h.get('congestion_mae')} "

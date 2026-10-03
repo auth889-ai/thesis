@@ -21,12 +21,12 @@ export type NavItem = {path: string; label: string; icon: string; title: string;
 
 /** The app, in the order of the sidebar. The photographs are streets of the world, not one city. */
 export const APP_NAV: NavItem[] = [
+  {path: "/city", label: "City", icon: "▦", title: "Who sees the jam first?", eyebrow: "Road traffic, forecast and checked", hint: "Every measured road now and 15, 30, 60 minutes ahead from models reproduced from their papers; which roads are about to tip; when to leave to arrive on time at 90 %.", photo: "shibuya", cta: {label: "How good is each model? →", to: "/lab/models"}},
+  {path: "/map", label: "Map", icon: "◈", title: "When should you leave?", eyebrow: "Plan your route", hint: "Traffic now, traffic at departure, the best route, the rail option, and the latest reliable time to leave.", photo: "interchange", cta: {label: "See the city →", to: "/city"}},
   {path: "/today", label: "Today", icon: "⌂", title: "Make my day actually work.", eyebrow: "LIFE OS", hint: "Your calendar, tasks and the roads, checked together: what is on, when to leave, what is at risk, and what to do about it.", photo: "tokyo", cta: {label: "Plan a trip →", to: "/map"}},
   {path: "/plan", label: "Plan", icon: "▤", title: "A smoother day, your way.", eyebrow: "Your day, optimised", hint: "The day as one timeline with the travel between its commitments, the best times to leave, and the changes that keep it on track.", photo: "newyork", cta: {label: "Ask the assistant →", to: "/messages"}},
   {path: "/goals", label: "Goals", icon: "◎", title: "Turn what matters into a plan you can follow.", eyebrow: "Your goals", hint: "Progress, the next action, what is at risk, and what each goal created.", photo: "jakarta", cta: {label: "New goal →", to: "/messages"}},
   {path: "/messages", label: "Messages", icon: "✉", title: "Say what you need.", eyebrow: "Your assistant", hint: "It reads your goal, proposes its steps, waits for you, asks before anything it cannot undo, and logs every step.", photo: "nairobi", cta: {label: "See your goals →", to: "/goals"}},
-  {path: "/map", label: "Map", icon: "◈", title: "When should you leave?", eyebrow: "Plan your route", hint: "Traffic now, traffic at departure, the best route, the rail option, and the latest reliable time to leave.", photo: "interchange", cta: {label: "See the city →", to: "/city"}},
-  {path: "/city", label: "City", icon: "▦", title: "The city at a glance.", eyebrow: "City intelligence", hint: "Every measured road at now, +15, +30 and +60 minutes, from a model validated on the city's own data.", photo: "shibuya", cta: {label: "Plan around it →", to: "/map"}},
   {path: "/settings", label: "Settings", icon: "⚙", title: "Your profile, your city.", eyebrow: "Settings", hint: "Who you are and where you live, what the assistant remembers, what it may do, linked calendars, and the export or erasure of everything.", photo: "lagos", cta: {label: "Back to today →", to: "/today"}},
 ];
 export const SECONDARY: NavItem[] = [
@@ -46,7 +46,7 @@ const moved: [string, string][] = [["mobility", "/map"], ["forecast", "/city"], 
 
 export const router = createBrowserRouter([
   {path: "/", element: <AppShell />, children: [
-    {index: true, element: <Navigate to="/today" replace />},
+    {index: true, element: <Navigate to="/city" replace />},
     {path: "today", element: <TodayPage />},
     {path: "plan", element: <PlanPage />},
     {path: "goals", element: <GoalsPage />},
@@ -66,5 +66,5 @@ export const router = createBrowserRouter([
     {path: "references", element: <ReferencesPage />},
     {path: "system", element: <SystemPage />},
   ]},
-  {path: "*", element: <Navigate to="/today" replace />},
+  {path: "*", element: <Navigate to="/city" replace />},
 ]);

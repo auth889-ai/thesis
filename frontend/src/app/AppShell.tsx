@@ -8,7 +8,7 @@ import {ErrorBoundary} from "./ErrorBoundary";
 import {Hero} from "./Hero";
 import {APP_NAV, SECONDARY} from "./routes";
 
-const TOP = ["/today", "/plan", "/city"];
+const TOP = ["/city", "/map", "/today"];
 
 /** The app: a sidebar of pages, a top bar with the three main tabs and the live chip, a hero band on every page, then the page. */
 export function AppShell() {

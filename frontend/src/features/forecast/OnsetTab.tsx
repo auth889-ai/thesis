@@ -5,8 +5,8 @@ import {api} from "@/lib/api";
 import {IntervalsTable} from "./IntervalsTable";
 import {modelName} from "./model";
 
-type Row = {model: string; mae_15: number | null; congestion_mae_15: number | null; congestion_f1_15: number | null; mae_60: number | null; onset_detection_rate: number | null; mean_lead_min: number | null};
-type Run = {dataset: string; generated_utc: string; nodes: number; protocol: Record<string, any>; rows: Row[]; source: string; regenerate: string};
+type Row = {model: string; n_seeds?: number; mae_15_std?: number | null; congestion_mae_15_std?: number | null; onset_detection_rate_std?: number | null; mae_15: number | null; congestion_mae_15: number | null; congestion_f1_15: number | null; mae_60: number | null; onset_detection_rate: number | null; mean_lead_min: number | null};
+type Run = {dataset: string; generated_utc: string; nodes: number; seeds?: number[]; protocol: Record<string, any>; rows: Row[]; source: string; regenerate: string};
 
 const NAME: Record<string, string> = {chronos: "Chronos-Bolt", chronos2: "Chronos-2", chronos2_mv: "Chronos-2 (multivariate)", timesfm: "TimesFM 2.5", xgboost: "XGBoost", random_forest: "Random forest"};
 const name = (k: string) => NAME[k] ?? modelName(k);
@@ -26,7 +26,7 @@ export function OnsetTab({datasetName}: {datasetName: string}) {
     <div className="stack">
       <div className="row" style={{gap: 8, flexWrap: "wrap"}}>
         <Pill tone="info">{run.nodes} roads</Pill><Pill tone="info">{p.windows} consecutive test windows</Pill><Pill tone="info">context {p.context_steps} steps</Pill>
-        <Pill tone="neutral">seed {p.seed}</Pill><Pill tone="neutral">generated {new Date(run.generated_utc).toLocaleDateString()}</Pill>
+        <Pill tone="neutral">{run.seeds && run.seeds.length > 1 ? `${run.seeds.length} seeds (${run.seeds.join(", ")}), mean ± std` : `seed ${p.seed}`}</Pill><Pill tone="neutral">generated {new Date(run.generated_utc).toLocaleDateString()}</Pill>
       </div>
       <p>
         Every model sees the same windows, the same context and the same horizons. Aggregate error hides the regime that matters: <b>congestion</b> is below {p.congestion_threshold}, and an <b>onset</b> is the first congested window of a run. Sensor outages are excluded from every metric.
@@ -35,8 +35,8 @@ export function OnsetTab({datasetName}: {datasetName: string}) {
       <Table
         head={["Model", "MAE @15 min", "MAE @15 in congestion", "Congestion F1 @15", "MAE @60", "Onsets detected", "Mean lead"]}
         rows={rows.map((r) => [
-          <b key="m">{name(r.model)}</b>, f(r.mae_15), <b key="c">{f(r.congestion_mae_15)}</b>, f(r.congestion_f1_15, 3), f(r.mae_60),
-          <Pill key="d" tone={(r.onset_detection_rate ?? 0) >= 0.5 ? "ok" : (r.onset_detection_rate ?? 0) >= 0.25 ? "warn" : "bad"}>{pct(r.onset_detection_rate)}</Pill>,
+          <b key="m">{name(r.model)}</b>, <>{f(r.mae_15)}{r.mae_15_std ? <small className="muted"> ±{f(r.mae_15_std)}</small> : null}</>, <b key="c">{f(r.congestion_mae_15)}{r.congestion_mae_15_std ? <small className="muted"> ±{f(r.congestion_mae_15_std)}</small> : null}</b>, f(r.congestion_f1_15, 3), f(r.mae_60),
+          <Pill key="d" tone={(r.onset_detection_rate ?? 0) >= 0.5 ? "ok" : (r.onset_detection_rate ?? 0) >= 0.25 ? "warn" : "bad"}>{pct(r.onset_detection_rate)}{r.onset_detection_rate_std ? ` ±${Math.round(r.onset_detection_rate_std * 100)}` : ""}</Pill>,
           r.mean_lead_min == null ? "–" : `${f(r.mean_lead_min, 0)} min`,
         ])}
       />
