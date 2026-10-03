@@ -62,9 +62,11 @@ if config.FRONTEND.exists():
         app.mount("/media", StaticFiles(directory=config.MEDIA), name="media")
     app.mount("/static", StaticFiles(directory=config.FRONTEND), name="static")          # kept for older links
 
+    NO_CACHE = {"Cache-Control": "no-cache, no-store, must-revalidate"}      # index.html names the hashed bundle: a cached copy shows yesterday's app
+
     @app.get("/", include_in_schema=False)
     def index():
-        return FileResponse(config.FRONTEND / "index.html")
+        return FileResponse(config.FRONTEND / "index.html", headers=NO_CACHE)
 
     class SPAStaticFiles(StaticFiles):
         """The web app routes in the browser (/today, /mobility, ...): an unknown path without a file
@@ -74,7 +76,9 @@ if config.FRONTEND.exists():
                 return await super().get_response(path, scope)
             except HTTPException as exc:
                 if exc.status_code == 404 and "." not in path.rsplit("/", 1)[-1] and not path.startswith("api/"):
-                    return await super().get_response("index.html", scope)
+                    r = await super().get_response("index.html", scope)
+                    r.headers.update(NO_CACHE)
+                    return r
                 raise
 
     app.mount("/", SPAStaticFiles(directory=config.FRONTEND), name="web")                 # the app's own relative assets (last: API routes win)

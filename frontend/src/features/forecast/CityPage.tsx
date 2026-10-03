@@ -19,7 +19,7 @@ export function CityPage() {
   if (!cities.data || !datasets.data) return <Loading what="loading the cities" />;
   const choices: CityChoice[] = [
     ...cities.data.cities.filter((c) => !c.dataset).map((c) => ({key: `city:${c.id}`, label: c.label, kind: "corridors" as const, id: c.id, center: c.id === "dhaka" ? DHAKA : DHAKA})),
-    ...datasets.data.filter((d) => d.scientific || d.id.startsWith("user:")).map((d) => ({key: `ds:${d.id}`, label: `${d.name.split(" —")[0]} (sensor network)`, kind: "sensors" as const, id: d.id, center: DHAKA})),
+    ...datasets.data.filter((d) => d.scientific).map((d) => ({key: `ds:${d.id}`, label: `${d.name.split(" —")[0]} (sensor network)`, kind: "sensors" as const, id: d.id, center: DHAKA})),   // uploads are managed in the Lab
   ];
   const current = choices.find((c) => c.key === key) ?? choices[0];
   if (!current) return <div className="note warn">No city is available yet.</div>;
