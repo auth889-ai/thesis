@@ -64,8 +64,12 @@ def networking_conditions():
 def health():
     """Liveness plus data freshness — a dashboard must say when its data is stale."""
     h = readers.recorder_health()
+    from app.data.live_providers.observatory import observatory
+    live = observatory.liveness()
+    cities = {k: v for k, v in live.items() if not k.startswith("_")}
     return {"status": "ok", "recorder_healthy": h.healthy, "last_tick_utc": h.last_tick_utc,
-            "age_minutes": h.age_minutes}
+            "age_minutes": h.age_minutes,
+            "live_sampling": cities, "live_sampling_healthy": bool(cities) and all(v["healthy"] for v in cities.values())}
 
 
 def _pulse() -> dict:

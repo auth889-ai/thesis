@@ -277,3 +277,32 @@ def test_v2x_closed_loop_endpoint_lists_runs_and_reroute_examples(client, tmp_pa
     r = client.get("/api/experiment/v2x_closed_loop?run=la_x_peak_ideal_p30_cfgz").json()
     assert r["run"]["reroute_examples"][0]["vehicle_id"] == "veh1" and r["run"]["reroute_examples"][0]["outcome"] == "APPLIED"
     assert client.get("/api/experiment/v2x_closed_loop?run=nope").status_code == 404
+
+
+def test_health_reports_live_sampling_age_not_just_process_liveness(client, tmp_path, monkeypatch):
+    """A running process is not live data: health must say when each city last got a valued sample, and the
+    overall flag must be false when the newest valued sample is old (the 2026-09 month of nulls)."""
+    import json, sqlite3, time
+    from app.data.live_providers import observatory as obs
+    db = tmp_path / "obs.sqlite"
+    c = sqlite3.connect(db)
+    c.execute("create table samples (city text, t real, utc text, nodes text, values_json text, primary key (city, t))")
+    c.execute("create table watched (city text primary key, since text)")
+    c.execute("insert into watched values ('dhaka', 'x')")
+    old = time.time() - 3600
+    c.execute("insert into samples values ('dhaka', ?, 'u', '[\"a\"]', ?)", (old, json.dumps([3.2])))
+    c.execute("insert into samples values ('dhaka', ?, 'u', '[\"a\"]', ?)", (time.time(), json.dumps([None])))
+    c.commit(); c.close()
+    monkeypatch.setattr(obs, "DB", db)
+    h = client.get("/api/health").json()
+    assert h["live_sampling"]["dhaka"]["healthy"] is False and h["live_sampling"]["dhaka"]["age_minutes"] >= 59
+    assert h["live_sampling_healthy"] is False
+
+
+def test_observatory_samples_through_the_selected_provider_not_google_by_name():
+    """The sampler must ask `live.provider()` (Amazon Location when configured); a month of null samples came
+    from a hard import of the Google provider after that key stopped working."""
+    import inspect
+    from app.data.live_providers import observatory as obs
+    src = inspect.getsource(obs.Observatory.sample)
+    assert "live import provider" in src and "google_routes import service" not in src

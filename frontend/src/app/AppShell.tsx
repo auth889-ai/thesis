@@ -32,7 +32,7 @@ export function AppShell() {
         <div className="content">
           <header className="topbar slim">
             <nav className="toptabs">{TOP.map((t) => { const n = APP_NAV.find((x) => x.path === t)!; return <NavLink key={t} to={t} className={({isActive}) => (isActive ? "on" : "")}>{n.label}</NavLink>; })}</nav>
-            <div className={`status ${health.isError ? "bad" : health.data ? "ok" : ""}`}><span className={`dot ${health.isError ? "bad" : health.data ? "ok" : ""}`} />{health.isError ? "Offline" : health.data ? "Live" : "Connecting…"}</div>
+            <div className={`status ${health.isError ? "bad" : health.data ? ((health.data as any).live_sampling_healthy ? "ok" : "warn") : ""}`} title={health.data ? Object.entries(((health.data as any).live_sampling ?? {}) as Record<string, any>).map(([c, v]) => `${c}: last live sample ${v.age_minutes == null ? "never" : `${v.age_minutes} min ago`}`).join(" · ") : ""}><span className={`dot ${health.isError ? "bad" : health.data ? ((health.data as any).live_sampling_healthy ? "ok" : "warn") : ""}`} />{health.isError ? "Offline" : health.data ? ((health.data as any).live_sampling_healthy ? "Live" : "Live data stale") : "Connecting…"}</div>
           </header>
           <Hero page={current} chip={chip} />
           <main className="page"><ErrorBoundary><Outlet /></ErrorBoundary></main>

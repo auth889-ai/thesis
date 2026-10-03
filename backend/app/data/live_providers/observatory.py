@@ -146,7 +146,10 @@ class Observatory:
     # ------------------------------------------------------------- sampling
     def sample(self, city_id: str = "dhaka") -> dict:
         """Take one live reading and append DERIVED speeds. Gaps stay NaN, never interpolated."""
-        from app.data.live_providers.google_routes import service
+        # the SELECTED provider (Amazon Location when configured, the Google fallback otherwise), never Google by
+        # name: this line pointed at google_routes and wrote a month of null samples after that key stopped working
+        from app.data.live_providers.live import provider
+        service = provider()
         snap = service.corridors_for(city_id)
         ids = [c["id"] for c in snap.get("corridors", [])] if city_id != "dhaka" else [c["id"] for c in _corridors.CORRIDORS]
         if not ids:
@@ -176,6 +179,31 @@ class Observatory:
             rows = list(self._rows.get(city_id, []))
             nodes = list(self._nodes.get(city_id, []))
         return rows, nodes
+
+    def liveness(self, city_id: str | None = None) -> dict:
+        """When each watched city last got a sample that carried a value, and whether that is recent.
+
+        A sampling thread that dies, or a provider that stops answering, keeps writing rows of nulls (or nothing):
+        the dashboard said "Live" for a month on exactly that in 2026-09. Healthy means a valued sample within
+        three intervals."""
+        out = {}
+        try:
+            c = sqlite3.connect(DB, timeout=10)
+            cities = [city_id] if city_id else [r[0] for r in c.execute("select city from watched")]
+            now = time.time()
+            for city in cities:
+                last = None
+                for t, v in c.execute("select t, values_json from samples where city=? order by t desc limit 400", (city,)):
+                    if any(x is not None for x in json.loads(v)):
+                        last = t
+                        break
+                age = None if last is None else round((now - last) / 60, 1)
+                out[city] = {"last_live_sample_utc": datetime.fromtimestamp(last, timezone.utc).isoformat() if last else None,
+                             "age_minutes": age, "healthy": age is not None and age <= 3 * self.interval_s / 60}
+            c.close()
+        except sqlite3.Error as ex:                                   # the file may not exist yet
+            out["_error"] = str(ex)
+        return out
 
     def readiness(self, city_id: str = "dhaka") -> dict:
         rows, nodes = self.series(city_id)
