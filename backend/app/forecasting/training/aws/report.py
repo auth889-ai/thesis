@@ -17,7 +17,9 @@ PUB = {("GWNet", "METR-LA", 15): (2.69, 6.90), ("GWNet", "METR-LA", 30): (3.07, 
        ("MegaCRN", "PEMS-BAY", 15): (1.28, 2.67), ("MegaCRN", "PEMS-BAY", 30): (1.60, 3.57), ("MegaCRN", "PEMS-BAY", 60): (1.88, 4.41),
        # D2STGNN: Table 3 of the paper (figures/TheTable.png in GestaltCogTeam/D2STGNN), horizons 3/6/12
        ("D2STGNN", "METR-LA", 15): (2.56, 6.48), ("D2STGNN", "METR-LA", 30): (2.90, 7.78), ("D2STGNN", "METR-LA", 60): (3.35, 9.40),
-       ("D2STGNN", "PEMS-BAY", 15): (1.24, 2.58), ("D2STGNN", "PEMS-BAY", 30): (1.55, 3.49), ("D2STGNN", "PEMS-BAY", 60): (1.85, 4.37)}
+       ("D2STGNN", "PEMS-BAY", 15): (1.24, 2.58), ("D2STGNN", "PEMS-BAY", 30): (1.55, 3.49), ("D2STGNN", "PEMS-BAY", 60): (1.85, 4.37),
+       # STD-MAE: Table 2 of the paper (results/results.png in Jimmy-7664/STD-MAE); PEMS flow papers report the AVERAGE over the 12 steps
+       ("STDMAE", "PEMS04", "avg"): (17.80, 11.97)}
 _LINE = re.compile(r"horizon\s+(\d+),\s*Test MAE:\s*([\d.]+),\s*Test MAPE:\s*([\d.]+),\s*Test RMSE:\s*([\d.]+)")
 
 
@@ -34,6 +36,9 @@ def parse_logs(dst: Path) -> list[dict]:
         for h, v in sorted(best.items()):
             v["mape"] = v["mape"] * 100 if v["mape"] < 1.5 else v["mape"]   # BasicTS logs MAPE as a FRACTION; report percent, as the papers do
             rows.append({"model": model, "dataset": dataset, "horizon_min": h * 5, **v})
+        if len(best) == 12:                                                   # every step evaluated: add the 12-step average the PEMS papers report
+            rows.append({"model": model, "dataset": dataset, "horizon_min": "avg",
+                         **{k: round(sum(best[h][k] for h in best) / 12, 4) for k in ("mae", "mape", "rmse")}})
     return rows
 
 

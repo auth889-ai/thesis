@@ -49,12 +49,19 @@ for D in $DATASETS; do
   cp /home/ec2-user/in/$D/* datasets/raw_data/$D/ 2>/dev/null || true
   $PY scripts/data_preparation/$D/generate_training_data.py || echo "PREP FAILED $D"
 done
+# model-specific extras: STD-MAE needs two packages and the authors' released mask checkpoints (uploaded as in/mask_save)
+if echo " $MODELS " | grep -q " STDMAE "; then
+  $PY -m pip install -q positional_encodings==6.0.1 timm==0.6.7 || echo "STDMAE DEPS FAILED"
+  mkdir -p baselines/STDMAE/mask_save && cp /home/ec2-user/in/mask_save/*.pt baselines/STDMAE/mask_save/ 2>/dev/null || echo "NO MASK CHECKPOINTS"
+fi
 for D in $DATASETS; do for M in $MODELS; do
   CFG=baselines/$M/$D.py
+  [ -f "$CFG" ] || CFG=baselines/$M/${M}_${D}.py        # some baselines name their configs <MODEL>_<DATASET>.py (STDMAE)
   [ -f "$CFG" ] || { echo "no config $CFG"; continue; }
   sed -i "s/^NUM_EPOCHS = .*/NUM_EPOCHS = $EPOCHS/" $CFG || true
   # evaluate the 5-minute horizon as well (official default is [3, 6, 12] = 15/30/60 min)
-  sed -i "s/^CFG.EVAL.HORIZONS = .*/CFG.EVAL.HORIZONS = [1, 3, 6, 12]/" $CFG || true
+  # evaluate every horizon when the official config already does (PEMS flow papers report the 12-step average)
+  grep -q "CFG.EVAL.HORIZONS = \[1, 2, 3" $CFG || sed -i "s/^CFG.EVAL.HORIZONS = .*/CFG.EVAL.HORIZONS = [1, 3, 6, 12]/" $CFG || true
   # DCRNN's official config calls random.randint with float bounds (-1e6, 1e6); Python >= 3.10 raises
   # TypeError. Same call with integer bounds; the value is a throwaway seed and nothing else changes.
   sed -i "s/random.randint(-1e6, 1e6)/random.randint(-1000000, 1000000)/" $CFG || true

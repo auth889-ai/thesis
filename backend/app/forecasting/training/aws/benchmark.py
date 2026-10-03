@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import time
+from pathlib import Path
 
 from app.paths import REPO
 
@@ -39,6 +40,15 @@ def _upload_inputs(a, job: str) -> int:
             return 3
         print(f"[upload] {src} -> {base}/{d}/")
         s3("sync", str(src), f"{base}/{d}/")
+    if "STDMAE" in a.models.split(","):
+        masks = Path.home() / ".dhakaflow/upstream/STD-MAE_mask_save"
+        pts = sorted(masks.glob("*.pt")) if masks.exists() else []
+        if not pts:
+            print(f"missing the authors' mask checkpoints in {masks} (Jimmy-7664/STD-MAE/mask_save)")
+            return 3
+        for f in pts:
+            s3("cp", str(f), f"{base}/mask_save/{f.name}")
+        print(f"[upload] {len(pts)} STD-MAE mask checkpoint(s) -> {base}/mask_save/")
     for key in ("DONE", "logs/"):                      # a watcher must not read a stale DONE and report early
         s3("rm", f"{base}/{key}", *(["--recursive"] if key.endswith("/") else []), check=False)
     if a.opencity:
