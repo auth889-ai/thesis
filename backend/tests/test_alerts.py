@@ -96,3 +96,26 @@ def test_departure_over_http_on_the_served_model(client):
     assert j["legs"] and j["travel_min_worst"] >= j["travel_min"] and "advice" in j
     assert client.get("/api/protocol-b/departure?src=S0&dst=S9999&as_of=20000").status_code in (404, 422)
     assert client.get("/api/protocol-b/sensors").json()["sensors"][0]["node"] == "S0"
+
+
+def test_imputation_protocol_hides_a_quarter_of_observed_points_and_scores_only_those():
+    import numpy as np
+    from app.forecasting.evaluation import imputation as im
+    w = np.random.default_rng(0).uniform(20, 70, (50, 24, 7)).astype("float32")
+    w[:, 3, 2] = np.nan                                                       # an outage column
+    x, hidden = im.mask_points(w, 1)
+    assert 0.22 < hidden.sum() / np.isfinite(w).sum() < 0.28 and not hidden[:, 3, 2].any()
+    assert np.isnan(x[hidden]).all() and np.isfinite(x[np.isfinite(w) & ~hidden]).all()
+    s = im.score(im.baseline_last(x), w, hidden)
+    assert s["points"] == int(hidden.sum()) and s["mae"] > 0
+    perfect = im.score(w, w, hidden)
+    assert perfect["mae"] == 0.0
+    lin = im.baseline_linear(x)
+    assert np.isfinite(lin[hidden]).all()
+
+
+def test_imputation_endpoint_serves_the_run_or_says_how_to_make_it(client):
+    r = client.get("/api/protocol-b/imputation")
+    assert r.status_code in (200, 503)
+    if r.status_code == 200:
+        j = r.json(); assert "ImputeFormer" in j["results"] and j["published_point_missing_mae"]["ImputeFormer"] == 1.80

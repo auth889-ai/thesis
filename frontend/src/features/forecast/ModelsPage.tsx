@@ -7,13 +7,14 @@ import {useNetwork, useRegistry, useRoad, useTrained} from "./hooks";
 import {ModelStatus} from "./ModelStatus";
 import {ModelsTab} from "./ModelsTab";
 import {OnsetTab} from "./OnsetTab";
+import {SparseTab} from "./SparseTab";
 import {TrainTab} from "./TrainTab";
 import {DatasetSelect, useDataset} from "./useDataset";
 import {ValidationTab} from "./ValidationTab";
 import "./forecast.css";
 
-type Tab = "models" | "onset" | "validation" | "train" | "data";
-const TABS: {key: Tab; label: string}[] = [{key: "models", label: "Models"}, {key: "onset", label: "Onset"}, {key: "validation", label: "Validation"}, {key: "train", label: "Train"}, {key: "data", label: "Data"}];
+type Tab = "models" | "onset" | "sparse" | "validation" | "train" | "data";
+const TABS: {key: Tab; label: string}[] = [{key: "models", label: "Models"}, {key: "onset", label: "Onset"}, {key: "sparse", label: "Sparse"}, {key: "validation", label: "Validation"}, {key: "train", label: "Train"}, {key: "data", label: "Data"}];
 
 /** LAB · MODELS: the model behind the city map with its verified facts, every model compared, held-out validation, training and upload. */
 export function ModelsPage() {
@@ -33,6 +34,7 @@ export function ModelsPage() {
       <Card title="The model behind the city map" sub="checkpoint, hashes and the fresh inference of the latest request">{net.data ? <ModelStatus net={net.data} registry={registry.data} /> : <Loading />}</Card>
       {tab === "models" && <ModelsTab ds={ds} road={road.data ?? null} asOf={asOf} />}
       {tab === "onset" && <OnsetTab datasetName={ds.id} />}
+      {tab === "sparse" && <SparseTab />}
       {tab === "validation" && <ValidationTab ds={ds} net={net.data ?? null} registry={registry.data} trainedCard={trainedCard} />}
       {tab === "train" && <TrainTab ds={ds} onTrained={refresh} />}
       {tab === "data" && <DataTab ds={ds} onUploaded={(id) => { refresh(); setDsId(id); setTab("models"); }} />}

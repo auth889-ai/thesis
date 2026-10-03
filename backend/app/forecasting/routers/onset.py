@@ -82,3 +82,15 @@ def sensors():
     from app.forecasting.operations import departure as dep
     _, _, locs = dep.sensor_graph()
     return {"dataset": "METR-LA", "sensors": locs}
+
+
+IMPUTATION = REPO / "results/forecasting/imputation.json"
+
+
+@router.get("/api/protocol-b/imputation", tags=["predict"])
+def imputation():
+    """Sparse sensing: the imputation run (25 % point missing, scored on hidden points) with its published counterparts."""
+    if not IMPUTATION.exists():
+        raise HTTPException(503, "no imputation run yet: USE_TF=0 python -m app.forecasting.evaluation.imputation")
+    return {**json.loads(IMPUTATION.read_text()), "source": "results/forecasting/imputation.json",
+            "regenerate": "USE_TF=0 python -m app.forecasting.evaluation.imputation --epochs <n>"}
