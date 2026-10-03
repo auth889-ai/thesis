@@ -25,14 +25,14 @@ on AWS GPUs; the app runs on AWS (Bedrock, Location, S3, EC2, SNS, Cognito, ECS)
 
 ## 2. All features
 
-| # | Feature | Pillar |
-|---|---|---|
+| # | Feature | Pillar | State 2026-10-03 |
+|---|---|---|---|
 | F1 | Live map of any city, speed per road, data age shown | 6 |
-| F2 | Forecast map 15/30/60 min ahead, time slider, model picker | 3 |
-| F3 | Leaderboard: each paper, our number vs published, gap % | 3 |
-| F4 | Onset page: which model sees the jam first, lead minutes | 4 |
-| F5 | Calibrated p10/p50/p90 band with measured coverage | 3 |
-| F6 | Departure advice with a probability | 6 |
+| F2 | Forecast map 15/30/60 min ahead, time slider, model picker | 3 | exists |
+| F3 | Leaderboard: each paper, our number vs published, gap % | 3 | exists |
+| F4 | Onset page: which model sees the jam first, lead minutes | 4 | exists |
+| F5 | Calibrated p10/p50/p90 band with measured coverage | 3 | exists |
+| F6 | Departure advice with a probability | 6 | exists (sensor corridor) |
 | F7 | Large-scale mode, thousands of sensors | 3 |
 | F8 | Zero-shot: upload any city's sensor CSV, forecast without training | 3 |
 | F9 | Cross-city page: LA models on the Dhaka corridor, honest gap | 3 |
@@ -40,9 +40,9 @@ on AWS GPUs; the app runs on AWS (Bedrock, Location, S3, EC2, SNS, Cognito, ECS)
 | F11 | Evidence page: checkpoint hashes, logs, protocol check | all |
 | F12 | Twin replay: vehicle-hours with and without the advice | 7 |
 | F13 | Assistant and Alexa on the same forecast | 6 |
-| F14 | Regime-aware alerts on watched roads | 4 |
+| F14 | Regime-aware alerts on watched roads | 4 | exists |
 | F15 | Camera page: counts per class per minute from a feed or video | 1 |
-| F16 | Sparse-sensing page: switch sensors off, watch the estimate, error curve | 2 |
+| F16 | Sparse-sensing page: switch sensors off, watch the estimate, error curve | 2 | exists (imputation) |
 | F17 | Incident page: anomaly score, location, severity, detection delay | 4 |
 | F18 | Signal page: controllers compared on the same simulated day | 5 |
 | F19 | Probe page: a GPS trace map-matched into segment speeds | 6 |
