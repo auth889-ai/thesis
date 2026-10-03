@@ -173,6 +173,9 @@ def test_protocol_b_scores_the_trained_checkpoints_with_the_official_architectur
     assert "the harness data file and the evaluation data file disagree" in src   # the timeline check stays
     assert '"checkpoints"' in inspect.getsource(evaluate_models.stage)
     assert "checkpoints_for(dataset)" in inspect.getsource(evaluate_models.evaluate)
+    from app.forecasting.evaluation.protocol_b import baselines, data, records, run, scoring, settings, stages
+    for mod in (settings, data, baselines, scoring, stages, records, run):
+        assert len(inspect.getsource(mod).splitlines()) < 200, mod.__name__       # one responsibility per file
     for ck in checkpoint_stage.checkpoints_for("METR-LA"):
         assert "best_val" in ck["path"].name and ck["dataset_dir"] == "METR-LA"
 
@@ -207,8 +210,10 @@ def test_protocol_b_merge_refuses_a_stage_scored_on_different_windows(tmp_path, 
     same windows; otherwise the comparison would silently mix test moments."""
     import numpy as np
     from app.forecasting.evaluation import evaluate_models as em
-    monkeypatch.setattr(em, "OUT", tmp_path)
-    monkeypatch.setattr(em, "load", lambda ds: np.ones((1000, 4), dtype="float32"))
+    from app.forecasting.evaluation.protocol_b import records
+    monkeypatch.setattr(records, "OUT", tmp_path)
+    monkeypatch.setattr(records, "RECORDS", tmp_path / "model_comparison.json")
+    monkeypatch.setattr(records, "load", lambda ds: np.ones((1000, 4), dtype="float32"))
     (tmp_path / "protocol_b").mkdir()
     np.savez_compressed(tmp_path / "protocol_b/X_val_w3_n4_s1.npz", truth=np.ones((3, 12, 4)), starts=np.array([10, 11, 12]), threshold=np.ones(4))
     bad = tmp_path / "bad.npz"
