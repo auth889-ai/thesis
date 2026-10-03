@@ -43,8 +43,9 @@ The core hypothesis: **foundation models win the aggregate protocol and lose the
 conformal calibration repairs the interval without giving back the aggregate gain.** Hence two protocols that share
 the same models, data and horizons but differ in which windows are scored, and a rule that A and B are never averaged.
 
-Models run so far: Graph WaveNet, STID, STAEformer (official BasicTS configs, trained on AWS GPUs), OpenCity-plus
-(released weights, authors' commands), Chronos-Bolt (released weights). Nothing is re-implemented.
+Models run so far: DCRNN, Graph WaveNet, STID, STAEformer, MegaCRN (official BasicTS configs, trained on AWS GPUs),
+OpenCity-plus (released weights, authors' commands), Chronos-Bolt, Chronos-2, TimesFM 2.5 (released weights). Nothing is
+re-implemented.
 
 ## Findings
 
@@ -55,6 +56,8 @@ rows of the same model on the same dataset; Protocol B numbers have no published
 
 | Model | Dataset | Ours 15 / 30 / 60 min | Published | Gap |
 |---|---|---|---|---|
+| DCRNN | METR-LA | 2.67 / 3.08 / 3.57 | 2.77 / 3.15 / 3.60 | -3.5 / -2.3 / -0.8 % |
+| MegaCRN | METR-LA | 2.63 / 3.02 / 3.48 | 2.52 / 2.93 / 3.38 | +4.4 / +3.0 / +2.8 % |
 | Graph WaveNet | METR-LA | 2.72 / 3.11 / 3.59 | 2.69 / 3.07 / 3.53 | +1.1 / +1.3 / +1.8 % |
 | Graph WaveNet | PEMS-BAY | 1.31 / 1.64 / 1.95 | 1.30 / 1.63 / 1.95 | +0.6 / +0.5 / −0.2 % |
 | STID | METR-LA | 2.82 / 3.21 / 3.59 | 2.82 / 3.19 / 3.55 | 0.0 / +0.7 / +1.2 % |
@@ -63,6 +66,8 @@ rows of the same model on the same dataset; Protocol B numbers have no published
 | OpenCity-plus zero-shot | PEMS07M (held out of its pre-training) | 4.50 (12-step) | 4.50 | 0.0 % |
 | OpenCity-plus zero-shot | TrafficSH (held out) | 0.55 | 0.55 | 0.0 % |
 
+MegaCRN sits 4.4 % above its authors' README at 15 min and within 3 % at 30 and 60; the authors' number comes from their own
+training code, ours from the BasicTS fair-comparison config, which is the comparison the harness paper reports.
 Protocol check: our historical-average floor on METR-LA is 4.19 MAE against the DCRNN paper's 4.16 (0.7 %), so the
 split, masking and metric are the papers' own. Every row above was trained or evaluated on AWS (g4dn / g5, Tesla T4)
 with the official config unmodified except epochs and horizons; checkpoint SHA-256 and the log path sit beside each
@@ -77,6 +82,8 @@ window of a congested run. Sensor outages (0.0) are excluded from every metric.
 
 | Model | MAE@15 all | MAE@15 congested | Onset detection rate | Mean lead (min) |
 |---|---|---|---|---|
+| MegaCRN (trained) | 2.83 | 5.19 | 0.71 | 49.1 |
+| DCRNN (trained) | 2.92 | 5.54 | 0.69 | 50.6 |
 | STAEformer (trained) | 2.93 | 5.49 | 0.66 | 50.8 |
 | Graph WaveNet (trained) | 3.04 | 5.88 | 0.58 | 48.7 |
 | STID (trained) | 3.13 | 6.61 | 0.52 | 48.9 |
@@ -89,8 +96,8 @@ window of a congested run. Sensor outages (0.0) are excluded from every metric.
 | Historical average | 5.59 | 19.68 | 0.14 | 48.1 |
 
 Reading: on the aggregate column the trained models are within 0.2 mph of each other; in congestion the spread opens
-to 1.1 mph and against the zero-shot models to 1.7–2.5 mph. STAEformer flags two onsets in three, Chronos-2 and
-Chronos-Bolt one in three, persistence almost none. Chronos-2's multivariate mode (all 80 roads as one input) beats its
+to 1.1 mph and against the zero-shot models to 1.7–2.5 mph. MegaCRN and DCRNN flag about seven onsets in ten, STAEformer
+two in three, Chronos-2 and Chronos-Bolt one in three, persistence almost none. Chronos-2's multivariate mode (all 80 roads as one input) beats its
 univariate mode and persistence on every column, and still trails every trained model. Chronos-Bolt does not beat persistence on aggregate MAE at 15 minutes (a negative
 result, kept) yet detects ten times more onsets than persistence. Neither protocol alone tells the story. DCRNN joins
 this table when its reproduction lands; the page `/lab/models` → Onset serves it from the run file.
@@ -102,6 +109,10 @@ prediction time; one per regime the model itself predicts at the horizon. Covera
 
 | Model | Calibrator | All | Free flow | Congested | Transition into congestion |
 |---|---|---|---|---|---|
+| MegaCRN | global | 0.89 | 0.92 | 0.78 | 0.45 |
+| MegaCRN | predicted-regime | 0.91 | 0.91 | 0.91 | 0.55 |
+| DCRNN | global | 0.89 | 0.92 | 0.77 | 0.42 |
+| DCRNN | predicted-regime | 0.91 | 0.91 | 0.90 | 0.52 |
 | STAEformer | global | 0.89 | 0.91 | 0.77 | 0.39 |
 | STAEformer | regime-aware | 0.91 | 0.91 | 0.88 | 0.33 |
 | STAEformer | predicted-regime | 0.90 | 0.90 | 0.90 | 0.50 |
@@ -263,8 +274,9 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 
 - [x] Protocol A: Graph WaveNet, STID, STAEformer within 2 %; OpenCity exact on held-out cities; Chronos-Bolt
 - [x] Protocol B: floors, XGBoost, Chronos-Bolt, GWNet, STID, STAEformer on the 80-node block; the Onset page
-- [ ] P1 DCRNN (official BasicTS config), training on AWS
-- [ ] P3–P7 D2STGNN, MegaCRN, STD-MAE, HimNet, BigST, PatchSTG, STGformer
+- [x] P1 DCRNN: 2.67 / 3.08 / 3.57 against 2.77 / 3.15 / 3.60, on AWS with the official config
+- [x] P4 MegaCRN: 2.63 / 3.02 / 3.48 against 2.52 / 2.93 / 3.38; best onset detector so far (71%)
+- [ ] P3 D2STGNN (training on AWS) · P5–P7 STD-MAE, HimNet, BigST, PatchSTG, STGformer
 - [x] P8a regime-aware conformal intervals (MAPIE) on every Protocol B model, three calibrators, the transition result
 - [ ] P8b departure advice from the calibrated lower bound
 - [x] P9a Chronos-2 (univariate and multivariate) and TimesFM 2.5 zero-shot under Protocol B with conformal rows

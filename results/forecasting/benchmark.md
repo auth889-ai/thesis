@@ -4,6 +4,10 @@
 
 | model | dataset | horizon | MAE | published MAE | diff | RMSE | MAPE % | published MAPE % |
 |---|---|---|---|---|---|---|---|---|
+| DCRNN | METR-LA | 5 min | 2.176 | – | – | 3.773 | 5.18 | – |
+| DCRNN | METR-LA | 15 min | 2.672 | 2.77 | -3.5 % | 5.176 | 6.86 | 7.30 |
+| DCRNN | METR-LA | 30 min | 3.078 | 3.15 | -2.3 % | 6.313 | 8.41 | 8.80 |
+| DCRNN | METR-LA | 60 min | 3.572 | 3.60 | -0.8 % | 7.558 | 10.34 | 10.50 |
 | GWNet | METR-LA | 15 min | 2.719 | 2.69 | +1.1 % | 5.183 | 7.02 | 6.90 |
 | GWNet | METR-LA | 30 min | 3.111 | 3.07 | +1.3 % | 6.225 | 8.45 | 8.37 |
 | GWNet | METR-LA | 60 min | 3.595 | 3.53 | +1.8 % | 7.423 | 10.05 | 10.01 |
@@ -11,6 +15,14 @@
 | GWNet | PEMS-BAY | 15 min | 1.308 | 1.30 | +0.6 % | 2.744 | 2.70 | 2.73 |
 | GWNet | PEMS-BAY | 30 min | 1.638 | 1.63 | +0.5 % | 3.693 | 3.63 | 3.67 |
 | GWNet | PEMS-BAY | 60 min | 1.945 | 1.95 | -0.2 % | 4.460 | 4.55 | 4.63 |
+| MegaCRN | METR-LA | 5 min | 2.141 | – | – | 3.705 | 5.08 | – |
+| MegaCRN | METR-LA | 15 min | 2.631 | 2.52 | +4.4 % | 5.049 | 6.73 | 6.44 |
+| MegaCRN | METR-LA | 30 min | 3.018 | 2.93 | +3.0 % | 6.124 | 8.23 | 7.96 |
+| MegaCRN | METR-LA | 60 min | 3.476 | 3.38 | +2.8 % | 7.298 | 10.04 | 9.72 |
+| STAEformer | METR-LA | 5 min | 2.267 | – | – | 3.970 | 5.51 | – |
+| STAEformer | METR-LA | 15 min | 2.674 | – | – | 5.167 | 6.96 | – |
+| STAEformer | METR-LA | 30 min | 2.985 | – | – | 6.068 | 8.25 | – |
+| STAEformer | METR-LA | 60 min | 3.350 | – | – | 7.063 | 9.82 | – |
 | STID | METR-LA | 15 min | 2.825 | – | – | 5.563 | 7.69 | – |
 | STID | METR-LA | 30 min | 3.214 | – | – | 6.665 | 9.55 | – |
 | STID | METR-LA | 60 min | 3.593 | – | – | 7.646 | 11.31 | – |
@@ -21,4 +33,4 @@
 
 Compare against `results/forecasting/benchmark_floors.md` (the floors these must beat) and the published numbers cited there.
 
-Regenerate: `python pipeline/forecasting/aws_train.py --launch` then `--collect`.
+Regenerate: `python -m app.forecasting.training.aws_train --launch` then `--collect`.

@@ -1,8 +1,94 @@
 {
- "generated_utc": "2026-09-02T04:56:10.152382+00:00",
- "repo_git_sha": "72b86be",
+ "generated_utc": "2026-10-03T10:27:29.244155+00:00",
+ "repo_git_sha": "2f80f8a1",
  "reality": "REAL public benchmark datasets; official upstream configs; GPU-trained",
  "runs": [
+  {
+   "model": "DCRNN",
+   "model_info": {
+    "name": "DCRNN",
+    "paper": "Li et al., ICLR 2018",
+    "repo": "https://github.com/liyaguang/DCRNN",
+    "config": "baselines/DCRNN/{dataset}.py"
+   },
+   "dataset": "METR-LA",
+   "dataset_info": {
+    "sensors": 207,
+    "bin_minutes": 5,
+    "source": "DCRNN release (Li et al., ICLR 2018)",
+    "note": "real loop detectors, Los Angeles"
+   },
+   "harness": {
+    "name": "BasicTS (legacy fair-comparison branch)",
+    "repo": "https://github.com/GestaltCogTeam/BasicTS",
+    "sha": "4c3e2d373c647667c2123e1591f2d79c229dfcc6",
+    "paper": "Shao et al., Exploring Progress in Multivariate Time Series Forecasting, TKDE 2024"
+   },
+   "config": "baselines/DCRNN/METR-LA.py",
+   "epochs": 100,
+   "epochs_completed": 100,
+   "checkpoint": "checkpoints/DCRNN/METR-LA_100_12_12/6044b43dfffab1f61defbfe8f71cf69e/DCRNN_best_val_MAE.pt",
+   "hardware": {
+    "provider": "AWS EC2",
+    "instance_type": "g4dn.xlarge",
+    "gpu": "Tesla T4",
+    "region": "us-east-1",
+    "ami": "ami-001972c501ec6b965",
+    "instance_id": "i-02f5a2a390e38dce4",
+    "launched_utc": "2026-10-03T10:21:54Z",
+    "matched_by": "dataset"
+   },
+   "mape_unit_note": "harness logs MAPE as a fraction; converted to percent here",
+   "log": "results/forecasting/aws_logs/DCRNN_METR-LA.log",
+   "metrics_by_horizon_min": {
+    "5": {
+     "mae": 2.1765,
+     "rmse": 3.7734,
+     "mape_pct": 5.18,
+     "horizon_steps": 1,
+     "horizon_minutes": 5
+    },
+    "15": {
+     "mae": 2.6722,
+     "rmse": 5.176,
+     "mape_pct": 6.859999999999999,
+     "horizon_steps": 3,
+     "horizon_minutes": 15,
+     "published_mae": 2.77,
+     "published_rmse": 5.38,
+     "published_mape_pct": 7.3,
+     "mae_diff_pct": -3.53,
+     "rmse_diff_pct": -3.79,
+     "mape_diff_pct": -6.03
+    },
+    "30": {
+     "mae": 3.0782,
+     "rmse": 6.3126,
+     "mape_pct": 8.41,
+     "horizon_steps": 6,
+     "horizon_minutes": 30,
+     "published_mae": 3.15,
+     "published_rmse": 6.45,
+     "published_mape_pct": 8.8,
+     "mae_diff_pct": -2.28,
+     "rmse_diff_pct": -2.13,
+     "mape_diff_pct": -4.43
+    },
+    "60": {
+     "mae": 3.5719,
+     "rmse": 7.558,
+     "mape_pct": 10.34,
+     "horizon_steps": 12,
+     "horizon_minutes": 60,
+     "published_mae": 3.6,
+     "published_rmse": 7.6,
+     "published_mape_pct": 10.5,
+     "mae_diff_pct": -0.78,
+     "rmse_diff_pct": -0.55,
+     "mape_diff_pct": -1.52
+    }
+   }
+  },
   {
    "model": "GWNet",
    "model_info": {
@@ -30,12 +116,12 @@
    "checkpoint": "checkpoints/GraphWaveNet/METR-LA_50_12_12/333285b1c05e8a34c37660d8800c888b/GraphWaveNet_best_val_MAE.pt",
    "hardware": {
     "provider": "AWS EC2",
-    "instance_type": "g5.xlarge",
+    "instance_type": "g4dn.xlarge",
     "gpu": "Tesla T4",
     "region": "us-east-1",
     "ami": "ami-001972c501ec6b965",
-    "instance_id": "i-0872f901f15cc8024",
-    "launched_utc": "2026-09-02T04:35:36Z",
+    "instance_id": "i-02f5a2a390e38dce4",
+    "launched_utc": "2026-10-03T10:21:54Z",
     "matched_by": "dataset"
    },
    "mape_unit_note": "harness logs MAPE as a fraction; converted to percent here",
@@ -169,6 +255,87 @@
    }
   },
   {
+   "model": "MegaCRN",
+   "model_info": {},
+   "dataset": "METR-LA",
+   "dataset_info": {
+    "sensors": 207,
+    "bin_minutes": 5,
+    "source": "DCRNN release (Li et al., ICLR 2018)",
+    "note": "real loop detectors, Los Angeles"
+   },
+   "harness": {
+    "name": "BasicTS (legacy fair-comparison branch)",
+    "repo": "https://github.com/GestaltCogTeam/BasicTS",
+    "sha": "4c3e2d373c647667c2123e1591f2d79c229dfcc6",
+    "paper": "Shao et al., Exploring Progress in Multivariate Time Series Forecasting, TKDE 2024"
+   },
+   "config": "",
+   "epochs": 100,
+   "epochs_completed": 100,
+   "checkpoint": "checkpoints/MegaCRN/METR-LA_100_12_12/eb9112707fb2037fd54fb28c357322f1/MegaCRN_best_val_MAE.pt",
+   "hardware": {
+    "provider": "AWS EC2",
+    "instance_type": "g4dn.xlarge",
+    "gpu": "Tesla T4",
+    "region": "us-east-1",
+    "ami": "ami-001972c501ec6b965",
+    "instance_id": "i-02f5a2a390e38dce4",
+    "launched_utc": "2026-10-03T10:21:54Z",
+    "matched_by": "dataset"
+   },
+   "mape_unit_note": "harness logs MAPE as a fraction; converted to percent here",
+   "log": "results/forecasting/aws_logs/MegaCRN_METR-LA.log",
+   "metrics_by_horizon_min": {
+    "5": {
+     "mae": 2.141,
+     "rmse": 3.7048,
+     "mape_pct": 5.08,
+     "horizon_steps": 1,
+     "horizon_minutes": 5
+    },
+    "15": {
+     "mae": 2.6308,
+     "rmse": 5.0493,
+     "mape_pct": 6.7299999999999995,
+     "horizon_steps": 3,
+     "horizon_minutes": 15,
+     "published_mae": 2.52,
+     "published_rmse": 4.94,
+     "published_mape_pct": 6.44,
+     "mae_diff_pct": 4.4,
+     "rmse_diff_pct": 2.21,
+     "mape_diff_pct": 4.5
+    },
+    "30": {
+     "mae": 3.0179,
+     "rmse": 6.1241,
+     "mape_pct": 8.23,
+     "horizon_steps": 6,
+     "horizon_minutes": 30,
+     "published_mae": 2.93,
+     "published_rmse": 6.06,
+     "published_mape_pct": 7.96,
+     "mae_diff_pct": 3.0,
+     "rmse_diff_pct": 1.06,
+     "mape_diff_pct": 3.39
+    },
+    "60": {
+     "mae": 3.4759,
+     "rmse": 7.2985,
+     "mape_pct": 10.040000000000001,
+     "horizon_steps": 12,
+     "horizon_minutes": 60,
+     "published_mae": 3.38,
+     "published_rmse": 7.23,
+     "published_mape_pct": 9.72,
+     "mae_diff_pct": 2.84,
+     "rmse_diff_pct": 0.95,
+     "mape_diff_pct": 3.29
+    }
+   }
+  },
+  {
    "model": "STAEformer",
    "model_info": {
     "name": "STAEformer",
@@ -195,12 +362,12 @@
    "checkpoint": "checkpoints/STAEformer/METR-LA_50_12_12/809473e13fe9f1182d15ca25c4518806/STAEformer_best_val_MAE.pt",
    "hardware": {
     "provider": "AWS EC2",
-    "instance_type": "g5.xlarge",
+    "instance_type": "g4dn.xlarge",
     "gpu": "Tesla T4",
     "region": "us-east-1",
     "ami": "ami-001972c501ec6b965",
-    "instance_id": "i-0872f901f15cc8024",
-    "launched_utc": "2026-09-02T04:35:36Z",
+    "instance_id": "i-02f5a2a390e38dce4",
+    "launched_utc": "2026-10-03T10:21:54Z",
     "matched_by": "dataset"
    },
    "mape_unit_note": "harness logs MAPE as a fraction; converted to percent here",
@@ -263,12 +430,12 @@
    "checkpoint": "checkpoints/STID/METR-LA_50_12_12/e14ab7b7d7f2e85cdece47ae4a6e3f75/STID_best_val_MAE.pt",
    "hardware": {
     "provider": "AWS EC2",
-    "instance_type": "g5.xlarge",
+    "instance_type": "g4dn.xlarge",
     "gpu": "Tesla T4",
     "region": "us-east-1",
     "ami": "ami-001972c501ec6b965",
-    "instance_id": "i-0872f901f15cc8024",
-    "launched_utc": "2026-09-02T04:35:36Z",
+    "instance_id": "i-02f5a2a390e38dce4",
+    "launched_utc": "2026-10-03T10:21:54Z",
     "matched_by": "dataset"
    },
    "mape_unit_note": "harness logs MAPE as a fraction; converted to percent here",
