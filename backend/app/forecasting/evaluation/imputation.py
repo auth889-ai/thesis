@@ -83,17 +83,20 @@ def baseline_last(x: np.ndarray) -> np.ndarray:
     return out
 
 
-def run_imputeformer(train: np.ndarray, val_x: np.ndarray, test_x: np.ndarray, epochs: int, seed: int) -> tuple[np.ndarray, dict]:
+def run_imputeformer(train: np.ndarray, val_x: np.ndarray, val_truth: np.ndarray, test_x: np.ndarray, epochs: int, seed: int) -> tuple[np.ndarray, dict]:
+    """Fit on z-scored data (the official config sets `scale_target: true`); predictions come back in mph."""
     import torch
     from pypots.imputation import ImputeFormer
     torch.manual_seed(seed)
     device = "mps" if torch.backends.mps.is_available() else "cpu"
+    mu, sd = float(np.nanmean(train)), float(np.nanstd(train))
+    z = lambda a: (a - mu) / sd
     model = ImputeFormer(**CFG, epochs=epochs, patience=max(1, min(epochs - 1, epochs // 5)) if epochs > 1 else None, device=device, verbose=False)
     t0 = time.time()
-    model.fit({"X": train}, {"X": val_x, "X_ori": val_x})
+    model.fit({"X": z(train)}, {"X": z(val_x), "X_ori": z(val_truth)})      # validation scores the hidden points against the truth
     fit_s = round(time.time() - t0, 1)
-    pred = model.predict({"X": test_x})["imputation"]
-    return pred, {"device": device, "fit_seconds": fit_s, "epochs": epochs, "config": CFG}
+    pred = model.predict({"X": z(test_x)})["imputation"] * sd + mu
+    return pred, {"device": device, "fit_seconds": fit_s, "epochs": epochs, "config": CFG, "scaling": "z-score on the train split"}
 
 
 def run(epochs: int, seed: int = 42, dataset: str = "METR-LA") -> dict:
@@ -103,7 +106,7 @@ def run(epochs: int, seed: int = 42, dataset: str = "METR-LA") -> dict:
     results = {"mean": score(baseline_mean(train, test_x), test, hidden),
                "linear": score(baseline_linear(test_x), test, hidden),
                "last": score(baseline_last(test_x), test, hidden)}
-    pred, info = run_imputeformer(train, val_x, test_x, epochs, seed)
+    pred, info = run_imputeformer(train, val_x, val, test_x, epochs, seed)
     results["ImputeFormer"] = {**score(pred, test, hidden), **info}
     return {"dataset": dataset, "generated_utc": datetime.now(timezone.utc).isoformat(),
             "protocol": {"window": WINDOW, "missing": f"point, {MISSING:.0%} of observed points, seed {seed}", "split": "chronological 70/10/20 on non-overlapping windows",
