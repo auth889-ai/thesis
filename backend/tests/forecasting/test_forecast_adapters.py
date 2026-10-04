@@ -77,7 +77,7 @@ def test_a_real_model_is_preferred_over_a_baseline_when_one_can_run():
     pytest.importorskip("chronos", reason="chronos-forecasting not installed")
     r = forecast(city(T=40, N=12), [15])
     assert r["is_baseline"] is False
-    assert r["model_used"] == "Chronos-Bolt"
+    assert r["model_used"].startswith("Chronos")     # Chronos-2 is the default zero-shot model now; Bolt stays the fallback
 
 
 def test_refusals_are_reported_so_the_ui_can_explain_itself():

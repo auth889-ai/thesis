@@ -57,6 +57,7 @@ rows of the same model on the same dataset; Protocol B numbers have no published
 | Model | Dataset | Ours 15 / 30 / 60 min | Published | Gap |
 |---|---|---|---|---|
 | DCRNN | METR-LA | 2.67 / 3.08 / 3.57 | 2.77 / 3.15 / 3.60 | -3.5 / -2.3 / -0.8 % |
+| DCRNN | PEMS-BAY | 1.31 / 1.66 / 1.97 | 1.38 / 1.74 / 2.07 | -5.1 / -4.9 / -4.7 % (63 of 100 epochs: the 16-hour cap stopped it; best-validation checkpoint) |
 | D2STGNN | METR-LA | 2.56 / 2.91 / 3.36 | 2.56 / 2.90 / 3.35 | +0.1 / +0.5 / +0.1 % |
 | MegaCRN | METR-LA | 2.63 / 3.02 / 3.48 | 2.52 / 2.93 / 3.38 | +4.4 / +3.0 / +2.8 % |
 | Graph WaveNet | METR-LA | 2.72 / 3.11 / 3.59 | 2.69 / 3.07 / 3.53 | +1.1 / +1.3 / +1.8 % |
@@ -64,6 +65,7 @@ rows of the same model on the same dataset; Protocol B numbers have no published
 | STID | METR-LA | 2.82 / 3.21 / 3.59 | 2.82 / 3.19 / 3.55 | 0.0 / +0.7 / +1.2 % |
 | STID | PEMS-BAY | 1.32 / 1.64 / 1.92 | 1.31 / 1.64 / 1.91 | +0.6 / 0.0 / +0.5 % |
 | STAEformer | METR-LA | 2.67 / 2.98 / 3.35 | 2.65 / 2.97 / 3.34 | +0.9 / +0.5 / +0.3 % |
+| PatchSTG, authors' released weights | LargeST-SD (716 sensors, flow) | 16.85 / 29.57 / 11.01 % (12-step MAE / RMSE / MAPE) | 16.90 / 29.27 / 11.23 % | -0.3 % MAE |
 | OpenCity-plus zero-shot | PEMS07M (held out of its pre-training) | 4.50 (12-step) | 4.50 | 0.0 % |
 | OpenCity-plus zero-shot | TrafficSH (held out) | 0.55 | 0.55 | 0.0 % |
 
@@ -73,6 +75,9 @@ Protocol check: our historical-average floor on METR-LA is 4.19 MAE against the 
 split, masking and metric are the papers' own. Every row above was trained or evaluated on AWS (g4dn / g5, Tesla T4)
 with the official config unmodified except epochs and horizons; checkpoint SHA-256 and the log path sit beside each
 row in `results/forecasting/trained_results.csv`.
+The PatchSTG row is the authors' own `main.py` in test mode with their released SD checkpoint, run on this laptop's CPU in 87 s; the
+release carries no adjacency file, so their `construct_adj` rebuilt it from the training split, which is the only difference from
+their committed log (16.90 / 29.27 / 11.23). Rows for GBA, GLA and CA, and a training run on SD, follow in `results/forecasting/patchstg_largest.md`.
 
 Reading: the pipeline reproduces the field. That is the precondition for Protocol B meaning anything.
 
@@ -280,7 +285,8 @@ SUMO run, the model gate, and an anti-hardcode test that fails when an input sto
 - [x] P1 DCRNN: 2.67 / 3.08 / 3.57 against 2.77 / 3.15 / 3.60, on AWS with the official config
 - [x] P4 MegaCRN: 2.63 / 3.02 / 3.48 against 2.52 / 2.93 / 3.38; best onset detector so far (71%)
 - [x] P3 D2STGNN: 2.56 / 2.91 / 3.36 against 2.56 / 2.90 / 3.35, an exact reproduction; best congested error of the table
-- [ ] P5–P7 STD-MAE (job prepared), HimNet, BigST, PatchSTG, STGformer
+- [x] P7a PatchSTG released weights reproduced on LargeST-SD (-0.3 % MAE); SD training job on AWS running
+- [ ] P5–P7 STD-MAE (job prepared), HimNet, BigST, STGformer; PatchSTG GBA / GLA / CA rows
 - [x] P8a regime-aware conformal intervals (MAPIE) on every Protocol B model, three calibrators, the transition result
 - [x] P8b departure advice on a sensor corridor from the calibrated half-widths
 - [x] P9a Chronos-2 (univariate and multivariate) and TimesFM 2.5 zero-shot under Protocol B with conformal rows

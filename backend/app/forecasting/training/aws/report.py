@@ -12,6 +12,7 @@ from .settings import RESULTS
 PUB = {("GWNet", "METR-LA", 15): (2.69, 6.90), ("GWNet", "METR-LA", 30): (3.07, 8.37), ("GWNet", "METR-LA", 60): (3.53, 10.01),
        ("GWNet", "PEMS-BAY", 15): (1.30, 2.73), ("GWNet", "PEMS-BAY", 30): (1.63, 3.67), ("GWNet", "PEMS-BAY", 60): (1.95, 4.63),
        ("DCRNN", "METR-LA", 15): (2.77, 7.30), ("DCRNN", "METR-LA", 30): (3.15, 8.80), ("DCRNN", "METR-LA", 60): (3.60, 10.50),
+       ("DCRNN", "PEMS-BAY", 15): (1.38, 2.95), ("DCRNN", "PEMS-BAY", 30): (1.74, 3.97), ("DCRNN", "PEMS-BAY", 60): (2.07, 4.74),   # Li et al. 2018, Table 2
        # MegaCRN: the authors' README table (deepkashiwa20/MegaCRN), steps 3/6/12
        ("MegaCRN", "METR-LA", 15): (2.52, 6.44), ("MegaCRN", "METR-LA", 30): (2.93, 7.96), ("MegaCRN", "METR-LA", 60): (3.38, 9.72),
        ("MegaCRN", "PEMS-BAY", 15): (1.28, 2.67), ("MegaCRN", "PEMS-BAY", 30): (1.60, 3.57), ("MegaCRN", "PEMS-BAY", 60): (1.88, 4.41),

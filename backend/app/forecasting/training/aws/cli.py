@@ -6,6 +6,7 @@ import argparse
 
 from . import benchmark
 from .city import city_collect, city_launch
+from .largest import largest_collect, largest_launch
 from .settings import JOB
 
 
@@ -21,6 +22,7 @@ def parser(doc: str = "") -> argparse.ArgumentParser:
     p.add_argument("--models", default="STID,GWNet")
     p.add_argument("--datasets", default="METR-LA")
     p.add_argument("--epochs", type=int, default=50)
+    p.add_argument("--largest", default="", help="LargeST region (SD/GBA/GLA/CA): train PatchSTG with the authors' main.py; --launch / --collect")
     p.add_argument("--instance-type", default="g5.xlarge,g5.2xlarge",
                    help="ladder of single-GPU types; g5 (A10G) is the verified CUDA path, add g6.xlarge only after verifying L4")
     p.add_argument("--max-hours", type=int, default=4)
@@ -47,6 +49,13 @@ def main(doc: str = "") -> int:
         return 0 if city_collect(a.collect_city) else 1
     if a.city_dataset and a.launch:
         return city_launch(a)
+    if a.largest:
+        a.epochs_set = "--epochs" in __import__("sys").argv
+        if a.launch:
+            return largest_launch(a)
+        if a.collect:
+            return largest_collect(a)
+        job = a.job or f"patchstg-{a.largest.lower()}"
     for flag, fn in (("plan", benchmark.plan), ("launch", benchmark.launch), ("status", benchmark.status),
                      ("collect", benchmark.collect), ("collect_checkpoints", benchmark.collect_checkpoints), ("finish", benchmark.finish), ("terminate", benchmark.terminate)):
         if getattr(a, flag):

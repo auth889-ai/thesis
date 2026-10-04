@@ -97,6 +97,8 @@ def run(region: str, mode: str = "test", device: str = "cpu", epochs: int | None
     args = official_args(REPO / "config" / f"{region}.conf", workers)
     if epochs:
         args["max_epoch"] = epochs
+    (OUT / "patchstg_logs").mkdir(parents=True, exist_ok=True)
+    args["log_file"] = str(OUT / "patchstg_logs" / f"{region}_{mode}.log")    # ours, so the authors' committed log/ stays untouched
     official.log = open(args["log_file"], "a")
     official.random.seed(args["seed"]); official.np.random.seed(args["seed"]); torch.manual_seed(args["seed"])
     t0 = time.time()
@@ -143,7 +145,7 @@ def main() -> int:
     p = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     p.add_argument("--region", default="SD")
     p.add_argument("--mode", choices=("test", "train"), default="test")
-    p.add_argument("--device", default="cpu", help="cpu, mps, or cuda (cuda is picked by the authors' code when present)")
+    p.add_argument("--device", default="cpu", help="cpu or cuda (cuda is picked by the authors' code when present; MPS rejects their float64 stamps)")
     p.add_argument("--epochs", type=int, default=None, help="train mode only; default is the authors' config")
     p.add_argument("--workers", type=int, default=0)
     a = p.parse_args()

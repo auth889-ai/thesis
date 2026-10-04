@@ -46,7 +46,7 @@ Written 2026-10-02 from a fresh literature search. Verified links and licences a
 | B4 | STPGNN | AAAI 2024 | BasicTS | — | pivotal-node graph |
 | B5 | STDN | AAAI 2025 | BasicTS | — | newest BasicTS spatial-temporal baseline |
 | B6 | STGformer, Wang et al. | arXiv 2024 | Dreamzz5/STGformer | MIT | one-layer graph transformer, efficient on LargeST |
-| B7 | PatchSTG, Fang et al. | KDD 2025 | LMissher/PatchSTG | unspecified → ask authors / use as reference only | current best on LargeST; KD-tree spatial patching |
+| B7 | PatchSTG, Fang et al. | KDD 2025 | LMissher/PatchSTG | MIT (LICENSE file at 8b298b23, read 2026-10-04) | current best on LargeST; KD-tree spatial patching |
 | B8 | RPMixer, Yeh et al. | KDD 2024 | authors' site | — | all-MLP random projections for large graphs |
 | B9 | LargeST benchmark, Liu et al. | NeurIPS 2023 | liuxu77/LargeST | code MIT, data CC BY-NC 4.0 | 8,600-sensor California; SD / GBA / GLA / CA |
 
@@ -102,7 +102,7 @@ mini-report, commit, stop.
 | T5 | HimNet (B2) | BasicTS | Colab | same |
 | T6 | BigST (B3) on LargeST-SD (B9) | BasicTS large-scale configs | Colab A100 or g5.2xlarge | LargeST-SD published row reproduced |
 | T7 | STGformer (B6) on LargeST-SD | official repo | same | published row |
-| T8 | PatchSTG (B7) | official repo, reference only until licence answered | same | published row or documented block |
+| T8 | PatchSTG (B7) | official repo, MIT, used as released | same | published row or documented block |
 | T9 | Chronos-2 (C5) and TimesFM 2.5 (C6) zero-shot | official checkpoints | Colab | reproduce C9's METR-LA numbers; onset rows |
 | T10 | UniST (C2) | official repo | Colab | published grid result reproduced |
 | T11 | Conformal per regime (D1, D3) | MAPIE | CPU | coverage 90 % at transitions on every model in the table |
