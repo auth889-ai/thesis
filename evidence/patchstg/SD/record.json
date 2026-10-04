@@ -1,0 +1,52 @@
+{
+ "region": "SD",
+ "job": "patchstg-sd",
+ "weights": "trained here with the authors' recipe",
+ "upstream": "LMissher/PatchSTG (MIT), main.py run as released",
+ "epochs": "authors' config",
+ "best_epoch": 48,
+ "instances": 1,
+ "resumes": 0,
+ "average": {
+  "mae": 16.9825,
+  "rmse": 29.375,
+  "mape_pct": 10.98
+ },
+ "published": {
+  "mae": 16.9,
+  "rmse": 29.27,
+  "mape_pct": 11.23
+ },
+ "mae_gap_pct": 0.49,
+ "generated_utc": "2026-10-04T21:44:13Z",
+ "log": "train.log.gz",
+ "log_sha256": "c55309c4d592a536b4e1ecb286a1c41091860f12503f358c0663b5b8da7c3d8d",
+ "checkpoint": "results/forecasting/checkpoints/PatchSTG/SD/sd_model",
+ "checkpoint_sha256": "cf154ed1fb8b6332069440f6f2fd8634229be3bb7506b7f13adc3be57d45f77b",
+ "ledger": [
+  {
+   "job": "patchstg-sd",
+   "instance": "i-08178034a896d636e",
+   "type": "g4dn.xlarge",
+   "region": "us-east-1",
+   "ami": "ami-001972c501ec6b965",
+   "models": "PatchSTG",
+   "datasets": "LargeST-SD",
+   "epochs": "authors' config",
+   "launched_utc": "2026-10-04T03:43:43Z",
+   "s3": "s3://dhakaflow-train-915644996102/jobs/patchstg-sd/"
+  },
+  {
+   "job": "patchstg-sd",
+   "instance": "i-02886fc74b03c755b",
+   "type": "g4dn.xlarge",
+   "region": "us-east-1",
+   "ami": "ami-001972c501ec6b965",
+   "models": "PatchSTG",
+   "datasets": "LargeST-SD",
+   "epochs": "authors' config",
+   "launched_utc": "2026-10-04T14:05:41Z",
+   "s3": "s3://dhakaflow-train-915644996102/jobs/patchstg-sd/"
+  }
+ ]
+}

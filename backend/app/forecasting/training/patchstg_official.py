@@ -14,6 +14,9 @@ Data and weights come from the authors' Google Drive folders (`PatchSTG_data/{da
 region's `flow<region>.npz` and `adj.npy` are linked into the repo's `data/<REGION>/` beside the committed meta csv,
 and `cpt/` is linked whole, so the config's relative paths resolve exactly as the authors wrote them.
 
+On a rented machine training is resumable (`--resume <file>`, `--on-epoch <command>`): see patchstg_resume.py, which
+calls the authors' `train()` one epoch at a time and writes a state file after each.
+
 Each run writes one record to results/forecasting/patchstg_largest.json keyed `<region>|<mode>` with the per-step and
 12-step-average MAE / RMSE / MAPE beside the published Table 3 average, and refreshes patchstg_largest.md.
 """
@@ -82,7 +85,8 @@ def link_release(region: str) -> list[str]:
     return missing
 
 
-def run(region: str, mode: str = "test", device: str = "cpu", epochs: int | None = None, workers: int = 0) -> dict:
+def run(region: str, mode: str = "test", device: str = "cpu", epochs: int | None = None, workers: int = 0,
+        resume: str | None = None, on_epoch: str | None = None) -> dict:
     region = region.upper()
     if region not in REGIONS:
         raise SystemExit(f"region must be one of {sorted(REGIONS)}")
@@ -108,7 +112,12 @@ def run(region: str, mode: str = "test", device: str = "cpu", epochs: int | None
     if device != "cpu" and not torch.cuda.is_available():          # their Solver only knows cuda-or-cpu; MPS is ours to ask for
         solver.device = torch.device(device)
         solver.model.to(solver.device)
-    if mode == "train":
+    progress = None
+    if mode == "train" and resume:
+        sys.path.insert(0, str(Path(__file__).parent))            # on a rented machine the two files sit side by side, outside the package
+        from patchstg_resume import resumable_epochs
+        progress = resumable_epochs(solver, args["max_epoch"], resume, on_epoch, say=lambda m: official.log_string(official.log, m))
+    elif mode == "train":
         solver.train()
     maes, rmses, mapes = solver.test()
     steps = [{"step": i + 1, "mae": round(float(maes[i]), 4), "rmse": round(float(rmses[i]), 4), "mape_pct": round(float(mapes[i]) * 100, 4)}
@@ -121,6 +130,8 @@ def run(region: str, mode: str = "test", device: str = "cpu", epochs: int | None
            "published": {"mae": pub[0], "rmse": pub[1], "mape_pct": pub[2]}, "steps": steps,
            "upstream": "LMissher/PatchSTG (MIT), main.py Solver used as released"}
     rec["mae_gap_pct"] = round((rec["average"]["mae"] - pub[0]) / pub[0] * 100, 2)
+    if progress:
+        rec["best_epoch"], rec["resumes"] = progress["best_epoch"], progress["resumes"]
     write(rec)
     return rec
 
@@ -150,8 +161,10 @@ def main() -> int:
     p.add_argument("--device", default="cpu", help="cpu or cuda (cuda is picked by the authors' code when present; MPS rejects their float64 stamps)")
     p.add_argument("--epochs", type=int, default=None, help="train mode only; default is the authors' config")
     p.add_argument("--workers", type=int, default=0)
+    p.add_argument("--resume", default=None, help="train mode: state file written after every epoch and continued from when present")
+    p.add_argument("--on-epoch", default=None, help="train mode with --resume: shell command run after each epoch's state file is written")
     a = p.parse_args()
-    rec = run(a.region, a.mode, a.device, a.epochs, a.workers)
+    rec = run(a.region, a.mode, a.device, a.epochs, a.workers, a.resume, a.on_epoch)
     avg, pub = rec["average"], rec["published"]
     print(f"{rec['region']} {rec['mode']}: MAE {avg['mae']} RMSE {avg['rmse']} MAPE {avg['mape_pct']} %  "
           f"(published {pub['mae']} / {pub['rmse']} / {pub['mape_pct']} %, gap {rec['mae_gap_pct']:+.2f} %)  wrote {OUT / 'patchstg_largest.md'}")

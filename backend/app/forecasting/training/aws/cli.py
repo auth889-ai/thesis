@@ -6,7 +6,7 @@ import argparse
 
 from . import benchmark
 from .city import city_collect, city_launch
-from .largest import largest_collect, largest_launch
+from .largest import largest_collect, largest_launch, largest_status
 from .settings import JOB
 
 
@@ -34,8 +34,9 @@ def parser(doc: str = "") -> argparse.ArgumentParser:
     p.add_argument("--clients", default="4,8,16", help="RSU counts to sweep (federated)")
     p.add_argument("--rounds", type=int, default=30, help="FedAvg rounds (federated)")
     p.add_argument("--job", default="", help="job name (default per-dataset isolation)")
-    p.add_argument("--no-spot", action="store_true", help="skip spot entirely; use for runs that must complete without interruption")
-    p.add_argument("--allow-on-demand", action="store_true", help="fall back to on-demand (~2x spot) when no spot capacity exists anywhere")
+    p.add_argument("--no-spot", action="store_true", help="launch on-demand instead of spot; only after the person approved the on-demand cost")
+    p.add_argument("--phase", default="", help="value of the phase tag every instance carries (project=dhakaflow, phase=<this>); --largest defaults to patchstg")
+    p.add_argument("--fresh", action="store_true", help="--largest: discard the per-epoch state on S3 and start from epoch 1 instead of resuming")
     p.add_argument("--instance-profile", default="dhakaflow-train-profile", help="IAM instance profile granting S3 access")
     p.add_argument("--city-dataset", default="", help="train on an app dataset (user:<id> / live:<city>) instead of a benchmark")
     p.add_argument("--collect-city", default="", help="collect a finished city job by name and write the app's cards")
@@ -51,6 +52,9 @@ def main(doc: str = "") -> int:
         return city_launch(a)
     if a.largest:
         a.epochs_set = "--epochs" in __import__("sys").argv
+        a.phase = a.phase or "patchstg"
+        if a.status:
+            return largest_status(a)
         if a.launch:
             return largest_launch(a)
         if a.collect:

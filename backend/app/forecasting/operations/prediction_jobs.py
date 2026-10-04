@@ -369,7 +369,7 @@ def _train_cloud_run(job: str, p: dict) -> None:
         name = at.city_job_name(dataset)
         emit(stage="Preparing the data and sending it to the cloud", cloud_job=name)
         cmd = [sys.executable, "-m", "app.forecasting.training.aws_train", "--launch", "--city-dataset", dataset,
-               "--models", arch, "--epochs", str(epochs), "--allow-on-demand", "--max-hours", "1", "--job", name]
+               "--models", arch, "--epochs", str(epochs), "--phase", "app-training", "--max-hours", "1", "--job", name]
         r = subprocess.run(cmd, capture_output=True, text=True, cwd=config.REPO, env=env, timeout=900)
         if r.returncode != 0:
             raise RuntimeError((r.stdout + r.stderr)[-900:].strip())

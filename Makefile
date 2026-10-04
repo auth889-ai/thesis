@@ -76,7 +76,7 @@ train-city:      ## E7 train the official STID baseline on an uploaded / observe
 	$(PY) -m app.forecasting.training.basicts_train --dataset $(or $(DATASET),user:los_angeles_two_weeks) --arch $(or $(ARCH),STID) --epochs $(or $(EPOCHS),30)
 
 train-city-gpu:  ## E7 on an AWS spot GPU (g5.xlarge): same harness, 100 epochs; the app's "run on: AWS GPU" does this
-	$(PY) -m app.forecasting.training.aws_train --launch --city-dataset $(or $(DATASET),user:los_angeles_two_weeks) --models $(or $(ARCH),STID) --epochs $(or $(EPOCHS),100) --allow-on-demand --max-hours 1
+	$(PY) -m app.forecasting.training.aws_train --launch --city-dataset $(or $(DATASET),user:los_angeles_two_weeks) --models $(or $(ARCH),STID) --epochs $(or $(EPOCHS),100) --phase city-training --max-hours 1
 	@echo "watch: $(PY) -m app.forecasting.training.aws_train --status --job city-...; collect: --collect-city city-..."
 
 opencity:        ## E6 OpenCity-plus zero-shot on the persisted live window (needs ~4 days of observation)

@@ -225,3 +225,28 @@ aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/ || true
 echo DONE > /tmp/DONE && aws s3 cp /tmp/DONE s3://$BUCKET/jobs/$NAME/DONE
 shutdown -h now
 """
+
+
+# The hang watchdog, a file of its own on the instance: `watchdog.sh <log> <limit_s> <every_s> <fail_script>`.
+# Every <every_s> it notes the machine's free memory beside the log; when the log has not grown for <limit_s> it
+# calls `<fail_script> "HANG: ..."`, and when available memory stays under 3 % for two minutes it calls it with
+# "MEMORY: ...". The third GLA job (2026-10-04) froze at its first validation and billed for hours because nothing
+# watched the log; this is that watcher. <limit_s> and <every_s> are whole seconds. It reads /proc/meminfo with shell builtins so it forks as little as it can.
+WATCHDOG = r"""#!/bin/bash
+LOG=$1; LIMIT=$2; EVERY=$3; FAIL=$4
+{ echo -1000 > /proc/$$/oom_score_adj; } 2>/dev/null || true
+last=-1; still=0; low=0
+while true; do
+  sleep $EVERY
+  size=$(stat -c %s "$LOG" 2>/dev/null || stat -f %z "$LOG" 2>/dev/null || echo 0)
+  if [ -r /proc/meminfo ]; then
+    tot=1; avail=1
+    while read -r k v _; do case $k in MemTotal:) tot=$v;; MemAvailable:) avail=$v;; esac; done < /proc/meminfo
+    echo "$(date -u +%FT%TZ) mem_available_kb=$avail mem_total_kb=$tot log_bytes=$size" >> "$LOG.mem"
+    if [ $((avail * 100 / tot)) -lt 3 ]; then low=$((low + EVERY)); else low=0; fi
+    if [ $low -ge 120 ]; then "$FAIL" "MEMORY: available memory under 3 % for ${low}s"; exit 2; fi
+  fi
+  if [ "$size" = "$last" ]; then still=$((still + EVERY)); else still=0; last=$size; fi
+  if [ $still -ge $LIMIT ]; then "$FAIL" "HANG: training log silent for ${still}s"; exit 1; fi
+done
+"""

@@ -1,5 +1,5 @@
 """The aws CLI, the instances tagged with a job, and launching one instance: spot first across a
-ladder of types and zones, on-demand only when allowed. Every instance terminates itself."""
+ladder of types and zones; on-demand only with --no-spot, never as a fallback. Every instance terminates itself."""
 from __future__ import annotations
 
 import base64
@@ -45,9 +45,12 @@ def run_instance(a, script: str, job: str):
     # equivalent instances across zones instead of failing. Order = cheapest capable first.
     types = [t for t in a.instance_type.split(",") if t]
     zones = json.loads(aws("ec2", "describe-availability-zones", "--query", "AvailabilityZones[?State=='available'].ZoneName", "--output", "json"))
-    # --no-spot: a reclaimed spot instance loses the whole run (PEMS-BAY was reclaimed 7 min in,
-    # Server.SpotInstanceTermination), so long jobs that must finish should not start on spot.
-    markets = ["on-demand"] if a.no_spot else (["spot", "on-demand"] if a.allow_on_demand else ["spot"])
+    # Spot is the default and the only market tried. --no-spot is the on-demand path, used after the
+    # person has approved its cost; there is no silent fallback from one to the other.
+    markets = ["on-demand"] if a.no_spot else ["spot"]
+    if not getattr(a, "phase", ""):
+        raise SystemExit("refusing to launch without --phase: every instance is tagged project=dhakaflow and phase=<phase>")
+    tags = [{"Key": "project", "Value": "dhakaflow"}, {"Key": "phase", "Value": a.phase}, {"Key": "dhakaflow-job", "Value": job}, {"Key": "Name", "Value": job}]
     attempts: list[str] = []
     for market in markets:
         for t in types:
@@ -60,14 +63,15 @@ def run_instance(a, script: str, job: str):
                               "--block-device-mappings", json.dumps([{"DeviceName": "/dev/xvda", "Ebs": {"VolumeSize": 120, "DeleteOnTermination": True}}]),
                               "--user-data", ud,
                               *(["--iam-instance-profile", json.dumps({"Name": a.instance_profile})] if a.instance_profile else []),
-                              "--tag-specifications", json.dumps([{"ResourceType": "instance", "Tags": [{"Key": "dhakaflow-job", "Value": job}, {"Key": "Name", "Value": job}]}]),
+                              "--tag-specifications", json.dumps([{"ResourceType": r, "Tags": tags} for r in ("instance", "volume")]),
                               "--query", "Instances[0].InstanceId", "--output", "text")
                     return out.strip(), (t, z, market), attempts
                 except SystemExit as ex:
                     reason = "no capacity" if "InsufficientInstanceCapacity" in str(ex) else str(ex)[-90:]
                     attempts.append(f"{market} {t}/{z}: {reason}")
-    print("[launch] no spot capacity anywhere. Attempts:")
+    print(f"[launch] no {markets[0]} capacity in any zone. Attempts:")
     for x in attempts:
         print("   ", x)
-    print("\nOptions: widen --instance-type (e.g. g4dn.xlarge,g5.xlarge,g6.xlarge), try another --region, or use the Colab notebooks instead.")
+    if not a.no_spot:
+        print("\nNo spot capacity. Nothing was launched. On-demand costs more and needs the person's approval first (--no-spot).")
     return None, None, attempts

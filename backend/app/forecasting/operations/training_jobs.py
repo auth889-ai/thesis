@@ -229,7 +229,7 @@ def _train_aws(job_id: str, prep: dict, arch: str, epochs: int):
     name = f"{at.city_job_name(get(job_id)['dataset'])}-{arch.lower()}"    # one worker per architecture
     _set(job_id, stage="PROVISIONING_GPU", cloud_job=name, epochs=epochs, epoch=0)
     cmd = [sys.executable, "-m", "app.forecasting.training.aws_train", "--launch", "--city-dataset", get(job_id)["dataset"],
-           "--models", arch, "--epochs", str(epochs), "--allow-on-demand", "--max-hours", "1", "--job", name]
+           "--models", arch, "--epochs", str(epochs), "--phase", "app-training", "--max-hours", "1", "--job", name]
     r = subprocess.run(cmd, capture_output=True, text=True, cwd=config.REPO, env=env, timeout=900)
     if r.returncode != 0:
         raise RuntimeError("could not start the GPU worker: " + (r.stdout + r.stderr)[-700:].strip())

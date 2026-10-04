@@ -1,7 +1,14 @@
 """A LargeST job: PatchSTG trained on one region with the authors' own code, on a GPU.
 
-    python -m app.forecasting.training.aws_train --largest SD --launch --no-spot --max-hours 6
-    python -m app.forecasting.training.aws_train --largest SD --collect
+    python -m app.forecasting.training.aws_train --largest GLA --launch --instance-type g5.2xlarge --max-hours 8
+    python -m app.forecasting.training.aws_train --largest GLA --status
+    python -m app.forecasting.training.aws_train --largest GLA --collect
+
+Spot only (on-demand needs --no-spot, after its cost is approved); tagged project=dhakaflow, phase=patchstg. After
+every epoch the instance uploads the resumable state, the best weights and the log to `jobs/<job>/state/`, so a spot
+interruption loses less than one epoch: the same --launch command continues from that state (--fresh discards it).
+A watchdog on the instance stops the job and writes `FAILED.json` when the log is silent for 30 minutes or memory
+runs out; --status and --collect copy that record into aws_jobs.jsonl and flag a log that stopped updating.
 
 The instance clones LMissher/PatchSTG at the pinned SHA, receives the region's flow array and the adjacency
 our released-weights test built with their `construct_adj` (so train and test patch the same way), and trains
@@ -18,50 +25,21 @@ Collect brings the log and the trained weights down, parses the per-step and ave
 """
 from __future__ import annotations
 
+import gzip
+import hashlib
 import json
 import re
 import time
+from pathlib import Path
 
 from app.forecasting.training import patchstg_official as po
 
 from .ec2 import run_instance, running_instances, s3
-from .scripts import render
-from .settings import AMI, BUCKET, REGION, RESULTS
+from .largest_script import SCRIPT
+from .scripts import WATCHDOG, render
+from .settings import AMI, BUCKET, REGION, RESULTS, REPO
 
 PATCHSTG_SHA = "8b298b230227a304a082e05241c69dca3740a73d"       # upstream/UPSTREAM_PINS.yaml: PatchSTG
-
-SCRIPT = r"""#!/bin/bash
-exec > >(tee -a /var/log/dhakaflow.log) 2>&1
-set -x
-NAME=@NAME@; BUCKET=@BUCKET@; SHA=@SHA@; RG=@REGION@; LRG=@LREGION@; EPOCHS=@EPOCHS@
-( sleep $((@MAXH@ * 3600)); shutdown -h now ) &          # hard watchdog
-( while true; do sleep 30; aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/live.log >/dev/null 2>&1; done ) &
-aws s3 cp s3://$BUCKET/jobs/$NAME/in/ /home/ec2-user/in/ --recursive || true
-cd /home/ec2-user
-git clone -q https://github.com/LMissher/PatchSTG.git patchstg && cd patchstg && git checkout -q $SHA
-PY=""
-for C in /opt/pytorch/bin/python /opt/conda/envs/pytorch/bin/python /opt/conda/bin/python \
-         /usr/local/bin/python3 /usr/bin/python3 $(ls -d /opt/*/bin/python /opt/*/*/bin/python 2>/dev/null); do
-  if [ -x "$C" ] && "$C" -c "import torch" >/dev/null 2>&1; then PY="$C"; break; fi
-done
-[ -z "$PY" ] && { echo NO_TORCH; aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/; echo FAILED > /tmp/DONE; aws s3 cp /tmp/DONE s3://$BUCKET/jobs/$NAME/DONE; shutdown -h now; }
-$PY -c "import torch;print('torch',torch.__version__,'cuda',torch.cuda.is_available(),torch.cuda.get_device_name(0))"
-$PY -m pip install -q timm scikit-learn pandas
-mkdir -p data/$RG cpt log && cp /home/ec2-user/in/flow$LRG.npz data/$RG/ && cp /home/ec2-user/in/adj.npy data/$RG/ 2>/dev/null || true
-W=/home/ec2-user/df/backend/app/forecasting/training                     # the switch finds results/ four levels up
-mkdir -p $W /home/ec2-user/.dhakaflow/upstream && cp /home/ec2-user/in/patchstg_official.py $W/
-ln -sfn /home/ec2-user/patchstg /home/ec2-user/.dhakaflow/upstream/PatchSTG
-EP=""; [ "$EPOCHS" != "0" ] && EP="--epochs $EPOCHS"
-echo "=== TRAIN PatchSTG $RG (authors' Solver, 4 loader workers) ==="
-HOME=/home/ec2-user timeout $((@MAXH@ * 3600 - 1800)) $PY $W/patchstg_official.py --region $RG --mode train --device cuda --workers 4 $EP 2>&1 | tee /tmp/PatchSTG_$RG.log
-aws s3 cp /tmp/PatchSTG_$RG.log s3://$BUCKET/jobs/$NAME/logs/ || true
-aws s3 cp /home/ec2-user/df/results/forecasting/patchstg_logs/${RG}_train.log s3://$BUCKET/jobs/$NAME/logs/${LRG}_log || true
-aws s3 cp cpt/${LRG}_model s3://$BUCKET/jobs/$NAME/checkpoints/PatchSTG/$RG/${LRG}_model || true
-aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/ || true
-echo DONE > /tmp/DONE && aws s3 cp /tmp/DONE s3://$BUCKET/jobs/$NAME/DONE
-shutdown -h now
-"""
-
 
 def job_name(region: str) -> str:
     return f"patchstg-{region.lower()}"
@@ -83,30 +61,74 @@ def largest_launch(a) -> int:
         print(f"missing {flow}: " + ", ".join(missing))
         return 3
     base = f"s3://{BUCKET}/jobs/{job}"
-    for key in ("DONE", "logs/"):
+    for key in ("DONE", "FAILED.json") + (("state/", "logs/") if a.fresh else ()):     # an interrupted job's state and logs stay
         s3("rm", f"{base}/{key}", *(["--recursive"] if key.endswith("/") else []), check=False)
+    resumed = s3("ls", f"{base}/state/{region.lower()}_state.pt", check=False).stdout.strip()
+    print(f"[state] {'continuing from the per-epoch state on S3: ' + resumed if resumed else 'no saved state: starts at epoch 1'}")
     print(f"[upload] {flow.name} ({flow.stat().st_size / 1e6:.0f} MB) -> {base}/in/")
     s3("cp", str(flow.resolve()), f"{base}/in/{flow.name}")
     if adj.exists():
         s3("cp", str(adj), f"{base}/in/adj.npy")
         print(f"[upload] adj.npy (built by their construct_adj during the released-weights test) -> {base}/in/")
-    s3("cp", po.__file__, f"{base}/in/patchstg_official.py")
-    script = render(SCRIPT, NAME=job, BUCKET=BUCKET, SHA=PATCHSTG_SHA, REGION=region, LREGION=region.lower(),
+    for f in ("patchstg_official.py", "patchstg_resume.py"):
+        s3("cp", str(Path(po.__file__).with_name(f)), f"{base}/in/{f}")
+    script = render(SCRIPT.replace("@WATCHDOG@", WATCHDOG.strip()), NAME=job, BUCKET=BUCKET, SHA=PATCHSTG_SHA, REGION=region, LREGION=region.lower(),
                     EPOCHS=str(a.epochs if a.epochs_set else 0), MAXH=str(a.max_hours))
     iid, chosen, attempts = run_instance(a, script, job)
     if not iid:
         return 4
     print(f"[launch] {iid} ({chosen[0]} {chosen[2]} in {chosen[1]}) after {len(attempts)} unavailable option(s); trains with the authors' Solver, uploads, terminates")
     entry = {"job": job, "instance": iid, "type": chosen[0], "region": REGION, "ami": AMI, "models": "PatchSTG", "datasets": f"LargeST-{region}",
-             "epochs": a.epochs if a.epochs_set else "authors' config", "launched_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "s3": base + "/"}
-    with open(RESULTS / "aws_jobs.jsonl", "a") as fh:
+             "epochs": a.epochs if a.epochs_set else "authors' config", "launched_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "s3": base + "/",
+             "market": chosen[2], "phase": a.phase, "resumed_from_state": bool(resumed)}
+    _ledger(entry)
+    return 0
+
+
+def _ledger(entry: dict) -> None:
+    path = RESULTS / "aws_jobs.jsonl"
+    if path.exists() and json.dumps(entry) in path.read_text():
+        return
+    with open(path, "a") as fh:
         fh.write(json.dumps(entry) + "\n")
+
+
+def record_failure(job: str) -> dict | None:
+    """Copy the instance's FAILED.json (written by its watchdog) into the job ledger, once."""
+    r = s3("cp", f"s3://{BUCKET}/jobs/{job}/FAILED.json", "-", check=False)
+    if r.returncode or not r.stdout.strip():
+        return None
+    failed = json.loads(r.stdout)
+    _ledger(failed)
+    return failed
+
+
+def stale_minutes(listing: str, now: float | None = None) -> float | None:
+    """Minutes since the `aws s3 ls` line's timestamp (local time, as the CLI prints it)."""
+    m = re.match(r"(\d{4}-\d\d-\d\d \d\d:\d\d:\d\d)", listing.strip())
+    return None if not m else ((now or time.time()) - time.mktime(time.strptime(m.group(1), "%Y-%m-%d %H:%M:%S"))) / 60
+
+
+def largest_status(a) -> int:
+    job = a.job or job_name(a.largest.upper())
+    base = f"s3://{BUCKET}/jobs/{job}"
+    inst = running_instances(job)
+    print("instances:", inst or "none running")
+    failed = record_failure(job)
+    print("FAILED:", failed["reason"] if failed else "no failure record")
+    print("DONE:", s3("ls", f"{base}/DONE", check=False).stdout.strip() or "not yet")
+    print("state:", s3("ls", f"{base}/state/", check=False).stdout.strip() or "no epoch finished yet")
+    age = stale_minutes(s3("ls", f"{base}/logs/live.log", check=False).stdout)
+    if inst and age is not None and age > 30:
+        print(f"WARNING: the log last reached S3 {age:.0f} minutes ago while an instance is running. If the on-box watchdog is "
+              f"stalled too, stop it: aws ec2 terminate-instances --region {REGION} --instance-ids {' '.join(i['id'] for i in inst)}")
     return 0
 
 
 _STEP = re.compile(r"^step (\d+), mae: ([\d.]+), rmse: ([\d.]+), mape: ([\d.]+)", re.M)
 _AVG = re.compile(r"^average, mae: ([\d.]+), rmse: ([\d.]+), mape: ([\d.]+)", re.M)
 _BEST = re.compile(r"Best epoch is: (\d+)")
+_RESUME = re.compile(r"^\[resume\] ", re.M)
 
 
 def parse_official_log(text: str) -> dict | None:
@@ -125,12 +147,16 @@ def largest_collect(a) -> int:
     region = a.largest.upper()
     job = a.job or job_name(region)
     base = f"s3://{BUCKET}/jobs/{job}"
+    record_failure(job)
     logs = RESULTS / "patchstg_logs"
-    logs.mkdir(parents=True, exist_ok=True)
-    r = s3("cp", f"{base}/logs/PatchSTG_{region}.log", str(logs / f"{region}_train_aws.log"), check=False)
-    if r.returncode:
+    parts = logs / f"{job}_parts"
+    parts.mkdir(parents=True, exist_ok=True)
+    s3("sync", f"{base}/logs/", str(parts), "--exclude", "*", "--include", f"PatchSTG_{region}*.log", "--include", "memory_*.log", check=False)
+    pieces = sorted(parts.glob(f"PatchSTG_{region}*.log"), key=lambda f: f.stat().st_mtime)      # one per instance, oldest first
+    if not pieces:
         print(f"no training log on S3 yet for {job} (DONE: {s3('ls', f'{base}/DONE', check=False).stdout.strip() or 'not yet'})")
         return 1
+    (logs / f"{region}_train_aws.log").write_text("".join(f.read_text(errors="ignore") for f in pieces))
     ck = RESULTS / "checkpoints" / "PatchSTG" / region
     ck.mkdir(parents=True, exist_ok=True)
     s3("cp", f"{base}/checkpoints/PatchSTG/{region}/{region.lower()}_model", str(ck / f"{region.lower()}_model"), check=False)
@@ -144,9 +170,19 @@ def largest_collect(a) -> int:
            "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "epochs": a.epochs if a.epochs_set else "authors' config",
            "best_epoch": parsed["best_epoch"], "weights": "trained here with the authors' recipe", "average": parsed["average"],
            "published": {"mae": pub[0], "rmse": pub[1], "mape_pct": pub[2]}, "steps": parsed["steps"], "job": job,
-           "upstream": "LMissher/PatchSTG (MIT), " + ("Solver through patchstg_official, 4 loader workers" if f"{region} train: MAE" in text else "main.py run as released")}
+           "instances": len(pieces), "resumes": len(_RESUME.findall(text)),
+           "upstream": "LMissher/PatchSTG (MIT), " + ("Solver through patchstg_official, 4 loader workers, one epoch per train() call" if f"{region} train: MAE" in text else "main.py run as released")}
     rec["mae_gap_pct"] = round((rec["average"]["mae"] - pub[0]) / pub[0] * 100, 2)
     po.write(rec)
+    ev = REPO / "evidence/patchstg" / region                        # the log and the hashes behind the row
+    ev.mkdir(parents=True, exist_ok=True)
+    with gzip.open(ev / "train.log.gz", "wb") as fh:
+        fh.write(text.encode())
+    sha = lambda f: hashlib.sha256(f.read_bytes()).hexdigest()      # noqa: E731
+    weights = ck / f"{region.lower()}_model"
+    (ev / "record.json").write_text(json.dumps({**{k: rec[k] for k in ("region", "job", "weights", "upstream", "epochs", "best_epoch", "instances", "resumes", "average", "published", "mae_gap_pct", "generated_utc")},
+        "log": "train.log.gz", "log_sha256": hashlib.sha256(text.encode()).hexdigest(), "checkpoint": str(weights.relative_to(REPO)), "checkpoint_sha256": sha(weights) if weights.exists() else None,
+        "ledger": [json.loads(l) for l in (RESULTS / "aws_jobs.jsonl").read_text().splitlines() if json.loads(l).get("job") == job]}, indent=1))
     print(f"{region} trained: MAE {rec['average']['mae']} RMSE {rec['average']['rmse']} MAPE {rec['average']['mape_pct']} % "
           f"(published {pub[0]} / {pub[1]} / {pub[2]} %, gap {rec['mae_gap_pct']:+.2f} %); weights in {ck}")
     return 0
