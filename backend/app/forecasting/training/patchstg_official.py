@@ -97,6 +97,8 @@ def run(region: str, mode: str = "test", device: str = "cpu", epochs: int | None
     args = official_args(REPO / "config" / f"{region}.conf", workers)
     if epochs:
         args["max_epoch"] = epochs
+    if torch.cuda.is_available() and int(args["cuda"]) >= torch.cuda.device_count():
+        args["cuda"] = "0"                           # GBA/GLA/CA configs name GPU 7/4/6 of the authors' own machine
     (OUT / "patchstg_logs").mkdir(parents=True, exist_ok=True)
     args["log_file"] = str(OUT / "patchstg_logs" / f"{region}_{mode}.log")    # ours, so the authors' committed log/ stays untouched
     official.log = open(args["log_file"], "a")

@@ -66,6 +66,7 @@ rows of the same model on the same dataset; Protocol B numbers have no published
 | STID | PEMS-BAY | 1.32 / 1.64 / 1.92 | 1.31 / 1.64 / 1.91 | +0.6 / 0.0 / +0.5 % |
 | STAEformer | METR-LA | 2.67 / 2.98 / 3.35 | 2.65 / 2.97 / 3.34 | +0.9 / +0.5 / +0.3 % |
 | PatchSTG, authors' released weights | LargeST-SD (716 sensors, flow) | 16.85 / 29.57 / 11.01 % (12-step MAE / RMSE / MAPE) | 16.90 / 29.27 / 11.23 % | -0.3 % MAE |
+| PatchSTG, trained here (authors' `main.py`, their 50 epochs, best epoch 48) | LargeST-SD (716 sensors, flow) | 16.98 / 29.38 / 10.98 % (12-step MAE / RMSE / MAPE) | 16.90 / 29.27 / 11.23 % | +0.5 % MAE |
 | OpenCity-plus zero-shot | PEMS07M (held out of its pre-training) | 4.50 (12-step) | 4.50 | 0.0 % |
 | OpenCity-plus zero-shot | TrafficSH (held out) | 0.55 | 0.55 | 0.0 % |
 
@@ -77,7 +78,7 @@ with the official config unmodified except epochs and horizons; checkpoint SHA-2
 row in `results/forecasting/trained_results.csv`.
 The PatchSTG row is the authors' own `main.py` in test mode with their released SD checkpoint, run on this laptop's CPU in 87 s; the
 release carries no adjacency file, so their `construct_adj` rebuilt it from the training split, which is the only difference from
-their committed log (16.90 / 29.27 / 11.23). Rows for GBA, GLA and CA, and a training run on SD, follow in `results/forecasting/patchstg_largest.md`.
+their committed log (16.90 / 29.27 / 11.23). The trained SD row is `python main.py --config ./config/SD.conf` as released on an AWS g4dn.xlarge (Tesla T4), about 174 s per epoch. Released-weights rows for GBA, GLA and CA (+0.3 / -0.4 / +1.7 % MAE) are in `results/forecasting/patchstg_largest.md`; no model has been trained here on those three regions yet.
 
 Reading: the pipeline reproduces the field. That is the precondition for Protocol B meaning anything.
 

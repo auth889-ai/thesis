@@ -1,14 +1,17 @@
-"""A LargeST job: PatchSTG trained on one region with the authors' own `main.py`, on a GPU.
+"""A LargeST job: PatchSTG trained on one region with the authors' own code, on a GPU.
 
     python -m app.forecasting.training.aws_train --largest SD --launch --no-spot --max-hours 6
     python -m app.forecasting.training.aws_train --largest SD --collect
 
 The instance clones LMissher/PatchSTG at the pinned SHA, receives the region's flow array and the adjacency
-our released-weights test built with their `construct_adj` (so train and test patch the same way), and runs
-the authors' entrypoint exactly as their README says — `python main.py --config ./config/<REGION>.conf` —
-which trains for `max_epoch` and then tests the best epoch. Their first parser accepts `--config` alone and
-rejects anything else (the first SD job died on `unrecognized arguments: --num_workers 4`), so nothing else is
-passed; a shorter run is asked for through a copy of their config with `max_epoch` changed, never an option.
+our released-weights test built with their `construct_adj` (so train and test patch the same way), and trains
+through `patchstg_official --mode train`: the authors' `Solver` with the dictionary their argparse builds from
+`config/<REGION>.conf`, `train()` then `test()` of the best epoch. Their `main.py` itself cannot run on a rented
+single-GPU box for three reasons found by launching it: its first parser rejects every option but `--config`
+(`unrecognized arguments: --num_workers 4`), so its 32 loader workers are fixed and were killed for memory on GLA
+with 16 GB; and the GBA/GLA/CA configs name GPU 7/4/6 of the authors' machine (`invalid device ordinal`). SD, whose
+config says GPU 0 and whose data is small, did train with `python main.py --config ./config/SD.conf` as released.
+The switch passes their own `num_workers` option as 4 and falls back to GPU 0 when the named one is absent.
 
 Collect brings the log and the trained weights down, parses the per-step and average lines the authors'
 `metric` prints, and records the row beside the released-weights row in patchstg_largest.{json,md}.
@@ -45,12 +48,14 @@ done
 $PY -c "import torch;print('torch',torch.__version__,'cuda',torch.cuda.is_available(),torch.cuda.get_device_name(0))"
 $PY -m pip install -q timm scikit-learn pandas
 mkdir -p data/$RG cpt log && cp /home/ec2-user/in/flow$LRG.npz data/$RG/ && cp /home/ec2-user/in/adj.npy data/$RG/ 2>/dev/null || true
-CONF=./config/$RG.conf
-[ "$EPOCHS" != "0" ] && { sed "s/^max_epoch = .*/max_epoch = $EPOCHS/" ./config/$RG.conf > ./config/${RG}_short.conf; CONF=./config/${RG}_short.conf; }
-echo "=== TRAIN PatchSTG $RG (authors' main.py) ==="
-timeout $((@MAXH@ * 3600 - 1800)) $PY main.py --config $CONF 2>&1 | tee /tmp/PatchSTG_$RG.log
+W=/home/ec2-user/df/backend/app/forecasting/training                     # the switch finds results/ four levels up
+mkdir -p $W /home/ec2-user/.dhakaflow/upstream && cp /home/ec2-user/in/patchstg_official.py $W/
+ln -sfn /home/ec2-user/patchstg /home/ec2-user/.dhakaflow/upstream/PatchSTG
+EP=""; [ "$EPOCHS" != "0" ] && EP="--epochs $EPOCHS"
+echo "=== TRAIN PatchSTG $RG (authors' Solver, 4 loader workers) ==="
+HOME=/home/ec2-user timeout $((@MAXH@ * 3600 - 1800)) $PY $W/patchstg_official.py --region $RG --mode train --device cuda --workers 4 $EP 2>&1 | tee /tmp/PatchSTG_$RG.log
 aws s3 cp /tmp/PatchSTG_$RG.log s3://$BUCKET/jobs/$NAME/logs/ || true
-aws s3 cp log/${LRG}_log s3://$BUCKET/jobs/$NAME/logs/${LRG}_log || true
+aws s3 cp /home/ec2-user/df/results/forecasting/patchstg_logs/${RG}_train.log s3://$BUCKET/jobs/$NAME/logs/${LRG}_log || true
 aws s3 cp cpt/${LRG}_model s3://$BUCKET/jobs/$NAME/checkpoints/PatchSTG/$RG/${LRG}_model || true
 aws s3 cp /var/log/dhakaflow.log s3://$BUCKET/jobs/$NAME/logs/ || true
 echo DONE > /tmp/DONE && aws s3 cp /tmp/DONE s3://$BUCKET/jobs/$NAME/DONE
@@ -85,12 +90,13 @@ def largest_launch(a) -> int:
     if adj.exists():
         s3("cp", str(adj), f"{base}/in/adj.npy")
         print(f"[upload] adj.npy (built by their construct_adj during the released-weights test) -> {base}/in/")
+    s3("cp", po.__file__, f"{base}/in/patchstg_official.py")
     script = render(SCRIPT, NAME=job, BUCKET=BUCKET, SHA=PATCHSTG_SHA, REGION=region, LREGION=region.lower(),
                     EPOCHS=str(a.epochs if a.epochs_set else 0), MAXH=str(a.max_hours))
     iid, chosen, attempts = run_instance(a, script, job)
     if not iid:
         return 4
-    print(f"[launch] {iid} ({chosen[0]} {chosen[2]} in {chosen[1]}) after {len(attempts)} unavailable option(s); trains with the authors' main.py, uploads, terminates")
+    print(f"[launch] {iid} ({chosen[0]} {chosen[2]} in {chosen[1]}) after {len(attempts)} unavailable option(s); trains with the authors' Solver, uploads, terminates")
     entry = {"job": job, "instance": iid, "type": chosen[0], "region": REGION, "ami": AMI, "models": "PatchSTG", "datasets": f"LargeST-{region}",
              "epochs": a.epochs if a.epochs_set else "authors' config", "launched_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "s3": base + "/"}
     with open(RESULTS / "aws_jobs.jsonl", "a") as fh:
@@ -128,7 +134,8 @@ def largest_collect(a) -> int:
     ck = RESULTS / "checkpoints" / "PatchSTG" / region
     ck.mkdir(parents=True, exist_ok=True)
     s3("cp", f"{base}/checkpoints/PatchSTG/{region}/{region.lower()}_model", str(ck / f"{region.lower()}_model"), check=False)
-    parsed = parse_official_log((logs / f"{region}_train_aws.log").read_text(errors="ignore"))
+    text = (logs / f"{region}_train_aws.log").read_text(errors="ignore")
+    parsed = parse_official_log(text)
     if not parsed:
         print("the log has no test block yet (still training, or the cap hit before the test)")
         return 1
@@ -137,7 +144,7 @@ def largest_collect(a) -> int:
            "generated_utc": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()), "epochs": a.epochs if a.epochs_set else "authors' config",
            "best_epoch": parsed["best_epoch"], "weights": "trained here with the authors' recipe", "average": parsed["average"],
            "published": {"mae": pub[0], "rmse": pub[1], "mape_pct": pub[2]}, "steps": parsed["steps"], "job": job,
-           "upstream": "LMissher/PatchSTG (MIT), main.py run as released"}
+           "upstream": "LMissher/PatchSTG (MIT), " + ("Solver through patchstg_official, 4 loader workers" if f"{region} train: MAE" in text else "main.py run as released")}
     rec["mae_gap_pct"] = round((rec["average"]["mae"] - pub[0]) / pub[0] * 100, 2)
     po.write(rec)
     print(f"{region} trained: MAE {rec['average']['mae']} RMSE {rec['average']['rmse']} MAPE {rec['average']['mape_pct']} % "
