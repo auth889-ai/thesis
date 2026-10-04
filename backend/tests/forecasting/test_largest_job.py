@@ -8,7 +8,8 @@ from app.forecasting.training.aws.scripts import render
 def test_script_runs_the_authors_main_at_the_pinned_sha_with_no_placeholder_left():
     s = render(largest.SCRIPT, NAME="patchstg-sd", BUCKET="b", SHA=largest.PATCHSTG_SHA, REGION="SD", LREGION="sd", EPOCHS="0", MAXH="6")
     assert "git clone -q https://github.com/LMissher/PatchSTG.git" in s and largest.PATCHSTG_SHA in s
-    assert "main.py --config ./config/$RG.conf --num_workers 4 $EP" in s          # their command, their options only
+    assert "main.py --config $CONF 2>&1" in s and "CONF=./config/$RG.conf" in s      # their command; their first parser rejects any other option
+    assert "--num_workers" not in s and "--max_epoch" not in s
     assert "sed -i" not in s and "experiments/train.py" not in s                     # nothing of theirs edited, no other harness
     assert "timeout $((6 * 3600 - 1800))" in s and "shutdown -h now" in s
     assert "cpt/${LRG}_model s3://" in s                                             # the trained weights are the result

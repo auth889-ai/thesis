@@ -6,8 +6,9 @@
 The instance clones LMissher/PatchSTG at the pinned SHA, receives the region's flow array and the adjacency
 our released-weights test built with their `construct_adj` (so train and test patch the same way), and runs
 the authors' entrypoint exactly as their README says — `python main.py --config ./config/<REGION>.conf` —
-which trains for `max_epoch` and then tests the best epoch. Only two of their own command-line options are
-passed: `--num_workers` (the box has 4 vCPUs, their default is 32) and `--max_epoch` when asked.
+which trains for `max_epoch` and then tests the best epoch. Their first parser accepts `--config` alone and
+rejects anything else (the first SD job died on `unrecognized arguments: --num_workers 4`), so nothing else is
+passed; a shorter run is asked for through a copy of their config with `max_epoch` changed, never an option.
 
 Collect brings the log and the trained weights down, parses the per-step and average lines the authors'
 `metric` prints, and records the row beside the released-weights row in patchstg_largest.{json,md}.
@@ -44,9 +45,10 @@ done
 $PY -c "import torch;print('torch',torch.__version__,'cuda',torch.cuda.is_available(),torch.cuda.get_device_name(0))"
 $PY -m pip install -q timm scikit-learn pandas
 mkdir -p data/$RG cpt log && cp /home/ec2-user/in/flow$LRG.npz data/$RG/ && cp /home/ec2-user/in/adj.npy data/$RG/ 2>/dev/null || true
-EP=""; [ "$EPOCHS" != "0" ] && EP="--max_epoch $EPOCHS"
+CONF=./config/$RG.conf
+[ "$EPOCHS" != "0" ] && { sed "s/^max_epoch = .*/max_epoch = $EPOCHS/" ./config/$RG.conf > ./config/${RG}_short.conf; CONF=./config/${RG}_short.conf; }
 echo "=== TRAIN PatchSTG $RG (authors' main.py) ==="
-timeout $((@MAXH@ * 3600 - 1800)) $PY main.py --config ./config/$RG.conf --num_workers 4 $EP 2>&1 | tee /tmp/PatchSTG_$RG.log
+timeout $((@MAXH@ * 3600 - 1800)) $PY main.py --config $CONF 2>&1 | tee /tmp/PatchSTG_$RG.log
 aws s3 cp /tmp/PatchSTG_$RG.log s3://$BUCKET/jobs/$NAME/logs/ || true
 aws s3 cp log/${LRG}_log s3://$BUCKET/jobs/$NAME/logs/${LRG}_log || true
 aws s3 cp cpt/${LRG}_model s3://$BUCKET/jobs/$NAME/checkpoints/PatchSTG/$RG/${LRG}_model || true
