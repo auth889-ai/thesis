@@ -18,7 +18,7 @@ export const STATUS_TONE: Record<GoalStatus, "ok" | "warn" | "bad" | "info" | "n
 export const STATUS_WORDS: Record<GoalStatus, string> = {proposed: "waiting for you to start", planning: "planning", running: "working", waiting_approval: "needs your approval", waiting_user: "has a question", done: "done", failed: "failed", cancelled: "cancelled"};
 
 /** The user id is a session-scoped identity until accounts exist; it is read once here. */
-import {stableUserId} from "@/lib/profile";
+import {stableUserId} from "@/lib/userId";
 
 /** The person this browser belongs to: generated once, kept in this browser, filed under on the server (accounts come later). */
 export const USER_ID = stableUserId();

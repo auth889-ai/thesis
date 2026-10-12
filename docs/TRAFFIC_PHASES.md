@@ -47,7 +47,7 @@ negative result. These rows stay on the leaderboard.
 ### P2 · The onset scorecard — our evaluation on every model so far
 - Papers: the regime-failure finding, *Do TSFM benchmarks hide regime-dependent failures?*, ICML 2026 workshop,
   https://arxiv.org/abs/2606.18367; metric definitions follow Li et al. 2018 masking.
-- Code: ours (`backend/app/forecasting/evaluation`), extended; no upstream.
+- Code: ours (`core/ml/forecasting/evaluation`), extended; no upstream.
 - Implement: congestion-regime MAE, onset detection rate, lead time, interval coverage at transitions for GWNet, STID,
   STAEformer, DCRNN, persistence, HA, Chronos.
 - Web feature: F4 onset page.

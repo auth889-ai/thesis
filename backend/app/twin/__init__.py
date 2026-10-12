@@ -1,1 +1,1 @@
-"""SUMO command construction, TraCI execution, and measured traffic metrics."""
+"""The twin API (HTTP routes); the SUMO twin is in core/simulation/twin."""

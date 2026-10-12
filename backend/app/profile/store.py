@@ -5,7 +5,7 @@ import sqlite3
 import threading
 from datetime import datetime, timezone
 
-from app.paths import REPO
+from core.common.paths import REPO
 
 DB = REPO / "results/live/agent/profiles.sqlite"
 _LOCK = threading.Lock()

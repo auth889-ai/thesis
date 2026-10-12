@@ -6,6 +6,7 @@
 | SD | 716 | trained here with the authors' recipe | 16.9825 | 29.375 | 10.98 | 16.9 / 29.27 / 11.23 | +0.49 % | cuda (AWS g4dn.xlarge) | None s |
 | GBA | 2352 | authors' released checkpoint | 19.5658 | 33.0628 | 14.8939 | 19.5 / 33.16 / 14.64 | +0.34 % | cpu | 479.7 s |
 | GLA | 3834 | authors' released checkpoint | 18.8908 | 31.9988 | 11.3391 | 18.96 / 32.33 / 11.44 | -0.36 % | cpu | 358.3 s |
+| GLA | 3834 | trained here with the authors' recipe | 18.8954 | 32.3152 | 11.26 | 18.96 / 32.33 / 11.44 | -0.34 % | cuda (AWS g4dn.2xlarge (spot) then g5.2xlarge (on-demand) then g5.2xlarge (on-demand)) | None s |
 | CA | 8600 | authors' released checkpoint | 17.6439 | 29.9393 | 12.3514 | 17.35 / 29.79 / 12.79 | +1.69 % | cpu | 1178.9 s |
 
 Regenerate: `python -m app.forecasting.training.patchstg_official --region <SD|GBA|GLA|CA> [--mode train]`.

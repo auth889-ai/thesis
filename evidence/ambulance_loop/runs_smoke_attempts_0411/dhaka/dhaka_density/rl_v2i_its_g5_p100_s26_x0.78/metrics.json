@@ -1,0 +1,76 @@
+{
+ "city_id": "dhaka",
+ "demand_id": "dhaka_density",
+ "arm": "rl_v2i",
+ "signals": "sumo-rl Q-learning (frozen)",
+ "signals_controlled": [
+  "6904866115",
+  "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+  "cluster_10139575501_2446124135_2446124154_3501293480"
+ ],
+ "v2i": true,
+ "technology": "its_g5",
+ "equipped_share": 1.0,
+ "seed": 26,
+ "scale": 0.78,
+ "design": "Su et al., EMVLight, AAAI 2022, arXiv:2109.05429 (design idea only: primary = the junction being entered, secondary = the next one)",
+ "wall_s": 5.5,
+ "run_utc": "2026-10-11T22:14:08.654638+00:00",
+ "makeway": {
+  "version": 2,
+  "distance_m": 100,
+  "keep_strategic": true
+ },
+ "state": "sumo_crashed",
+ "departed_s": 901.0,
+ "arrived_s": null,
+ "messages": {
+  "sent": 75,
+  "delivered": 7,
+  "lost": 1,
+  "out_of_range": 67
+ },
+ "vehicles_alerted": 2,
+ "junctions_preempted": [
+  "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+  "cluster_10139575501_2446124135_2446124154_3501293480"
+ ],
+ "messages_per_junction": {
+  "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+   "sent": 35,
+   "delivered": 1,
+   "lost": 0,
+   "out_of_range": 34
+  },
+  "cluster_10139575501_2446124135_2446124154_3501293480": {
+   "sent": 34,
+   "delivered": 1,
+   "lost": 0,
+   "out_of_range": 33
+  }
+ },
+ "preemption_events": [
+  {
+   "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+   "what": "informed",
+   "t": 949.0
+  },
+  {
+   "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+   "what": "released",
+   "t": 966.0
+  },
+  {
+   "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+   "what": "informed",
+   "t": 968.0
+  }
+ ],
+ "crash": "'cluster_10139575489_10139575490_1720308864_225181943_#4more'",
+ "ambulance": {
+  "arrived": false,
+  "travel_time_s": null
+ },
+ "others": null,
+ "teleports": null
+}

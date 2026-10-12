@@ -4,6 +4,7 @@ import {Link} from "react-router-dom";
 
 import {Segmented} from "@/components/Tabs";
 import {Button, Card, Loading} from "@/components/ui";
+import {useT} from "@/i18n";
 import {useNetwork, useRoad} from "./hooks";
 import {Inspector} from "./Inspector";
 import {fmtT, HORIZONS, modelName, type Dataset, type Horizon} from "./model";
@@ -16,6 +17,7 @@ import "./forecast.css";
 
 /** A city with a sensor network and a validated model: every measured road now and +15/+30/+60, the ranked changes, the selected road. */
 export function SensorCity({ds}: {ds: Dataset}) {
+  const t = useT();
   const {mode, setMode, moment, setMoment, asOf} = useDataset();
   const [horizon, setHorizon] = useState<Horizon>("30");
   const [split, setSplit] = useState(false);
@@ -40,25 +42,25 @@ export function SensorCity({ds}: {ds: Dataset}) {
   return (
     <div className="stack tf">
       <div className="row tf-ctrl">
-        <Segmented items={[{key: "latest", label: "Latest data"}, {key: "replay", label: "A past moment"}]} value={mode} onChange={(m) => { setMode(m); if (m === "replay" && !moment && n) setMoment(String(n.held_out.moments[Math.floor(n.held_out.moments.length / 2)]?.index ?? "")); }} />
-        {mode === "replay" && n && <select value={moment} onChange={(e) => setMoment(e.target.value)} aria-label="Moment">{n.held_out.moments.map((m) => <option key={m.index} value={m.index}>{fmtT(m.utc)}</option>)}</select>}
-        <Segmented items={HORIZONS.map((h) => ({key: h, label: h === "now" ? "NOW" : `+${h} MIN`}))} value={horizon} onChange={(h) => { setPlaying(false); setHorizon(h); }} />
-        <Button kind="ghost" onClick={() => setPlaying(!playing)}>{playing ? "❚❚ Pause" : "▶ Play the hour"}</Button>
-        <Button kind={split ? "primary" : "ghost"} onClick={() => setSplit(!split)}>Now ↔ later</Button>
-        {n && <span className="muted small">computed just now from data at <b>{fmtT(n.as_of_utc)}</b> · {modelName(n.model)}{n.provenance.inference_seconds != null ? ` · ${n.provenance.inference_seconds.toFixed(2)} s` : ""}</span>}
+        <Segmented items={[{key: "latest", label: t("city.latest")}, {key: "replay", label: t("city.pastMoment")}]} value={mode} onChange={(m) => { setMode(m); if (m === "replay" && !moment && n) setMoment(String(n.held_out.moments[Math.floor(n.held_out.moments.length / 2)]?.index ?? "")); }} />
+        {mode === "replay" && n && <select value={moment} onChange={(e) => setMoment(e.target.value)} aria-label={t("city.moment")}>{n.held_out.moments.map((m) => <option key={m.index} value={m.index}>{fmtT(m.utc)}</option>)}</select>}
+        <Segmented items={HORIZONS.map((h) => ({key: h, label: h === "now" ? t("city.now") : t("city.plusMin", {n: h})}))} value={horizon} onChange={(h) => { setPlaying(false); setHorizon(h); }} />
+        <Button kind="ghost" onClick={() => setPlaying(!playing)}>{playing ? t("city.pause") : t("city.play")}</Button>
+        <Button kind={split ? "primary" : "ghost"} onClick={() => setSplit(!split)}>{t("city.nowLater")}</Button>
+        {n && <span className="muted small">{t("city.computedFrom")} <b>{fmtT(n.as_of_utc)}</b> · {modelName(n.model)}{n.provenance.inference_seconds != null ? ` · ${n.provenance.inference_seconds.toFixed(2)} s` : ""}</span>}
       </div>
       {net.isError && <div className="note bad">{(net.error as Error).message}</div>}
-      {!net.isError && !n && (net.isFetching ? <div className="note">Running the model on every sensor… the first load also reads the road network, a few seconds.</div> : <div className="note warn">No mapped forecast for this city yet.</div>)}
+      {!net.isError && !n && (net.isFetching ? <div className="note">{t("city.running")}</div> : <div className="note warn">{t("city.noMapped")}</div>)}
       <div className="grid wide">
         <div className={`tf-maps ${split ? "split" : ""}`}>
-          <NetworkMap net={n} horizon={split ? "now" : horizon} onSelect={setRoad} onMove={setMapA} caption={<>{split || horizon === "now" ? "NOW" : `+${horizon} MIN · ${modelLabel}`}<small>{split || horizon === "now" ? `measured · ${fmtT(n?.as_of_utc)}` : "predicted"}</small></>} />
-          {split && <NetworkMap net={n} horizon={futureH} onSelect={setRoad} syncWith={mapA} caption={<>+{futureH} MIN · {modelLabel}<small>predicted</small></>} />}
+          <NetworkMap net={n} horizon={split ? "now" : horizon} onSelect={setRoad} onMove={setMapA} caption={<>{split || horizon === "now" ? t("city.now") : `${t("city.plusMin", {n: horizon})} · ${modelLabel}`}<small>{split || horizon === "now" ? `${t("city.measured")} · ${fmtT(n?.as_of_utc)}` : t("city.predicted")}</small></>} />
+          {split && <NetworkMap net={n} horizon={futureH} onSelect={setRoad} syncWith={mapA} caption={<>{t("city.plusMin", {n: futureH})} · {modelLabel}<small>{t("city.predicted")}</small></>} />}
         </div>
-        <Card title={<>What changes by <span className="muted">+{futureH} min</span></>}>{n ? <Inspector net={n} horizon={horizon} onSelect={setRoad} /> : <Loading what="waiting for the forecast" />}</Card>
+        <Card title={<>{t("city.whatChangesBy")} <span className="muted">{t("city.plusMinLower", {n: futureH})}</span></>}>{n ? <Inspector net={n} horizon={horizon} onSelect={setRoad} /> : <Loading what={t("city.waiting")} />}</Card>
       </div>
-      <Card title="Selected road" right={<Link className="btn ghost small" to="/lab/models">How good is the model? →</Link>}>{n ? <RoadPanel net={n} node={road} asOf={asOf} /> : <Loading />}</Card>
-      <Card title="Leave when?" sub="the corridor from the selected road, forecast per leg, and the latest departure that still meets your deadline at 90 %"><LeaveWhen from={road} asOf={asOf} model={n?.model ?? null} /></Card>
-      <Card title="About to tip" sub="roads the model forecasts into congestion within the hour at this moment; watch one to be told"><OnsetNow dataset={ds.id} asOf={asOf} model={n?.model ?? null} onPick={setRoad} /></Card>
+      <Card title={t("city.selectedRoad")} right={<Link className="btn ghost small" to="/lab/models">{t("city.howGood")}</Link>}>{n ? <RoadPanel net={n} node={road} asOf={asOf} /> : <Loading />}</Card>
+      <Card title={t("city.leaveWhen")} sub={t("city.leaveWhenSub")}><LeaveWhen from={road} asOf={asOf} model={n?.model ?? null} /></Card>
+      <Card title={t("city.aboutToTip")} sub={t("city.aboutToTipSub")}><OnsetNow dataset={ds.id} asOf={asOf} model={n?.model ?? null} onPick={setRoad} /></Card>
     </div>
   );
 }

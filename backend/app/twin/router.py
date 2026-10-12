@@ -2,10 +2,10 @@
 from __future__ import annotations
 
 import threading
-from app import evidence_paths as config
-from app.twin.live import runtime as live_sim_mod
-from app.twin.live import command_handler as sim_agent
-from app.twin.live import network_comparison as twin_compare
+from core.common import evidence_paths as config
+from core.simulation.twin.live import runtime as live_sim_mod
+from core.simulation.twin.live import command_handler as sim_agent
+from core.simulation.twin.live import network_comparison as twin_compare
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -68,7 +68,7 @@ def twin_test_start(payload: dict | None = None):
     forecast become the SUMO scenario (probe vehicle for that exact trip in every arm).
     404 ANALYSIS_RUN_NOT_FOUND when the run id is unknown; SUMO_OD_MAPPING_FAILED when the
     trip cannot be snapped to drivable edges — never a stored or fixed scenario."""
-    from app.twin.live import trip_comparison as twin_test
+    from core.simulation.twin.live import trip_comparison as twin_test
     r = twin_test.start(payload or {})
     if not r.get("started") and r.get("http") == 404:
         from fastapi.responses import JSONResponse
@@ -78,7 +78,7 @@ def twin_test_start(payload: dict | None = None):
 
 @router.get("/api/twin/test/{simulation_run_id}", tags=["twin"])
 def twin_test_status(simulation_run_id: str):
-    from app.twin.live import trip_comparison as twin_test
+    from core.simulation.twin.live import trip_comparison as twin_test
     return twin_test.status(simulation_run_id)
 
 
@@ -93,6 +93,15 @@ def twin_compare_start(payload: dict):
 @router.get("/api/twin/compare/{job}", tags=["twin"])
 def twin_compare_status(job: str):
     return twin_compare.status(job)
+
+
+@router.get("/api/twin/scene/{city_id}", tags=["twin"])
+def twin_scene(city_id: str, buildings: bool = True):
+    """What the 3D view draws for a city: roads, signal positions and, unless `buildings=false`, the building outlines
+    fetched when the city was built. Simulated, and labelled so."""
+    from core.simulation.twin import scene
+    s = scene.build(city_id)
+    return s if buildings or not s.get("available") else {**s, "buildings": {"type": "FeatureCollection", "features": []}}
 
 
 @router.get("/api/twin/networks", tags=["twin"])
@@ -111,8 +120,8 @@ def twin_generate_network(payload: dict):
     import sys as _sys
     import uuid as _uuid
     _sys.path.insert(0, str(config.REPO))
-    from app.twin import scenario_builder as sumo_scenario
-    from app.data.cities import registry
+    from core.simulation.twin import scenario_builder as sumo_scenario
+    from core.common.data.cities import registry
     job = "net_" + _uuid.uuid4().hex[:8]
     _NET_JOBS[job] = {"job": job, "status": "running", "stage": "creating city"}
 

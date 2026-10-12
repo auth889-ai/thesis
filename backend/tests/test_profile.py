@@ -52,7 +52,7 @@ def test_a_floating_calendar_time_is_read_in_the_persons_zone():
 
 
 def test_locate_names_the_city_at_a_point(monkeypatch):
-    from app.routing.trip import places
+    from core.simulation.routing.trip import places
     monkeypatch.setattr(places, "reverse_geocode", lambda lat, lng: {"display_name": "Farmgate, Dhaka, Bangladesh", "address": {"city": "Dhaka", "country": "Bangladesh"}})
     assert service.locate(23.75, 90.39)["city"] == "Dhaka"
 

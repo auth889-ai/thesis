@@ -6,8 +6,8 @@ import time
 
 import pytest
 
-from app.forecasting.training.aws import cli, ec2, largest, largest_script
-from app.forecasting.training.aws.scripts import WATCHDOG, render
+from core.ml.forecasting.training.aws import cli, ec2, largest, largest_script
+from core.ml.forecasting.training.aws.scripts import WATCHDOG, render
 
 
 def _script(maxh="8"):

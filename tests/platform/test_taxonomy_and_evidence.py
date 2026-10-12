@@ -9,9 +9,9 @@ from __future__ import annotations
 
 import pytest
 
-from app.common.model_registry import (EvidenceDomain, MetricBlock,
+from core.common.model_registry import (EvidenceDomain, MetricBlock,
                                              ModelEntry, ModelStatus)
-from app.perception.taxonomy import (MAPPINGS, ClassMapping, DhakaFlowClass,
+from core.ml.perception.taxonomy import (MAPPINGS, ClassMapping, DhakaFlowClass,
                                            MappingQuality, coverage_report,
                                            cross_dataset_conflicts, mapping_for,
                                            open_decisions, trainable_classes)

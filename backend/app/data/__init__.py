@@ -1,1 +1,1 @@
-"""Evidence storage and provenance, separate from generated data directories."""
+"""The data API (HTTP routes); the data code is in core/common/data."""

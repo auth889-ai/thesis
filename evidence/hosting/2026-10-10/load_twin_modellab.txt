@@ -1,0 +1,39 @@
+--- memory before
+Mem:           15783        5939        1714           3        8481        9843
+  RSS COMMAND
+4770156 valhalla_servic
+607660 uvicorn
+493544 valhalla_servic
+92172 dockerd
+56432 containerd
+0
+
+
+twin twin-d7e3188022 start 0.63 s
+twin running at sim 922.0
+--- memory twin running + Model Lab call 1
+Mem:           15783        6223        1405           3        8507        9560
+  RSS COMMAND
+4770156 valhalla_servic
+1122340 uvicorn
+493544 valhalla_servic
+103168 sumo
+92172 dockerd
+0
+
+
+Model Lab call 1: 0.48 s ok=True rq1_check={'file': 'METR-LA_test_w120_n207_s11.npz', 'window': 0, 'max_abs_diff_mph': 3.814697265625e-06, 'equal': True}
+Model Lab call 2: 0.47 s ok=True
+twin sim t after calls 978.0
+{'stopping': 'twin-d7e3188022'}
+--- memory after stop
+Mem:           15783        6184        1469           3        8482        9598
+  RSS COMMAND
+4770156 valhalla_servic
+1070884 uvicorn
+493544 valhalla_servic
+92172 dockerd
+56516 containerd
+0
+
+

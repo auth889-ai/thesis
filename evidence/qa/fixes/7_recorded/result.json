@@ -1,0 +1,46 @@
+{
+ "fix": "7_recorded",
+ "ranks": "7",
+ "change": "DhaTraX MANIFEST.json, replay/ and the two Traffic_Analysis summaries packaged (CC BY 4.0); 'on this computer' wording replaced. The first deploy packaged the manifest without the summaries and broke whole-city routes (500) for about 16 min (23:33–23:49 +06) until redeployed; a test now runs every recorded reader. The QA check now requires recorded vehicles, not only a reason",
+ "regression_test": "backend/tests/test_hosted_package.py::test_recorded_replay_files_are_packaged, ::test_every_recorded_reader_reads_only_packaged_files",
+ "before_pass": "8/8",
+ "after_pass": "6/6",
+ "after_runs": [
+  {
+   "run": "F6-desktop-dhaka-1",
+   "ok": true,
+   "ms": 16304,
+   "reason": null
+  },
+  {
+   "run": "F6-desktop-dhaka-2",
+   "ok": true,
+   "ms": 16266,
+   "reason": null
+  },
+  {
+   "run": "F6-desktop-dhaka-3",
+   "ok": true,
+   "ms": 16365,
+   "reason": null
+  },
+  {
+   "run": "F6-phone-dhaka-1",
+   "ok": true,
+   "ms": 16374,
+   "reason": null
+  },
+  {
+   "run": "F6-phone-dhaka-2",
+   "ok": true,
+   "ms": 16268,
+   "reason": null
+  },
+  {
+   "run": "F6-phone-dhaka-3",
+   "ok": true,
+   "ms": 16414,
+   "reason": null
+  }
+ ]
+}

@@ -1,0 +1,46 @@
+{
+ "fix": "9_bangla_turns",
+ "ranks": "9",
+ "change": "the spoken Bangla turn no longer reads our own sentence back as a road name; recognised by its text because Ferrostar's core copies the route (attempt 2 relied on a mark the copy dropped, 0/6)",
+ "regression_test": "frontend/src/features/today/bannerText.test.ts (3); QA check F4 fails on a doubled phrase",
+ "before_pass": "6/8",
+ "after_pass": "6/6",
+ "after_runs": [
+  {
+   "run": "F4-desktop-dhaka-1",
+   "ok": true,
+   "ms": 34171,
+   "reason": null
+  },
+  {
+   "run": "F4-desktop-dhaka-2",
+   "ok": true,
+   "ms": 34709,
+   "reason": null
+  },
+  {
+   "run": "F4-desktop-dhaka-3",
+   "ok": true,
+   "ms": 33151,
+   "reason": null
+  },
+  {
+   "run": "F4-phone-dhaka-1",
+   "ok": true,
+   "ms": 33176,
+   "reason": null
+  },
+  {
+   "run": "F4-phone-dhaka-2",
+   "ok": true,
+   "ms": 33184,
+   "reason": null
+  },
+  {
+   "run": "F4-phone-dhaka-3",
+   "ok": true,
+   "ms": 32735,
+   "reason": null
+  }
+ ]
+}

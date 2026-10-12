@@ -1,0 +1,70 @@
+{
+ "base": "http://127.0.0.1:8011/",
+ "when": "2026-10-10T04:01:19.601Z",
+ "checks": [
+  {
+   "name": "the trip pack holds our map style, sprite and glyphs (under /app/)",
+   "ok": true,
+   "detail": "23 assets"
+  },
+  {
+   "name": "offline, Home loads our own style from /app/liberty/",
+   "ok": true,
+   "detail": "{\"own_style\":1,\"pack_tiles\":0,\"glyphs\":11}"
+  },
+  {
+   "name": "offline, no tiles from the online provider; the trip pack holds our tiles",
+   "ok": true,
+   "detail": "0 provider requests, 31 tiles in the pack"
+  },
+  {
+   "name": "offline, the saved trip's route is shown again",
+   "ok": true
+  },
+  {
+   "name": "offline, the map is drawn (not blank)",
+   "ok": true,
+   "detail": "74 colours"
+  },
+  {
+   "name": "no request answered 404 (favicon aside)",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "not_found": [],
+ "pack_text": "Saved: 9.9 MB, 30 map tiles.",
+ "pack_assets": [
+  "/app/liberty/style.json",
+  "/app/liberty/sprite/ofm.json",
+  "/app/liberty/sprite/ofm.png",
+  "/app/liberty/sprite/ofm@2x.json",
+  "/app/liberty/sprite/ofm@2x.png",
+  "/app/fonts/Noto%20Sans%20Regular/0-255.pbf",
+  "/app/fonts/Noto%20Sans%20Regular/256-511.pbf",
+  "/app/fonts/Noto%20Sans%20Regular/768-1023.pbf",
+  "/app/fonts/Noto%20Sans%20Regular/2304-2559.pbf",
+  "/app/fonts/Noto%20Sans%20Regular/7680-7935.pbf",
+  "/app/fonts/Noto%20Sans%20Regular/8192-8447.pbf",
+  "/app/fonts/Noto%20Sans%20Italic/0-255.pbf",
+  "/app/fonts/Noto%20Sans%20Italic/256-511.pbf",
+  "/app/fonts/Noto%20Sans%20Italic/768-1023.pbf",
+  "/app/fonts/Noto%20Sans%20Italic/2304-2559.pbf",
+  "/app/fonts/Noto%20Sans%20Italic/7680-7935.pbf",
+  "/app/fonts/Noto%20Sans%20Italic/8192-8447.pbf",
+  "/app/fonts/Noto%20Sans%20Bold/0-255.pbf",
+  "/app/fonts/Noto%20Sans%20Bold/256-511.pbf",
+  "/app/fonts/Noto%20Sans%20Bold/768-1023.pbf",
+  "/app/fonts/Noto%20Sans%20Bold/2304-2559.pbf",
+  "/app/fonts/Noto%20Sans%20Bold/7680-7935.pbf",
+  "/app/fonts/Noto%20Sans%20Bold/8192-8447.pbf"
+ ],
+ "offline_resources": {
+  "own_style": 1,
+  "pack_tiles": 0,
+  "glyphs": 11
+ },
+ "pack_tiles_stored": 31,
+ "blank_check": "74 colours",
+ "offline_s": 11
+}

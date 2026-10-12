@@ -16,6 +16,9 @@ class Fix(BaseModel):
     accuracy_m: float | None = None
     heading: float | None = None
     speed_kmh: float | None = None
+    net_type: str | None = Field(default=None, max_length=12)      # navigator.connection.effectiveType: slow-2g | 2g | 3g | 4g (the signal history)
+    downlink_mbps: float | None = Field(default=None, ge=0)
+    rtt_ms: float | None = Field(default=None, ge=0)
 
 
 class Batch(BaseModel):

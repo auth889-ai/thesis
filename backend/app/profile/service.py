@@ -57,7 +57,7 @@ def context(user_id: str) -> dict:
 
 def locate(lat: float, lng: float) -> dict:
     """The city at a point, from OpenStreetMap's reverse geocoder; the person confirms it."""
-    from app.routing.trip.places import reverse_geocode
+    from core.simulation.routing.trip.places import reverse_geocode
     hit = reverse_geocode(lat, lng)
     a = hit.get("address", {})
     city = a.get("city") or a.get("town") or a.get("municipality") or a.get("county") or a.get("state") or hit.get("display_name", "").split(",")[0]

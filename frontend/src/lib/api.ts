@@ -3,14 +3,34 @@
  * backend's OpenAPI document (api.types.d.ts, `npm run api:types`); shapes that document leaves loose
  * are narrowed in the feature that owns them.
  */
+import type {Buildings} from "./buildingStyle";
+
+export type Satellite = {tiles: string; attribution: string; captured: string; resolution_m: number; maxzoom: number};
+
 export class ApiError extends Error {
   constructor(public status: number, message: string) { super(message); }
 }
 
 export type Json = Record<string, any>;
 
+const PACK_FIRST = /^\/api\/(route|trip)\//;                  // the route, the trip and its signal plan; never alerts
+
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
-  const r = await fetch(path, init);
+  let r: Response;
+  if ((!init?.method || init.method === "GET") && PACK_FIRST.test(path)) {   // a saved trip's route answers are used first: fetched while the signal was good (the point of the trip pack)
+    const {fromAnyPack} = await import("./pack");
+    const saved = await fromAnyPack(new URL(path, location.origin).toString());
+    if (saved) return (await saved.json()) as T;
+  }
+  try {
+    r = await fetch(path, init);
+  } catch (err) {                                     // no network: a GET answer saved in a trip pack stands in, and says so through its header
+    if (init?.method && init.method !== "GET") throw err;
+    const {fromAnyPack} = await import("./pack");
+    const hit = await fromAnyPack(new URL(path, location.origin).toString());
+    if (!hit) throw err;
+    r = hit;
+  }
   let body: any = null;
   try { body = await r.json(); } catch { /* no JSON body */ }
   if (!r.ok) {
@@ -19,7 +39,7 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   }
   return body as T;
 }
-export const get = <T = Json,>(p: string) => request<T>(p, {headers: {Accept: "application/json"}});
+export const get = <T = Json,>(p: string, signal?: AbortSignal) => request<T>(p, {headers: {Accept: "application/json"}, signal});
 export const post = <T = Json,>(p: string, body: unknown = {}) => request<T>(p, {method: "POST", headers: {"Content-Type": "application/json", Accept: "application/json"}, body: JSON.stringify(body)});
 export const del = <T = Json,>(p: string) => request<T>(p, {method: "DELETE", headers: {Accept: "application/json"}});
 export const postForm = <T = Json,>(p: string, form: FormData) => request<T>(p, {method: "POST", body: form});
@@ -27,8 +47,9 @@ const q = (o: Record<string, string | number | boolean | null | undefined>) => O
 
 export const api = {
   health: () => get("/api/health"),
-  mapConfig: () => get<{tiles?: string; attribution?: string}>("/api/config/map"),
-  profile: (user_id: string) => get(`/api/profile?${q({user_id})}`),
+  mapConfig: () => get<{provider?: string; style?: string; tiles?: string; attribution?: string; buildings?: Buildings; satellite?: Satellite}>("/api/config/map"),
+  profile: (user_id: string) => get(api.profileUrl(user_id)),
+  profileUrl: (user_id: string) => `/api/profile?${q({user_id})}`,
   saveProfile: (user_id: string, edit: Record<string, unknown>) => request(`/api/profile`, {method: "PUT", headers: {"Content-Type": "application/json", Accept: "application/json"}, body: JSON.stringify({user_id, ...edit})}),
   locate: (lat: number, lng: number) => post("/api/profile/locate", {lat, lng}),
   compile: (person_id: string, text: string, save = false) => post("/api/lifeos/compile", {person_id, text, save}),
@@ -54,8 +75,9 @@ export const api = {
   postProbes: (body: {device_id: string; city: string; points: unknown[]}) => post("/api/probes", body),
   probeCells: (city: string, minutes = 30) => get<{city: string; cells: any[]}>(`/api/probes/cells?${q({city, minutes})}`),
   probeStatus: (city: string) => get(`/api/probes/status?${q({city})}`),
-  places: (city = "dhaka", search = "") => get(`/api/places?${q({city, q: search})}`),
-  cities: () => get("/api/operate/cities"),
+  places: (city = "dhaka", search = "", signal?: AbortSignal) => get(`/api/places?${q({city, q: search})}`, signal),
+  cities: () => get(api.citiesUrl),
+  citiesUrl: "/api/operate/cities",
   models: (city: string) => get(`/api/operate/models?${q({city})}`),
   commutePlan: (body: Json) => post("/api/commute/plan", body),
   commuteWatch: (body: {city: string; origin: string; destination: string}) => post("/api/commute/watch", body),
@@ -97,7 +119,46 @@ export const api = {
   executionCancel: (id: string) => post(`/api/research/executions/${encodeURIComponent(id)}/cancel`),
   executionControl: (id: string, body: Json) => post(`/api/research/executions/${encodeURIComponent(id)}/controls`, body),
   executionTrace: (id: string, arm: string, vehicle: string, after = 0) => get(`/api/research/executions/${encodeURIComponent(id)}/trace?${q({arm, vehicle, after})}`),
+  // add your city
+  citySearch: (name: string) => get(`/api/cities/search?${q({q: name})}`),
+  cityAdd: (body: Json) => post("/api/cities", body),
+  cityJob: (job: string) => get(`/api/cities/jobs/${encodeURIComponent(job)}`),
+  // simulated twin
+  routeSignal: (city: string, origin: string, destination: string, profile: string) => get(`/api/route/${encodeURIComponent(city)}/signal?${q({origin, destination, profile})}`),
+  routeSignalUrl: (city: string, origin: string, destination: string, profile: string) => `/api/route/${encodeURIComponent(city)}/signal?${q({origin, destination, profile})}`,
+  routeUrl: (city: string, origin: string, destination: string, profile: string, at?: string | null) => `/api/route/${encodeURIComponent(city)}?${q({origin, destination, profile, at})}`,
+  /** What a trip pack keeps for one trip: the answers Home needs to open at all (the city list, the visitor's profile; QA 2026-10-07 rank 6:
+   * offline, Home stopped at "could not load the list of cities"), then the trip's own route, trip, alerts and signal answers. */
+  packUrls: (city: string, origin: string, destination: string, profile: string, userId: string) => [api.citiesUrl, api.profileUrl(userId),
+    api.routeUrl(city, origin, destination, profile), api.tripUrl(city, origin, destination), `/api/alerts/feed?${q({city_id: city})}`, api.routeSignalUrl(city, origin, destination, profile)],
+  tripUrl: (city: string, origin: string, destination: string, recorded_at?: string | null) => `/api/trip/${encodeURIComponent(city)}?${q({origin, destination, recorded_at})}`,
+  prefetchResults: () => get("/api/networking/prefetch"),
+  tilesInfo: (city: string) => get(`/api/tiles/${encodeURIComponent(city)}/info`),
+  route: (city: string, origin: string, destination: string, profile: string, at?: string | null) => get(`/api/route/${encodeURIComponent(city)}?${q({origin, destination, profile, at})}`),
+  trip: (city: string, origin: string, destination: string, recorded_at?: string | null) => get(`/api/trip/${encodeURIComponent(city)}?${q({origin, destination, recorded_at})}`),
+  recordedReplay: (city: string, at: string, seconds = 60) => get(`/api/recorded/${encodeURIComponent(city)}/replay?${q({at, seconds})}`),
+  alertsFeed: (city_id: string) => get(`/api/alerts/feed?${q({city_id})}`),
+  twinScene: (city: string) => get(`/api/twin/scene/${encodeURIComponent(city)}?buildings=false`),
+  simState: () => get("/api/sim/live/state"),
+  simStart: (body: Json) => post("/api/sim/live/start", body),
+  simPause: () => post("/api/sim/live/pause"),
+  simResume: () => post("/api/sim/live/resume"),
+  simStop: () => post("/api/sim/live/stop"),
+  emergencyStart: (body: Json) => post("/api/emergency/runs", body),
+  emergencyResults: (city: string) => get(`/api/emergency/results/${encodeURIComponent(city)}`),
+  emergencyReach: (city: string, points = true) => get(`/api/emergency/reach/${encodeURIComponent(city)}?points=${points}`),
+  emergencyNearest: (city: string, lat: number, lon: number, k = 3) => get(`/api/emergency/reach/${encodeURIComponent(city)}/nearest?${q({lat, lon, k})}`),
+  sosResults: () => get("/api/emergency/sos/results"),
+  sosTrace: (kind: string) => get(`/api/emergency/sos/trace/${encodeURIComponent(kind)}`),
+  sosPath: (city: string, online: boolean, peak_g: number | null) => get(`/api/emergency/sos/path/${encodeURIComponent(city)}?${q({online, peak_g})}`),
+  sosTest: (body: {city_id: string; peak_g: number | null; online: boolean; source: string}) => post("/api/emergency/sos/test", body),
+  emergencyIsochrone: (city: string, lat: number, lon: number) => get(`/api/emergency/reach/${encodeURIComponent(city)}/isochrone?${q({lat, lon})}`),
+  meshResults: (city: string) => get(`/api/mesh/results/${encodeURIComponent(city)}`),
   // evidence
+  emergencyRq2: () => get("/api/emergency/rq2"),
+  emergencyRq2Figure: (name: string) => `/api/emergency/rq2/figures/${encodeURIComponent(name)}`,
+  forecastingRq1: () => get("/api/forecasting/rq1"),
+  forecastingRq1Figure: (name: string) => `/api/forecasting/rq1/figures/${encodeURIComponent(name)}`,
   stress: (city = "la_c4_central_wide") => get(`/api/experiment/stress?${q({city})}`),
   researchStatus: () => get("/api/research/status"),
   references: () => get("/api/references"),

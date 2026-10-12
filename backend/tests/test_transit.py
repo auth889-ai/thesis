@@ -1,7 +1,9 @@
 """Transit planning on a line given in the test (no network): nearest stops, legs, hours, provenance."""
 from datetime import datetime, timezone
 
-from app.transit import osm, schedule, service
+from core.common.data import osm
+
+from app.transit import schedule, service
 
 LINE6 = {"id": 1, "mode": "subway", "name": "Dhaka Metro Rail Line 6", "network": "Dhaka Metro Rail", "ref": "6", "operator": None, "interval_s": None, "duration_s": None,
          "stops": [{"id": 1, "name": "Agargaon", "lat": 23.7784, "lon": 90.3802}, {"id": 2, "name": "Bijoy Shoroni", "lat": 23.7664, "lon": 90.3831}, {"id": 3, "name": "Farmgate", "lat": 23.7591, "lon": 90.3871},

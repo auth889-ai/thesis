@@ -9,7 +9,7 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
-from app.forecasting.federated.federated_forecast import Link, fedavg, measured_link, model_bytes, partition_sensors  # noqa: E402
+from core.ml.forecasting.federated.federated_forecast import Link, fedavg, measured_link, model_bytes, partition_sensors  # noqa: E402
 
 
 def test_partition_is_a_true_partition():

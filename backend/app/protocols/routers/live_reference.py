@@ -1,12 +1,12 @@
 """Live reference HTTP endpoints."""
 from __future__ import annotations
 
-from app.data import reference_corridors as corridor_registry
-from app.data.live_providers import observatory as observatory_mod
-from app.data.live_providers import google_routes as live_service
-from app.forecasting.operations import live_reference as predict_live
-from app import credentials as key_store
-from app.twin.live import counterfactual_jobs as simulate
+from core.common.data import reference_corridors as corridor_registry
+from core.common.data.live_providers import observatory as observatory_mod
+from core.common.data.live_providers import google_routes as live_service
+from core.ml.forecasting.operations import live_reference as predict_live
+from core.common import credentials as key_store
+from core.simulation.twin.live import counterfactual_jobs as simulate
 from fastapi import APIRouter
 
 router = APIRouter()

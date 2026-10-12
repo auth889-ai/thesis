@@ -1,0 +1,24 @@
+{
+ "item": "Q2b live navigation",
+ "date": "2026-10-07",
+ "server": "backend :8000 serving frontend/dist (production build)",
+ "checked": [
+  "headless Chrome (Playwright, locale bn-BD): Banani -> Dhaka Medical College, motorbike and car, simulated drive x8: Ferrostar banner in Bangla (road names from OpenStreetMap; sentences without a road name replaced by ours), our progress line, 6 Bangla guidance lines, End removes the overlay, 0 page errors (drive_*.json, drive_*_map.png, drive_*_panel.png)",
+  "the update bar: a waiting new version is applied on 'Update' (page moved to the newest build)",
+  "the proxy returns Valhalla's OSRM answer for motorcycle and auto"
+ ],
+ "not_checked": [
+  "a drive on a real phone with its own location",
+  "spoken output quality of a Bangla voice (guidance left off so nothing played on the owner's computer)",
+  "the along-the-drive download during a real drive (the trigger is unit-tested)"
+ ],
+ "observed_upstream": "Ferrostar's trip-progress duration showed 52 min 24 s as '1h 52m 24s' (its formatter); hidden, our own line shown",
+ "files": [
+  "drive_motorcycle.json",
+  "drive_motorcycle_map.png",
+  "drive_motorcycle_panel.png",
+  "drive_car.json",
+  "drive_car_map.png",
+  "drive_car_panel.png"
+ ]
+}

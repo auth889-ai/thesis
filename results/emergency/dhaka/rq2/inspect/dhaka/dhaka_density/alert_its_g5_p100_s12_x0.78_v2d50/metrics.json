@@ -1,0 +1,76 @@
+{
+ "city_id": "dhaka",
+ "demand_id": "dhaka_density",
+ "arm": "alert",
+ "technology": "its_g5",
+ "equipped_share": 1.0,
+ "seed": 12,
+ "wall_s": 44.3,
+ "run_utc": "2026-10-08T19:07:34.246009+00:00",
+ "sumo_extra": [
+  "--lateral-resolution",
+  "0.8"
+ ],
+ "demand": {
+  "label": "SYNTHETIC_RECORDED_COUNTS_CORRIDOR",
+  "calibrated_to": "DhaTraX counts at INT and BM, 07:00-08:00, on a 300 m corridor around the route (app.emergency.corridor)"
+ },
+ "route_m": 3402.5,
+ "signals_on_route": 2,
+ "scale": 0.78,
+ "alert_overrides": {
+  "keep_strategic": true,
+  "makeway_m": 50.0
+ },
+ "makeway": {
+  "version": 1,
+  "distance_m": 50.0,
+  "keep_strategic": true
+ },
+ "state": "arrived",
+ "departed_s": 901.0,
+ "arrived_s": 1214.0,
+ "messages": {
+  "sent": 164,
+  "delivered": 154,
+  "lost": 10,
+  "out_of_range": 0
+ },
+ "vehicles_alerted": 38,
+ "junctions_preempted": [],
+ "why": {
+  "free_width_m": 6.915,
+  "blocked_s": 71,
+  "yield_share": 0.711,
+  "alerted_seen": 38,
+  "queue_at_signals": 13.5,
+  "queue_peaks": {
+   "cluster_10139575489_10139575490_1720308864_225181943_#4more": 16,
+   "cluster_10139575501_2446124135_2446124154_3501293480": 11
+  },
+  "section_density_veh_km": 11.29,
+  "definitions": {
+   "look_m": 50.0,
+   "slice_m": 5.0,
+   "blocked_below_ms": 2.0,
+   "queue_within_m": 200.0,
+   "section": "691209729#5"
+  }
+ },
+ "ambulance": {
+  "arrived": true,
+  "travel_time_s": 313.0,
+  "time_loss_s": 171.51,
+  "waiting_s": 55.0,
+  "depart_s": 900.0
+ },
+ "others": {
+  "vehicles": 3349,
+  "arrived": 2254,
+  "unfinished_at_horizon": 1095,
+  "total_vehicle_hours": 730.577,
+  "mean_time_loss_s": 638.1,
+  "mean_waiting_s": 374.96
+ },
+ "teleports": 72
+}

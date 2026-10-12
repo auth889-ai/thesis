@@ -1,0 +1,104 @@
+{
+ "dataset": {
+  "repo": "vzc-research-chapter/VZCrash",
+  "revision": "42e1482d005c0e545379d6cfa4939486c9fe4249",
+  "license": "CC BY-NC 4.0",
+  "files_sha256": {
+   "validation-00000-of-00003.parquet": "c0724236d8272265044e5a6156aeda8372eedc6e2f61407a093fb838f4def4f3",
+   "validation-00001-of-00003.parquet": "440413ed77e56a8ae1455d60f0ce64065dc26140b6c580845739c865ab5c47c1",
+   "validation-00002-of-00003.parquet": "44dd4f2bad0903db48b0b7e6075ad37c28edd6c78ae9f02de2d4c94ca84863c1",
+   "test-00000-of-00002.parquet": "e319cf2a8f89b28cab891c719ea8854cb7e04eab302638114a0ce43ab2c80787",
+   "test-00001-of-00002.parquet": "c557089fb54f4ebbde2d995b7c9d4fb89a7b2eb864535d19c9c7109113567d25"
+  },
+  "events_test": 24174,
+  "events_validation": 27175,
+  "limit": null,
+  "positives": "crash",
+  "negatives": "near_miss + normal_driving (as in the paper, near-misses are negatives)"
+ },
+ "B_wreckwatch_rule": {
+  "rule": "|a| >= 4.0 g (gravity included) while GPS speed > 24.1 km/h; the app's own rule, core/safety/sos.py",
+  "test": {
+   "recall_on_crashes": 0.4558161573086946,
+   "false_alarm_rate_negatives": 0.012429208640304716,
+   "precision": 0.8858195211786372,
+   "n_pos": 4221,
+   "n_neg": 19953,
+   "fired_rate_crash": 0.4558161573086946,
+   "n_crash": 4221,
+   "fired_rate_near_miss": 0.007431874483897605,
+   "n_near_miss": 3633,
+   "fired_rate_normal_driving": 0.013541666666666667,
+   "n_normal_driving": 16320
+  },
+  "validation": {
+   "recall_on_crashes": 0.47309048178613394,
+   "false_alarm_rate_negatives": 0.011038394415357766,
+   "precision": 0.8883495145631068,
+   "n_pos": 4255,
+   "n_neg": 22920,
+   "fired_rate_crash": 0.47309048178613394,
+   "n_crash": 4255,
+   "fired_rate_near_miss": 0.004945831370701837,
+   "n_near_miss": 4246,
+   "fired_rate_normal_driving": 0.012423690692942059,
+   "n_normal_driving": 18674
+  },
+  "over_4g_but_too_slow_test": 452,
+  "speed_missing_test": 0
+ },
+ "A_physical_baseline": {
+  "name": "peak horizontal acceleration, max_t ||[a_x, a_y]||_2 (g)",
+  "source": "pr_curve.ipynb @ 42e1482d, read as text, reimplemented here",
+  "evaluation": "positives = crash, negatives = near_miss + normal_driving; AP on the test split, as in the notebook",
+  "test": {
+   "ap": 0.8962169214763558
+  }
+ },
+ "C_gradient_boosting": {
+  "model": "sklearn HistGradientBoostingClassifier(max_iter=300, learning_rate=0.05, random_state=7)",
+  "features": [
+   "peak_abs_g",
+   "peak_x_g",
+   "peak_y_g",
+   "peak_z_dev_g",
+   "p99_abs_g",
+   "jerk_max_g_per_s",
+   "samples_over_2g",
+   "samples_over_4g",
+   "gyro_peak_dps",
+   "speed_max_kmh",
+   "speed_before_kmh",
+   "speed_after_kmh",
+   "speed_drop_kmh",
+   "speed_at_peak_kmh"
+  ],
+  "train": "validation split",
+  "test": {
+   "ap": 0.954091523863574
+  },
+  "recall_at_rule_false_alarm_rate": {
+   "false_alarm_rate": 0.012429208640304716,
+   "threshold": 0.7750568468639556,
+   "recall": 0.7787254205164653
+  }
+ },
+ "peak_g_by_label_test": {
+  "crash": {
+   "median": 4.158,
+   "p90": 5.795,
+   "share_over_4g": 0.5472636815920398
+  },
+  "near_miss": {
+   "median": 1.376,
+   "p90": 1.869,
+   "share_over_4g": 0.008257638315441783
+  },
+  "normal_driving": {
+   "median": 1.361,
+   "p90": 1.942,
+   "share_over_4g": 0.017401960784313726
+  }
+ },
+ "when": "2026-10-11T16:04:51Z"
+}

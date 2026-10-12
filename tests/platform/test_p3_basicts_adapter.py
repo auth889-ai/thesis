@@ -6,8 +6,8 @@ import json
 import numpy as np
 import pytest
 
-from app.forecasting.evaluation.twin_baselines import ChronoSplit
-from app.forecasting.training.basicts_adapter import (
+from core.ml.forecasting.evaluation.twin_baselines import ChronoSplit
+from core.ml.forecasting.training.basicts_adapter import (
     LEGACY_RATIOS, export_basicts_dataset, export_basicts_legacy_dataset)
 
 

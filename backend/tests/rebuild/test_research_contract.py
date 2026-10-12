@@ -9,7 +9,7 @@ sys.path.insert(0, str(REPO / "src"))
 
 
 def test_gwnet_contract_is_tied_to_held_out_metr_la_evidence():
-    from app.forecasting import ModelRegistry
+    from core.ml.forecasting import ModelRegistry
 
     spec = ModelRegistry.metr_la_gwnet().public()
     assert spec["model"] == "GWNet" and spec["dataset"] == "METR-LA"
@@ -19,7 +19,7 @@ def test_gwnet_contract_is_tied_to_held_out_metr_la_evidence():
 
 
 def test_research_status_keeps_negative_and_dhaka_not_ready_states():
-    from app.protocols.research_status import compute_research_status
+    from core.simulation.closed_loop.protocols.research_status import compute_research_status
 
     gates = compute_research_status()["gates"]
     assert gates["FORECAST_VALIDATED"]["status"] == "PASSED"
@@ -33,7 +33,7 @@ def test_research_status_keeps_negative_and_dhaka_not_ready_states():
 
 def test_control_gates_fail_closed_with_incomplete_or_invalid_pairs(monkeypatch):
     import copy
-    import app.protocols.research_status as status
+    import core.simulation.closed_loop.protocols.research_status as status
 
     original_read = status._read
     for corruption in ("missing_seed", "duplicate_seed", "nan"):

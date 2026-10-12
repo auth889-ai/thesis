@@ -7,7 +7,7 @@ import sys
 
 import pytest
 
-from app.control import jobs
+from core.simulation.closed_loop.control import jobs
 
 JOB = "execution_20260920T120000_1234abcd"
 
@@ -75,7 +75,7 @@ def test_cancel_does_not_change_finished_evidence(client, isolated_jobs):
 
 
 def test_queued_worker_honors_cancellation_before_loading_model(isolated_jobs, monkeypatch):
-    from app.control import execution
+    from core.simulation.closed_loop.control import execution
     directory = pending(isolated_jobs, "queued")
     (directory / "cancel.request").touch()
     monkeypatch.setattr(execution, "JOBS", isolated_jobs)
@@ -120,7 +120,7 @@ def test_completed_ui_comparison_keeps_reference_origins_explicit():
 
 
 def test_vehicle_trace_preserves_logged_candidate_route_ids(client, tmp_path, monkeypatch):
-    from app import evidence_paths as config
+    from core.common import evidence_paths as config
     monkeypatch.setattr(config, "REPO", tmp_path)
     arm = tmp_path / "results/v2x/closed_loop/test_run/s201/predictive_v2x"
     round_dir = arm / "routing_round_0"
@@ -143,7 +143,7 @@ def test_vehicle_trace_preserves_logged_candidate_route_ids(client, tmp_path, mo
 
 
 def test_vehicle_trace_retains_message_join_and_does_not_score_unfinished_trips(client, tmp_path, monkeypatch):
-    from app import evidence_paths as config
+    from core.common import evidence_paths as config
     monkeypatch.setattr(config, "REPO", tmp_path)
     root = tmp_path / "results/v2x/closed_loop/test_run/s201"
     arm = root / "predictive_v2x"

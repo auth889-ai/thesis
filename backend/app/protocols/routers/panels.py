@@ -1,8 +1,8 @@
 """Panels HTTP endpoints."""
 from __future__ import annotations
 
-from app.protocols.evidence import panel_readers as readers
-from app import schemas
+from core.simulation.closed_loop.protocols.evidence import panel_readers as readers
+from core.common import schemas
 from fastapi import APIRouter
 
 router = APIRouter()

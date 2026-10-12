@@ -1,0 +1,16 @@
+{
+ "item": "Q4 voice alerts",
+ "date": "2026-10-07",
+ "server": "backend :8000 serving frontend/dist",
+ "checked": [
+  "headless Chrome, locale bn-BD, speechSynthesis.speak replaced by a recorder (nothing played): voice on -> TEST crash SOS spoken as 5 Bangla lines, each starting '\u09aa\u09b0\u09c0\u0995\u09cd\u09b7\u09be:' (Test:); the alerts strip's alerts spoken once each with their stamp; a simulated drive announced once ('\u09b8\u09bf\u09ae\u09c1\u09b2\u09c7\u09b6\u09a8: \u2026') and its turns spoken in Bangla; voice off -> 0 lines (lines.json)",
+  "unit: priority and interruption, 2 s spacing, once per id, Bangla/English/vibration by the voices present, nothing while off, no network call (announce.test.ts)"
+ ],
+ "not_checked": [
+  "real voices on a phone (headless Chrome reports no voices; the recorder captured what would be spoken and in which language)",
+  "vibration on a phone"
+ ],
+ "files": [
+  "lines.json"
+ ]
+}

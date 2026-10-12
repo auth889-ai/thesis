@@ -1,0 +1,163 @@
+{
+ "url": "https://43-205-213-250.sslip.io/",
+ "date": "2026-10-07T10:30:12.466Z",
+ "errors": [],
+ "live_3d": {
+  "status": "running",
+  "run_id": "live_20261007T103015Z_f8a60b",
+  "network": "dhaka",
+  "arm": "baseline",
+  "sim_time_s": 7,
+  "vehicles": 7,
+  "ambulance": false,
+  "duration_s": 1800,
+  "scenario": {
+   "demand": "SYNTHETIC WHAT-IF DEMAND",
+   "network": "REAL OSM ROAD NETWORK",
+   "note": "randomTrips demand (osmWebWizard parameters) is NOT real traffic; it demonstrates mechanism only"
+  }
+ },
+ "live_3d_later": {
+  "status": "running",
+  "run_id": "live_20261007T103015Z_f8a60b",
+  "network": "dhaka",
+  "arm": "baseline",
+  "sim_time_s": 15,
+  "vehicles": 17,
+  "ambulance": false,
+  "duration_s": 1800,
+  "scenario": {
+   "demand": "SYNTHETIC WHAT-IF DEMAND",
+   "network": "REAL OSM ROAD NETWORK",
+   "note": "randomTrips demand (osmWebWizard parameters) is NOT real traffic; it demonstrates mechanism only"
+  }
+ },
+ "second_start_refused": {
+  "started": false,
+  "reason": "a live simulation is already running",
+  "run_id": "live_20261007T103015Z_f8a60b"
+ },
+ "ambulance_start": {
+  "error": "rate_limited: at most 6 simulations per visitor per hour on the hosted app (one runs at a time for the whole site)",
+  "retry_after_s": 3490
+ },
+ "ambulance_run": {
+  "status": "stopped",
+  "run_id": "live_20261007T103015Z_f8a60b",
+  "network": "dhaka",
+  "arm": "baseline",
+  "sim_time_s": 16,
+  "vehicles": 0,
+  "ambulance": false,
+  "duration_s": 1800,
+  "scenario": {
+   "demand": "SYNTHETIC WHAT-IF DEMAND",
+   "network": "REAL OSM ROAD NETWORK",
+   "note": "randomTrips demand (osmWebWizard parameters) is NOT real traffic; it demonstrates mechanism only"
+  }
+ },
+ "ambulance_view": {
+  "keys": [
+   "detail"
+  ]
+ },
+ "ambulance_in_3d": {
+  "status": "stopped",
+  "run_id": "live_20261007T103015Z_f8a60b",
+  "network": "dhaka",
+  "arm": "baseline",
+  "sim_time_s": 16,
+  "vehicles": 0,
+  "ambulance": false,
+  "duration_s": 1800,
+  "scenario": {
+   "demand": "SYNTHETIC WHAT-IF DEMAND",
+   "network": "REAL OSM ROAD NETWORK",
+   "note": "randomTrips demand (osmWebWizard parameters) is NOT real traffic; it demonstrates mechanism only"
+  }
+ },
+ "ambulance_check": {
+  "date": "2026-10-07T10:33:42.773Z",
+  "errors": [],
+  "ambulance_start": {
+   "started": true,
+   "run_id": "live_20261007T103344Z_9b2bc9",
+   "params": {
+    "scale": 1,
+    "duration_s": 600,
+    "seed": 11,
+    "compliance": 0.3,
+    "arm": "baseline",
+    "levels": "",
+    "step_delay_ms": 200,
+    "v2x": "ideal",
+    "horizon_min": 15,
+    "continuous": false,
+    "network": "dhaka",
+    "gui": false,
+    "routes_file": "/srv/app/data/cities/dhaka/sumo/dhaka.rou.xml",
+    "emergency": {
+     "arm": "alert_preemption",
+     "technology": "its_g5",
+     "equipped_share": 0.5,
+     "demand": "generated",
+     "depart_s": 60
+    },
+    "demand_reality": "SYNTHETIC_PARTLY_CALIBRATED",
+    "center": [
+     90.39,
+     23.7425
+    ]
+   },
+   "label": "SIMULATED"
+  },
+  "ambulance_run": {
+   "status": "running",
+   "run_id": "live_20261007T103344Z_9b2bc9",
+   "network": "dhaka",
+   "arm": "baseline",
+   "sim_time_s": 81,
+   "vehicles": 42,
+   "ambulance": 1
+  },
+  "ambulance_view": {
+   "run_id": "live_20261007T103344Z_9b2bc9",
+   "status": "running",
+   "sim_time_s": 81,
+   "city_id": "dhaka",
+   "emergency": {
+    "label": "SIMULATED",
+    "arm": "alert_preemption",
+    "technology": "its_g5",
+    "equipped_share": 0.5,
+    "state": "driving",
+    "depart_s": 60,
+    "departed_s": 61,
+    "arrived_s": null,
+    "messages": {
+     "sent": 7,
+     "delivered": 0,
+     "lost": 0,
+     "out_of_range": 7
+    },
+    "vehicles_alerted": 0,
+    "making_way_now": 0,
+    "junctions_preempted_now": [],
+    "demand": {
+     "label": "SYNTHETIC_WHAT_IF",
+     "calibrated_to": null
+    },
+    "vehicle_id": "ambulance_alert"
+   }
+  },
+  "in_3d": {
+   "status": "running",
+   "run_id": "live_20261007T103344Z_9b2bc9",
+   "network": "dhaka",
+   "arm": "baseline",
+   "sim_time_s": 152,
+   "vehicles": 75,
+   "ambulance": 1
+  }
+ }
+}

@@ -11,7 +11,7 @@ from pathlib import Path
 from sqlalchemy import JSON, Boolean, DateTime, Float, ForeignKey, Integer, String, TypeDecorator, create_engine, event
 from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column, relationship, sessionmaker
 
-from app.paths import REPO
+from core.common.paths import REPO
 
 DEFAULT_URL = f"sqlite:///{(REPO / 'results/live/lifeos.sqlite').as_posix()}"
 

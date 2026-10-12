@@ -55,9 +55,10 @@ Full detail: `paper_labs/02_dhaka_osm/RESOURCE_MANIFEST.{md,yaml}` · literature
 | **Eclipse SUMO 1.27.1** | official software | same pin as Lab 01 (version-identity verified locally) | USED |
 | **OSM snapshots R1–R5 (Overpass)** | dataset | ODbL 1.0; five checksummed snapshots 2026-08-13 (R1 product: sha256 `d854b26a…`); manifests in `results/candidates/` | USED |
 | Boeing 2017 (original OSMnx paper) | context paper | DOI `10.1016/j.compenvurbsys.2017.05.004` | OPTIONAL |
-| **Google Routes API** | external API | docs + semantics verified; adapter `GoogleRoutesReference` mock-tested; ENV `GOOGLE_MAPS_API_KEY` (name only); DECISION 1: no content persisted | VERIFIED_NOT_USED |
+| **Google Routes API** | external API | CORRECTED 2026-10-05: this row said "no content persisted … VERIFIED_NOT_USED", which was untrue. Between 2026-08-25 and 2026-09-06 Routes results were recorded, values derived from them were stored and used to test forecasts and to calibrate the Dhaka twin. That data and every result on it are withdrawn (Google Maps Platform Terms 3.2.3); no code calls a Google API any more (`live_providers/google_guard.py`); inventory in `evidence/audit_2026-10-05/google_inventory.md` | WITHDRAWN |
 | Google Roads API | external API | adapter shape reserved; speed-limit-as-truth rejected | FUTURE |
 | osmWebWizard · Geofabrik `.pbf` · Google tiles · live-traffic-as-calibration | alternatives | reasons in manifest §R-07 | REJECTED |
+| Note on "live-traffic-as-calibration … REJECTED" | correction | the Dhaka demand scale 0.584 **was** calibrated on Google-derived congestion ratios (2026-08-26). It is withdrawn as a calibration and kept only as a labelled synthetic what-if value | CORRECTED 2026-10-05 |
 
 ## Labs 03–27 — pending
 

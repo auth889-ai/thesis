@@ -17,7 +17,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 from app.agent.models import AuditEntry
-from app.paths import REPO
+from core.common.paths import REPO
 
 AUDIT_DIR = REPO / "results/live/agent/audit"
 _LOCK = threading.Lock()
@@ -25,7 +25,7 @@ CHECKPOINT_KINDS = ("approval", "summary", "error")
 
 
 def _key() -> bytes:
-    from app.credentials import load
+    from core.common.credentials import load
     k = load("AUDIT_SIGNING_KEY")
     if k:
         return k.encode()

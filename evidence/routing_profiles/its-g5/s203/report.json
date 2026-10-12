@@ -1,0 +1,151 @@
+{
+ "profile": "its-g5",
+ "profile_params": {
+  "latency_ms": 16.2,
+  "jitter_ms": 0.0,
+  "loss": 0.1,
+  "ttl_s": 600.0,
+  "from": "network_model.yaml technologies.its_g5 (delay_s x hops, delivery_ratio_in_range, lifetime_s)"
+ },
+ "seed": 203,
+ "settings": {
+  "city": "la_c4_central_wide",
+  "profile": "its-g5",
+  "penetration": 0.3,
+  "moment": "prepeak",
+  "round_s": 300,
+  "horizon_min": 15,
+  "status_period_s": 10,
+  "duration_s": 4800,
+  "fork_t0": 1200,
+  "demand_scale": 8.0,
+  "demand_profile": "peak",
+  "od_rule": "arterial"
+ },
+ "run_dir": "results/v2x/closed_loop/la_c4_central_wide_prepeak_its-g5_p30_cfgea08dddedc14_profile1791763619_fork1200_x8_peak_arterial",
+ "arms": {
+  "baseline": {
+   "vehicle_hours": 3533.5294,
+   "arrived": 9132,
+   "teleports": 82,
+   "reroutes_applied": 0,
+   "uplink": {
+    "channel": "uplink",
+    "latency_profile": {
+     "latency_ms": 16.2,
+     "jitter_ms": 0.0,
+     "loss": 0.1,
+     "ttl_s": 600.0,
+     "source": "configured"
+    },
+    "messages_tx": 0,
+    "messages_rx": 0,
+    "messages_dropped": 0,
+    "messages_expired": 0,
+    "undelivered_at_end": 0,
+    "packet_delivery_ratio": null,
+    "latency_mean_ms": null,
+    "latency_median_ms": null,
+    "latency_p95_ms": null,
+    "latency_p99_ms": null,
+    "observed_latency_median_ms": null,
+    "observed_latency_p95_ms": null,
+    "bytes_tx": 0,
+    "message_rate_per_s": 0.0,
+    "throughput_bytes_per_s": 0.0
+   },
+   "downlink": {
+    "channel": "downlink",
+    "latency_profile": {
+     "latency_ms": 16.2,
+     "jitter_ms": 0.0,
+     "loss": 0.1,
+     "ttl_s": 600.0,
+     "source": "configured"
+    },
+    "messages_tx": 0,
+    "messages_rx": 0,
+    "messages_dropped": 0,
+    "messages_expired": 0,
+    "undelivered_at_end": 0,
+    "packet_delivery_ratio": null,
+    "latency_mean_ms": null,
+    "latency_median_ms": null,
+    "latency_p95_ms": null,
+    "latency_p99_ms": null,
+    "observed_latency_median_ms": null,
+    "observed_latency_p95_ms": null,
+    "bytes_tx": 0,
+    "message_rate_per_s": 0.0,
+    "throughput_bytes_per_s": 0.0
+   },
+   "connected": 3272,
+   "seen": 10597,
+   "wall_s": 62.8
+  },
+  "predictive_corrected_v2x": {
+   "vehicle_hours": 3542.8306,
+   "arrived": 9159,
+   "teleports": 116,
+   "reroutes_applied": 46,
+   "uplink": {
+    "channel": "uplink",
+    "latency_profile": {
+     "latency_ms": 16.2,
+     "jitter_ms": 0.0,
+     "loss": 0.1,
+     "ttl_s": 600.0,
+     "source": "configured"
+    },
+    "messages_tx": 331967,
+    "messages_rx": 298366,
+    "messages_dropped": 33555,
+    "messages_expired": 0,
+    "undelivered_at_end": 46,
+    "packet_delivery_ratio": 0.8988,
+    "latency_mean_ms": 16.2,
+    "latency_median_ms": 16.2,
+    "latency_p95_ms": 16.2,
+    "latency_p99_ms": 16.2,
+    "observed_latency_median_ms": 1000.0,
+    "observed_latency_p95_ms": 1000.0,
+    "bytes_tx": 59315445,
+    "message_rate_per_s": 69.16,
+    "throughput_bytes_per_s": 12357.4
+   },
+   "downlink": {
+    "channel": "downlink",
+    "latency_profile": {
+     "latency_ms": 16.2,
+     "jitter_ms": 0.0,
+     "loss": 0.1,
+     "ttl_s": 600.0,
+     "source": "configured"
+    },
+    "messages_tx": 55,
+    "messages_rx": 48,
+    "messages_dropped": 7,
+    "messages_expired": 0,
+    "undelivered_at_end": 0,
+    "packet_delivery_ratio": 0.8727,
+    "latency_mean_ms": 16.2,
+    "latency_median_ms": 16.2,
+    "latency_p95_ms": 16.2,
+    "latency_p99_ms": 16.2,
+    "observed_latency_median_ms": 1000.0,
+    "observed_latency_p95_ms": 2000.0,
+    "bytes_tx": 163286,
+    "message_rate_per_s": 0.011,
+    "throughput_bytes_per_s": 34.0
+   },
+   "connected": 3535,
+   "seen": 11438,
+   "wall_s": 278.3
+  }
+ },
+ "vehicle_hours_vs_baseline": {
+  "baseline": 0.0,
+  "predictive_corrected_v2x": 9.30119999999988
+ },
+ "real_s": 411
+}

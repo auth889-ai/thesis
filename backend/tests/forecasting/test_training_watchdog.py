@@ -3,7 +3,7 @@ import subprocess
 import threading
 import time
 
-from app.forecasting.training.aws.scripts import WATCHDOG
+from core.ml.forecasting.training.aws.scripts import WATCHDOG
 
 
 def _setup(tmp_path):

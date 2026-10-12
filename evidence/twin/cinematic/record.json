@@ -1,0 +1,36 @@
+{
+ "what": "Slow orbit, street-level view and night lighting on the simulated twin, driven in headless Chrome on the Dhaka twin",
+ "date_utc": "2026-10-05",
+ "reference": "karthiksenv/real-time-digital-traffic-simulation, MIT, commit f8ef35927a525b58ce99b015fa8699e018a9381a",
+ "opening_view": "#16.4/23.7425/90.39/-18/60 (zoom/lat/lon/bearing/pitch); before this step the tilted opening view was not applied, because the map had already written its own view to the address",
+ "orbit": {
+  "bearing_at_two_readings_10_s_apart": [
+   -13,
+   13.9
+  ],
+  "measured_deg_per_s": 2.69,
+  "reference_deg_per_s": 2.7
+ },
+ "street_level": {
+  "view": "#19/23.7417912/90.3918333/14.1/80",
+  "note_on_the_page": "riding with simulated vehicle veh24",
+  "view_after_leaving": "#16.4/23.743104/90.392103/9.3/60"
+ },
+ "night": {
+  "note_on_the_page": "night is a look only, not the time in the simulation",
+  "changes": "light colour and strength, backdrop, base map brightness, road colour, a glow under each vehicle; no simulated number"
+ },
+ "screenshots": [
+  "dhaka_1_day.png",
+  "dhaka_2_night.png",
+  "dhaka_3_street_night.png",
+  "dhaka_4_street_day.png"
+ ],
+ "not_checked": [
+  "a real graphics card (headless Chrome drew with software rendering)",
+  "touch devices",
+  "that dragging the map stops the orbit (written, not exercised)",
+  "choosing the vehicle to ride with by clicking it (the click itself is still not exercised in a browser)",
+  "the same controls on other cities' twins"
+ ]
+}

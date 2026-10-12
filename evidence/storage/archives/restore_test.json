@@ -1,0 +1,8 @@
+{
+ "date": "2026-10-09",
+ "archive": "gdrive2tb:DhakaFlow-Nexus-Data/mac-offload/archives/results__live.tar.zst",
+ "command": "rclone cat <archive> | zstd -d | tar -xf - -C <scratch>; md5 of every file against evidence/storage/archives/results__live/files.md5",
+ "files": 1840,
+ "result": "all files identical",
+ "note": "the other five archives were checked by their Drive md5 only (MATCH, SUMS.txt); not unpacked"
+}

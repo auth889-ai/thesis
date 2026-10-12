@@ -1,0 +1,45 @@
+{
+ "seeds": [
+  201
+ ],
+ "arms": [
+  "baseline",
+  "predictive_corrected_v2x"
+ ],
+ "quick": true,
+ "settings": {
+  "city": "la_c4_central_wide",
+  "profile": "ideal",
+  "penetration": 0.3,
+  "moment": "prepeak",
+  "round_s": 300,
+  "horizon_min": 15,
+  "status_period_s": 10,
+  "duration_s": 4800,
+  "fork_t0": 1200,
+  "demand_scale": 8.0,
+  "demand_profile": "peak",
+  "od_rule": "arterial"
+ },
+ "rows": [
+  {
+   "seed": 201,
+   "arm": "baseline",
+   "check": "REPRODUCED exactly",
+   "differences": {},
+   "vehicle_hours": 3750.8756,
+   "wall_s": 98
+  },
+  {
+   "seed": 201,
+   "arm": "predictive_corrected_v2x",
+   "check": "REPRODUCED exactly",
+   "differences": {},
+   "vehicle_hours": 3770.6531,
+   "wall_s": 305
+  }
+ ],
+ "ok": true,
+ "real_s": 485,
+ "run_dir": "results/v2x/closed_loop/la_c4_central_wide_prepeak_ideal_p30_cfgea08dddedc14_quick1791734846_fork1200_x8_peak_arterial"
+}

@@ -7,7 +7,11 @@ from app.calendar import router as calendar_router
 from app.plan import router as plan_router
 from app.commute import router as commute_router
 from app.data import router as data_router
-from app.forecasting.routers import model_prototypes, onset, predictions, training
+from app.emergency import router as emergency_router
+from app.mesh import router as mesh_router
+from app.live_jobs import router as live_jobs_router
+from app.live_twin import router as live_twin_router
+from app.forecasting.routers import layer as forecast_layer, model_prototypes, onset, predictions, rq1 as forecasting_rq1, training
 from app.lifeos import router as lifeos_router
 from app.lifeos.compiler import router as compiler_router
 from app.networking import router as networking_router
@@ -16,10 +20,11 @@ from app.probes import router as probes_router
 from app.profile import router as profile_router
 from app.protocols.routers import experiments, live_reference, panels, references, research, stress
 from app.routing import router as routing_router
+from app.routing import headway_adapter
 from app.transit import router as transit_router
 from app.twin import router as twin_router
 
 api_router = APIRouter()
-for module in (platform_router, profile_router, lifeos_router, compiler_router, data_router, commute_router, transit_router, agent_router, calendar_router, plan_router, probes_router, alerts_router, predictions, training, model_prototypes, onset, routing_router, twin_router, networking_router,
-               experiments, stress, research, panels, live_reference, references):
+for module in (platform_router, profile_router, lifeos_router, compiler_router, data_router, commute_router, transit_router, agent_router, calendar_router, plan_router, probes_router, alerts_router, predictions, training, model_prototypes, onset, forecasting_rq1, forecast_layer, live_jobs_router, live_twin_router, routing_router, twin_router, networking_router, emergency_router, mesh_router,
+               experiments, stress, research, panels, live_reference, references, headway_adapter):
     api_router.include_router(module.router)

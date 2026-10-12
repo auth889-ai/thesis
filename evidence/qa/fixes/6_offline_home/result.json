@@ -1,0 +1,58 @@
+{
+ "fix": "6_offline_home",
+ "ranks": "6",
+ "change": "the trip pack also keeps the answers Home needs to open (city list, the visitor's profile) via api.packUrls; the existing pack fallback serves them offline (attempt 1 ran while whole-city routing answered 500 and is kept as invalid)",
+ "regression_test": "frontend/src/lib/packUrls.test.ts",
+ "before_pass": "0/8",
+ "after_pass": "8/8",
+ "after_runs": [
+  {
+   "run": "F10-desktop-dhaka-1",
+   "ok": true,
+   "ms": 31027,
+   "reason": null
+  },
+  {
+   "run": "F10-desktop-dhaka-2",
+   "ok": true,
+   "ms": 29492,
+   "reason": null
+  },
+  {
+   "run": "F10-desktop-dhaka-3",
+   "ok": true,
+   "ms": 29028,
+   "reason": null
+  },
+  {
+   "run": "F10-desktop-los_angeles-1",
+   "ok": true,
+   "ms": 40652,
+   "reason": null
+  },
+  {
+   "run": "F10-phone-dhaka-1",
+   "ok": true,
+   "ms": 30086,
+   "reason": null
+  },
+  {
+   "run": "F10-phone-dhaka-2",
+   "ok": true,
+   "ms": 28057,
+   "reason": null
+  },
+  {
+   "run": "F10-phone-dhaka-3",
+   "ok": true,
+   "ms": 26511,
+   "reason": null
+  },
+  {
+   "run": "F10-phone-los_angeles-1",
+   "ok": true,
+   "ms": 41041,
+   "reason": null
+  }
+ ]
+}

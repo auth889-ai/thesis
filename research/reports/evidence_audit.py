@@ -223,10 +223,9 @@ def write_markdown(path: Path, report: dict[str, Any], repo: Path) -> None:
         lines.append(f"| {r['name']} | {r['status']} | `{rel}` | {r['check']} | {details} |")
     lines += [
         "",
-        "Reality rule: live Google data is used only as runtime/reference evidence, "
-        "not as cached training data. Dhaka twin sensor data is simulated on the real frozen R1 topology "
-        "and must not be described as real sensor measurements.",
-        "The `live/` route-advisor and user-pilot path is the no-fixed-seed real-world evidence path.",
+        "Reality rule: no Google data is used. Every result built on the Google Routes recording was withdrawn on "
+        "2026-10-05 (docs/proposals.md). Dhaka twin sensor data is simulated on the real frozen R1 topology "
+        "and must not be described as real sensor measurements; its demand is a synthetic what-if, uncalibrated.",
         "",
     ]
     path.write_text("\n".join(lines))
@@ -238,8 +237,7 @@ def build_report(repo: Path) -> dict[str, Any]:
         audit_twin_floors(repo),
         audit_colab_benchmark(repo),
         audit_routing(repo),
-        audit_live_reference(repo),
-        audit_live_route_advice(repo),
+        # the two Google-derived audits (live reference, route advice) were withdrawn with their data on 2026-10-05
         audit_user_pilot(repo),
         audit_asset_manifest(repo),
         audit_network(repo),

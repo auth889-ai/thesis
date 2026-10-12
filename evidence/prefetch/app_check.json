@@ -1,0 +1,33 @@
+{
+ "item": "Q3 works with weak signal",
+ "date": "2026-10-07",
+ "server": "backend :8000 serving frontend/dist (production build with the Workbox service worker)",
+ "checked": [
+  "own tiles: /api/tiles/dhaka/basemap.pmtiles answers 206 with the PMTiles magic from s3 (14.4 MB Dhaka, 64.0 MB Los Angeles, evidence/tiles/TILES_BASEMAP.txt)",
+  "Home, Dhaka (Banani to Dhaka Medical College): signal strip 12.3 km all 'not known' (no history yet, no tunnels); 'Save this trip' stored 9.2 MB (30 own tiles z12-14, route, trip, alerts, signal plan, style, sprite, glyphs); the saved trip survives a reload",
+  "experiment: 24 runs in headless Chrome, service worker throttled with the page (run.log); results/networking/prefetch/summary.json; Research table shows the same numbers"
+ ],
+ "bugs_found_and_fixed": [
+  "km per signal level counted steps x 100 m instead of their lengths",
+  "the MB counter stopped at the browser's 250-entry resource buffer",
+  "two own-map assets had not downloaded (ofm@2x.png, Noto Sans Regular 2304-2559); a test now checks every asset",
+  "first experiment run discarded: DevTools throttling did not apply to the service worker's fetches, so with-prefetch timings were too fast (run1_discarded_service_worker_not_throttled.log)",
+  "energy first computed with the emulated presets' throughput (80x spread), beyond Bartendr's measured range; now at the paper's ratios (1/2, 1/4)",
+  "saved answers were only used when the network failed; now a saved trip's route answers are used first (alerts always fresh)"
+ ],
+ "not_checked": [
+  "offline, the map: whether our own tiles were drawn after the network was cut (the route answers stayed on screen in both arms because the app shell keeps its last answers)",
+  "a real phone: Network Information readings, BreadCrumbs learning over 5 real trips, DeviceMotion; no phone in this check",
+  "spreading the pack along a live drive (needs live navigation, Q2b)"
+ ],
+ "files": [
+  "summary.json",
+  "summary.sha256",
+  "run.log",
+  "run1_discarded_service_worker_not_throttled.log",
+  "home_weak_signal_saving_2026-10-07.jpg",
+  "home_weak_signal_saved_2026-10-07.jpg",
+  "research_prefetch_table_2026-10-07.jpg",
+  "research_prefetch_energy_2026-10-07.jpg"
+ ]
+}

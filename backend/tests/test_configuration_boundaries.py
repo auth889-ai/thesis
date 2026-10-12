@@ -6,8 +6,8 @@ from pathlib import Path
 import pytest
 
 from app import config as configuration
-from app import credentials
-from app.protocols.evidence.vehicle_trace import vehicle_trace
+from core.common import credentials
+from core.simulation.closed_loop.protocols.evidence.vehicle_trace import vehicle_trace
 
 
 @pytest.fixture
@@ -46,13 +46,13 @@ def test_dotenv_is_not_expanded_or_written_to_environment(private_config):
 
 
 def test_all_adapters_use_same_google_key(private_config):
-    from app.routing.route_advisor import load_key as route_key
-    from app.forecasting.live.run_live_capture import load_key as capture_key
+    from core.simulation.routing.route_advisor import load_key as route_key
+    from core.ml.forecasting.live.run_live_capture import load_key as capture_key
     assert route_key() == capture_key() == credentials.google_key()
 
 
 def test_provider_adapters_keep_legacy_fallback(private_config):
-    from app.data.live_providers.road511_provider import load_road511_key
+    from core.common.data.live_providers.road511_provider import load_road511_key
     assert load_road511_key() == "old-road"
 
 
@@ -101,7 +101,7 @@ def test_trace_reader_streams_logs_without_an_http_dependency(tmp_path, monkeypa
 def test_extracted_reader_does_not_import_http_or_simulation_engines():
     import inspect
     import importlib
-    module = importlib.import_module("app.protocols.evidence.vehicle_trace")
+    module = importlib.import_module("core.simulation.closed_loop.protocols.evidence.vehicle_trace")
     tree = ast.parse(inspect.getsource(module))
     imports = []
     for node in ast.walk(tree):

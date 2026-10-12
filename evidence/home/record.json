@@ -1,0 +1,235 @@
+{
+ "what": "The everyday user home on the Today page, driven in headless Chrome on 2026-10-05: a city on the worldwide 3D map, a route on the city's own network, the departure slider, 'Leave when?', the simulated view, the alerts strip.",
+ "date_utc": "2026-10-05",
+ "headline": "No city has traffic data yet, so no route is coloured and no travel time in traffic is given anywhere. Every route in this record is the grey dashed 'no traffic data' line. The colour, forecast and travel-time paths are exercised only by unit tests with test rows that never reach the app.",
+ "command": "cd frontend && npm run build; python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8011; a DevTools script opened /, clicked the map twice, moved the slider, set an arrival time, switched the simulated view on and off, zoomed out and clicked a far point",
+ "cities": {
+  "dhaka": {
+   "opens_at": "/today",
+   "title": "Dhaka today",
+   "alerts_strip": "Alerts\nno alerts for Dhaka\nnot built yet: ambulance approaching, offline mesh messages, crash SOS",
+   "map_credit": [
+    "© OpenStreetMap contributors, Overture Maps Foundation | OpenFreeMap © OpenMapTiles Data from OpenStreetMap"
+   ],
+   "route_after_two_map_clicks": {
+    "start_and_destination": [
+     "23.73892, 90.38750",
+     "23.74755, 90.39250"
+    ],
+    "sections": 18,
+    "sections_with_a_real_speed": 0,
+    "traffic": "none",
+    "travel_time_in_traffic_at_each_departure": {
+     "0": null,
+     "15": null,
+     "30": null,
+     "60": null
+    },
+    "drive_time_at_map_speed_limits": {
+     "value": 1,
+     "unit": "min",
+     "tag": {
+      "kind": "simulated",
+      "calibrated_to": "uncalibrated",
+      "basis": "every section driven at its map speed limit; no traffic, signals or queues"
+     }
+    }
+   },
+   "what_the_page_says": "Route: 1.1 km over 18 road sections. REAL — OpenStreetMap geometry converted by SUMO netconvert\n\nNo traffic data for Dhaka yet. The route is drawn as a grey dashed line and no travel time in traffic is given.\nDrive time at the map's speed limits (not traffic)\n\n1 min\nSIMULATED\nuncalibrated; every section driven at its map speed limit; no traffic, signals or queues\nARRIVE BY\nPhones that opted in: no readings stored · \n0 cells\nREAL\nmeasured by: this app's own store of opt-in phone cells, inside this city's built area; refers to Oct 5, 2026, 9:57 PM\nField counts: not available yet",
+   "slider_moved_to": "IN 30 MIN",
+   "arrive_by_23_59_answer": "No answer: there is no traffic data on this route.",
+   "simulated_view": {
+    "texts_seen": [
+     "SIMULATED\nloading the simulated view",
+     "SIMULATED\nstarting the simulation",
+     "SIMULATED\n1 simulated vehicles"
+    ],
+    "now": "SIMULATED\n7 simulated vehicles; generated traffic, uncalibrated, not a measurement",
+    "after_off": {
+     "badge": null,
+     "server": "stopped"
+    }
+   },
+   "destination_outside_the_built_area": {
+    "clicked": "23.79956, 90.58100",
+    "page_says": "That point is outside Dhaka's built area. A route exists only inside it. Build a larger area under “Add your city”."
+   },
+   "console_errors": [],
+   "hosts_requested": [
+    "127.0.0.1:8011",
+    "fonts.googleapis.com",
+    "fonts.gstatic.com",
+    "overturemaps-extras-us-west-2.s3.us-west-2.amazonaws.com",
+    "tiles.openfreemap.org"
+   ]
+  },
+  "los_angeles": {
+   "opens_at": "/today",
+   "title": "Los Angeles today",
+   "alerts_strip": "Alerts\nno alerts for Los Angeles\nnot built yet: ambulance approaching, offline mesh messages, crash SOS",
+   "map_credit": [
+    "© OpenStreetMap contributors, Overture Maps Foundation | OpenFreeMap © OpenMapTiles Data from OpenStreetMap"
+   ],
+   "route_after_two_map_clicks": {
+    "start_and_destination": [
+     "34.13476, -118.35950",
+     "34.14256, -118.35450"
+    ],
+    "sections": 21,
+    "sections_with_a_real_speed": 0,
+    "traffic": "none",
+    "travel_time_in_traffic_at_each_departure": {
+     "0": null,
+     "15": null,
+     "30": null,
+     "60": null
+    },
+    "drive_time_at_map_speed_limits": {
+     "value": 3.1,
+     "unit": "min",
+     "tag": {
+      "kind": "simulated",
+      "calibrated_to": "uncalibrated",
+      "basis": "every section driven at its map speed limit; no traffic, signals or queues"
+     }
+    }
+   },
+   "what_the_page_says": "Route: 1.4 mi over 21 road sections. REAL — OpenStreetMap geometry converted by SUMO netconvert\n\nNo traffic data for Los Angeles yet. The route is drawn as a grey dashed line and no travel time in traffic is given.\nDrive time at the map's speed limits (not traffic)\n\n3.1 min\nSIMULATED\nuncalibrated; every section driven at its map speed limit; no traffic, signals or queues\nARRIVE BY\nPhones that opted in: no readings stored · \n0 cells\nREAL\nmeasured by: this app's own store of opt-in phone cells, inside this city's built area; refers to Oct 5, 2026, 9:57 PM\nCaltrans PeMS stations: not available yet",
+   "slider_moved_to": "IN 30 MIN",
+   "arrive_by_23_59_answer": "No answer: there is no traffic data on this route.",
+   "simulated_view": {
+    "texts_seen": [
+     "SIMULATED\nloading the simulated view",
+     "SIMULATED\nstarting the simulation",
+     "SIMULATED\n1 simulated vehicles"
+    ],
+    "now": "SIMULATED\n6 simulated vehicles; generated traffic, uncalibrated, not a measurement",
+    "after_off": {
+     "badge": null,
+     "server": "stopped"
+    }
+   },
+   "destination_outside_the_built_area": {
+    "clicked": "34.20185, -118.11931",
+    "page_says": "That point is outside Los Angeles's built area. A route exists only inside it. Build a larger area under “Add your city”."
+   },
+   "console_errors": [],
+   "hosts_requested": [
+    "127.0.0.1:8011",
+    "fonts.googleapis.com",
+    "fonts.gstatic.com",
+    "overturemaps-extras-us-west-2.s3.us-west-2.amazonaws.com",
+    "tiles.openfreemap.org"
+   ]
+  },
+  "sylhet": {
+   "opens_at": "/today",
+   "title": "Sylhet today",
+   "alerts_strip": "Alerts\nno alerts for Sylhet\nnot built yet: ambulance approaching, offline mesh messages, crash SOS",
+   "map_credit": [
+    "© OpenStreetMap contributors, Overture Maps Foundation | OpenFreeMap © OpenMapTiles Data from OpenStreetMap"
+   ],
+   "route_after_two_map_clicks": {
+    "start_and_destination": [
+     "24.89567, 91.86602",
+     "24.90422, 91.87102"
+    ],
+    "sections": 14,
+    "sections_with_a_real_speed": 0,
+    "traffic": "none",
+    "travel_time_in_traffic_at_each_departure": {
+     "0": null,
+     "15": null,
+     "30": null,
+     "60": null
+    },
+    "drive_time_at_map_speed_limits": {
+     "value": 1.1,
+     "unit": "min",
+     "tag": {
+      "kind": "simulated",
+      "calibrated_to": "uncalibrated",
+      "basis": "every section driven at its map speed limit; no traffic, signals or queues"
+     }
+    }
+   },
+   "what_the_page_says": "Route: 1.3 km over 14 road sections. REAL — OpenStreetMap geometry converted by SUMO netconvert\n\nNo traffic data for Sylhet yet. The route is drawn as a grey dashed line and no travel time in traffic is given.\nDrive time at the map's speed limits (not traffic)\n\n1.1 min\nSIMULATED\nuncalibrated; every section driven at its map speed limit; no traffic, signals or queues\nARRIVE BY\nPhones that opted in: no readings stored · \n0 cells\nREAL\nmeasured by: this app's own store of opt-in phone cells, inside this city's built area; refers to Oct 5, 2026, 9:58 PM",
+   "slider_moved_to": "IN 30 MIN",
+   "arrive_by_23_59_answer": "No answer: there is no traffic data on this route.",
+   "simulated_view": {
+    "texts_seen": [
+     "SIMULATED\nloading the simulated view",
+     "SIMULATED\nstarting the simulation",
+     "SIMULATED\n1 simulated vehicles"
+    ],
+    "now": "SIMULATED\n7 simulated vehicles; generated traffic, uncalibrated, not a measurement",
+    "after_off": {
+     "badge": null,
+     "server": "stopped"
+    }
+   },
+   "destination_outside_the_built_area": {
+    "clicked": "24.95585, 92.05579",
+    "page_says": "That point is outside Sylhet's built area. A route exists only inside it. Build a larger area under “Add your city”."
+   },
+   "console_errors": [],
+   "hosts_requested": [
+    "127.0.0.1:8011",
+    "fonts.googleapis.com",
+    "fonts.gstatic.com",
+    "overturemaps-extras-us-west-2.s3.us-west-2.amazonaws.com",
+    "tiles.openfreemap.org"
+   ]
+  }
+ },
+ "city_without_a_network": {
+  "city": "berlin",
+  "page_says": "No data for this city: no road network has been built for Berlin.",
+  "map_shown": false,
+  "console_errors": []
+ },
+ "bangla": {
+  "title": "আজকের ঢাকা",
+  "bar": "কোথা থেকে\nআমার অবস্থান ব্যবহার করুন\nকোথায়\nরওনা\nএখন\nসিমুলেটেড দৃশ্য\nমুছুন\n\nঅথবা মানচিত্রে ক্লিক করুন: প্রথম ক্লিক শুরু, পরেরটি গন্তব্য।",
+  "side": "পথ: ১.১ km, 18টি সড়ক অংশ জুড়ে। REAL — OpenStreetMap geometry converted by SUMO netconvert\n\nঢাকা-এর জন্য এখনো যান চলাচলের তথ্য নেই। পথটি ধূসর ভাঙা রেখায় আঁকা এবং যানজটসহ কোনো যাত্রার সময় দেওয়া হয়নি।\nমানচিত্রের গতিসীমায় চালানোর সময় (যান চলাচল নয়)\n\n১ min\nসিমুলেটেড\nমিলিয়ে নেওয়া হয়নি; every section driven at its map speed limit; no traffic, signals or queues\nযে সময়ের মধ্যে পৌঁছাতে চান\nযাঁরা সম্মতি দিয়েছেন তাঁদের ফোন: কোনো পাঠ সংরক্ষিত নেই · \n০ cells\nবাস্তব\nমেপেছে: this app's own store of opt-in phone cells, inside this city's built area; সময়: ৫ অক্টো, ২০২৬, ৯:৫৯ PM\nমাঠ পর্যায়ের গণনা: এখনো পাওয়া যাচ্ছে না",
+  "legend": "গতিসীমার অন্তত 70 %\n40 % বা তার বেশি\nতার নিচে\nযান চলাচলের তথ্য নেই\nএই তিনটি শ্রেণি এই অ্যাপের নিজস্ব",
+  "console_errors": [],
+  "still_english": "the tag's source and basis sentences, the units (min, km, cells) and the network's description come from the backend in English"
+ },
+ "real_sources_today": {
+  "phones": "3 cells and 10 positions are stored in results/live/lifeos.sqlite, all sent with the city name 'Gazipur' and none inside any built city's box; the home counts cells by position, so every city shows 0",
+  "pems": {
+   "state": "pending: account not approved; logged-in terms and data freshness not read; nothing fetched",
+   "station_matching": "evidence/home/los_angeles/station_matching.json",
+   "stations_in_the_box": 24,
+   "on_one_section": 16,
+   "unresolved_direction": 8
+  },
+  "field_counts": "none collected"
+ },
+ "forecast_model": "Chronos-2 through the existing adapter. On this laptop `import chronos` fails (a broken TensorFlow install, the same cause as six long-failing adapter tests), so a real forecast could not be run here even with data; the page would say 'the forecast model cannot run on this machine'.",
+ "screenshots": {
+  "berlin_no_data.png": "6de03d24ed33e677a9f5f8f1181119cdc8ce008bb080582ec2374d9fefa66c06",
+  "dhaka_1_route.png": "1db24d263b31a01c4f46619f2f954ac727d7fdbf913c4e069f67d986f9823539",
+  "dhaka_2_simulated_view.png": "2191af56bd21a3ef559c45dc09a42f0572566c5098ac4a6c5cf7d452022cd055",
+  "dhaka_3_outside_the_built_area.png": "f9575feffe4916d9cf9da40c569c6692fa36201361d226ca21fdfd9153e35262",
+  "dhaka_bangla.png": "7bdf2ca3c87eb8ecc9ebbc1d7bf1345e881973503c57de9fb7314257b00e02ab",
+  "los_angeles_1_route.png": "d65d95dde728e66beee694bf84db8c96f32e2e2f7cc31b925bd9e9c2308ae1aa",
+  "los_angeles_2_simulated_view.png": "6fb7658f996db2e6846cb4be045988a26c9c2fe59882dbfaad3071fac5f6b8fb",
+  "los_angeles_3_outside_the_built_area.png": "b8cba9588f38df153157de5b6733636aab0e6014f061345d1ccac1bb96369ebc",
+  "sylhet_1_route.png": "f11d61dd1369c14fa925c4bb92411fbcbf28e3392d3978f987f965176f9f5949",
+  "sylhet_2_simulated_view.png": "c55d65cfc90702899b08447de9a6a47f6a2ce6071ea0eac6bcd689318e131b1d",
+  "sylhet_3_outside_the_built_area.png": "220f536812fd3d9b545d8d5035a2ec58cd3224157fbb7f0b4f06a1e16290cbc6"
+ },
+ "tests": "backend/tests/city/test_city_home.py (9), frontend/src/features/today/trip.test.ts (5), frontend/src/components/Tagged.test.tsx (2)",
+ "not_checked": [
+  "a route coloured by real speed, a forecast, a travel time in traffic or a 'Leave by' answer in the browser: no city has the data; only unit tests cover them",
+  "a real Chronos-2 forecast on section series (the model cannot be imported on this machine)",
+  "place search by typing a name, and 'Use my location' (headless Chrome has no location); the route was set by map clicks only",
+  "changing city with the switcher while a route is shown (each city was opened by reloading the page)",
+  "the alerts strip with an alert in it (the stored alerts table is empty; the feed is unit-tested)",
+  "a phone or touch screen, and a real graphics card",
+  "whether the fastest path at speed limits is a route a person would take; one-way streets and turn bans are only as good as OpenStreetMap and netconvert made them",
+  "the simulated view on the home was watched for about 15 seconds per city"
+ ]
+}

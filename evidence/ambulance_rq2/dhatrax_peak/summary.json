@@ -1,0 +1,403 @@
+{
+ "generated_utc": "2026-10-11T22:15:56.689796+00:00",
+ "label": "SIMULATION, corridor at the recorded DhaTraX counts (scale 1.0), not the thesis level",
+ "recorded": {
+  "window": "07:00, 3600 s in 300 s intervals; BM and INT were recorded on different days, treated as one clock window",
+  "sites": {
+   "BM": {
+    "section": "235293033#10",
+    "day": "2026-04-20",
+    "vehicles_per_hour": 2361,
+    "five_minute_counts": 12
+   },
+   "INT": {
+    "section": "691209729#5",
+    "day": "2026-04-19",
+    "vehicles_per_hour": 1230,
+    "five_minute_counts": 12
+   }
+  },
+  "thesis_level_scale": 0.78,
+  "this_check_scale": 1.0,
+  "calibration_sha256": "df4447502470a618163239f332e29e0d14ed6edd353506f36f84753328b5ecbe"
+ },
+ "tech": "its_g5",
+ "share": 1.0,
+ "seeds_completed": [
+  12,
+  17,
+  19,
+  28,
+  31
+ ],
+ "seeds_crashed_in_sumo": [
+  {
+   "seed": 11,
+   "arm": "no_alert",
+   "crashed_after_s": 999.0
+  },
+  {
+   "seed": 13,
+   "arm": "alert_preemption",
+   "crashed_after_s": 1483.0
+  },
+  {
+   "seed": 14,
+   "arm": "alert_preemption",
+   "crashed_after_s": 1496.0
+  },
+  {
+   "seed": 15,
+   "arm": "alert",
+   "crashed_after_s": 965.0
+  },
+  {
+   "seed": 16,
+   "arm": "alert",
+   "crashed_after_s": 1139.0
+  },
+  {
+   "seed": 18,
+   "arm": "alert_preemption",
+   "crashed_after_s": 1226.0
+  },
+  {
+   "seed": 20,
+   "arm": "no_alert",
+   "crashed_after_s": 956.0
+  },
+  {
+   "seed": 21,
+   "arm": "no_alert",
+   "crashed_after_s": 1129.0
+  },
+  {
+   "seed": 22,
+   "arm": "alert",
+   "crashed_after_s": 1003.0
+  },
+  {
+   "seed": 23,
+   "arm": "alert",
+   "crashed_after_s": 998.0
+  },
+  {
+   "seed": 24,
+   "arm": "alert",
+   "crashed_after_s": 1263.0
+  },
+  {
+   "seed": 25,
+   "arm": "alert_preemption",
+   "crashed_after_s": 1311.0
+  },
+  {
+   "seed": 26,
+   "arm": "alert_preemption",
+   "crashed_after_s": 1348.0
+  },
+  {
+   "seed": 27,
+   "arm": "alert",
+   "crashed_after_s": 1291.0
+  },
+  {
+   "seed": 29,
+   "arm": "no_alert",
+   "crashed_after_s": 1420.0
+  },
+  {
+   "seed": 30,
+   "arm": "alert",
+   "crashed_after_s": 968.0
+  }
+ ],
+ "crash_note": "SUMO 1.27.1's bluelight device segfault (evidence/emergency/dhaka/sumo_bluelight_crash.json); a crashed seed is recorded and the next tried, as in the study",
+ "rows": [
+  {
+   "seed": 12,
+   "no_alert": {
+    "travel_time_s": 382.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 882,
+    "messages": {
+     "sent": 0,
+     "delivered": 0,
+     "lost": 0,
+     "out_of_range": 0
+    },
+    "vehicles_alerted": 0,
+    "junctions_preempted": 0,
+    "wall_s": 56.3
+   },
+   "alert": {
+    "travel_time_s": 417.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 854,
+    "messages": {
+     "sent": 141,
+     "delivered": 131,
+     "lost": 10,
+     "out_of_range": 0
+    },
+    "vehicles_alerted": 58,
+    "junctions_preempted": 0,
+    "wall_s": 56.2
+   },
+   "alert_preemption": {
+    "travel_time_s": 390.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 967,
+    "messages": {
+     "sent": 513,
+     "delivered": 167,
+     "lost": 14,
+     "out_of_range": 332
+    },
+    "vehicles_alerted": 62,
+    "junctions_preempted": 2,
+    "wall_s": 60.4
+   }
+  },
+  {
+   "seed": 17,
+   "no_alert": {
+    "travel_time_s": null,
+    "arrived": false,
+    "state": "driving",
+    "crashed_after_s": null,
+    "teleports": 724,
+    "messages": {
+     "sent": 0,
+     "delivered": 0,
+     "lost": 0,
+     "out_of_range": 0
+    },
+    "vehicles_alerted": 0,
+    "junctions_preempted": 0,
+    "wall_s": 65.2
+   },
+   "alert": {
+    "travel_time_s": 308.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 700,
+    "messages": {
+     "sent": 220,
+     "delivered": 203,
+     "lost": 17,
+     "out_of_range": 0
+    },
+    "vehicles_alerted": 103,
+    "junctions_preempted": 0,
+    "wall_s": 55.0
+   },
+   "alert_preemption": {
+    "travel_time_s": 341.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 399,
+    "messages": {
+     "sent": 354,
+     "delivered": 193,
+     "lost": 27,
+     "out_of_range": 134
+    },
+    "vehicles_alerted": 107,
+    "junctions_preempted": 2,
+    "wall_s": 50.6
+   }
+  },
+  {
+   "seed": 19,
+   "no_alert": {
+    "travel_time_s": 766.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 664,
+    "messages": {
+     "sent": 0,
+     "delivered": 0,
+     "lost": 0,
+     "out_of_range": 0
+    },
+    "vehicles_alerted": 0,
+    "junctions_preempted": 0,
+    "wall_s": 77.7
+   },
+   "alert": {
+    "travel_time_s": 672.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 771,
+    "messages": {
+     "sent": 325,
+     "delivered": 295,
+     "lost": 30,
+     "out_of_range": 0
+    },
+    "vehicles_alerted": 110,
+    "junctions_preempted": 0,
+    "wall_s": 72.4
+   },
+   "alert_preemption": {
+    "travel_time_s": 634.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 1020,
+    "messages": {
+     "sent": 1008,
+     "delivered": 239,
+     "lost": 22,
+     "out_of_range": 747
+    },
+    "vehicles_alerted": 104,
+    "junctions_preempted": 2,
+    "wall_s": 69.1
+   }
+  },
+  {
+   "seed": 28,
+   "no_alert": {
+    "travel_time_s": 572.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 994,
+    "messages": {
+     "sent": 0,
+     "delivered": 0,
+     "lost": 0,
+     "out_of_range": 0
+    },
+    "vehicles_alerted": 0,
+    "junctions_preempted": 0,
+    "wall_s": 59.0
+   },
+   "alert": {
+    "travel_time_s": 361.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 870,
+    "messages": {
+     "sent": 160,
+     "delivered": 148,
+     "lost": 12,
+     "out_of_range": 0
+    },
+    "vehicles_alerted": 88,
+    "junctions_preempted": 0,
+    "wall_s": 58.5
+   },
+   "alert_preemption": {
+    "travel_time_s": 357.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 857,
+    "messages": {
+     "sent": 414,
+     "delivered": 151,
+     "lost": 22,
+     "out_of_range": 241
+    },
+    "vehicles_alerted": 87,
+    "junctions_preempted": 2,
+    "wall_s": 58.1
+   }
+  },
+  {
+   "seed": 31,
+   "no_alert": {
+    "travel_time_s": 595.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 767,
+    "messages": {
+     "sent": 0,
+     "delivered": 0,
+     "lost": 0,
+     "out_of_range": 0
+    },
+    "vehicles_alerted": 0,
+    "junctions_preempted": 0,
+    "wall_s": 55.8
+   },
+   "alert": {
+    "travel_time_s": 906.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 645,
+    "messages": {
+     "sent": 221,
+     "delivered": 198,
+     "lost": 23,
+     "out_of_range": 0
+    },
+    "vehicles_alerted": 86,
+    "junctions_preempted": 0,
+    "wall_s": 59.5
+   },
+   "alert_preemption": {
+    "travel_time_s": 692.0,
+    "arrived": true,
+    "state": "arrived",
+    "crashed_after_s": null,
+    "teleports": 794,
+    "messages": {
+     "sent": 737,
+     "delivered": 114,
+     "lost": 17,
+     "out_of_range": 606
+    },
+    "vehicles_alerted": 66,
+    "junctions_preempted": 2,
+    "wall_s": 59.4
+   }
+  }
+ ],
+ "arrived": {
+  "no_alert": 4,
+  "alert": 5,
+  "alert_preemption": 5
+ },
+ "median_travel_s": {
+  "no_alert": 583.5,
+  "alert": 417.0,
+  "alert_preemption": 390.0
+ },
+ "saving_s_vs_no_alert": {
+  "alert": {
+   "values": [
+    -35.0,
+    94.0,
+    211.0,
+    -311.0
+   ],
+   "median": 29.5
+  },
+  "alert_preemption": {
+   "values": [
+    -8.0,
+    132.0,
+    215.0,
+    -97.0
+   ],
+   "median": 62.0
+  }
+ }
+}

@@ -1,0 +1,346 @@
+{
+ "city_id": "dhaka",
+ "available": true,
+ "label": "SIMULATED",
+ "built_utc": "2026-10-06T02:52:36.539746+00:00",
+ "dataset": {
+  "network": "data/cities/dhaka_r1/dhaka_r1.net.xml.gz",
+  "network_sha256": "06194df039740fa2ceb0bcb2c438444efd755f26e0f863327f0e1d6524775dcb",
+  "demand": {
+   "kind": "SYNTHETIC randomTrips, UNCALIBRATED",
+   "seed": 11,
+   "period_s": 2.0,
+   "horizon_s": 1800
+  },
+  "sumo": "Eclipse SUMO sumo 1.27.1",
+  "routes_sha256": "838f509a7db07c47fc42ed52581e320950ed8ce538d2ac207e01cef5d38294e1"
+ },
+ "scope": {
+  "window_s": [
+   900,
+   1200
+  ],
+  "window_steps": 300,
+  "vehicles_seen": 277,
+  "vehicles_simulated": 17,
+  "radio": {
+   "name": "BT_10m",
+   "range_m": 10,
+   "source": "The ONE simulator, default_settings.txt, lines 19-23: \"# \\\"Bluetooth\\\" interface for all nodes ... btInterface.transmitRange = 10\" (range in meters). https://github.com/akeranen/the-one/blob/43eaab1e0592af2526d124ee9ba9590eeadcd49a/default_settings.txt ; simulator described in Keranen, Ott, Karkkainen, \"The ONE Simulator for DTN Protocol Evaluation\", SIMUTools 2009."
+  },
+  "messages": {
+   "interval_s": 1,
+   "size_bytes": 100,
+   "ttl_s": 300
+  },
+  "simulator": "pons-dtn 0.2.1",
+  "seeds": [
+   1,
+   2,
+   3,
+   4,
+   5
+  ],
+  "ns2_trace_sha256": "2ca59a89fc09483c1448e37990134bedbdfa10113fe677e2bc2bdcd62c4dab6b"
+ },
+ "reading_rules": [
+  "every number is a simulation on generated, uncalibrated traffic; nothing is a measurement of the city",
+  "only the 17 of 277 vehicles present for the whole window take part, so a message reaches only those; low delivery is the sparse setup, not a property of the city",
+  "the movement is the same in every seed; the spread is over which vehicles send to which and when",
+  "delay is averaged over delivered messages only; a seed without a delivery carries no delay",
+  "definitions are PONS's own routing statistics: delivery ratio = delivered / created; copies = relayed transfers / created; overhead = (relayed - delivered) / delivered"
+ ],
+ "rows": [
+  {
+   "router": "epidemic",
+   "name": "Epidemic",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "n": 5,
+   "seeds_without_delivery": 0,
+   "delivery_ratio": {
+    "mean": 0.028,
+    "sd": 0.009,
+    "min": 0.013,
+    "max": 0.033,
+    "n": 5
+   },
+   "delay_s": {
+    "mean": 65.2,
+    "sd": 21.4,
+    "min": 33.7,
+    "max": 91.0,
+    "n": 5
+   },
+   "copies_per_message": {
+    "mean": 0.62,
+    "sd": 0.09,
+    "min": 0.55,
+    "max": 0.77,
+    "n": 5
+   },
+   "overhead_ratio": {
+    "mean": 23.8,
+    "sd": 10.5,
+    "min": 16.0,
+    "max": 40.5,
+    "n": 5
+   },
+   "per_seed": [
+    {
+     "seed": 1,
+     "created": 300,
+     "delivered": 4,
+     "delivery_ratio": 0.013,
+     "delay_s": 60.8,
+     "relayed": 166,
+     "hops_avg": 1.0
+    },
+    {
+     "seed": 2,
+     "created": 300,
+     "delivered": 10,
+     "delivery_ratio": 0.033,
+     "delay_s": 91.0,
+     "relayed": 170,
+     "hops_avg": 1.2
+    },
+    {
+     "seed": 3,
+     "created": 300,
+     "delivered": 8,
+     "delivery_ratio": 0.027,
+     "delay_s": 33.7,
+     "relayed": 230,
+     "hops_avg": 1.0
+    },
+    {
+     "seed": 4,
+     "created": 300,
+     "delivered": 10,
+     "delivery_ratio": 0.033,
+     "delay_s": 63.1,
+     "relayed": 180,
+     "hops_avg": 1.0
+    },
+    {
+     "seed": 5,
+     "created": 300,
+     "delivered": 10,
+     "delivery_ratio": 0.033,
+     "delay_s": 77.4,
+     "relayed": 188,
+     "hops_avg": 1.0
+    }
+   ]
+  },
+  {
+   "router": "spray_and_wait",
+   "name": "Spray and Wait (7 copies, non-binary)",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "n": 5,
+   "seeds_without_delivery": 0,
+   "delivery_ratio": {
+    "mean": 0.027,
+    "sd": 0.014,
+    "min": 0.01,
+    "max": 0.043,
+    "n": 5
+   },
+   "delay_s": {
+    "mean": 60.0,
+    "sd": 20.7,
+    "min": 34.6,
+    "max": 85.4,
+    "n": 5
+   },
+   "copies_per_message": {
+    "mean": 0.44,
+    "sd": 0.04,
+    "min": 0.4,
+    "max": 0.49,
+    "n": 5
+   },
+   "overhead_ratio": {
+    "mean": 19.8,
+    "sd": 12.1,
+    "min": 8.7,
+    "max": 39.3,
+    "n": 5
+   },
+   "per_seed": [
+    {
+     "seed": 1,
+     "created": 300,
+     "delivered": 3,
+     "delivery_ratio": 0.01,
+     "delay_s": 43.7,
+     "relayed": 121,
+     "hops_avg": 1.0
+    },
+    {
+     "seed": 2,
+     "created": 300,
+     "delivered": 13,
+     "delivery_ratio": 0.043,
+     "delay_s": 72.0,
+     "relayed": 126,
+     "hops_avg": 1.15
+    },
+    {
+     "seed": 3,
+     "created": 300,
+     "delivered": 7,
+     "delivery_ratio": 0.023,
+     "delay_s": 34.6,
+     "relayed": 147,
+     "hops_avg": 1.0
+    },
+    {
+     "seed": 4,
+     "created": 300,
+     "delivered": 6,
+     "delivery_ratio": 0.02,
+     "delay_s": 85.4,
+     "relayed": 126,
+     "hops_avg": 1.0
+    },
+    {
+     "seed": 5,
+     "created": 300,
+     "delivered": 12,
+     "delivery_ratio": 0.04,
+     "delay_s": 64.3,
+     "relayed": 141,
+     "hops_avg": 1.0
+    }
+   ]
+  },
+  {
+   "router": "prophet",
+   "name": "PRoPHET (PONS defaults)",
+   "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+   ],
+   "n": 5,
+   "seeds_without_delivery": 0,
+   "delivery_ratio": {
+    "mean": 0.029,
+    "sd": 0.013,
+    "min": 0.01,
+    "max": 0.047,
+    "n": 5
+   },
+   "delay_s": {
+    "mean": 77.6,
+    "sd": 22.1,
+    "min": 40.6,
+    "max": 93.5,
+    "n": 5
+   },
+   "copies_per_message": {
+    "mean": 0.03,
+    "sd": 0.01,
+    "min": 0.01,
+    "max": 0.05,
+    "n": 5
+   },
+   "overhead_ratio": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0,
+    "n": 5
+   },
+   "per_seed": [
+    {
+     "seed": 1,
+     "created": 300,
+     "delivered": 3,
+     "delivery_ratio": 0.01,
+     "delay_s": 90.7,
+     "relayed": 3,
+     "hops_avg": 1.0
+    },
+    {
+     "seed": 2,
+     "created": 300,
+     "delivered": 14,
+     "delivery_ratio": 0.047,
+     "delay_s": 89.4,
+     "relayed": 14,
+     "hops_avg": 1.0
+    },
+    {
+     "seed": 3,
+     "created": 300,
+     "delivered": 7,
+     "delivery_ratio": 0.023,
+     "delay_s": 40.6,
+     "relayed": 7,
+     "hops_avg": 1.0
+    },
+    {
+     "seed": 4,
+     "created": 300,
+     "delivered": 10,
+     "delivery_ratio": 0.033,
+     "delay_s": 73.9,
+     "relayed": 10,
+     "hops_avg": 1.0
+    },
+    {
+     "seed": 5,
+     "created": 300,
+     "delivered": 9,
+     "delivery_ratio": 0.03,
+     "delay_s": 93.5,
+     "relayed": 9,
+     "hops_avg": 1.0
+    }
+   ]
+  }
+ ],
+ "plain": {
+  "vehicles": 17,
+  "reached_pct": 2.9,
+  "delay_s": 78,
+  "router": "prophet"
+ },
+ "run_sha256": {
+  "epidemic_seed1.json": "d791f871d9a3d86275af08a4f34f63c15dfbb819a00900e5144d41bfb301bd56",
+  "epidemic_seed2.json": "916a7dfac23e65f6276972ecdaa6c807a4b80e3e530fcabe2981f55767869819",
+  "epidemic_seed3.json": "c594765c380564149fad4911e67ae38561e57a53ed388face55a33853cb85ed8",
+  "epidemic_seed4.json": "a1d4094ada3c6874e177679c114510cfa2cf3a5cac007602329acdfc13273017",
+  "epidemic_seed5.json": "9251a3195edef6db6e69e6862d8003cc85cd885d5e506f6e670880f98fb2bf49",
+  "prophet_seed1.json": "af2f452a588b2625ea1f6cd85a867e46eb72ede6a0dbddf52fa60c65a4c952ca",
+  "prophet_seed2.json": "4295b0795c1f86a32fcdcd6b5ae828b016af4785dd4fd0903afd71f34d49da70",
+  "prophet_seed3.json": "414f9fe9821904893632d55a7105b9394881a144dae92dc290fde752c1dc7769",
+  "prophet_seed4.json": "028c3219fd9a7b14f91997dc1ffaf61f9bf1b376ea9bf9c860a308c1dd65bdb2",
+  "prophet_seed5.json": "fd5ff6e1f05057df7ffd775827f7cf6d98337755746e1a98c162a76847971231",
+  "spray_and_wait_seed1.json": "c31f3302b2bd25751241d734b03cbe1961641701a4fe32dbf42a005283a1b4be",
+  "spray_and_wait_seed2.json": "9e30a49c6f10071bd61db57fecbfc2a68ae574f155b3fc951095ed6a7a026d64",
+  "spray_and_wait_seed3.json": "f268bd96a418d9f9898f742cac6a6cb751ade392350e1bb8555465dcd3c99e14",
+  "spray_and_wait_seed4.json": "32fee7ca6ad079d5b8886b9a7b248ce83a9cf37e0d445fa0ac5e432f16b52eec",
+  "spray_and_wait_seed5.json": "c883804e367237844f5d34b74b19ad07beb4026d9e8553b5bab42acec1b4edb0"
+ },
+ "source_files": {
+  "runs": "research/mesh_pons/evidence",
+  "report": "research/mesh_pons/RESULTS.md"
+ }
+}

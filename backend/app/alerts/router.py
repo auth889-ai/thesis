@@ -19,7 +19,7 @@ class Watch(BaseModel):
 @router.get("/api/protocol-b/onset-now", tags=["predict"])
 def onset_now(dataset: str = "METR_LA", as_of: int = 20000, model: str | None = None):
     """Roads about to tip at this dataset moment, from the served model's fresh forecast against the train-split threshold."""
-    from app.forecasting.operations import onset_now as on
+    from core.ml.forecasting.operations import onset_now as on
     try:
         return on.onsets(dataset, as_of, model)
     except ValueError as ex:
@@ -50,3 +50,12 @@ def evaluate(dataset: str = "METR_LA", as_of: int = 20000, model: str | None = N
         return service.evaluate(dataset, as_of, model)
     except ValueError as ex:
         raise HTTPException(422, str(ex))
+
+
+@router.get("/api/alerts/feed", tags=["alerts"])
+def alerts_feed(city_id: str, person_id: str | None = None):
+    """Every alert for one city in one list, each stamped with its origin (real, recorded data, simulated or test).
+    An ambulance appears while a simulated one drives on the city's twin; a mesh line states what the city's saved offline
+    mesh result (PONS, simulated) would deliver; SOS alerts are named and empty until that demo exists."""
+    return service.feed(city_id, person_id)
+

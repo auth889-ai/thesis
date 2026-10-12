@@ -1,0 +1,61 @@
+{
+ "base": "http://127.0.0.1:8011/",
+ "when": "2026-10-10T02:40:53.931Z",
+ "checks": [
+  {
+   "name": "Home offline: our own style, sprite and glyphs from /app/",
+   "ok": false,
+   "detail": "{\"own_style\":0,\"own_tiles\":1,\"glyphs\":0,\"sprite\":0,\"provider_tiles\":0}"
+  },
+  {
+   "name": "Home offline: our own tiles (PMTiles from this server), none from the online provider",
+   "ok": true
+  },
+  {
+   "name": "Home offline: the map is drawn (not blank)",
+   "ok": false,
+   "detail": "BLANK 11 colours"
+  },
+  {
+   "name": "every trip-pack map asset loads from its address (packAssets.ts uses the app's base)",
+   "ok": true,
+   "detail": "17 of 17"
+  },
+  {
+   "name": "no request answered 404 (favicon aside)",
+   "ok": false,
+   "detail": "http://127.0.0.1:8011/liberty/style.json"
+  }
+ ],
+ "not_found": [
+  "http://127.0.0.1:8011/liberty/style.json"
+ ],
+ "mode": "navigator.onLine = false, this server reachable (the routing server is needed for the full trip-pack flow: --with-route)",
+ "resources": {
+  "own_style": 0,
+  "own_tiles": 1,
+  "glyphs": 0,
+  "sprite": 0,
+  "provider_tiles": 0
+ },
+ "blank_check": "BLANK 11 colours",
+ "pack_assets": {
+  "app/liberty/style.json": 200,
+  "app/liberty/sprite/ofm.json": 200,
+  "app/liberty/sprite/ofm.png": 200,
+  "app/liberty/sprite/ofm@2x.json": 200,
+  "app/liberty/sprite/ofm@2x.png": 200,
+  "app/fonts/Noto%20Sans%20Regular/0-255.pbf": 200,
+  "app/fonts/Noto%20Sans%20Regular/256-511.pbf": 200,
+  "app/fonts/Noto%20Sans%20Regular/2304-2559.pbf": 200,
+  "app/fonts/Noto%20Sans%20Regular/8192-8447.pbf": 200,
+  "app/fonts/Noto%20Sans%20Italic/0-255.pbf": 200,
+  "app/fonts/Noto%20Sans%20Italic/256-511.pbf": 200,
+  "app/fonts/Noto%20Sans%20Italic/2304-2559.pbf": 200,
+  "app/fonts/Noto%20Sans%20Italic/8192-8447.pbf": 200,
+  "app/fonts/Noto%20Sans%20Bold/0-255.pbf": 200,
+  "app/fonts/Noto%20Sans%20Bold/256-511.pbf": 200,
+  "app/fonts/Noto%20Sans%20Bold/2304-2559.pbf": 200,
+  "app/fonts/Noto%20Sans%20Bold/8192-8447.pbf": 200
+ }
+}

@@ -16,3 +16,21 @@ describe("verdict", () => {
 });
 
 it("gateOk rejects negated statuses", () => { expect(gateOk("ESTABLISHED")).toBe(true); expect(gateOk("NOT_ESTABLISHED")).toBe(false); expect(gateOk("TRAFFIC_BENEFIT_NOT_ESTABLISHED")).toBe(false); expect(gateOk("PASSED")).toBe(true); });
+
+// QA 2026-10-07 rank 14: the Research evidence page stayed in English when the app was in Bangla.
+import {translate} from "@/i18n";
+const src = Object.values(import.meta.glob("./ResultsPage.tsx", {query: "?raw", import: "default", eager: true}))[0] as string;
+
+describe("the Research evidence page in Bangla", () => {
+  it("the verdict is in Bangla, with Bangla digits", () => {
+    const v = verdict({FUTURE_INFORMATION_VALUE: {status: "ESTABLISHED"}}, evalA, (k, vars) => translate("bn", k, vars));
+    expect(v.text + v.strong).not.toMatch(/[A-Za-z]{3,}/);
+    expect(v.strong).toContain("১.৮ %");
+  });
+
+  it("the page holds no English sentence of its own: every sentence goes through the translation files", () => {
+    const english = src.match(/>\s*[A-Z][a-z]+(?: [a-z]+){2,}[^<{]*</g) ?? [];
+    const quoted = src.match(/(?:title|sub|what)="[A-Za-z][^"]{8,}"/g) ?? [];
+    expect([...english, ...quoted]).toEqual([]);
+  });
+});

@@ -16,7 +16,7 @@ T = datetime(2026, 10, 2, 3, 0, tzinfo=timezone.utc)                    # 09:00 
 def fresh_db(tmp_path, monkeypatch):
     url = f"sqlite:///{tmp_path / 'lifeos.sqlite'}"
     monkeypatch.setenv("LIFEOS_DATABASE_URL", url)
-    assert db.init(url) == "0003_road_watches"             # the current head
+    assert db.init(url) == "0004_probe_signal"             # the current head
 
 
 def test_a_commitment_must_be_coherent():
@@ -69,7 +69,7 @@ def test_every_entity_round_trips_through_the_store():
 
 def test_the_store_is_rebuilt_from_the_migration_and_is_idempotent(tmp_path):
     url = f"sqlite:///{tmp_path / 'again.sqlite'}"
-    assert db.init(url) == "0003_road_watches" and db.init(url) == "0003_road_watches"      # idempotent at the current head
+    assert db.init(url) == "0004_probe_signal" and db.init(url) == "0004_probe_signal"      # idempotent at the current head
     with db.session(url) as s:
         assert repo.list_for(s, "commitment", "nobody") == []
 

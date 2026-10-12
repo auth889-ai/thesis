@@ -14,3 +14,7 @@
 .cr-trace { display: grid; gap: 6px; font-size: 12.5px; }
 .cr-step { border-left: 3px solid var(--line); padding: 6px 10px; border-radius: 4px; background: var(--surface-2); }
 .cr-step.ok { border-left-color: var(--good); } .cr-step.drop { border-left-color: var(--warn); } .cr-step.late { border-left-color: var(--ink-muted); color: var(--ink-muted); } .cr-step.end { border-left-color: var(--accent); font-weight: 600; }
+.tw-map { min-height: 620px; }
+.tw-map .tw-legend { gap: 4px 12px; right: 10px; bottom: 58px; }   /* above the map credit, which can take two lines */ .tw-ramp { display: inline-block; width: 70px; height: 10px; border-radius: 3px; margin-right: 6px; vertical-align: middle; }
+.tw-cam { position: absolute; left: 10px; top: 10px; z-index: 2; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; max-width: calc(100% - 70px); }
+.tw-cam-note { font-size: 12px; padding: 4px 10px; border-radius: 10px; background: color-mix(in srgb, var(--surface-solid) 92%, transparent); }

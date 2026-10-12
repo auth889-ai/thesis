@@ -12,12 +12,12 @@ def db(tmp_path, monkeypatch):
     url = f"sqlite:///{tmp_path}/alerts.sqlite"
     monkeypatch.setenv("LIFEOS_DATABASE_URL", url)
     from app.lifeos import db as core
-    assert core.init(url) == "0003_road_watches"
+    assert core.init(url) == "0004_probe_signal"
     return url
 
 
 def test_flags_mark_onset_only_for_roads_free_now_and_forecast_below_threshold():
-    from app.forecasting.operations.onset_now import flags
+    from core.ml.forecasting.operations.onset_now import flags
     now = np.array([60.0, 30.0, 60.0, 0.0])
     thr = np.array([40.0, 40.0, 40.0, 40.0])
     pred = np.tile(now, (12, 1)); pred[5, 0] = 35.0; pred[2, 2] = 61.0
@@ -65,7 +65,7 @@ def test_watch_round_trip_over_http(db, client):
 
 
 def test_onset_now_runs_on_the_served_model(client):
-    from app.forecasting.operations import served_checkpoints as sc
+    from core.ml.forecasting.operations import served_checkpoints as sc
     r = client.get("/api/protocol-b/onset-now?dataset=METR_LA&as_of=20000&model=GWNet")
     assert r.status_code == 200
     j = r.json()
@@ -75,12 +75,12 @@ def test_onset_now_runs_on_the_served_model(client):
 def test_departure_advice_is_a_sum_over_the_corridor_with_calibrated_worst_case(monkeypatch):
     """Legs are the shortest sensor path; worst case subtracts the stored half-width; the deadline rule is arithmetic."""
     import numpy as np
-    from app.forecasting.operations import departure as d
+    from core.ml.forecasting.operations import departure as d
     g, _, _ = d.sensor_graph()
     assert g.number_of_nodes() == 207 and g.number_of_edges() > 10000
     monkeypatch.setattr(d, "half_width", lambda model, h, cong: 10.0)
     now = np.full(207, 60.0); pred = np.full((12, 207), 60.0)
-    monkeypatch.setattr("app.forecasting.operations.scientific_prediction.forecast", lambda as_of, model=None: (now, pred, {"resolved_model": "fake", "checkpoint_sha256": "x"}))
+    monkeypatch.setattr("core.ml.forecasting.operations.scientific_prediction.forecast", lambda as_of, model=None: (now, pred, {"resolved_model": "fake", "checkpoint_sha256": "x"}))
     r = d.advise("S0", "S40", 20000, "fake", deadline_min=30)
     km = r["distance_km"]
     assert abs(r["travel_min"] - km / 1.609344 / 60 * 60) < 0.2                   # 60 mph over the corridor
@@ -100,7 +100,7 @@ def test_departure_over_http_on_the_served_model(client):
 
 def test_imputation_protocol_hides_a_quarter_of_observed_points_and_scores_only_those():
     import numpy as np
-    from app.forecasting.evaluation import imputation as im
+    from core.ml.forecasting.evaluation import imputation as im
     w = np.random.default_rng(0).uniform(20, 70, (50, 24, 7)).astype("float32")
     w[:, 3, 2] = np.nan                                                       # an outage column
     x, hidden = im.mask_points(w, 1)
@@ -122,8 +122,8 @@ def test_imputation_endpoint_serves_the_run_or_says_how_to_make_it(client):
 
 
 def test_a_live_city_may_train_only_on_enough_of_its_own_derived_history(monkeypatch):
-    from app.forecasting.operations import training_jobs as tj, prediction_jobs as pj
-    from app.data.live_providers import observatory as obs
+    from core.ml.forecasting.operations import training_jobs as tj, prediction_jobs as pj
+    from core.common.data.live_providers import observatory as obs
     monkeypatch.setattr(pj, "datasets", lambda include_uploads=True: [{"id": "live:dhaka", "steps": 300, "nodes": 12, "models": []}])
     monkeypatch.setattr(pj, "cloud", lambda: {"available": False})
     monkeypatch.setattr(obs.observatory, "own_history", lambda city: {"steps_own": 53})
@@ -135,7 +135,7 @@ def test_a_live_city_may_train_only_on_enough_of_its_own_derived_history(monkeyp
 
 def test_train_all_runs_the_architectures_one_after_another(monkeypatch):
     import time
-    from app.forecasting.operations import training_jobs as tj
+    from core.ml.forecasting.operations import training_jobs as tj
     monkeypatch.setattr(tj, "plan", lambda *a, **k: {"where": "local"})
     order, state = [], {}
     def fake_start(payload):

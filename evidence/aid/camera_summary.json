@@ -1,0 +1,371 @@
+{
+ "what": "AID J2 camera sensor, evaluation on the held-out seeds and the incidents on the unseen station pairs; offline only (no closed loop)",
+ "label": "SIMULATION",
+ "seeds": [
+  11,
+  12,
+  13,
+  14,
+  15
+ ],
+ "scale": 0.78,
+ "cameras": [
+  {
+   "id": "cam0",
+   "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+   "edge": "155271803#3",
+   "chainage": 1367.0,
+   "limit_kmh": 100.0
+  },
+  {
+   "id": "cam1",
+   "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+   "edge": "691209729#6",
+   "chainage": 1924.7,
+   "limit_kmh": 60.0
+  }
+ ],
+ "test_pairs": [
+  1,
+  3,
+  5,
+  7,
+  9
+ ],
+ "incidents_per_seed": 4,
+ "horizon_s": 3600,
+ "test_csv": "data/aid/camera_test.csv",
+ "test_csv_sha256": "753ca7c25b3db8ebfa0729d19a0aeb953cc158cf8ccd4401ef02b081c7e4e165",
+ "model_sha256": "204b9eaf8112d3bfcef791faa6904da01a3b75ca6872356da6baad913d6e8eb2",
+ "summary": {
+  "camera": {
+   "detection_rate": 0.45,
+   "time_to_detect_s_mean": 101.2,
+   "false_alarms_per_pair_hour": 6.96,
+   "threshold": 0.5
+  },
+  "camera_at_0.5": {
+   "detection_rate": 0.45,
+   "time_to_detect_s_mean": 101.2,
+   "false_alarms_per_pair_hour": 6.96,
+   "threshold": 0.5
+  },
+  "incidents_between_cameras": 8,
+  "incidents_total": 20,
+  "loop_rows_match_saved_test_csv": true
+ },
+ "per_seed": [
+  {
+   "seed": 11,
+   "incidents": [
+    {
+     "id": 0,
+     "start_s": 1155,
+     "duration_s": 249,
+     "pair": 1,
+     "actual_start_s": 1155.0,
+     "vehicle": "cal900_216",
+     "done": true,
+     "actual_end_s": 1404.0
+    },
+    {
+     "id": 1,
+     "start_s": 1556,
+     "duration_s": 213,
+     "pair": 1,
+     "actual_start_s": 1557.0,
+     "vehicle": "cal1200_240",
+     "done": true,
+     "actual_end_s": 1770.0
+    },
+    {
+     "id": 2,
+     "start_s": 2219,
+     "duration_s": 264,
+     "pair": 5,
+     "actual_start_s": 2219.0,
+     "vehicle": "cal1800_137",
+     "done": true,
+     "actual_end_s": 2483.0
+    },
+    {
+     "id": 3,
+     "start_s": 2809,
+     "duration_s": 299,
+     "pair": 7,
+     "actual_start_s": 2809.0,
+     "vehicle": "cal2700_92",
+     "done": true,
+     "actual_end_s": 3108.0
+    }
+   ],
+   "incidents_between": 1,
+   "camera": {
+    "incidents": 4,
+    "detected": 3,
+    "detection_rate": 0.75,
+    "time_to_detect_s_mean": 129.0,
+    "false_alarms": 4,
+    "false_alarms_per_pair_hour": 4.8
+   },
+   "camera_at_0.5": {
+    "incidents": 4,
+    "detected": 3,
+    "detection_rate": 0.75,
+    "time_to_detect_s_mean": 129.0,
+    "false_alarms": 4,
+    "false_alarms_per_pair_hour": 4.8
+   }
+  },
+  {
+   "seed": 12,
+   "incidents": [
+    {
+     "id": 0,
+     "start_s": 1072,
+     "duration_s": 248,
+     "pair": 7,
+     "actual_start_s": 1072.0,
+     "vehicle": "cal600_287",
+     "done": true,
+     "actual_end_s": 1320.0
+    },
+    {
+     "id": 1,
+     "start_s": 1709,
+     "duration_s": 224,
+     "pair": 7,
+     "actual_start_s": 1709.0,
+     "vehicle": "cal1200_252",
+     "done": true,
+     "actual_end_s": 1933.0
+    },
+    {
+     "id": 2,
+     "start_s": 2333,
+     "duration_s": 193,
+     "pair": 3,
+     "actual_start_s": 2342.0,
+     "vehicle": "cal2100_87",
+     "done": true,
+     "actual_end_s": 2535.0
+    },
+    {
+     "id": 3,
+     "start_s": 2847,
+     "duration_s": 194,
+     "pair": 7,
+     "actual_start_s": 2847.0,
+     "vehicle": "cal2100_142",
+     "done": true,
+     "actual_end_s": 3041.0
+    }
+   ],
+   "incidents_between": 1,
+   "camera": {
+    "incidents": 4,
+    "detected": 1,
+    "detection_rate": 0.25,
+    "time_to_detect_s_mean": 63.0,
+    "false_alarms": 7,
+    "false_alarms_per_pair_hour": 8.4
+   },
+   "camera_at_0.5": {
+    "incidents": 4,
+    "detected": 1,
+    "detection_rate": 0.25,
+    "time_to_detect_s_mean": 63.0,
+    "false_alarms": 7,
+    "false_alarms_per_pair_hour": 8.4
+   }
+  },
+  {
+   "seed": 13,
+   "incidents": [
+    {
+     "id": 0,
+     "start_s": 1255,
+     "duration_s": 274,
+     "pair": 9,
+     "actual_start_s": 1255.0,
+     "vehicle": "cal1200_50",
+     "done": true,
+     "actual_end_s": 1529.0
+    },
+    {
+     "id": 1,
+     "start_s": 1796,
+     "duration_s": 222,
+     "pair": 1,
+     "actual_start_s": 1796.0,
+     "vehicle": "cal1500_299",
+     "done": true,
+     "actual_end_s": 2018.0
+    },
+    {
+     "id": 2,
+     "start_s": 2277,
+     "duration_s": 215,
+     "pair": 3,
+     "actual_start_s": 2277.0,
+     "vehicle": "cal1800_150",
+     "done": true,
+     "actual_end_s": 2492.0
+    },
+    {
+     "id": 3,
+     "start_s": 2896,
+     "duration_s": 263,
+     "pair": 5,
+     "actual_start_s": 2896.0,
+     "vehicle": "cal1200_240",
+     "done": true,
+     "actual_end_s": 3159.0
+    }
+   ],
+   "incidents_between": 2,
+   "camera": {
+    "incidents": 4,
+    "detected": 3,
+    "detection_rate": 0.75,
+    "time_to_detect_s_mean": 154.0,
+    "false_alarms": 4,
+    "false_alarms_per_pair_hour": 4.8
+   },
+   "camera_at_0.5": {
+    "incidents": 4,
+    "detected": 3,
+    "detection_rate": 0.75,
+    "time_to_detect_s_mean": 154.0,
+    "false_alarms": 4,
+    "false_alarms_per_pair_hour": 4.8
+   }
+  },
+  {
+   "seed": 14,
+   "incidents": [
+    {
+     "id": 0,
+     "start_s": 1261,
+     "duration_s": 221,
+     "pair": 7,
+     "actual_start_s": 1261.0,
+     "vehicle": "cal900_250",
+     "done": true,
+     "actual_end_s": 1482.0
+    },
+    {
+     "id": 1,
+     "start_s": 1848,
+     "duration_s": 241,
+     "pair": 9,
+     "actual_start_s": 1883.0,
+     "vehicle": "cal1200_224",
+     "done": true,
+     "actual_end_s": 2124.0
+    },
+    {
+     "id": 2,
+     "start_s": 2336,
+     "duration_s": 275,
+     "pair": 5,
+     "actual_start_s": 2336.0,
+     "vehicle": "cal1500_2",
+     "done": true,
+     "actual_end_s": 2611.0
+    },
+    {
+     "id": 3,
+     "start_s": 2754,
+     "duration_s": 274,
+     "pair": 3,
+     "actual_start_s": 2754.0,
+     "vehicle": "veh1368",
+     "done": true,
+     "actual_end_s": 3028.0
+    }
+   ],
+   "incidents_between": 2,
+   "camera": {
+    "incidents": 4,
+    "detected": 1,
+    "detection_rate": 0.25,
+    "time_to_detect_s_mean": 97.0,
+    "false_alarms": 8,
+    "false_alarms_per_pair_hour": 9.6
+   },
+   "camera_at_0.5": {
+    "incidents": 4,
+    "detected": 1,
+    "detection_rate": 0.25,
+    "time_to_detect_s_mean": 97.0,
+    "false_alarms": 8,
+    "false_alarms_per_pair_hour": 9.6
+   }
+  },
+  {
+   "seed": 15,
+   "incidents": [
+    {
+     "id": 0,
+     "start_s": 1197,
+     "duration_s": 265,
+     "pair": 3,
+     "actual_start_s": 1197.0,
+     "vehicle": "veh573",
+     "done": true,
+     "actual_end_s": 1462.0
+    },
+    {
+     "id": 1,
+     "start_s": 1843,
+     "duration_s": 214,
+     "pair": 3,
+     "actual_start_s": 1843.0,
+     "vehicle": "cal900_216",
+     "done": true,
+     "actual_end_s": 2057.0
+    },
+    {
+     "id": 2,
+     "start_s": 2273,
+     "duration_s": 202,
+     "pair": 1,
+     "actual_start_s": 2273.0,
+     "vehicle": "cal1800_148",
+     "done": true,
+     "actual_end_s": 2475.0
+    },
+    {
+     "id": 3,
+     "start_s": 2722,
+     "duration_s": 180,
+     "pair": 7,
+     "actual_start_s": 2722.0,
+     "vehicle": "cal1800_120",
+     "done": true,
+     "actual_end_s": 2902.0
+    }
+   ],
+   "incidents_between": 2,
+   "camera": {
+    "incidents": 4,
+    "detected": 1,
+    "detection_rate": 0.25,
+    "time_to_detect_s_mean": 63.0,
+    "false_alarms": 6,
+    "false_alarms_per_pair_hour": 7.2
+   },
+   "camera_at_0.5": {
+    "incidents": 4,
+    "detected": 1,
+    "detection_rate": 0.25,
+    "time_to_detect_s_mean": 63.0,
+    "false_alarms": 6,
+    "false_alarms_per_pair_hour": 7.2
+   }
+  }
+ ],
+ "caveat": "2 signalised junctions on the corridor = one camera pair covering the stretch between them; the label is an incident anywhere on the corridor",
+ "when": "2026-10-11T06:46:47+00:00"
+}

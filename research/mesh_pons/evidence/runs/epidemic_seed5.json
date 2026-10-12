@@ -1,0 +1,42 @@
+{
+ "label": "SIMULATED",
+ "city": "dhaka",
+ "router": "epidemic",
+ "router_str": "EpidemicRouter",
+ "seed": 5,
+ "message_generator": "pons.message_event_generator",
+ "nodes": 17,
+ "duration_s": 300,
+ "radio": {
+  "name": "BT_10m",
+  "range_m": 10,
+  "source": "The ONE simulator, default_settings.txt, lines 19-23: \"# \\\"Bluetooth\\\" interface for all nodes ... btInterface.transmitRange = 10\" (range in meters). https://github.com/akeranen/the-one/blob/43eaab1e0592af2526d124ee9ba9590eeadcd49a/default_settings.txt ; simulator described in Keranen, Ott, Karkkainen, \"The ONE Simulator for DTN Protocol Evaluation\", SIMUTools 2009."
+ },
+ "messages": {
+  "interval_s": 1,
+  "size_bytes": 100,
+  "ttl_s": 300
+ },
+ "ns2_trace_sha256": "2ca59a89fc09483c1448e37990134bedbdfa10113fe677e2bc2bdcd62c4dab6b",
+ "pons_version": "pons-dtn 0.2.1",
+ "routing_stats": {
+  "created": 300,
+  "delivered": 10,
+  "dropped": 0,
+  "started": 201,
+  "relayed": 188,
+  "removed": 12,
+  "aborted": 9,
+  "dups": 57,
+  "latency_avg": 77.35000185185186,
+  "delivery_prob": 0.03333333333333333,
+  "hops_avg": 1.0,
+  "overhead_ratio": 17.8
+ },
+ "net_stats": {
+  "tx": 197,
+  "rx": 188,
+  "drop": 9,
+  "loss": 0
+ }
+}

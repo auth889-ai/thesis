@@ -6,14 +6,7 @@ export type Profile = {user_id: string; exists: boolean; name: string | null; ti
 export type ProfileEdit = Partial<Pick<Profile, "name" | "timezone" | "city" | "lat" | "lng" | "home" | "work" | "on_time_target">>;
 
 /** One person per browser until accounts arrive: an id generated once and kept; it is what the server files everything under. */
-export function stableUserId(): string {
-  try {
-    const k = "tt.user"; const cur = localStorage.getItem(k);
-    if (cur) return cur;
-    const id = "p_" + (crypto.randomUUID ? crypto.randomUUID().replace(/-/g, "").slice(0, 16) : Math.random().toString(36).slice(2, 18));
-    localStorage.setItem(k, id); return id;
-  } catch { return "p_local"; }
-}
+export {stableUserId} from "./userId";
 
 export const browserZone = () => { try { return Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { return "UTC"; } };
 

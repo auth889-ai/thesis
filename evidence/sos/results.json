@@ -1,0 +1,68 @@
+{
+ "label": "SYNTHETIC",
+ "built_utc": "2026-10-10T11:56:24.939304+00:00",
+ "rule": {
+  "threshold_g": 4.0,
+  "min_speed_kmh": 24.1,
+  "countdown_s": 15,
+  "source": "White et al. 2011, WreckWatch, Mobile Networks and Applications 16(3): 4 g and a GPS speed over 15 mph"
+ },
+ "generator": {
+  "rate_hz": 50,
+  "seconds": 30,
+  "seed": 7,
+  "noise_sd_g": 0.15
+ },
+ "rows": [
+  {
+   "kind": "normal_ride",
+   "label": "SYNTHETIC",
+   "description": "a normal ride: gravity plus road noise",
+   "samples": 1500,
+   "peak_g": 1.54,
+   "detected": false,
+   "at_s": null,
+   "at_g": null,
+   "speed_checked": false,
+   "sha256": "684830a4c29db882b298d4a742e36ba06899039648f691d6c5c4d08c7ad40890",
+   "note": "no speed in the trace, so the speed floor was not applied"
+  },
+  {
+   "kind": "hard_brake",
+   "label": "SYNTHETIC",
+   "description": "a hard brake: a 1.5 s pulse to 1.8 g",
+   "samples": 1500,
+   "peak_g": 2.03,
+   "detected": false,
+   "at_s": null,
+   "at_g": null,
+   "speed_checked": false,
+   "sha256": "90e2a67f495db5169b1dc97992914b04c99639474b9efce953b5b07320d52101",
+   "note": "no speed in the trace, so the speed floor was not applied"
+  },
+  {
+   "kind": "crash_jolt",
+   "label": "SYNTHETIC",
+   "description": "a crash-like jolt: a 120 ms spike to 6.5 g",
+   "samples": 1500,
+   "peak_g": 6.37,
+   "detected": true,
+   "at_s": 12.04,
+   "at_g": 5.87,
+   "speed_checked": false,
+   "sha256": "7d0d9fc63980ebe74aa5961dc2abbb9b515aacb8033ca352238ab9b90e35fb0d",
+   "note": "no speed in the trace, so the speed floor was not applied"
+  }
+ ],
+ "plain": {
+  "traces": 3,
+  "detected": 1,
+  "peak_g": {
+   "normal_ride": 1.54,
+   "hard_brake": 2.03,
+   "crash_jolt": 6.37
+  },
+  "threshold_g": 4.0
+ },
+ "sha256": "c7236aeb0be94bc6ecfe701d6bd5070662daeead1a2b3a00e78f22d23debee90"
+}

@@ -1,0 +1,179 @@
+{
+ "generated_utc": "2026-10-08T14:59:49.482053+00:00",
+ "buffer_m": 300.0,
+ "edges_kept": 1198,
+ "edges_full": 6527,
+ "net": {
+  "file": "data/cities/dhaka/sumo/corridor/dhaka_corridor.net.xml.gz",
+  "sha256": "171804d02291d737b050143071e1b3de233961ac92fd5c19af3bb47560369849"
+ },
+ "routes": {
+  "file": "data/cities/dhaka/sumo/corridor/dhaka_density.rou.xml",
+  "sha256": "c3393a971c80e2846c193477b1702ade41880894da2c7426fbd5959df54adcc1"
+ },
+ "route_signals_after_cut": [
+  {
+   "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+   "same_programme": true,
+   "phases_full": 4,
+   "phases_corridor": 4
+  },
+  {
+   "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+   "same_programme": true,
+   "phases_full": 4,
+   "phases_corridor": 4
+  }
+ ],
+ "sites": [
+  {
+   "site": "BM",
+   "day": "2026-04-20",
+   "section": "235293033#10",
+   "counts": [
+    163,
+    219,
+    220,
+    226,
+    205,
+    246,
+    184,
+    142,
+    184,
+    183,
+    235,
+    154
+   ]
+  },
+  {
+   "site": "INT",
+   "day": "2026-04-19",
+   "section": "691209729#5",
+   "counts": [
+    86,
+    101,
+    86,
+    96,
+    92,
+    86,
+    95,
+    101,
+    128,
+    102,
+    109,
+    148
+   ]
+  }
+ ],
+ "window": "07:00, 3600 s in 300 s intervals; BM and INT were recorded on different days, treated as one clock window",
+ "demand": {
+  "sampled_through_counted_sections": 3451,
+  "background_uncalibrated": 937,
+  "background_dropped_for_touching_a_counted_section": 863,
+  "vehicle_mix": {
+   "source": "DhaTraX v1.0, Traffic_Analysis/vehicle_class_composition_by_site.csv, the three sites pooled (69,083 crossings)",
+   "citation": "Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+   "simulated_as": "each class is drawn at its share and driven as the nearest SUMO vehicle class with SUMO's own default parameters for that class; SUMO has no CNG auto-rickshaw or cycle-rickshaw class, and no Dhaka-specific size, speed or lane behaviour is modelled",
+   "seed": 11,
+   "vehicles": 4388,
+   "classes": [
+    {
+     "name": "Car_Micro",
+     "sumo_class": "passenger",
+     "asked_pct": 33.15,
+     "vehicles": 1548,
+     "achieved_pct": 35.28
+    },
+    {
+     "name": "Motor_Cycle",
+     "sumo_class": "motorcycle",
+     "asked_pct": 29.88,
+     "vehicles": 1311,
+     "achieved_pct": 29.88
+    },
+    {
+     "name": "CNG",
+     "sumo_class": "taxi",
+     "asked_pct": 22.46,
+     "vehicles": 986,
+     "achieved_pct": 22.47
+    },
+    {
+     "name": "Rickshaw",
+     "sumo_class": "bicycle",
+     "asked_pct": 4.39,
+     "vehicles": 99,
+     "achieved_pct": 2.26
+    },
+    {
+     "name": "Bus_Minibus",
+     "sumo_class": "bus",
+     "asked_pct": 4.06,
+     "vehicles": 178,
+     "achieved_pct": 4.06
+    },
+    {
+     "name": "Pickup_Truck",
+     "sumo_class": "delivery",
+     "asked_pct": 3.58,
+     "vehicles": 157,
+     "achieved_pct": 3.58
+    },
+    {
+     "name": "Van",
+     "sumo_class": "passenger",
+     "asked_pct": 0.9,
+     "vehicles": 39,
+     "achieved_pct": 0.89
+    },
+    {
+     "name": "Ambulance",
+     "sumo_class": "emergency",
+     "asked_pct": 0.79,
+     "vehicles": 35,
+     "achieved_pct": 0.8
+    },
+    {
+     "name": "Special_Purpose",
+     "sumo_class": "truck",
+     "asked_pct": 0.48,
+     "vehicles": 21,
+     "achieved_pct": 0.48
+    },
+    {
+     "name": "Bicycle",
+     "sumo_class": "bicycle",
+     "asked_pct": 0.31,
+     "vehicles": 14,
+     "achieved_pct": 0.32
+    }
+   ]
+  }
+ },
+ "tight_lateral": {
+  "Motor_Cycle": {
+   "minGapLat": "0.1",
+   "latAlignment": "arbitrary",
+   "minGap": "1.0"
+  },
+  "Bicycle": {
+   "minGapLat": "0.1",
+   "latAlignment": "arbitrary"
+  },
+  "Rickshaw": {
+   "minGapLat": "0.15",
+   "latAlignment": "arbitrary"
+  },
+  "CNG": {
+   "minGapLat": "0.2",
+   "latAlignment": "arbitrary",
+   "minGap": "1.5"
+  }
+ },
+ "routesampler_log_tail": "istinct) achieving total count 279 (100.00%) at 2 locations. GEH<5 for 100.00%\n2100: Wrote 232 routes (230 distinct) achieving total count 243 (100.00%) at 2 locations. GEH<5 for 100.00%\n2400: Wrote 297 routes (291 distinct) achieving total count 312 (100.00%) at 2 locations. GEH<5 for 100.00%\n2700: Wrote 271 routes (263 distinct) achieving total count 285 (100.00%) at 2 locations. GEH<5 for 100.00%\n3000: Wrote 331 routes (327 distinct) achieving total count 344 (100.00%) at 2 locations. GEH<5 for 100.00%\n3300: Wrote 292 routes (285 distinct) achieving total count 302 (100.00%) at 2 locations. GEH<5 for 100.00%\navg interval input count: count 12, min 243.00 (2100.0), max 344.00 (3000.0), mean 299.25, Q1 285.00, median 306.00, Q3 322.00\navg interval written vehs: count 12, min 232.00 (2100.0), max 331.00 (3000.0), mean 287.58, Q1 271.00, median 297.00, Q3 313.00\navg interval underflow: count 12, min 0.00 (0.0), max 0.00 (0.0), mean 0.00, Q1 0.00, median 0.00, Q3 0.00\navg interval overflow: count 12, min 0.00 (0.0), max 0.00 (0.0), mean 0.00, Q1 0.00, median 0.00, Q3 0.00\navg interval GEH%: count 12, min 100.00 (0.0), max 100.00 (0.0), mean 100.00, Q1 100.00, median 100.00, Q3 100.00",
+ "commands": [
+  "netconvert --sumo-net-file <dhaka_r1> --keep-edges.input-file keep_edges.txt --output-file dhaka_corridor.net.xml.gz",
+  "randomTrips.py (pool, background)",
+  "routeSampler.py -r pool.rou.xml --edgedata-files counts.xml --edgedata-attribute entered"
+ ]
+}

@@ -1,1 +1,1 @@
-"""Edge pricing, route candidate evaluation, and admission."""
+"""The routing API and the map app adapter; the routing code is in core/simulation/routing."""

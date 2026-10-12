@@ -1,1 +1,1 @@
-"""Research protocols: outcome gates (oracle, learned, controller), the paired-seed statistics, the congested-scenario calibration and experiment, and the report generators. Every number an evaluation page shows is produced here from run files."""
+"""The research API (HTTP routes); the protocols are in core/simulation/closed_loop/protocols."""

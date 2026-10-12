@@ -1,35 +1,11 @@
-"""Server-side credentials shared by the API and command-line adapters."""
-import os
-from pathlib import Path
-
-from dotenv import dotenv_values
-
-from app.paths import REPO
-
-ENV_FILE = REPO / ".env"
-LEGACY_ENV_FILES = ()
-
-
-def load_credential(name: str, *, files: tuple[Path, ...] | None = None) -> str:
-    """Process environment wins; parse files without expansion or global mutation."""
-    value = os.environ.get(name)
-    if value:
-        return value
-    for path in files if files is not None else (ENV_FILE, *LEGACY_ENV_FILES):
-        try:
-            value = dotenv_values(path, interpolate=False).get(name)
-        except OSError:
-            continue
-        if value:
-            return value
-    return ""
+"""Server-side settings of the web application. Credentials are loaded by core.common.credentials (shared with the research code)."""
+from core.common.credentials import ENV_FILE, LEGACY_ENV_FILES, load_credential  # noqa: F401 - re-exported for the app's modules
 
 
 # ---- application settings (used by main.py)
 import os as _os
-from app.evidence_paths import FRONTEND, REPO as _REPO      # noqa: E402
+from core.common.evidence_paths import FRONTEND, MAP_APP, REPO as _REPO      # noqa: E402
 MEDIA = _REPO / "docs/media"
 API_DOCS_URL = "/api/docs"
 OBSERVATORY_ENABLED = not _os.environ.get("DHAKAFLOW_NO_OBSERVATORY")     # live corridor sampling off in tests
-DEFAULT_CITY = _os.environ.get("TRAFFICTWIN_DEFAULT_CITY", "Dhaka")           # used only for a person with no profile yet
-DEFAULT_TZ = _os.environ.get("TRAFFICTWIN_DEFAULT_TZ", "Asia/Dhaka")
+from core.common.settings import DEFAULT_CITY, DEFAULT_TZ  # noqa: E402,F401

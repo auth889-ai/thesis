@@ -32,4 +32,6 @@ joblib==1.5.2
 PyYAML==6.0.3
 python-dotenv>=1.0,<2
 pytest==9.1.1
-chronos-forecasting  # pretrained univariate foundation model (Apache-2.0)
+chronos-forecasting==2.3.1  # Chronos-Bolt and Chronos-2 through BaseChronosPipeline (Apache-2.0); see third_party/SOURCES.md
+# Do NOT install tensorflow beside it on macOS 26: transformers 4.x imports TensorFlow whenever it is present, and
+# tensorflow 2.20.0 does not load on this laptop (import hangs in dyld). Nothing in this project imports TensorFlow.

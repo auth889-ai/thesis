@@ -1,0 +1,1247 @@
+{
+ "generated_utc": "2026-10-09T02:39:08.027027+00:00",
+ "question": "How well can traffic speed be forecast 15, 30 and 60 minutes ahead, in LA and in Dhaka, and why does Dhaka differ?",
+ "lab": {
+  "METR-LA": {
+   "persistence": {
+    "15": {
+     "seeds": 3,
+     "mae": 4.031,
+     "mae_sd": 0.315,
+     "rmse": 7.296,
+     "rmse_sd": 0.549,
+     "mape_pct": 11.269,
+     "mape_pct_sd": 1.703
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 4.946,
+     "mae_sd": 0.272,
+     "rmse": 9.148,
+     "rmse_sd": 0.429,
+     "mape_pct": 14.178,
+     "mape_pct_sd": 1.444
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 6.506,
+     "mae_sd": 0.372,
+     "rmse": 11.853,
+     "rmse_sd": 0.48,
+     "mape_pct": 18.954,
+     "mape_pct_sd": 2.523
+    }
+   },
+   "historical_average": {
+    "15": {
+     "seeds": 3,
+     "mae": 5.706,
+     "mae_sd": 0.654,
+     "rmse": 9.714,
+     "rmse_sd": 0.625,
+     "mape_pct": 22.376,
+     "mape_pct_sd": 4.586
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 5.712,
+     "mae_sd": 0.541,
+     "rmse": 9.718,
+     "rmse_sd": 0.4,
+     "mape_pct": 22.191,
+     "mape_pct_sd": 3.562
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 5.723,
+     "mae_sd": 0.46,
+     "rmse": 9.704,
+     "rmse_sd": 0.373,
+     "mape_pct": 21.845,
+     "mape_pct_sd": 1.435
+    }
+   },
+   "random_forest": {
+    "15": {
+     "seeds": 3,
+     "mae": 4.008,
+     "mae_sd": 0.343,
+     "rmse": 7.127,
+     "rmse_sd": 0.508,
+     "mape_pct": 12.348,
+     "mape_pct_sd": 2.163
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 5.101,
+     "mae_sd": 0.356,
+     "rmse": 8.859,
+     "rmse_sd": 0.472,
+     "mape_pct": 16.572,
+     "mape_pct_sd": 2.095
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 6.743,
+     "mae_sd": 0.433,
+     "rmse": 11.013,
+     "rmse_sd": 0.643,
+     "mape_pct": 22.788,
+     "mape_pct_sd": 2.04
+    }
+   },
+   "xgboost": {
+    "15": {
+     "seeds": 3,
+     "mae": 4.022,
+     "mae_sd": 0.366,
+     "rmse": 7.192,
+     "rmse_sd": 0.564,
+     "mape_pct": 12.44,
+     "mape_pct_sd": 2.266
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 5.119,
+     "mae_sd": 0.343,
+     "rmse": 8.952,
+     "rmse_sd": 0.461,
+     "mape_pct": 16.716,
+     "mape_pct_sd": 1.942
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 6.766,
+     "mae_sd": 0.468,
+     "rmse": 11.145,
+     "rmse_sd": 0.649,
+     "mape_pct": 22.902,
+     "mape_pct_sd": 2.094
+    }
+   },
+   "chronos": {
+    "15": {
+     "seeds": 3,
+     "mae": 4.143,
+     "mae_sd": 0.3,
+     "rmse": 7.591,
+     "rmse_sd": 0.428,
+     "mape_pct": 12.264,
+     "mape_pct_sd": 1.845
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 5.348,
+     "mae_sd": 0.298,
+     "rmse": 9.699,
+     "rmse_sd": 0.253,
+     "mape_pct": 16.166,
+     "mape_pct_sd": 1.75
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 7.35,
+     "mae_sd": 0.509,
+     "rmse": 12.769,
+     "rmse_sd": 0.493,
+     "mape_pct": 22.149,
+     "mape_pct_sd": 2.305
+    }
+   },
+   "chronos2": {
+    "15": {
+     "seeds": 3,
+     "mae": 3.909,
+     "mae_sd": 0.205,
+     "rmse": 7.66,
+     "rmse_sd": 0.487,
+     "mape_pct": 11.43,
+     "mape_pct_sd": 1.393
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 5.016,
+     "mae_sd": 0.096,
+     "rmse": 9.828,
+     "rmse_sd": 0.349,
+     "mape_pct": 14.993,
+     "mape_pct_sd": 1.186
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 6.947,
+     "mae_sd": 0.098,
+     "rmse": 12.953,
+     "rmse_sd": 0.184,
+     "mape_pct": 20.917,
+     "mape_pct_sd": 2.274
+    }
+   },
+   "chronos2_mv": {
+    "15": {
+     "seeds": 3,
+     "mae": 3.72,
+     "mae_sd": 0.246,
+     "rmse": 7.19,
+     "rmse_sd": 0.504,
+     "mape_pct": 10.852,
+     "mape_pct_sd": 1.41
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 4.683,
+     "mae_sd": 0.197,
+     "rmse": 9.085,
+     "rmse_sd": 0.4,
+     "mape_pct": 14.046,
+     "mape_pct_sd": 1.295
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 6.343,
+     "mae_sd": 0.247,
+     "rmse": 11.779,
+     "rmse_sd": 0.406,
+     "mape_pct": 19.492,
+     "mape_pct_sd": 2.907
+    }
+   },
+   "timesfm": {
+    "15": {
+     "seeds": 3,
+     "mae": 3.975,
+     "mae_sd": 0.227,
+     "rmse": 7.59,
+     "rmse_sd": 0.381,
+     "mape_pct": 12.041,
+     "mape_pct_sd": 1.384
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 5.03,
+     "mae_sd": 0.152,
+     "rmse": 9.591,
+     "rmse_sd": 0.227,
+     "mape_pct": 15.725,
+     "mape_pct_sd": 1.316
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 6.719,
+     "mae_sd": 0.156,
+     "rmse": 12.317,
+     "rmse_sd": 0.16,
+     "mape_pct": 21.572,
+     "mape_pct_sd": 2.831
+    }
+   },
+   "D2STGNN": {
+    "15": {
+     "seeds": 3,
+     "mae": 2.938,
+     "mae_sd": 0.245,
+     "rmse": 5.585,
+     "rmse_sd": 0.593,
+     "mape_pct": 8.447,
+     "mape_pct_sd": 1.592
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 3.351,
+     "mae_sd": 0.252,
+     "rmse": 6.58,
+     "rmse_sd": 0.688,
+     "mape_pct": 9.977,
+     "mape_pct_sd": 1.504
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 3.779,
+     "mae_sd": 0.415,
+     "rmse": 7.506,
+     "rmse_sd": 0.95,
+     "mape_pct": 11.669,
+     "mape_pct_sd": 2.208
+    }
+   },
+   "DCRNN": {
+    "15": {
+     "seeds": 3,
+     "mae": 3.046,
+     "mae_sd": 0.282,
+     "rmse": 5.807,
+     "rmse_sd": 0.628,
+     "mape_pct": 8.782,
+     "mape_pct_sd": 1.621
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 3.527,
+     "mae_sd": 0.331,
+     "rmse": 6.957,
+     "rmse_sd": 0.763,
+     "mape_pct": 10.649,
+     "mape_pct_sd": 1.786
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 4.091,
+     "mae_sd": 0.515,
+     "rmse": 8.222,
+     "rmse_sd": 1.064,
+     "mape_pct": 12.889,
+     "mape_pct_sd": 2.197
+    }
+   },
+   "GWNet": {
+    "15": {
+     "seeds": 3,
+     "mae": 3.183,
+     "mae_sd": 0.331,
+     "rmse": 6.006,
+     "rmse_sd": 0.727,
+     "mape_pct": 9.594,
+     "mape_pct_sd": 2.123
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 3.7,
+     "mae_sd": 0.403,
+     "rmse": 7.226,
+     "rmse_sd": 0.972,
+     "mape_pct": 11.623,
+     "mape_pct_sd": 2.441
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 4.249,
+     "mae_sd": 0.629,
+     "rmse": 8.279,
+     "rmse_sd": 1.39,
+     "mape_pct": 13.83,
+     "mape_pct_sd": 2.843
+    }
+   },
+   "MegaCRN": {
+    "15": {
+     "seeds": 3,
+     "mae": 2.994,
+     "mae_sd": 0.251,
+     "rmse": 5.63,
+     "rmse_sd": 0.533,
+     "mape_pct": 8.598,
+     "mape_pct_sd": 1.558
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 3.452,
+     "mae_sd": 0.279,
+     "rmse": 6.744,
+     "rmse_sd": 0.662,
+     "mape_pct": 10.308,
+     "mape_pct_sd": 1.536
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 3.965,
+     "mae_sd": 0.494,
+     "rmse": 7.926,
+     "rmse_sd": 1.026,
+     "mape_pct": 12.172,
+     "mape_pct_sd": 2.209
+    }
+   },
+   "STAEformer": {
+    "15": {
+     "seeds": 3,
+     "mae": 3.063,
+     "mae_sd": 0.212,
+     "rmse": 5.823,
+     "rmse_sd": 0.521,
+     "mape_pct": 8.903,
+     "mape_pct_sd": 1.408
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 3.447,
+     "mae_sd": 0.266,
+     "rmse": 6.743,
+     "rmse_sd": 0.731,
+     "mape_pct": 10.436,
+     "mape_pct_sd": 1.51
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 3.878,
+     "mae_sd": 0.53,
+     "rmse": 7.709,
+     "rmse_sd": 1.163,
+     "mape_pct": 12.095,
+     "mape_pct_sd": 2.636
+    }
+   },
+   "STID": {
+    "15": {
+     "seeds": 3,
+     "mae": 3.291,
+     "mae_sd": 0.318,
+     "rmse": 6.325,
+     "rmse_sd": 0.701,
+     "mape_pct": 10.259,
+     "mape_pct_sd": 1.994
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 3.774,
+     "mae_sd": 0.396,
+     "rmse": 7.473,
+     "rmse_sd": 0.884,
+     "mape_pct": 12.442,
+     "mape_pct_sd": 2.3
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 4.22,
+     "mae_sd": 0.576,
+     "rmse": 8.389,
+     "rmse_sd": 1.158,
+     "mape_pct": 14.273,
+     "mape_pct_sd": 2.943
+    }
+   },
+   "historical_average_weekday": {
+    "15": {
+     "seeds": 3,
+     "mae": 4.886,
+     "mae_sd": 0.46,
+     "rmse": 8.552,
+     "rmse_sd": 0.692,
+     "mape_pct": 17.451,
+     "mape_pct_sd": 3.394
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 4.893,
+     "mae_sd": 0.478,
+     "rmse": 8.547,
+     "rmse_sd": 0.734,
+     "mape_pct": 17.371,
+     "mape_pct_sd": 3.152
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 4.878,
+     "mae_sd": 0.566,
+     "rmse": 8.469,
+     "rmse_sd": 0.909,
+     "mape_pct": 17.001,
+     "mape_pct_sd": 2.883
+    }
+   }
+  },
+  "PEMS-BAY": {
+   "persistence": {
+    "15": {
+     "seeds": 3,
+     "mae": 1.226,
+     "mae_sd": 0.129,
+     "rmse": 2.51,
+     "rmse_sd": 0.439,
+     "mape_pct": 2.078,
+     "mape_pct_sd": 0.18
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 1.543,
+     "mae_sd": 0.198,
+     "rmse": 3.471,
+     "rmse_sd": 0.677,
+     "mape_pct": 2.69,
+     "mape_pct_sd": 0.314
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 2.05,
+     "mae_sd": 0.432,
+     "rmse": 4.93,
+     "rmse_sd": 1.24,
+     "mape_pct": 3.862,
+     "mape_pct_sd": 1.366
+    }
+   },
+   "historical_average": {
+    "15": {
+     "seeds": 3,
+     "mae": 3.105,
+     "mae_sd": 2.167,
+     "rmse": 5.493,
+     "rmse_sd": 3.245,
+     "mape_pct": 5.577,
+     "mape_pct_sd": 3.642
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 3.091,
+     "mae_sd": 2.139,
+     "rmse": 5.496,
+     "rmse_sd": 3.168,
+     "mape_pct": 5.514,
+     "mape_pct_sd": 3.583
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 3.096,
+     "mae_sd": 2.071,
+     "rmse": 5.569,
+     "rmse_sd": 3.119,
+     "mape_pct": 5.634,
+     "mape_pct_sd": 3.441
+    }
+   },
+   "random_forest": {
+    "15": {
+     "seeds": 3,
+     "mae": 1.175,
+     "mae_sd": 0.082,
+     "rmse": 2.383,
+     "rmse_sd": 0.252,
+     "mape_pct": 2.02,
+     "mape_pct_sd": 0.1
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 1.512,
+     "mae_sd": 0.128,
+     "rmse": 3.221,
+     "rmse_sd": 0.368,
+     "mape_pct": 2.677,
+     "mape_pct_sd": 0.197
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 2.038,
+     "mae_sd": 0.286,
+     "rmse": 4.283,
+     "rmse_sd": 0.758,
+     "mape_pct": 3.796,
+     "mape_pct_sd": 1.092
+    }
+   },
+   "xgboost": {
+    "15": {
+     "seeds": 3,
+     "mae": 1.162,
+     "mae_sd": 0.072,
+     "rmse": 2.364,
+     "rmse_sd": 0.234,
+     "mape_pct": 2.013,
+     "mape_pct_sd": 0.085
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 1.487,
+     "mae_sd": 0.109,
+     "rmse": 3.217,
+     "rmse_sd": 0.368,
+     "mape_pct": 2.66,
+     "mape_pct_sd": 0.179
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 1.997,
+     "mae_sd": 0.267,
+     "rmse": 4.245,
+     "rmse_sd": 0.77,
+     "mape_pct": 3.741,
+     "mape_pct_sd": 1.08
+    }
+   },
+   "chronos": {
+    "15": {
+     "seeds": 3,
+     "mae": 1.278,
+     "mae_sd": 0.198,
+     "rmse": 2.535,
+     "rmse_sd": 0.427,
+     "mape_pct": 2.172,
+     "mape_pct_sd": 0.271
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 1.722,
+     "mae_sd": 0.37,
+     "rmse": 3.763,
+     "rmse_sd": 0.88,
+     "mape_pct": 2.988,
+     "mape_pct_sd": 0.537
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 2.566,
+     "mae_sd": 0.827,
+     "rmse": 5.834,
+     "rmse_sd": 2.072,
+     "mape_pct": 4.676,
+     "mape_pct_sd": 1.79
+    }
+   },
+   "chronos2": {
+    "15": {
+     "seeds": 3,
+     "mae": 1.206,
+     "mae_sd": 0.152,
+     "rmse": 3.095,
+     "rmse_sd": 1.138,
+     "mape_pct": 2.105,
+     "mape_pct_sd": 0.255
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 1.6,
+     "mae_sd": 0.288,
+     "rmse": 4.635,
+     "rmse_sd": 2.023,
+     "mape_pct": 2.896,
+     "mape_pct_sd": 0.614
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 2.316,
+     "mae_sd": 0.693,
+     "rmse": 6.687,
+     "rmse_sd": 3.439,
+     "mape_pct": 4.538,
+     "mape_pct_sd": 2.12
+    }
+   },
+   "chronos2_mv": {
+    "15": {
+     "seeds": 3,
+     "mae": 1.121,
+     "mae_sd": 0.098,
+     "rmse": 2.37,
+     "rmse_sd": 0.306,
+     "mape_pct": 1.946,
+     "mape_pct_sd": 0.135
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 1.433,
+     "mae_sd": 0.18,
+     "rmse": 3.343,
+     "rmse_sd": 0.529,
+     "mape_pct": 2.587,
+     "mape_pct_sd": 0.385
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 1.959,
+     "mae_sd": 0.488,
+     "rmse": 4.792,
+     "rmse_sd": 1.457,
+     "mape_pct": 3.877,
+     "mape_pct_sd": 1.752
+    }
+   },
+   "timesfm": {
+    "15": {
+     "seeds": 3,
+     "mae": 1.158,
+     "mae_sd": 0.12,
+     "rmse": 2.48,
+     "rmse_sd": 0.373,
+     "mape_pct": 2.014,
+     "mape_pct_sd": 0.176
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 1.468,
+     "mae_sd": 0.2,
+     "rmse": 3.445,
+     "rmse_sd": 0.647,
+     "mape_pct": 2.649,
+     "mape_pct_sd": 0.423
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 1.977,
+     "mae_sd": 0.462,
+     "rmse": 4.833,
+     "rmse_sd": 1.453,
+     "mape_pct": 3.911,
+     "mape_pct_sd": 1.656
+    }
+   },
+   "DCRNN": {
+    "15": {
+     "seeds": 3,
+     "mae": 0.992,
+     "mae_sd": 0.023,
+     "rmse": 2.0,
+     "rmse_sd": 0.151,
+     "mape_pct": 1.728,
+     "mape_pct_sd": 0.086
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 1.156,
+     "mae_sd": 0.018,
+     "rmse": 2.519,
+     "rmse_sd": 0.221,
+     "mape_pct": 2.083,
+     "mape_pct_sd": 0.113
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 1.31,
+     "mae_sd": 0.118,
+     "rmse": 2.981,
+     "rmse_sd": 0.145,
+     "mape_pct": 2.43,
+     "mape_pct_sd": 0.458
+    }
+   },
+   "GWNet": {
+    "15": {
+     "seeds": 3,
+     "mae": 0.995,
+     "mae_sd": 0.027,
+     "rmse": 2.015,
+     "rmse_sd": 0.134,
+     "mape_pct": 1.721,
+     "mape_pct_sd": 0.071
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 1.15,
+     "mae_sd": 0.014,
+     "rmse": 2.513,
+     "rmse_sd": 0.172,
+     "mape_pct": 2.068,
+     "mape_pct_sd": 0.1
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 1.273,
+     "mae_sd": 0.113,
+     "rmse": 2.743,
+     "rmse_sd": 0.278,
+     "mape_pct": 2.326,
+     "mape_pct_sd": 0.418
+    }
+   },
+   "STID": {
+    "15": {
+     "seeds": 3,
+     "mae": 0.993,
+     "mae_sd": 0.048,
+     "rmse": 2.017,
+     "rmse_sd": 0.203,
+     "mape_pct": 1.76,
+     "mape_pct_sd": 0.188
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 1.135,
+     "mae_sd": 0.033,
+     "rmse": 2.509,
+     "rmse_sd": 0.275,
+     "mape_pct": 2.1,
+     "mape_pct_sd": 0.188
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 1.234,
+     "mae_sd": 0.123,
+     "rmse": 2.598,
+     "rmse_sd": 0.333,
+     "mape_pct": 2.271,
+     "mape_pct_sd": 0.437
+    }
+   },
+   "historical_average_weekday": {
+    "15": {
+     "seeds": 3,
+     "mae": 1.833,
+     "mae_sd": 0.373,
+     "rmse": 3.583,
+     "rmse_sd": 0.921,
+     "mape_pct": 3.569,
+     "mape_pct_sd": 1.074
+    },
+    "30": {
+     "seeds": 3,
+     "mae": 1.807,
+     "mae_sd": 0.363,
+     "rmse": 3.462,
+     "rmse_sd": 0.804,
+     "mape_pct": 3.408,
+     "mape_pct_sd": 0.991
+    },
+    "60": {
+     "seeds": 3,
+     "mae": 1.773,
+     "mae_sd": 0.381,
+     "rmse": 3.225,
+     "rmse_sd": 0.824,
+     "mape_pct": 3.23,
+     "mape_pct_sd": 1.028
+    }
+   }
+  }
+ },
+ "dhaka": {
+  "persistence": {
+   "15": {
+    "mae": 2.385,
+    "mae_sd": 0.558,
+    "per_site": {
+     "BM": 1.7857,
+     "BS": 2.891,
+     "INT": 2.4777
+    }
+   },
+   "30": {
+    "mae": 2.623,
+    "mae_sd": 0.514,
+    "per_site": {
+     "BM": 2.0294,
+     "BS": 2.915,
+     "INT": 2.9231
+    }
+   },
+   "60": {
+    "mae": 2.717,
+    "mae_sd": 0.674,
+    "per_site": {
+     "BM": 1.9707,
+     "BS": 2.9015,
+     "INT": 3.2802
+    }
+   }
+  },
+  "chronos": {
+   "15": {
+    "mae": 2.225,
+    "mae_sd": 0.333,
+    "per_site": {
+     "BM": 1.8415,
+     "BS": 2.3917,
+     "INT": 2.4404
+    }
+   },
+   "30": {
+    "mae": 2.422,
+    "mae_sd": 0.444,
+    "per_site": {
+     "BM": 2.012,
+     "BS": 2.3599,
+     "INT": 2.8938
+    }
+   },
+   "60": {
+    "mae": 2.878,
+    "mae_sd": 0.552,
+    "per_site": {
+     "BM": 2.5057,
+     "BS": 2.617,
+     "INT": 3.5122
+    }
+   }
+  },
+  "chronos2": {
+   "15": {
+    "mae": 2.301,
+    "mae_sd": 0.323,
+    "per_site": {
+     "BM": 1.9279,
+     "BS": 2.4868,
+     "INT": 2.489
+    }
+   },
+   "30": {
+    "mae": 2.41,
+    "mae_sd": 0.31,
+    "per_site": {
+     "BM": 2.0936,
+     "BS": 2.4229,
+     "INT": 2.7139
+    }
+   },
+   "60": {
+    "mae": 2.877,
+    "mae_sd": 0.43,
+    "per_site": {
+     "BM": 2.6251,
+     "BS": 2.6329,
+     "INT": 3.3735
+    }
+   }
+  },
+  "timesfm": {
+   "15": {
+    "mae": 2.328,
+    "mae_sd": 0.117,
+    "per_site": {
+     "BM": 2.3329,
+     "BS": 2.2092,
+     "INT": 2.4432
+    }
+   },
+   "30": {
+    "mae": 2.628,
+    "mae_sd": 0.334,
+    "per_site": {
+     "BM": 2.7744,
+     "BS": 2.2458,
+     "INT": 2.8646
+    }
+   },
+   "60": {
+    "mae": 2.948,
+    "mae_sd": 0.544,
+    "per_site": {
+     "BM": 3.1509,
+     "BS": 2.3315,
+     "INT": 3.3622
+    }
+   }
+  },
+  "random_forest_from_metr_la": {
+   "15": {
+    "mae": 2.465,
+    "mae_sd": 0.232,
+    "per_site": {
+     "BM": 2.1977,
+     "BS": 2.5823,
+     "INT": 2.6151
+    }
+   },
+   "30": {
+    "mae": 3.074,
+    "mae_sd": 0.238,
+    "per_site": {
+     "BM": 2.8849,
+     "BS": 2.9951,
+     "INT": 3.3416
+    }
+   },
+   "60": {
+    "mae": 4.157,
+    "mae_sd": 0.565,
+    "per_site": {
+     "BM": 3.778,
+     "BS": 3.8872,
+     "INT": 4.8067
+    }
+   }
+  },
+  "xgboost_from_metr_la": {
+   "15": {
+    "mae": 2.523,
+    "mae_sd": 0.219,
+    "per_site": {
+     "BM": 2.2737,
+     "BS": 2.6834,
+     "INT": 2.6125
+    }
+   },
+   "30": {
+    "mae": 3.226,
+    "mae_sd": 0.236,
+    "per_site": {
+     "BM": 2.9871,
+     "BS": 3.2336,
+     "INT": 3.458
+    }
+   },
+   "60": {
+    "mae": 4.691,
+    "mae_sd": 0.453,
+    "per_site": {
+     "BM": 4.3489,
+     "BS": 4.5203,
+     "INT": 5.2042
+    }
+   }
+  }
+ },
+ "unseen_city": {
+  "random_forest_trained_on_metr_la": {
+   "15": {
+    "mae": 1.304,
+    "mae_sd": 0.153
+   },
+   "30": {
+    "mae": 1.683,
+    "mae_sd": 0.22
+   },
+   "60": {
+    "mae": 2.485,
+    "mae_sd": 0.425
+   }
+  },
+  "xgboost_trained_on_metr_la": {
+   "15": {
+    "mae": 1.353,
+    "mae_sd": 0.133
+   },
+   "30": {
+    "mae": 1.826,
+    "mae_sd": 0.203
+   },
+   "60": {
+    "mae": 2.76,
+    "mae_sd": 0.375
+   }
+  },
+  "random_forest_trained_on_pems_bay": {
+   "15": {
+    "mae": 1.19,
+    "mae_sd": 0.121
+   },
+   "30": {
+    "mae": 1.572,
+    "mae_sd": 0.207
+   },
+   "60": {
+    "mae": 2.223,
+    "mae_sd": 0.435
+   }
+  },
+  "xgboost_trained_on_pems_bay": {
+   "15": {
+    "mae": 1.214,
+    "mae_sd": 0.125
+   },
+   "30": {
+    "mae": 1.632,
+    "mae_sd": 0.223
+   },
+   "60": {
+    "mae": 2.35,
+    "mae_sd": 0.419
+   }
+  }
+ },
+ "cannot_transfer": {
+  "DCRNN": "cannot transfer: it learns one embedding or adjacency entry per METR-LA sensor (207), so it has no input for another network",
+  "GWNet": "cannot transfer: it learns one embedding or adjacency entry per METR-LA sensor (207), so it has no input for another network",
+  "MegaCRN": "cannot transfer: it learns one embedding or adjacency entry per METR-LA sensor (207), so it has no input for another network",
+  "STAEformer": "cannot transfer: it learns one embedding or adjacency entry per METR-LA sensor (207), so it has no input for another network",
+  "STID": "cannot transfer: it learns one embedding or adjacency entry per METR-LA sensor (207), so it has no input for another network",
+  "D2STGNN": "cannot transfer: it learns one embedding or adjacency entry per METR-LA sensor (207), so it has no input for another network"
+ },
+ "character": {
+  "METR-LA": {
+   "city": "Los Angeles",
+   "unit": "mph",
+   "n": 3686,
+   "stop_and_go_share": {
+    "median": 0.0065,
+    "ci95": [
+     0.0065,
+     0.0067
+    ],
+    "p10": 0.0,
+    "p90": 0.04
+   },
+   "congested_share": {
+    "median": 0.141,
+    "ci95": [
+     0.1311,
+     0.1508
+    ],
+    "p10": 0.0,
+    "p90": 0.4211
+   },
+   "cv": {
+    "median": 0.229,
+    "ci95": [
+     0.2216,
+     0.2365
+    ],
+    "p10": 0.0317,
+    "p90": 0.4359
+   },
+   "acf_1": {
+    "median": 0.8835,
+    "ci95": [
+     0.8792,
+     0.8888
+    ],
+    "p10": 0.2693,
+    "p90": 0.9714
+   },
+   "acf_3": {
+    "median": 0.7447,
+    "ci95": [
+     0.732,
+     0.7553
+    ],
+    "p10": 0.1773,
+    "p90": 0.9311
+   },
+   "acf_6": {
+    "median": 0.5939,
+    "ci95": [
+     0.5764,
+     0.6087
+    ],
+    "p10": 0.1073,
+    "p90": 0.8765
+   },
+   "acf_12": {
+    "median": 0.3572,
+    "ci95": [
+     0.3414,
+     0.3687
+    ],
+    "p10": -0.0069,
+    "p90": 0.75
+   }
+  },
+  "PEMS-BAY": {
+   "city": "San Francisco Bay Area",
+   "unit": "mph",
+   "n": 8450,
+   "stop_and_go_share": {
+    "median": 0.0,
+    "ci95": [
+     0.0,
+     0.0
+    ],
+    "p10": 0.0,
+    "p90": 0.0
+   },
+   "congested_share": {
+    "median": 0.0705,
+    "ci95": [
+     0.0641,
+     0.0769
+    ],
+    "p10": 0.0,
+    "p90": 0.3013
+   },
+   "cv": {
+    "median": 0.1621,
+    "ci95": [
+     0.1585,
+     0.1662
+    ],
+    "p10": 0.0319,
+    "p90": 0.3576
+   },
+   "acf_1": {
+    "median": 0.9733,
+    "ci95": [
+     0.9724,
+     0.9742
+    ],
+    "p10": 0.8576,
+    "p90": 0.9937
+   },
+   "acf_3": {
+    "median": 0.8897,
+    "ci95": [
+     0.8866,
+     0.8931
+    ],
+    "p10": 0.6275,
+    "p90": 0.9668
+   },
+   "acf_6": {
+    "median": 0.7753,
+    "ci95": [
+     0.7702,
+     0.7813
+    ],
+    "p10": 0.3833,
+    "p90": 0.9166
+   },
+   "acf_12": {
+    "median": 0.5766,
+    "ci95": [
+     0.5702,
+     0.5828
+    ],
+    "p10": 0.1312,
+    "p90": 0.803
+   }
+  },
+  "DhaTraX": {
+   "city": "Dhaka",
+   "unit": "km/h",
+   "sites": {
+    "BM": {
+     "day": "2026-04-20",
+     "stop_and_go_share": 0.1308,
+     "congested_share": 0.0661,
+     "cv": 0.5105,
+     "acf_1": 0.9641,
+     "acf_3": 0.8786,
+     "acf_6": 0.6354,
+     "acf_12": 0.0758,
+     "readings": 121
+    },
+    "BS": {
+     "day": "2026-04-06",
+     "stop_and_go_share": 0.0645,
+     "congested_share": 0.0513,
+     "cv": 0.1852,
+     "acf_1": 0.5096,
+     "acf_3": 0.22,
+     "acf_6": 0.1821,
+     "acf_12": 0.1734,
+     "readings": 156
+    },
+    "INT": {
+     "day": "2026-04-19",
+     "stop_and_go_share": 0.0769,
+     "congested_share": 0.2708,
+     "cv": 0.4923,
+     "acf_1": 0.8965,
+     "acf_3": 0.7949,
+     "acf_6": 0.6431,
+     "acf_12": 0.2998,
+     "readings": 144
+    }
+   }
+  }
+ },
+ "findings": {
+  "lab": [
+   "Los Angeles (METR-LA): at 60 minutes the best is D2STGNN at 3.779 mph mean absolute error, against 6.506 for persistence; the best zero-shot model is Chronos-2, all roads together (zero-shot) at 6.343.",
+   "San Francisco Bay Area (PEMS-BAY): at 60 minutes the best is STID at 1.234 mph mean absolute error, against 2.05 for persistence; the best zero-shot model is Chronos-2, all roads together (zero-shot) at 1.959.",
+   "Dhaka (DhaTraX, three camera sites, one day each), the best model other than persistence: at 15 minutes Chronos-Bolt-small (zero-shot) 2.225 km/h against persistence 2.385 (better); at 30 minutes Chronos-2 (zero-shot) 2.41 km/h against persistence 2.623 (better); at 60 minutes Chronos-2 (zero-shot) 2.877 km/h against persistence 2.717 (not better)."
+  ],
+  "unseen_city": "XGBoost trained on METR-LA (Los Angeles) and run unchanged on PEMS-BAY (San Francisco Bay Area) scores 2.76 mph at 60 minutes, against 2.35 when trained on PEMS-BAY itself: moving cities costs 17.4 %. The six graph models cannot move at all: each is fixed to METR-LA's 207 sensors.",
+  "why": "Dhaka's speeds jump: 6.5-13.1 % of 5-minute steps change by more than 30 % of free-flow, against 0.7 % on a median METR-LA sensor-day and 0.0 % on PEMS-BAY. 2 of 3 sites vary more than a median Los Angeles sensor-day (coefficient of variation BM 0.51, BS 0.19, INT 0.49 against 0.229, and 0.1621 in the Bay Area); 3 of 3 remember less an hour ahead (autocorrelation at 60 minutes 0.08-0.3 against 0.3572 and 0.5766). So what a model learns from Los Angeles's smooth roads does not carry: XGBoost trained on METR-LA is 72.7 % worse than persistence in Dhaka at 60 minutes, while moving it to the Bay Area costs 17.4 %. And the models that win in Los Angeles (D2STGNN 3.779 against persistence 6.506 at 60 minutes) learned months of each sensor's history; a Dhaka camera site has one recorded day, so there is nothing to train them on, and only zero-shot models can be used."
+ },
+ "figures": [
+  "results/forecasting/rq1/figures/rq1_error_vs_horizon.png",
+  "results/forecasting/rq1/figures/rq1_unseen_city.png",
+  "results/forecasting/rq1/figures/rq1_why_dhaka.png"
+ ],
+ "names": {
+  "persistence": "Persistence",
+  "historical_average": "Historical average (time of day)",
+  "historical_average_weekday": "Historical average (time of day + weekday)",
+  "random_forest": "Random forest",
+  "xgboost": "XGBoost",
+  "chronos": "Chronos-Bolt-small (zero-shot)",
+  "chronos2": "Chronos-2 (zero-shot)",
+  "chronos2_mv": "Chronos-2, all roads together (zero-shot)",
+  "timesfm": "TimesFM 2.5 (zero-shot)"
+ },
+ "sources": {
+  "metrics": "BasicTS masked metrics (Apache-2.0)",
+  "models": "Chronos-Bolt-small, Chronos-2, TimesFM 2.5 (Apache-2.0); trained checkpoints via BasicTS",
+  "data": "METR-LA and PEMS-BAY (DCRNN release, Li et al., ICLR 2018); DhaTraX v1.0 (CC BY 4.0)"
+ },
+ "caveats": [
+  "DhaTraX speeds come from camera tracking whose calibration the authors did not validate; one day per site",
+  "LA units are mph (loop detectors); Dhaka units are km/h (camera median speed)",
+  "the foundation models are deterministic; seeds vary the scored test block and the trees' training"
+ ]
+}

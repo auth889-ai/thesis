@@ -1,0 +1,52 @@
+{
+ "chronos_bolt_small": {
+  "rows": [
+   {
+    "dataset": "exchange_rate",
+    "ours_MASE": 1.77722,
+    "ours_WQL": 0.01133,
+    "published_MASE": 1.77484,
+    "published_WQL": 0.01136,
+    "rel_diff_MASE": 0.00134,
+    "rel_diff_WQL": 0.00323,
+    "pass": true
+   },
+   {
+    "dataset": "monash_hospital",
+    "ours_MASE": 0.80083,
+    "ours_WQL": 0.05812,
+    "published_MASE": 0.69545,
+    "published_WQL": 0.05812,
+    "rel_diff_MASE": 0.15152,
+    "rel_diff_WQL": 1e-05,
+    "pass": false
+   }
+  ],
+  "pass": false,
+  "rule": "within 1 % relative on MASE and WQL",
+  "upstream_commit": "8589d1988e9676817548e9626738ff06b6ca6370",
+  "verdict": "forecasts reproduced; one MASE value not",
+  "investigation": {
+   "finding": "monash_hospital: our WQL equals the published WQL (0.05812 vs 0.05812), so the forecasts match; our MASE is 0.80083 against the published 0.69545 (15 % higher). exchange_rate matches on both (0.13 % and 0.32 %).",
+   "ruled_out": [
+    "GluonTS version: 0.16.3 (the repository's pin ~=0.16) gives the same 0.80083 (ours_gluonts016_monash_hospital.csv); 0.17.0 was used for the main run",
+    "the seasonal period: the script derives 'M' and GluonTS gives 12; recomputing our forecasts' MASE by hand gives 0.80083 with season 12 and 0.92482 with season 1, neither 0.695"
+   ],
+   "not_found": "the cause of the published MASE; it may come from an older pandas or GluonTS in the authors' environment, which their repository does not record",
+   "consequence_for_rq1": "RQ1 scores MAE, RMSE and MAPE on point forecasts, not MASE; the matching WQL shows the model and its forecasts reproduce"
+  }
+ },
+ "timesfm_2p5": {
+  "example": "timesfm-forecasting/examples/global-temperature/run_forecast.py",
+  "max_abs_diff": 6.999999999646178e-07,
+  "pass": true,
+  "rule": "max absolute difference below 1e-3",
+  "upstream_commit": "e51928e27119cb17bebc005be2696b75e0a9e688"
+ },
+ "chronos_2": {
+  "pass": null,
+  "ran": true,
+  "note": "no per-dataset Chronos-2 table is published in the repository; nothing to compare against",
+  "our_mae_vs_example_test": 2.4565
+ }
+}

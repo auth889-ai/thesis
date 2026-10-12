@@ -1,0 +1,62 @@
+# What lives off this Mac, and how to get it back (`make fetch-data`). Written by hand, read by scripts/storage/offload.py.
+#
+# class
+#   public    published by someone else: restored from its source (URL, licence) or, failing that, from our Drive copy
+#   ours      our own run outputs: restored only from our Drive copy
+#   document  not code, not research: kept on Drive only
+#
+# Every entry is copied whole to Drive and checked file by file (`offload.py verify`). Only files of KEEP_LOCAL_BYTES or more are
+# ever removed from the Mac, and only after the owner's yes; smaller files (summaries, hashes, notes) stay local.
+drive_remote: gdrive2tb
+drive_root: DhakaFlow-Nexus-Data/mac-offload
+keep_local_bytes: 1048576
+# archive: true = a busy folder (thousands of files), sent as one tar.zst by scripts/storage/archive.py; the rest per file by offload.py
+
+entries:
+  - path: results/v2x
+    archive: true
+    class: ours
+    what: closed-loop routing runs (RQ2), coverage diagnostic, executions
+  - path: results/routing
+    archive: true
+    class: ours
+    what: routing research runs (forecast-to-action, gates, model in the loop)
+  - path: results/emergency
+    archive: true
+    class: ours
+    what: ambulance study runs (RQ3), v1 and v2 make-way
+  - path: results/artifacts
+    archive: true
+    class: ours
+    what: build artefacts of earlier runs
+  - path: results/forecasting
+    class: ours
+    what: forecasting runs and predictions (RQ1, reproductions)
+  - path: results/live
+    archive: true
+    class: ours
+    what: recorded live-service snapshots
+  - path: results/nlp
+    class: ours
+    what: incident text classifier runs
+  - path: data/recorded/dhatrax
+    class: public
+    what: DhaTraX v1.0 (Roy, Zenodo) and our replay built from it
+    source: https://doi.org/10.5281/zenodo.22157752
+    licence: CC BY 4.0
+    refetch: python -m core.common.data.recorded.dhatrax --fetch --fetch-trajectories --build-replay
+  - path: ~/.dhakaflow/upstream/PatchSTG_data
+    class: public
+    what: LargeST data and released weights for PatchSTG (authors' Google Drive folders)
+    source: https://github.com/LMissher/PatchSTG (README, commit 8b298b230227a304a082e05241c69dca3740a73d)
+    licence: MIT (repository)
+  - path: ~/.dhakaflow/upstream/mosaic/logs
+    archive: true
+    class: ours
+    what: Eclipse MOSAIC run logs (V2X)
+  - path: ~/Documents/blobs
+    class: document
+    what: Ollama model blobs (not part of the thesis)
+  - path: ~/Documents/manifests
+    class: document
+    what: Ollama model manifests (not part of the thesis)

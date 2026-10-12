@@ -1,0 +1,41 @@
+{
+ "what": "What was tried while fitting the Dhaka demand to DhaTraX counts on 2026-10-06, and what was kept. In every attempt routeSampler placed exactly the counted vehicles (100 % of site-intervals within GEH 5 on paper); the difference is what an actual SUMO run then carried past the two sections.",
+ "kept": [
+  {
+   "setting": "candidates from randomTrips with fringe factor 5, routeSampler's default sampling, no sublane model",
+   "record": "calibration_no_sublane.json",
+   "BM_simulated_over_observed_pct": 68.8,
+   "INT_simulated_over_observed_pct": 88.6,
+   "site_intervals_within_geh_5_pct": 41.7
+  },
+  {
+   "setting": "the same demand file, checked with --lateral-resolution 0.8 (the sublane setting of the ambulance experiments)",
+   "record": "calibration.json",
+   "BM_simulated_over_observed_pct": 56.0,
+   "INT_simulated_over_observed_pct": 81.3,
+   "site_intervals_within_geh_5_pct": 20.8
+  }
+ ],
+ "discarded_records_not_kept": "The two attempts below were overwritten by later runs; their figures are from the session's terminal output only and are not evidence for any reported number.",
+ "discarded": [
+  {
+   "setting": "routeSampler --optimize full",
+   "why": "it put every vehicle of a section on one route from one single-lane origin road, which cannot insert 2,361 vehicles an hour",
+   "BM_simulated_over_observed_pct": 21.9,
+   "INT_simulated_over_observed_pct": 83.6
+  },
+  {
+   "setting": "candidates with fringe factor max (edge-to-edge routes only), no sublane model",
+   "why": "matched worse at BM than fringe factor 5",
+   "BM_simulated_over_observed_pct": 52.5,
+   "INT_simulated_over_observed_pct": 88.5
+  },
+  {
+   "setting": "the same demand checked with --lateral-resolution 0.65",
+   "why": "0.65 does not divide SUMO's 3.2 m lane evenly, which its documentation recommends; replaced by 0.8",
+   "BM_simulated_over_observed_pct": 45.2,
+   "INT_simulated_over_observed_pct": 75.6
+  }
+ ],
+ "reading": "A miss. The simulated network does not carry the counted volume past Bangla Motor: vehicles queue at give-way junctions and signals whose timings are netconvert's guesses, and SUMO teleports 130 to 430 stuck vehicles an hour. With the sublane model the shortfall is larger and varies strongly by seed."
+}

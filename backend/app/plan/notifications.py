@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import sqlite3
 
-from app import credentials
+from core.common import credentials
 from app.agent.models import new_id, now_iso
 from app.agent.store import DB, _LOCK
 

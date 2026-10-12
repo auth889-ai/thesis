@@ -1,0 +1,1650 @@
+{
+ "city_id": "dhaka",
+ "demand_id": "generated",
+ "available": true,
+ "label": "SIMULATED",
+ "built_utc": "2026-10-06T02:52:36.528638+00:00",
+ "demand": {
+  "label": "SYNTHETIC_WHAT_IF",
+  "calibrated_to": null
+ },
+ "route_m": 3402.5,
+ "signals_on_route": 2,
+ "sumo_extra": [
+  "--lateral-resolution",
+  "0.8"
+ ],
+ "settings": {
+  "ambulance": {
+   "vtype": {
+    "vClass": "emergency",
+    "speedFactor": 1.5,
+    "bluelight": true
+   },
+   "depart_s": 900
+  },
+  "horizon_s": 3600,
+  "alert": {
+   "ahead_m": 1000
+  },
+  "safety_profile": "LAB01_VALIDATED_REFERENCE_PROFILE"
+ },
+ "technologies_refused": {},
+ "technology_provenance": {
+  "its_g5": "5GAA proving-ground tests (P-190033, 2018): range and reception from a test track with a blocking vehicle, delay from a cabled laboratory test; not Dhaka",
+  "c_v2x": "5GAA proving-ground tests (P-190033, 2018): range and reception from a test track with a blocking vehicle, delay from a cabled laboratory test; not Dhaka",
+  "cellular_4g": "one field study: Xu et al. 2017, a test-bed LTE network on a university test track in Xi'an, China, one vehicle pair at 60 km/h (packet loss 4 %); delay from a public LTE network in Germany (tinyLTE, 2018); not Dhaka"
+ },
+ "runs": {
+  "total": 129,
+  "finished": 112,
+  "sumo_crashed": 17,
+  "ambulance_not_arrived": 0
+ },
+ "reading_rules": [
+  "a pair is one seed on which both the configuration and the no-alert baseline finished; a change is the configuration minus the baseline of the same seed",
+  "seeds on which SUMO crashed have no result and are replaced by later seeds, so the seeds behind a row are the survivors; if crashes are not random, a row is biased in an unknown direction",
+  "with one-second steps the millisecond delays of the technologies cannot matter; they differ here by range and delivery ratio only",
+  "every technology's parameters come from other places' measurements (technology_provenance); plain 4G rests on one field study on a test track in Xi'an, China, not on any Dhaka network",
+  "nothing here is a measurement of a real ambulance or a real city"
+ ],
+ "rows": [
+  {
+   "arm": "no_alert",
+   "technology": null,
+   "equipped_share_pct": null,
+   "pairs": 7,
+   "crashed": 1,
+   "ambulance_travel_time_s": {
+    "mean": 209.29,
+    "sd": 9.69,
+    "min": 191.0,
+    "max": 217.0
+   },
+   "others_mean_time_loss_s": {
+    "mean": 55.47,
+    "sd": 0.45,
+    "min": 54.87,
+    "max": 56.01
+   },
+   "others_vehicle_hours": {
+    "mean": 69.73,
+    "sd": 0.21,
+    "min": 69.51,
+    "max": 70.06
+   }
+  },
+  {
+   "arm": "alert",
+   "technology": "c_v2x",
+   "equipped_share_pct": 25,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    16
+   ],
+   "crashed": 0,
+   "ambulance_travel_time_s": {
+    "mean": 207.8,
+    "sd": 11.37,
+    "min": 191.0,
+    "max": 217.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.02,
+    "sd": 0.05,
+    "min": 0.0,
+    "max": 0.11
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.01,
+    "sd": 0.01,
+    "min": 0.0,
+    "max": 0.03
+   },
+   "teleports_change": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "vehicles_alerted": {
+    "mean": 1.0,
+    "sd": 0.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "messages_delivered": {
+    "mean": 1.8,
+    "sd": 1.1,
+    "min": 1.0,
+    "max": 3.0
+   },
+   "junctions_preempted": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   }
+  },
+  {
+   "arm": "alert",
+   "technology": "c_v2x",
+   "equipped_share_pct": 50,
+   "pairs": 5,
+   "seeds": [
+    13,
+    14,
+    15,
+    17,
+    18
+   ],
+   "crashed": 2,
+   "ambulance_travel_time_s": {
+    "mean": 209.0,
+    "sd": 5.15,
+    "min": 203.0,
+    "max": 214.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 0.8,
+    "sd": 12.6,
+    "min": -20.0,
+    "max": 13.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 0.14,
+    "sd": 6.34,
+    "min": -10.47,
+    "max": 5.99
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.02,
+    "sd": 0.17,
+    "min": -0.25,
+    "max": 0.2
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.01,
+    "sd": 0.04,
+    "min": -0.05,
+    "max": 0.05
+   },
+   "teleports_change": {
+    "mean": 0.2,
+    "sd": 0.45,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "vehicles_alerted": {
+    "mean": 6.4,
+    "sd": 1.14,
+    "min": 5.0,
+    "max": 8.0
+   },
+   "messages_delivered": {
+    "mean": 17.6,
+    "sd": 3.91,
+    "min": 14.0,
+    "max": 23.0
+   },
+   "junctions_preempted": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   }
+  },
+  {
+   "arm": "alert",
+   "technology": "c_v2x",
+   "equipped_share_pct": 100,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    17
+   ],
+   "crashed": 1,
+   "ambulance_travel_time_s": {
+    "mean": 186.2,
+    "sd": 6.94,
+    "min": 175.0,
+    "max": 194.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 23.6,
+    "sd": 16.09,
+    "min": -3.0,
+    "max": 40.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 10.96,
+    "sd": 7.54,
+    "min": -1.57,
+    "max": 18.6
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": -0.07,
+    "sd": 0.14,
+    "min": -0.29,
+    "max": 0.08
+   },
+   "others_vehicle_hours_change": {
+    "mean": -0.02,
+    "sd": 0.04,
+    "min": -0.07,
+    "max": 0.01
+   },
+   "teleports_change": {
+    "mean": 0.2,
+    "sd": 0.45,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "vehicles_alerted": {
+    "mean": 13.2,
+    "sd": 1.1,
+    "min": 12.0,
+    "max": 15.0
+   },
+   "messages_delivered": {
+    "mean": 33.6,
+    "sd": 5.03,
+    "min": 26.0,
+    "max": 38.0
+   },
+   "junctions_preempted": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   }
+  },
+  {
+   "arm": "alert",
+   "technology": "cellular_4g",
+   "equipped_share_pct": 25,
+   "pairs": 5,
+   "seeds": [
+    13,
+    14,
+    15,
+    16,
+    17
+   ],
+   "crashed": 1,
+   "ambulance_travel_time_s": {
+    "mean": 207.0,
+    "sd": 10.86,
+    "min": 191.0,
+    "max": 217.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 1.95,
+    "sd": 4.29,
+    "min": 0.0,
+    "max": 9.63
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.49,
+    "sd": 1.07,
+    "min": 0.0,
+    "max": 2.41
+   },
+   "teleports_change": {
+    "mean": 0.8,
+    "sd": 1.79,
+    "min": 0.0,
+    "max": 4.0
+   },
+   "vehicles_alerted": {
+    "mean": 1.6,
+    "sd": 0.55,
+    "min": 1.0,
+    "max": 2.0
+   },
+   "messages_delivered": {
+    "mean": 3.4,
+    "sd": 0.55,
+    "min": 3.0,
+    "max": 4.0
+   },
+   "junctions_preempted": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   }
+  },
+  {
+   "arm": "alert",
+   "technology": "cellular_4g",
+   "equipped_share_pct": 50,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    16
+   ],
+   "crashed": 0,
+   "ambulance_travel_time_s": {
+    "mean": 198.6,
+    "sd": 15.74,
+    "min": 176.0,
+    "max": 212.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 9.2,
+    "sd": 21.57,
+    "min": -21.0,
+    "max": 39.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 4.1,
+    "sd": 10.48,
+    "min": -10.99,
+    "max": 18.14
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.11,
+    "sd": 0.46,
+    "min": -0.43,
+    "max": 0.84
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.03,
+    "sd": 0.12,
+    "min": -0.11,
+    "max": 0.22
+   },
+   "teleports_change": {
+    "mean": 0.2,
+    "sd": 0.45,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "vehicles_alerted": {
+    "mean": 7.8,
+    "sd": 0.84,
+    "min": 7.0,
+    "max": 9.0
+   },
+   "messages_delivered": {
+    "mean": 28.2,
+    "sd": 7.95,
+    "min": 17.0,
+    "max": 39.0
+   },
+   "junctions_preempted": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   }
+  },
+  {
+   "arm": "alert",
+   "technology": "cellular_4g",
+   "equipped_share_pct": 100,
+   "pairs": 5,
+   "seeds": [
+    11,
+    14,
+    15,
+    16,
+    17
+   ],
+   "crashed": 1,
+   "ambulance_travel_time_s": {
+    "mean": 188.4,
+    "sd": 11.87,
+    "min": 179.0,
+    "max": 209.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 18.6,
+    "sd": 12.84,
+    "min": 7.0,
+    "max": 36.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 8.87,
+    "sd": 5.89,
+    "min": 3.66,
+    "max": 16.74
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.46,
+    "sd": 0.39,
+    "min": 0.03,
+    "max": 1.08
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.12,
+    "sd": 0.1,
+    "min": 0.01,
+    "max": 0.27
+   },
+   "teleports_change": {
+    "mean": 0.8,
+    "sd": 1.79,
+    "min": 0.0,
+    "max": 4.0
+   },
+   "vehicles_alerted": {
+    "mean": 17.4,
+    "sd": 1.14,
+    "min": 16.0,
+    "max": 19.0
+   },
+   "messages_delivered": {
+    "mean": 84.0,
+    "sd": 15.7,
+    "min": 72.0,
+    "max": 111.0
+   },
+   "junctions_preempted": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   }
+  },
+  {
+   "arm": "alert",
+   "technology": "its_g5",
+   "equipped_share_pct": 25,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    16
+   ],
+   "crashed": 0,
+   "ambulance_travel_time_s": {
+    "mean": 207.8,
+    "sd": 11.37,
+    "min": 191.0,
+    "max": 217.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.02,
+    "sd": 0.05,
+    "min": 0.0,
+    "max": 0.11
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.01,
+    "sd": 0.01,
+    "min": 0.0,
+    "max": 0.03
+   },
+   "teleports_change": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "vehicles_alerted": {
+    "mean": 0.8,
+    "sd": 0.45,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "messages_delivered": {
+    "mean": 1.6,
+    "sd": 1.34,
+    "min": 0.0,
+    "max": 3.0
+   },
+   "junctions_preempted": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   }
+  },
+  {
+   "arm": "alert",
+   "technology": "its_g5",
+   "equipped_share_pct": 50,
+   "pairs": 5,
+   "seeds": [
+    13,
+    14,
+    15,
+    17,
+    18
+   ],
+   "crashed": 2,
+   "ambulance_travel_time_s": {
+    "mean": 208.2,
+    "sd": 7.66,
+    "min": 199.0,
+    "max": 216.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 1.6,
+    "sd": 7.37,
+    "min": -8.0,
+    "max": 10.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 0.66,
+    "sd": 3.59,
+    "min": -4.19,
+    "max": 4.61
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": -0.07,
+    "sd": 0.26,
+    "min": -0.45,
+    "max": 0.2
+   },
+   "others_vehicle_hours_change": {
+    "mean": -0.02,
+    "sd": 0.07,
+    "min": -0.11,
+    "max": 0.05
+   },
+   "teleports_change": {
+    "mean": 0.2,
+    "sd": 0.45,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "vehicles_alerted": {
+    "mean": 5.6,
+    "sd": 1.52,
+    "min": 3.0,
+    "max": 7.0
+   },
+   "messages_delivered": {
+    "mean": 13.2,
+    "sd": 3.83,
+    "min": 7.0,
+    "max": 16.0
+   },
+   "junctions_preempted": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   }
+  },
+  {
+   "arm": "alert",
+   "technology": "its_g5",
+   "equipped_share_pct": 100,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    17
+   ],
+   "crashed": 1,
+   "ambulance_travel_time_s": {
+    "mean": 190.2,
+    "sd": 9.91,
+    "min": 176.0,
+    "max": 200.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 19.6,
+    "sd": 17.94,
+    "min": -9.0,
+    "max": 39.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 9.03,
+    "sd": 8.56,
+    "min": -4.71,
+    "max": 18.14
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": -0.03,
+    "sd": 0.17,
+    "min": -0.24,
+    "max": 0.23
+   },
+   "others_vehicle_hours_change": {
+    "mean": -0.01,
+    "sd": 0.04,
+    "min": -0.07,
+    "max": 0.06
+   },
+   "teleports_change": {
+    "mean": 0.2,
+    "sd": 0.45,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "vehicles_alerted": {
+    "mean": 12.0,
+    "sd": 0.71,
+    "min": 11.0,
+    "max": 13.0
+   },
+   "messages_delivered": {
+    "mean": 29.0,
+    "sd": 5.79,
+    "min": 21.0,
+    "max": 35.0
+   },
+   "junctions_preempted": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   }
+  },
+  {
+   "arm": "alert_preemption",
+   "technology": "c_v2x",
+   "equipped_share_pct": 0,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    16
+   ],
+   "crashed": 0,
+   "ambulance_travel_time_s": {
+    "mean": 185.0,
+    "sd": 9.82,
+    "min": 173.0,
+    "max": 200.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 22.8,
+    "sd": 13.18,
+    "min": 9.0,
+    "max": 42.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 10.8,
+    "sd": 5.93,
+    "min": 4.71,
+    "max": 19.53
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.34,
+    "sd": 0.17,
+    "min": 0.18,
+    "max": 0.54
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.09,
+    "sd": 0.04,
+    "min": 0.05,
+    "max": 0.13
+   },
+   "teleports_change": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "vehicles_alerted": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "messages_delivered": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   },
+   "junctions_preempted": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   }
+  },
+  {
+   "arm": "alert_preemption",
+   "technology": "c_v2x",
+   "equipped_share_pct": 25,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    16
+   ],
+   "crashed": 0,
+   "ambulance_travel_time_s": {
+    "mean": 187.0,
+    "sd": 8.46,
+    "min": 177.0,
+    "max": 200.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 20.8,
+    "sd": 13.59,
+    "min": 3.0,
+    "max": 38.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 9.8,
+    "sd": 6.22,
+    "min": 1.57,
+    "max": 17.67
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.22,
+    "sd": 0.19,
+    "min": 0.02,
+    "max": 0.5
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.06,
+    "sd": 0.05,
+    "min": -0.0,
+    "max": 0.13
+   },
+   "teleports_change": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "vehicles_alerted": {
+    "mean": 1.0,
+    "sd": 0.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "messages_delivered": {
+    "mean": 4.6,
+    "sd": 0.89,
+    "min": 3.0,
+    "max": 5.0
+   },
+   "junctions_preempted": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   }
+  },
+  {
+   "arm": "alert_preemption",
+   "technology": "c_v2x",
+   "equipped_share_pct": 50,
+   "pairs": 5,
+   "seeds": [
+    13,
+    14,
+    15,
+    17,
+    18
+   ],
+   "crashed": 2,
+   "ambulance_travel_time_s": {
+    "mean": 184.6,
+    "sd": 14.01,
+    "min": 174.0,
+    "max": 209.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 25.2,
+    "sd": 16.54,
+    "min": 6.0,
+    "max": 43.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 11.85,
+    "sd": 7.53,
+    "min": 2.79,
+    "max": 19.82
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.48,
+    "sd": 0.32,
+    "min": 0.19,
+    "max": 0.84
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.12,
+    "sd": 0.08,
+    "min": 0.05,
+    "max": 0.21
+   },
+   "teleports_change": {
+    "mean": 0.6,
+    "sd": 0.55,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "vehicles_alerted": {
+    "mean": 6.0,
+    "sd": 0.71,
+    "min": 5.0,
+    "max": 7.0
+   },
+   "messages_delivered": {
+    "mean": 22.8,
+    "sd": 4.09,
+    "min": 20.0,
+    "max": 30.0
+   },
+   "junctions_preempted": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   }
+  },
+  {
+   "arm": "alert_preemption",
+   "technology": "c_v2x",
+   "equipped_share_pct": 100,
+   "pairs": 5,
+   "seeds": [
+    11,
+    14,
+    15,
+    17,
+    18
+   ],
+   "crashed": 2,
+   "ambulance_travel_time_s": {
+    "mean": 182.2,
+    "sd": 11.58,
+    "min": 174.0,
+    "max": 202.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 27.6,
+    "sd": 22.29,
+    "min": -11.0,
+    "max": 43.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 12.72,
+    "sd": 10.62,
+    "min": -5.76,
+    "max": 19.82
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 2.49,
+    "sd": 5.29,
+    "min": -0.13,
+    "max": 11.94
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.63,
+    "sd": 1.32,
+    "min": -0.03,
+    "max": 2.98
+   },
+   "teleports_change": {
+    "mean": 0.4,
+    "sd": 0.55,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "vehicles_alerted": {
+    "mean": 12.2,
+    "sd": 1.3,
+    "min": 10.0,
+    "max": 13.0
+   },
+   "messages_delivered": {
+    "mean": 47.8,
+    "sd": 8.53,
+    "min": 38.0,
+    "max": 59.0
+   },
+   "junctions_preempted": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   }
+  },
+  {
+   "arm": "alert_preemption",
+   "technology": "cellular_4g",
+   "equipped_share_pct": 0,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    16
+   ],
+   "crashed": 0,
+   "ambulance_travel_time_s": {
+    "mean": 175.8,
+    "sd": 1.64,
+    "min": 174.0,
+    "max": 178.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 32.0,
+    "sd": 12.94,
+    "min": 13.0,
+    "max": 42.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 15.16,
+    "sd": 5.59,
+    "min": 6.81,
+    "max": 19.35
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.21,
+    "sd": 0.19,
+    "min": -0.01,
+    "max": 0.49
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.06,
+    "sd": 0.05,
+    "min": 0.0,
+    "max": 0.12
+   },
+   "teleports_change": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "vehicles_alerted": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "messages_delivered": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   },
+   "junctions_preempted": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   }
+  },
+  {
+   "arm": "alert_preemption",
+   "technology": "cellular_4g",
+   "equipped_share_pct": 25,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    16
+   ],
+   "crashed": 0,
+   "ambulance_travel_time_s": {
+    "mean": 175.8,
+    "sd": 1.64,
+    "min": 174.0,
+    "max": 178.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 32.0,
+    "sd": 12.94,
+    "min": 13.0,
+    "max": 42.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 15.16,
+    "sd": 5.59,
+    "min": 6.81,
+    "max": 19.35
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.22,
+    "sd": 0.15,
+    "min": -0.01,
+    "max": 0.41
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.06,
+    "sd": 0.04,
+    "min": 0.0,
+    "max": 0.11
+   },
+   "teleports_change": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "vehicles_alerted": {
+    "mean": 1.0,
+    "sd": 0.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "messages_delivered": {
+    "mean": 4.0,
+    "sd": 0.71,
+    "min": 3.0,
+    "max": 5.0
+   },
+   "junctions_preempted": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   }
+  },
+  {
+   "arm": "alert_preemption",
+   "technology": "cellular_4g",
+   "equipped_share_pct": 50,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    16
+   ],
+   "crashed": 0,
+   "ambulance_travel_time_s": {
+    "mean": 177.8,
+    "sd": 0.84,
+    "min": 177.0,
+    "max": 179.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 30.0,
+    "sd": 11.07,
+    "min": 14.0,
+    "max": 40.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 14.23,
+    "sd": 4.7,
+    "min": 7.33,
+    "max": 18.43
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.24,
+    "sd": 0.29,
+    "min": -0.19,
+    "max": 0.57
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.06,
+    "sd": 0.08,
+    "min": -0.06,
+    "max": 0.14
+   },
+   "teleports_change": {
+    "mean": 0.2,
+    "sd": 0.45,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "vehicles_alerted": {
+    "mean": 6.6,
+    "sd": 0.55,
+    "min": 6.0,
+    "max": 7.0
+   },
+   "messages_delivered": {
+    "mean": 31.2,
+    "sd": 7.6,
+    "min": 22.0,
+    "max": 40.0
+   },
+   "junctions_preempted": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   }
+  },
+  {
+   "arm": "alert_preemption",
+   "technology": "cellular_4g",
+   "equipped_share_pct": 100,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    16
+   ],
+   "crashed": 0,
+   "ambulance_travel_time_s": {
+    "mean": 184.2,
+    "sd": 11.82,
+    "min": 177.0,
+    "max": 205.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 23.6,
+    "sd": 22.28,
+    "min": -14.0,
+    "max": 40.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 10.91,
+    "sd": 10.66,
+    "min": -7.33,
+    "max": 18.43
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.27,
+    "sd": 0.36,
+    "min": -0.29,
+    "max": 0.61
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.07,
+    "sd": 0.1,
+    "min": -0.08,
+    "max": 0.16
+   },
+   "teleports_change": {
+    "mean": 0.4,
+    "sd": 0.89,
+    "min": 0.0,
+    "max": 2.0
+   },
+   "vehicles_alerted": {
+    "mean": 16.6,
+    "sd": 1.52,
+    "min": 15.0,
+    "max": 18.0
+   },
+   "messages_delivered": {
+    "mean": 117.0,
+    "sd": 12.35,
+    "min": 103.0,
+    "max": 136.0
+   },
+   "junctions_preempted": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   }
+  },
+  {
+   "arm": "alert_preemption",
+   "technology": "its_g5",
+   "equipped_share_pct": 0,
+   "pairs": 5,
+   "seeds": [
+    13,
+    14,
+    15,
+    16,
+    17
+   ],
+   "crashed": 1,
+   "ambulance_travel_time_s": {
+    "mean": 204.0,
+    "sd": 6.44,
+    "min": 199.0,
+    "max": 215.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 3.0,
+    "sd": 10.61,
+    "min": -9.0,
+    "max": 18.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 1.27,
+    "sd": 5.08,
+    "min": -4.71,
+    "max": 8.29
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 6.05,
+    "sd": 8.1,
+    "min": -0.12,
+    "max": 14.96
+   },
+   "others_vehicle_hours_change": {
+    "mean": 1.51,
+    "sd": 2.02,
+    "min": -0.03,
+    "max": 3.73
+   },
+   "teleports_change": {
+    "mean": 1.2,
+    "sd": 1.79,
+    "min": 0.0,
+    "max": 4.0
+   },
+   "vehicles_alerted": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "messages_delivered": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   },
+   "junctions_preempted": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   }
+  },
+  {
+   "arm": "alert_preemption",
+   "technology": "its_g5",
+   "equipped_share_pct": 25,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    16
+   ],
+   "crashed": 0,
+   "ambulance_travel_time_s": {
+    "mean": 198.6,
+    "sd": 10.5,
+    "min": 188.0,
+    "max": 215.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 9.2,
+    "sd": 14.24,
+    "min": -9.0,
+    "max": 27.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 4.22,
+    "sd": 6.79,
+    "min": -4.71,
+    "max": 12.56
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 0.23,
+    "sd": 0.27,
+    "min": -0.12,
+    "max": 0.53
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.05,
+    "sd": 0.07,
+    "min": -0.03,
+    "max": 0.13
+   },
+   "teleports_change": {
+    "mean": 0.0,
+    "sd": 0.0,
+    "min": 0.0,
+    "max": 0.0
+   },
+   "vehicles_alerted": {
+    "mean": 1.0,
+    "sd": 0.0,
+    "min": 1.0,
+    "max": 1.0
+   },
+   "messages_delivered": {
+    "mean": 4.8,
+    "sd": 0.45,
+    "min": 4.0,
+    "max": 5.0
+   },
+   "junctions_preempted": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   }
+  },
+  {
+   "arm": "alert_preemption",
+   "technology": "its_g5",
+   "equipped_share_pct": 50,
+   "pairs": 5,
+   "seeds": [
+    13,
+    14,
+    15,
+    17,
+    18
+   ],
+   "crashed": 2,
+   "ambulance_travel_time_s": {
+    "mean": 200.2,
+    "sd": 8.98,
+    "min": 192.0,
+    "max": 213.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 9.6,
+    "sd": 13.16,
+    "min": -8.0,
+    "max": 25.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 4.38,
+    "sd": 6.28,
+    "min": -4.19,
+    "max": 11.52
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": -0.03,
+    "sd": 0.34,
+    "min": -0.33,
+    "max": 0.5
+   },
+   "others_vehicle_hours_change": {
+    "mean": -0.0,
+    "sd": 0.09,
+    "min": -0.08,
+    "max": 0.13
+   },
+   "teleports_change": {
+    "mean": 0.2,
+    "sd": 0.45,
+    "min": 0.0,
+    "max": 1.0
+   },
+   "vehicles_alerted": {
+    "mean": 6.2,
+    "sd": 0.84,
+    "min": 5.0,
+    "max": 7.0
+   },
+   "messages_delivered": {
+    "mean": 17.2,
+    "sd": 2.77,
+    "min": 14.0,
+    "max": 21.0
+   },
+   "junctions_preempted": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   }
+  },
+  {
+   "arm": "alert_preemption",
+   "technology": "its_g5",
+   "equipped_share_pct": 100,
+   "pairs": 5,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    17
+   ],
+   "crashed": 1,
+   "ambulance_travel_time_s": {
+    "mean": 187.8,
+    "sd": 8.53,
+    "min": 177.0,
+    "max": 200.0
+   },
+   "ambulance_time_saved_s": {
+    "mean": 22.0,
+    "sd": 15.86,
+    "min": 0.0,
+    "max": 38.0
+   },
+   "ambulance_time_saved_pct": {
+    "mean": 10.23,
+    "sd": 7.34,
+    "min": 0.0,
+    "max": 17.67
+   },
+   "others_mean_time_loss_change_s": {
+    "mean": 2.58,
+    "sd": 4.46,
+    "min": -0.17,
+    "max": 10.44
+   },
+   "others_vehicle_hours_change": {
+    "mean": 0.65,
+    "sd": 1.12,
+    "min": -0.04,
+    "max": 2.62
+   },
+   "teleports_change": {
+    "mean": 1.0,
+    "sd": 1.41,
+    "min": 0.0,
+    "max": 3.0
+   },
+   "vehicles_alerted": {
+    "mean": 12.4,
+    "sd": 0.55,
+    "min": 12.0,
+    "max": 13.0
+   },
+   "messages_delivered": {
+    "mean": 36.8,
+    "sd": 5.63,
+    "min": 30.0,
+    "max": 43.0
+   },
+   "junctions_preempted": {
+    "mean": 2.0,
+    "sd": 0.0,
+    "min": 2.0,
+    "max": 2.0
+   }
+  }
+ ],
+ "plain": {
+  "trip_s": 209.29,
+  "alert_and_signals_saved_pct": {
+   "min": 10.2,
+   "max": 12.7,
+   "technologies": 3
+  },
+  "alert_only_saved_pct": {
+   "min": 8.9,
+   "max": 11.0,
+   "technologies": 3
+  }
+ },
+ "metrics_sha256": {
+  "alert_c_v2x_p025_s11": "56a5fcb616f61ecae9b797627560b127c82c13e735a9dcbee0c55bed3227d597",
+  "alert_c_v2x_p025_s13": "7012b0cc1243cb164b83208db817e4bde2f218663c8a38977d78285878df5c3c",
+  "alert_c_v2x_p025_s14": "d9c766796e320e627f5a2c958648f784cab8a993b3ce525c00624a53869eede6",
+  "alert_c_v2x_p025_s15": "5d51cd03946377422a414337b98cdcc3c532c0f680fd1a8ab44219514311d575",
+  "alert_c_v2x_p025_s16": "9844de230981b69d883c9842ba10fd871c77b17f9474be1df0750b8abffd3b5f",
+  "alert_c_v2x_p050_s11": "444b0016898500d252aca8609a91d393d25d95d9148bdbce19cc09306dd39e01",
+  "alert_c_v2x_p050_s13": "1092e32749cb9abf7dd178a9753c0a8d70452967bf763cc4e4488106e431b030",
+  "alert_c_v2x_p050_s14": "7f180bbf2485252c0d60e8d0c0f151a5c0bc6c4dfbe5b5c4fdccdf2c09b391ee",
+  "alert_c_v2x_p050_s15": "4c0d05991afa38516b1febde52cd5c7c9551045d9b58b33e68fef466dbb86642",
+  "alert_c_v2x_p050_s16": "1de0c4573ec0eb2d181b5e8da76f9e3d22db860b367ff16672d0966e3d2700ac",
+  "alert_c_v2x_p050_s17": "c60e9dc423de5f62e564df0f3b490c3c3578980e07bbf6f8097d46091f08ee7a",
+  "alert_c_v2x_p050_s18": "8e6d51e5a0cdf48328be41822633f31cd07b87c0f7e79a10dbe6b85e0ac4911c",
+  "alert_c_v2x_p100_s11": "4b6585252c18e4645318a0bc645f277351ddfcb30469983fa11063870aec01cf",
+  "alert_c_v2x_p100_s13": "cd7a002a0ec78d2e56088c9f69be31736354b2e4c6f17307649700b7e44813db",
+  "alert_c_v2x_p100_s14": "aba7f2038155f0161d00fc984a1d4a413128117b60de77e2c14602a87464a454",
+  "alert_c_v2x_p100_s15": "b9f88c4692952c655c8a4456e17b6d1a972925a8d2fdfc09a8223ef48e976adb",
+  "alert_c_v2x_p100_s16": "8e6c13cd3c0fd15f7626afdb2a34f41b7c00f62b3c263b63febf7cb1966e157b",
+  "alert_c_v2x_p100_s17": "18ef1e3b5eb09fad9c3fde56e9b3a1f8a792efedc1d57e006dc1d269625e18e0",
+  "alert_cellular_4g_p025_s11": "aa1f30022f04a5ee64f3d7c9a1733f49a94bd6fe133e704c814007f48f9e3840",
+  "alert_cellular_4g_p025_s13": "7a9919827f3f7c992ee7952a1b2cea4bd4ddcc2203414cc9bf4c326ee3dea7ec",
+  "alert_cellular_4g_p025_s14": "7e69002dae140586e57ef1726ef4be4cdc21c339e479fef905dc1a767e83b098",
+  "alert_cellular_4g_p025_s15": "11bf1a48a6d75cd8e1732caf2d90630161212b554b746b932b0f745106ff7f44",
+  "alert_cellular_4g_p025_s16": "506a4d0cee641d28ae0c54aa5cd0d338f4ef307e0ba59672d318a71b4527d9af",
+  "alert_cellular_4g_p025_s17": "8431c30f26ea5410a7329bab8d51e3e73045e068905bbb512409355e265ee7ef",
+  "alert_cellular_4g_p050_s11": "edf1859b4d01e5893d33ac040cca70dc4ca0136c558026aab9ae8aaf85bc05c3",
+  "alert_cellular_4g_p050_s13": "02eb0e1cd1eec14d6313392fe312e95c985e61dd17415940f5050f71e05f2abc",
+  "alert_cellular_4g_p050_s14": "1aeae5c1a79d189b14a871167db5af9832da20bf9d8cbda660a541c74b814f1a",
+  "alert_cellular_4g_p050_s15": "b7ae36d1c2f08a61e22ac41afc6e8563537eb3e6ff623300a14c5847e6d35f12",
+  "alert_cellular_4g_p050_s16": "ac8af2a22fcd2e86ccc16bf4edcfae834278d02e59e04d60d8e8afa4755b5bc4",
+  "alert_cellular_4g_p100_s11": "233ed97fb13eefcbe5e32921f4c2d7a65d0e92ae59b3c535ea80b79896036816",
+  "alert_cellular_4g_p100_s13": "7aa2a87140a911400449d0c28babf803ef2171401e272a9d70342adcb5c5b7ca",
+  "alert_cellular_4g_p100_s14": "ffad4b77af324248263d9ccb9e68cfa1f97c02845f1741d9e7c9fdcaab2863ba",
+  "alert_cellular_4g_p100_s15": "3614b562c31fd44c7fd4e4af8732b79a282b4fc4e3dae58d1fd647b85736bbed",
+  "alert_cellular_4g_p100_s16": "603097201e91c984f2b41e934f7b72b6732a6cb20824509ce560f0020569587e",
+  "alert_cellular_4g_p100_s17": "28cb503b0467effe7b845637c0f896b1e7e6ef2634861fb2938831bf40a39458",
+  "alert_its_g5_p025_s11": "f859d71a910053a227e4e6c50a8a3258086e8d58405987d67766dad2ec5f9aec",
+  "alert_its_g5_p025_s13": "8dac64aedef1c7a02d1cca9b8812168d6438243771957bfc638c3c7bea749a89",
+  "alert_its_g5_p025_s14": "716be875cabd4ba66af761ccdc35a9a8ea9907abdd02f536eb847494ae629967",
+  "alert_its_g5_p025_s15": "f071e3ddb1a47055aadcd48e4f0b53932a6db5c76b6588603b8183fad8ef7c96",
+  "alert_its_g5_p025_s16": "6564ec5c596132de14036fafcb87b7bbafb170eeb5e6169136e4cd6f4e062a54",
+  "alert_its_g5_p050_s11": "0ea2fa1a5b248c853860ddb578095b52e8a0bb48938a0387b431fe7026f6d81f",
+  "alert_its_g5_p050_s13": "139c9f8a6992f6b2533d4e481009889ccf31b4462f513691a191484b1e502104",
+  "alert_its_g5_p050_s14": "67586058a3491a9b01a71a069c0daeca0308042bbe7356c91ef19db867d70d7b",
+  "alert_its_g5_p050_s15": "66f428764fbcdb0c5009e27d9481d62bcb253b6ab54224702fb21a25f29d13f4",
+  "alert_its_g5_p050_s16": "53a775adc397088cb0e993dd87d621555572b36024eea8f89cd167f8feefe7f4",
+  "alert_its_g5_p050_s17": "1ea5c003ada60a1c16311fee3e05e9efb54db0eea37e9d7a6aff93f7619224dc",
+  "alert_its_g5_p050_s18": "02afe215628cdf77846478267409b81057e728fae369e99f236946c37b9eeb1f",
+  "alert_its_g5_p100_s11": "22833a00673cca1d5fa782421a358187bc40f21936d04e544581198ccfa8da3a",
+  "alert_its_g5_p100_s13": "b8bdb25ab437aa3d1e30f519438114d856a4afb108834332f8d888b7c9b34a1e",
+  "alert_its_g5_p100_s14": "535b45492b2915bdf827806e1821605428475b7fcf18a9182a051e84e30cad85",
+  "alert_its_g5_p100_s15": "357353045d5984332481232ee657d0f46354389c3991698799fea6dd7fd6896c",
+  "alert_its_g5_p100_s16": "45870799a53cac174beebf00362708f543afcfc15b178715a64ab89d8d557e05",
+  "alert_its_g5_p100_s17": "ab00f9593456c0451dc143cd641c71538f382fd6a4ac79d2c7aac839deb827b7",
+  "alert_preemption_c_v2x_p000_s11": "77a22d4b9ccc9dfd9b5f32a50416ec3755a1b1e9a861a22e758e2f68f8020079",
+  "alert_preemption_c_v2x_p000_s13": "90fac5260cba9dba600f305268f4311c5f4e4079d85be480b74301dbecd0d602",
+  "alert_preemption_c_v2x_p000_s14": "745d024017369e05d8ef97e3abb4a171b75732a81f71cea599fa347d0e7d2297",
+  "alert_preemption_c_v2x_p000_s15": "795e0320b85d32ce398eff32881a8c90118767af09d07b91347906237cfd9e8a",
+  "alert_preemption_c_v2x_p000_s16": "2e8039918b7f935d232b345cf705457af0af50071f41396ffc5824090265b582",
+  "alert_preemption_c_v2x_p025_s11": "128d376949cfb42d943a9d9514347927a87ec07788194a98eb2d5335510ce322",
+  "alert_preemption_c_v2x_p025_s13": "4efd6df02f7cd69534802cb722a951cfcc97e21d428ed53ac9a09bf4d3c75c44",
+  "alert_preemption_c_v2x_p025_s14": "2eb240e0a32d69f329f3d6f255ffcb5cc607d14429a3ef3ddf4456ee86dd3af2",
+  "alert_preemption_c_v2x_p025_s15": "fffaca5b4c2af940c37d41b3cdc5631ef56c7b5fe1e334db187858f9dd07b99e",
+  "alert_preemption_c_v2x_p025_s16": "31bebf0465719f3ef8a52c950a54c90c8cbaa800e20677294979730a35e937b4",
+  "alert_preemption_c_v2x_p050_s11": "246a4b61a34e591be3557488c57269529cb6ee634b2830e91f1a3f364846b048",
+  "alert_preemption_c_v2x_p050_s13": "60179523be6787a7c68ad5930fab443639d04d8eb1214eca1376349d466fb417",
+  "alert_preemption_c_v2x_p050_s14": "3c04295263be2ae3f7091cf8487e36eb61f2cbc07b6bdef0ca04c615c4bab247",
+  "alert_preemption_c_v2x_p050_s15": "6212f936811355a4e1e171671cbac36700f701fcd19da540f14aeb69efbf79f6",
+  "alert_preemption_c_v2x_p050_s16": "b55ec968924d424ef64edb74146a50c0e593727ea366dd8a5a537118f550a0ec",
+  "alert_preemption_c_v2x_p050_s17": "7d470b956a356297b7bc6fc5e2c476076b0afc4b541c55b6a445d009ec149dc6",
+  "alert_preemption_c_v2x_p050_s18": "a97a2efebe42384bfccd4d5bfb639bb18c2e60e6a7d28291bee5f18a1b4d0c46",
+  "alert_preemption_c_v2x_p100_s11": "cf1b02cdb26acd5940d56bdae045d5577059ba4f01a1a00530e8d23d1e4c4c10",
+  "alert_preemption_c_v2x_p100_s13": "41fa0053932a1e4c4e56386292ac85ff4c3830dcc62b4bb2f9e5fc49ac0e0b16",
+  "alert_preemption_c_v2x_p100_s14": "4c1e2db1130950761afc202a665de59972249b534a3202167ef3401c95cee1ac",
+  "alert_preemption_c_v2x_p100_s15": "cd2364c1bbfa37ba9182de44c179aba37fa9265b16c41b1f8061c5be4bb84e4a",
+  "alert_preemption_c_v2x_p100_s16": "b9078d9c8df7ccb1deb4a3304645962241b4fe8c7ae1f049bd4ab16b60e5508e",
+  "alert_preemption_c_v2x_p100_s17": "989d306a2295761d0ac1ebda604a1c531f55e6e3812c60fd7b690e076d498603",
+  "alert_preemption_c_v2x_p100_s18": "5cb0c2bbcd4c9aceab445134b622b86c82de3af53c727056efd97e68e87d6e6b",
+  "alert_preemption_cellular_4g_p000_s11": "5bfc0d1c4ba87fbf94aa47c346b32c89fed1b32660b35714e9f8942894f745a1",
+  "alert_preemption_cellular_4g_p000_s13": "5b09206ac21fd1c902280a47c09573c6f255c17125a9704bc1b2e6130178e7f2",
+  "alert_preemption_cellular_4g_p000_s14": "6679cb187d4a02ae2c6514297a2bac8ff155e41c6720139553ea6c0085b18c82",
+  "alert_preemption_cellular_4g_p000_s15": "aacacd9923ab8e35aa686593494a55e237c1873db654671187b5c896490b9b67",
+  "alert_preemption_cellular_4g_p000_s16": "2a5c703ffde35f4b5e9ab0b1309495db9de541013052072f925a7a06404cf2bd",
+  "alert_preemption_cellular_4g_p025_s11": "dd89aec6acc71f0e01c40bc3beb1e84731b35beeb39295f80818cd8fec7c649f",
+  "alert_preemption_cellular_4g_p025_s13": "fa4906a3261c30e8cdb8fb3e9512090627f888b22d8df4697b3c647d4990d788",
+  "alert_preemption_cellular_4g_p025_s14": "d001247db1f1614285f61d320c306a3183e193b2dc6c01359ced07b25a21b7f6",
+  "alert_preemption_cellular_4g_p025_s15": "f8ce7eace2f19504c1c7164985bdd8d07209a93efdca433f9991375bcdcad8a7",
+  "alert_preemption_cellular_4g_p025_s16": "8058e6a5b5eae71597e8121f9b452e926115b0afb7966d83aaac679ef61a6313",
+  "alert_preemption_cellular_4g_p050_s11": "62693d615edc891144a171f36618cdb197b89afde3f8a0b47cf15b282f92af04",
+  "alert_preemption_cellular_4g_p050_s13": "39425806b9984ce1caa4bb584470f9dfdd6450ba935c0b285361a9de02b5f042",
+  "alert_preemption_cellular_4g_p050_s14": "24763e6785663f40096e7bd67097f2674091395ca7969d5a455d0f58444bee7d",
+  "alert_preemption_cellular_4g_p050_s15": "2c9769a3c2b2d1518674c6229d4bf99d58025e6acb96828461464365bda804d4",
+  "alert_preemption_cellular_4g_p050_s16": "3f89d82fe238ac12ead441a39d51ea3d8c34d4c9a5a323cf76fdbb1db6f0fd57",
+  "alert_preemption_cellular_4g_p100_s11": "f49ad1eb7223a3d85a1624b1b3b6517e3554aef10e2a35391c08b602eb9e3427",
+  "alert_preemption_cellular_4g_p100_s13": "cd7ffa5ab917d37af651c3016b4165f7631e61cd84dffbcf50433dc0a0435290",
+  "alert_preemption_cellular_4g_p100_s14": "4277c8b7b5c9703c9375a9aa7fc9b694b305b812986a3283534a983e371c984d",
+  "alert_preemption_cellular_4g_p100_s15": "23c6bc20f17a92f49cf242b30b2f182062a8c60d1b89953618153a30e27a4ce6",
+  "alert_preemption_cellular_4g_p100_s16": "1188e2a433763184ab5a77f3940a2f7f318f6b4023643a39115ccd87e535de42",
+  "alert_preemption_its_g5_p000_s11": "7436eb6a5375adccd8f891bed6159497e0522c85ee8e6dcd2b0cd8abc5cbabb9",
+  "alert_preemption_its_g5_p000_s13": "d450c18cc6b09998f0ea4891041061a9dc51ded54954d089e70d5ae0b9b2e9a0",
+  "alert_preemption_its_g5_p000_s14": "2b4bf687094e6c662b73667d7f5736344897349b806d4f11ba571447ac6bb767",
+  "alert_preemption_its_g5_p000_s15": "f92cd68b04031bf81a2185f3adab663c2ef3a262db1dc980cccbd7d45292655d",
+  "alert_preemption_its_g5_p000_s16": "233b4140d09a1a54d03b6a22f26fa765d1fb011df43f67ceb4d9e7ea2710935b",
+  "alert_preemption_its_g5_p000_s17": "ba950dac945f2ea66d1a77c4e62deb25756c8730a7ed861df25c68f539919bed",
+  "alert_preemption_its_g5_p025_s11": "aa89f00940cb20e3c91119ea65ef4430168aa4d83f31c406f3f5e01bc2e5fc54",
+  "alert_preemption_its_g5_p025_s13": "b1cfa10e11aa7377b07dc8f2c788813d6ad747e52e2a22be6073cad52b8096b4",
+  "alert_preemption_its_g5_p025_s14": "32a1dea571db425b1a5efeb51eb38b076b991bb2f8b9f7f1ef2d6249228056bd",
+  "alert_preemption_its_g5_p025_s15": "5fd04509e05c44be307dfc0087f770b89e8be77135abcf6a6aa2c874842675ad",
+  "alert_preemption_its_g5_p025_s16": "d24300052477fe16de58e0da204cfab595b0732c20d9ec09bb2f15aadfd19bfd",
+  "alert_preemption_its_g5_p050_s11": "a50bbc1ebd52805a49b5733d5cbb1fd0c6b36fede01ba5059308a5c369806ed8",
+  "alert_preemption_its_g5_p050_s13": "d8e15a067a2516b66b76a345ba1342fd11990f35fe70c48a3d2d458f07d8c1ff",
+  "alert_preemption_its_g5_p050_s14": "f20f135e3b875bb07062acd2547ec54e68988e1235472fa1e0e34532e38e6fa8",
+  "alert_preemption_its_g5_p050_s15": "96d7999465ab1654baf58d228932ff31529985c808c48abba3d226f19aa83286",
+  "alert_preemption_its_g5_p050_s16": "09c5eadf1b24b49907d055885b8aaf52de36a19354ee589eb0160a107b11291e",
+  "alert_preemption_its_g5_p050_s17": "852e91198c9d45a5e76ffcea69cbacaa0afd110fc0d30ee1af68b987356d10b0",
+  "alert_preemption_its_g5_p050_s18": "16d5eb091b88572171ef5319a827e7d3a4d31daf43849ba7636e50d854c40740",
+  "alert_preemption_its_g5_p100_s11": "64a499c9c2c1321fb5b1ccee2f8bee1526b54625e0063180730af90cd5be814b",
+  "alert_preemption_its_g5_p100_s13": "45d14025b9290de470592e1cdac9e1344442f71c4f6f37db04269409060d4399",
+  "alert_preemption_its_g5_p100_s14": "187f272d5be790c1fdf615556d8dc0e65d29ed7da32383588258ae17c3003028",
+  "alert_preemption_its_g5_p100_s15": "8bd85cd38f62001a96dd439b937b891d3f13b2c6bd5c67be7b6213862e058e6c",
+  "alert_preemption_its_g5_p100_s16": "1135fde2adf86cc239aa3ec613dbeb62d6ffb430281da25d5c1c74445f79a401",
+  "alert_preemption_its_g5_p100_s17": "183be02a09b910ee7d77b74040d0c94a731ce3a4cdb63539318ab920dd7c0ea6",
+  "no_alert_s11": "e8375c8e7a08855831a77aa2f2c33eeff4308f7f60e1e0e6490904db06fa606d",
+  "no_alert_s12": "8d3d728d01444d7004b4f71dca529a803208eaa734a3f517b40cccefa14b6fc5",
+  "no_alert_s13": "92d47bb383d9daea5435d39a0da06cd8c1600ce3426bd4dd70324c964f377eee",
+  "no_alert_s14": "e961b66f30a406c86a9870ab646ad2ef1389607fa5f09b48fa269b69c7b498d0",
+  "no_alert_s15": "ddc6f82df7e3b408842f6c56501855a2a890fb2113f221cc2f27215eceafab88",
+  "no_alert_s16": "a32f57dd47a61a6ba8f2f85e1f40be4f1e8d0178d31f44d5db291d9acad20fba",
+  "no_alert_s17": "849bfc9ec6d5b1a8b6692721f856ba4364b09853b73ffda1898d4032b158b52f",
+  "no_alert_s18": "e1cc5da1cf041efbd5b0b625a4b708a81b94925124b48c553aa3b33641f120e2"
+ }
+}

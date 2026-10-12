@@ -16,7 +16,7 @@ export function IntervalsTable({datasetName}: {datasetName: string}) {
   const q = useQuery({queryKey: ["conformal", datasetName], queryFn: () => api.conformal(datasetName) as Promise<{datasets: Run[]}>, retry: false});
   const run = q.data?.datasets?.[0];
   if (q.isLoading) return <p className="muted">Loading the interval run…</p>;
-  if (!run) return <p className="muted">No conformal run for this dataset yet: <code>python -m app.forecasting.evaluation.conformal --dataset {datasetName}</code>.</p>;
+  if (!run) return <p className="muted">No conformal run for this dataset yet: <code>python -m core.ml.forecasting.evaluation.conformal --dataset {datasetName}</code>.</p>;
   const rows = run.rows.filter((r) => r.horizon_min === 15).sort((a, b) => (b.predicted_regime_coverage_transition ?? 0) - (a.predicted_regime_coverage_transition ?? 0));
   return (
     <div className="stack">

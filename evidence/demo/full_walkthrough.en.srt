@@ -1,0 +1,257 @@
+1
+00:00:00,000 --> 00:00:02,000
+1 · The Dhaka map
+
+2
+00:00:09,847 --> 00:00:22,900
+The app opens on Dhaka, in Bangla, at the person's (simulated) location in Farmgate.
+[Map: OpenStreetMap data, OpenFreeMap tiles, MapLibre GL · App: Headway (open source) with our additions]
+
+3
+00:00:22,900 --> 00:00:24,900
+2 · Search a place
+
+4
+00:00:24,928 --> 00:00:34,003
+Searching for "Dhaka Medical College Hospital": suggestions appear under the box.
+[Place search: Photon (komoot) over OpenStreetMap, at most one request per second]
+
+5
+00:00:34,003 --> 00:00:41,000
+The place card: name and address, with Directions, Start and Share.
+[Headway's place card; our actions added]
+
+6
+00:00:41,000 --> 00:00:43,000
+3 · Directions and alternatives
+
+7
+00:00:58,123 --> 00:01:08,133
+From Farmgate: 3 route(s), each with its drive time. Alternatives let the person choose.
+[Routing: our own Valhalla server on Dhaka's OpenStreetMap roads (times at map speeds, not live traffic)]
+
+8
+00:01:08,133 --> 00:01:10,133
+4 · Start: turn-by-turn
+
+9
+00:01:10,173 --> 00:01:37,533
+Start: a simulated drive along the chosen route. Each turn instruction is spoken in Bangla; the spoken lines appear in yellow.
+[Navigation: Ferrostar (Stadia Maps, BSD-3) on MapLibre · Voice: the browser's Web Speech API, our Bangla sentences]
+
+10
+00:01:19,452 --> 00:01:21,453
+(spoken, Bangla) ১০০ মিটার পরে সোজা চলতে থাকুন কাজী নজরুল ইসলাম সরণী-এ
+
+11
+00:01:21,453 --> 00:01:23,455
+(spoken, Bangla) সিমুলেশন: পথ ধরে একটি সিমুলেটেড যাত্রা; এরপরের নির্দেশনা এই প্রদর্শনের জন্য।
+
+12
+00:01:23,455 --> 00:01:25,455
+(spoken, Bangla) ৫০ মিটার পরে সোজা চলতে থাকুন কাজী নজরুল ইসলাম সরণী-এ
+
+13
+00:01:25,455 --> 00:01:27,456
+(spoken, Bangla) ৫০ মিটার পরে রাস্তার ভাগে কাজী নজরুল ইসলাম সরণী-এ যান
+
+14
+00:01:27,456 --> 00:01:30,456
+(spoken, Bangla) ১ কিলোমিটার পরে গোলচত্বরে ঢুকুন কাজী নজরুল ইসলাম সরণী-এ
+
+15
+00:01:32,893 --> 00:01:34,895
+(spoken, Bangla) ১৫০ মিটার পরে গোলচত্বরে ঢুকুন কাজী নজরুল ইসলাম সরণী-এ
+
+16
+00:01:34,895 --> 00:01:36,896
+(spoken, Bangla) ৫০ মিটার পরে গোলচত্বরে ঢুকুন কাজী নজরুল ইসলাম সরণী-এ
+
+17
+00:01:36,896 --> 00:01:38,897
+(spoken, Bangla) গোলচত্বর থেকে বের হয়ে কাজী নজরুল ইসলাম সরণী-এ যান
+
+18
+00:01:37,533 --> 00:01:51,535
+The trip is saved for weak signal: its map tiles, directions and alerts were downloaded while the signal was good.
+[Prefetch along the route: Bartendr (Schulman et al., MobiCom 2010) · offline shell: Workbox]
+
+19
+00:01:38,897 --> 00:01:41,897
+(spoken, Bangla) ১.৯ কিলোমিটার পরে গোলচত্বরে ঢুকুন শহীদ মিনার সড়ক-এ
+
+20
+00:01:51,567 --> 00:01:53,567
+5 · Alert, then crash SOS
+
+21
+00:02:01,719 --> 00:02:08,549
+An alert banner: a SIMULATED ambulance is coming (from the live SUMO run on this laptop).
+[Ambulance run: Eclipse SUMO 1.27.1, alert over ITS-G5 (our delivery model)]
+
+22
+00:02:04,458 --> 00:02:06,459
+(spoken, Bangla) ১০০ মিটার পরে গোলচত্বরে ঢুকুন শহীদ মিনার সড়ক-এ
+
+23
+00:02:06,459 --> 00:02:08,460
+(spoken, Bangla) ৫০ মিটার পরে গোলচত্বরে ঢুকুন শহীদ মিনার সড়ক-এ
+
+24
+00:02:08,460 --> 00:02:10,461
+(spoken, Bangla) ৫০ মিটার পরে গোলচত্বর থেকে বের হয়ে শহীদ মিনার সড়ক-এ যান
+
+25
+00:02:08,549 --> 00:02:14,579
+Crash SOS: a crash-like jolt is replayed. A 15-second countdown lets the person cancel a false alarm.
+[Rule: 4 g at driving speed, from WreckWatch (White et al., 2011) · TEST mode only]
+
+26
+00:02:10,461 --> 00:02:12,462
+(spoken, Bangla) ৩৫০ মিটার পরে বাঁয়ে ঘুরে স্যার সৈয়দ সড়ক-এ যান
+
+27
+00:02:12,462 --> 00:02:14,463
+(spoken, Bangla) ১০০ মিটার পরে বাঁয়ে ঘুরে স্যার সৈয়দ সড়ক-এ যান
+
+28
+00:02:14,463 --> 00:02:16,465
+(spoken, Bangla) ৫০ মিটার পরে বাঁয়ে ঘুরে স্যার সৈয়দ সড়ক-এ যান
+
+29
+00:02:14,579 --> 00:02:18,612
+Cancelled: nothing is sent.
+
+30
+00:02:16,465 --> 00:02:18,527
+(spoken, Bangla) ৫০০ মিটার পরে ডানে ঘুরে যান
+
+31
+00:02:18,527 --> 00:02:20,528
+(spoken, Bangla) ১০০ মিটার পরে ডানে ঘুরে যান
+
+32
+00:02:18,612 --> 00:02:45,050
+This time it is not cancelled: after 15 seconds the TEST alert path is shown step by step. Nothing is sent or dialled.
+[Path: mobile network if available, else the phone-to-phone mesh · the emergency number (999) comes from the city config and is only shown]
+
+33
+00:02:20,528 --> 00:02:22,529
+(spoken, Bangla) ৫০ মিটার পরে ডানে ঘুরে যান
+
+34
+00:02:22,529 --> 00:02:24,531
+(spoken, Bangla) ৫০ মিটার পরে ডানে ঘুরে যান
+
+35
+00:02:24,531 --> 00:02:27,531
+(spoken, Bangla) ৫০ মিটার পরে আপনি পৌঁছে গেছেন
+
+36
+00:02:45,067 --> 00:02:47,067
+6 · Nearest hospitals
+
+37
+00:02:52,163 --> 00:03:10,146
+Nearest hospitals with an emergency department, ordered by drive time from here.
+[Hospitals: OpenStreetMap (emergency=yes) · drive times: Valhalla's matrix service]
+
+38
+00:03:10,146 --> 00:03:22,167
+One hospital's place card; Directions starts a route to it.
+
+39
+00:03:22,167 --> 00:03:24,167
+7 · Offline: reopen with no network
+
+40
+00:03:24,167 --> 00:03:33,733
+Now the network is cut and the app is reopened.
+[Offline app shell: Workbox service worker (Google, MIT)]
+
+41
+00:03:33,733 --> 00:03:45,233
+With no network the app still opens from its saved copy; what is shown here comes from the phone's cache.
+
+42
+00:03:45,233 --> 00:03:47,233
+8 · The menu
+
+43
+00:03:53,835 --> 00:04:10,963
+Emergency: the city's numbers first, then the ambulance result and crash SOS.
+
+44
+00:04:10,963 --> 00:04:28,112
+Offline alerts: what the phone-to-phone mesh achieved in simulation.
+
+45
+00:04:28,112 --> 00:04:45,262
+Add city: type any city's name; its roads are built from OpenStreetMap.
+
+46
+00:04:45,262 --> 00:05:00,800
+Settings: language, voice, and what the app keeps on the phone.
+
+47
+00:05:00,800 --> 00:05:02,800
+9 · Research: RQ1 to RQ6 and ambulance reach
+
+48
+00:05:11,316 --> 00:05:17,453
+The Research page: every result with its city, dataset, tables, figures and sources.
+[Each number is read from a saved results file with its evidence]
+
+49
+00:05:17,453 --> 00:05:41,019
+RQ2 · Forecast-aware routing (Los Angeles twin): a perfect view of the next hour helps; our forecasts do not yet.
+[SUMO closed loop; paired seeds]
+
+50
+00:05:41,019 --> 00:06:06,221
+RQ1 · Forecasting: Los Angeles models are far better than "no change"; in Dhaka only slightly, and not an hour ahead.
+[METR-LA, PEMS-BAY (DCRNN release), DhaTraX; BasicTS, Chronos, TimesFM]
+
+51
+00:06:06,221 --> 00:06:21,237
+RQ3 · Ambulance alert in Dhaka (labelled RQ2 on this page, the older numbering): the runs behind the result.
+[Eclipse SUMO, ITS-G5 and C-V2X delivery models]
+
+52
+00:06:21,237 --> 00:06:57,036
+RQ3 · At Dhaka's density the alert saves a median 26 s on a 346 s trip, but 4 of 10 runs are slower than the siren alone.
+[make-way rule v2; signal pre-emption adapted from atsc-rl]
+
+53
+00:06:57,036 --> 00:07:13,605
+Supporting · Ambulance reach: share of Dhaka within 10, 20, 30 minutes of an emergency hospital.
+[Valhalla isochrones (gis-ops/valhalla-app approach)]
+
+54
+00:07:13,605 --> 00:07:19,089
+RQ6 · Crash detection: the WreckWatch rule on synthetic traces: a normal ride and a hard brake do not trigger it; a crash-like jolt does.
+[WreckWatch (White et al., 2011)]
+
+55
+00:07:19,089 --> 00:07:32,088
+RQ5 · Weak signal: with the trip saved in advance the route appears sooner on slow networks.
+[Bartendr (MobiCom 2010), BreadCrumbs (MobiCom 2008); headless Chrome throttling]
+
+56
+00:07:32,100 --> 00:07:34,100
+10 · 3D City with the ambulance
+
+57
+00:07:44,169 --> 00:08:07,000
+The 3D City: the same SUMO run, each vehicle on Dhaka's real roads; the ambulance and the cars making way are coloured. SIMULATED traffic.
+[Eclipse SUMO 1.27.1 via TraCI · buildings: Overture Maps · MapLibre]
+
+58
+00:08:07,000 --> 00:08:09,000
+11 · The ambulance in SUMO (make demo-ambulance)
+
+59
+00:08:09,000 --> 00:08:47,033
+The study's own simulation on the Dhaka corridor, seed 11: the ambulance (white, green cross) gets through; cars it alerts turn orange and move aside; signals ahead turn green. 292 s without the alert, 284 s with it, the same as the saved study run.
+[Eclipse SUMO 1.27.1 (sumo-gui) via TraCI · make-way rule v2 (SUMO bluelight settings; 100 m is our choice) · offline, on this laptop]
+

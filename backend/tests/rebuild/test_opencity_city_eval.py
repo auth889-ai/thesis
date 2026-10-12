@@ -9,8 +9,8 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
-from app.forecasting.opencity import opencity_city_eval as oce      # noqa: E402
-from app.forecasting.opencity import _opencity_boot as boot          # noqa: E402
+from core.ml.forecasting.opencity import opencity_city_eval as oce      # noqa: E402
+from core.ml.forecasting.opencity import _opencity_boot as boot          # noqa: E402
 
 needs_recorded = pytest.mark.skipif(not (REPO / "results/artifacts/live_dhaka/normalized/google_routes_runtime_reference.jsonl").exists(), reason="recorded live series is git-ignored; absent on CI")
 
@@ -45,7 +45,7 @@ def test_recorded_classes_are_recoded_so_zero_means_missing():
 
 
 def test_geo_adjacency_leaves_no_node_isolated():
-    from app.data import reference_corridors as cz
+    from core.common.data import reference_corridors as cz
     A = oce.geo_adjacency([c["id"] for c in cz.CORRIDORS])
     assert A.shape == (12, 12) and np.allclose(A, A.T)
     assert ((A > 0).sum(axis=1) >= 2).all()          # self plus at least one neighbour
@@ -68,7 +68,7 @@ def test_boot_shim_routes_only_df_names(monkeypatch):
 # ------------------------------------------------------------------ predictions through their stack
 
 def test_prediction_scoring_masks_missing_and_reports_skill():
-    from app.forecasting.opencity import opencity_predict as op
+    from core.ml.forecasting.opencity import opencity_predict as op
     pred = np.full((288, 3), 2.0); actual = np.full((288, 3), 2.0); last = np.array([1.0, 1.0, 1.0])
     actual[2, 1] = 0.0                                   # missing under the model's convention
     s = op.score(pred, actual, last, [15])
@@ -76,7 +76,7 @@ def test_prediction_scoring_masks_missing_and_reports_skill():
 
 
 def test_csv_contract_matches_the_authors_demo(tmp_path):
-    from app.forecasting.opencity import opencity_predict as op
+    from core.ml.forecasting.opencity import opencity_predict as op
     import pandas as pd
     t = pd.date_range("2026-01-01", periods=20, freq="5min")
     df = pd.DataFrame({"time": t, **{f"region_{i}": np.arange(20) + i for i in range(3)}})
@@ -88,7 +88,7 @@ def test_csv_contract_matches_the_authors_demo(tmp_path):
 
 
 def test_subgraph_centres_on_the_region_and_has_enough_nodes():
-    from app.forecasting.opencity import opencity_predict as op
+    from core.ml.forecasting.opencity import opencity_predict as op
     A = np.zeros((20, 20)); A[0, 1] = A[1, 0] = 0.9; A[0, 2] = A[2, 0] = 0.5; A[2, 3] = A[3, 2] = 0.7
     idx = op.subgraph(A, 0, 12)
     assert idx[0] == 0 and idx[1] == 1 and idx[2] == 2 and len(idx) == 12 and len(set(idx)) == 12

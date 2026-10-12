@@ -6,7 +6,7 @@ scheduler step, save to `model_file` when the validation MAE beats a best that i
 import numpy as np
 import torch
 
-from app.forecasting.training import patchstg_resume as po
+from core.ml.forecasting.training import patchstg_resume as po
 
 
 class _Solver:
@@ -73,3 +73,17 @@ def test_resumed_run_equals_the_uninterrupted_run_and_the_single_call(tmp_path):
 def test_state_file_is_never_left_half_written(tmp_path):
     po.resumable_epochs(_Solver(tmp_path / "m", 1), 1, tmp_path / "s.pt", say=lambda m: None)
     assert (tmp_path / "s.pt").exists() and (tmp_path / "s.pt.best").exists() and not (tmp_path / "s.pt.tmp").exists()
+
+
+def test_rng_states_restore_after_the_state_file_was_loaded_onto_another_device():
+    """What happened on the GPU: torch.load(map_location=cuda) moved the saved CPU generator state to the GPU."""
+    saved = po._rng_states(torch)
+    moved = type("OnDevice", (), {"cpu": lambda self: saved["torch"]})()         # stands for a tensor that is no longer a CPU ByteTensor
+    expected = torch.rand(3)
+    torch.rand(5)                                                                  # move the generator on
+    po._restore_rng(torch, {**saved, "torch": moved})
+    assert torch.equal(torch.rand(3), expected)
+    if torch.backends.mps.is_available():                                          # a real second device, where this machine has one
+        po._restore_rng(torch, {**saved, "torch": saved["torch"].to("mps")})
+        assert torch.equal(torch.rand(3), expected)
+

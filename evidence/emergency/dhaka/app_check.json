@@ -1,0 +1,25 @@
+{
+ "what": "One browser check of the ambulance alert in the app, Dhaka, 2026-10-06, on a local server (127.0.0.1:8012), page language Bangla.",
+ "seen": [
+  "Lab > Control Room: the 'Ambulance alert' card with its SIMULATED pill, the four choices, and the line saying plain 4G is not offered and why",
+  "a run started from the card's button; its state line, counters and the tag sentence (simulated, uncalibrated)",
+  "the map legend gaining the two meaningful colours during an ambulance run",
+  "GET /api/sim/live/state: the ambulance published with SUMO class 'emergency'; one junction preempted at simulated second 74",
+  "GET /api/alerts/feed: one item, kind ambulance, stamp SIMULATED, tag simulated/uncalibrated, while the ambulance drove",
+  "Lab > Evidence: the ambulance table for the uncalibrated demand (16 rows) and 'no data for this city' for the calibrated demand"
+ ],
+ "not_seen": [
+  "the ambulance's shape and colour on the map at street level",
+  "a vehicle drawn in the making-way colour",
+  "the pages in English",
+  "the home page's alerts strip itself (its feed was read through the API)",
+  "the automated tab was in the background, where the page refreshes rarely; the counters on the saved screenshot are from the previous run"
+ ],
+ "screenshot": "twin_page_ambulance_panel.jpg",
+ "item4_plain_4g_2026-10-06": {
+  "checked": "Emergency page on Dhaka, English: seven plain-4G rows in the ambulance table and the provenance lines under it (emergency_page_4g_rows.jpg); frontend typecheck and i18n/results tests pass; backend/tests/networking and backend/tests/emergency 14 pass, 1 skip",
+  "not_checked": "the page in Bangla; Lab \u2192 Evidence (same component)",
+  "runs": "45 plain-4G runs, 2 crashed (sweep_generated_4g.log); ITS-G5 and C-V2X not rerun",
+  "results_sha256": "3a78306c2ea87ca1777981d0a92bc7ec623c55170ec1d2dec6a8129352e9b857"
+ }
+}

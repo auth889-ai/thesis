@@ -1,0 +1,255 @@
+{
+ "simulation_run_id": "sim_veins_s8792_predictive_corrected_v2x",
+ "arm": "predictive_corrected_v2x",
+ "seed": 8792,
+ "profile": "veins_802.11p",
+ "penetration": 0.3,
+ "moment": "prepeak",
+ "config_hash": "ea08dddedc14",
+ "network_hash": "0d81df27ab2d",
+ "sumo": "1.21.0 --num-clients 2 (Veins order 1, this loop order 2)",
+ "fork": null,
+ "warm_up_s": 1200,
+ "design": "Santamaria, Fazio, Raimondo, Tropea, De Rango, IEEE TVT 68(5) 2019, doi:10.1109/TVT.2019.2905753 (design: RSUs + 802.11p + predictive rerouting; no code released)",
+ "information": "gwnet+correction",
+ "state": "ok",
+ "crash": null,
+ "veins_exit": 0,
+ "metrics": {
+  "arrived": 1669,
+  "unfinished_at_horizon": 2446,
+  "unfinished": 2446,
+  "total_vehicle_hours": 564.8269444444444,
+  "mean_travel_time_all": 494.1377885783718,
+  "mean_travel_time_s": 568.5320551228281,
+  "p95_travel_time_s": 1077.0,
+  "mean_waiting_s": 93.06051527860994,
+  "total_waiting_s": 155318.0,
+  "mean_time_loss_s": 203.2625164769323,
+  "mean_depart_delay_s": 0.5781605751947274,
+  "vehicles_rerouted_at_least_once": 0,
+  "teleports": 3,
+  "loaded": 12480,
+  "inserted": 4115,
+  "running_at_end": 2446,
+  "waiting_to_insert_at_end": 2,
+  "mean_queue_veh": 260.73,
+  "max_queue_veh": 614.0,
+  "mean_running_veh": 1362.81,
+  "queue_steps": 1510,
+  "never_inserted": 0,
+  "never_inserted_vehicle_hours": 0.0,
+  "congestion": {
+   "major_edges": 4952,
+   "teleport_reasons": {
+    "total": 3,
+    "jam": 0,
+    "yield": 0,
+    "wrongLane": 1
+   },
+   "busiest_interval_utilisation": {
+    "p50": 0.017,
+    "p90": 0.107,
+    "max": 0.673,
+    "share_ge_0.5": 0.0,
+    "share_ge_0.7": 0.0,
+    "share_ge_0.9": 0.0
+   },
+   "mean_occupancy_pct_major": 0.93,
+   "spillback_major_edges_occ_ge_80": 0,
+   "spillback_share": 0.0,
+   "max_running_vehicles": 2446,
+   "max_halting_vehicles": 614,
+   "mean_halting_vehicles": 260.7,
+   "mean_speed_mps": 12.56,
+   "min_mean_speed_mps": 0.0,
+   "loaded_mean_speed_mps": 12.45,
+   "loaded_min_speed_mps": 10.7,
+   "loaded_mean_halting_share": 0.185,
+   "loaded_max_halting_share": 0.263,
+   "loaded_steps": 1199
+  },
+  "total_vehicle_hours_incl_never_inserted": 564.8269,
+  "wall_s": 85.3
+ },
+ "network": {
+  "link": "Veins 5.3.1 IEEE 802.11p (packet level), 20 mW, 6 Mbit/s, no obstacle shadowing on the LA twin",
+  "uplink": {
+   "messages_tx": 54437,
+   "messages_rx_at_rsus": 17868,
+   "unique_to_server": 4635,
+   "duplicates_two_rsus": 1848,
+   "delivery_ratio_unique": 0.0851
+  },
+  "downlink": {
+   "advice_decided": 36,
+   "still_pending_at_end": 36,
+   "handed_to_rsu": 0,
+   "broadcast_by_rsus": 0,
+   "received_by_car": 0,
+   "applied": 0,
+   "inapplicable": 0,
+   "expired_no_rsu_in_reach": 0,
+   "delivery_ratio": null
+  },
+  "connected_vehicles": 1221,
+  "penetration_configured": 0.3,
+  "rsus": 10,
+  "rsu_reach_m": 600.0,
+  "reroutes_applied": 0,
+  "veins": {
+   "source": "Veins scalars (results/*.sca), its PHY/MAC",
+   "nodes": 1222,
+   "status_sent": 54437,
+   "status_received_at_rsus": 17868,
+   "advice_sent_by_rsus": 0,
+   "advice_received": 0,
+   "advice_applied": 0,
+   "advice_inapplicable": 0,
+   "advice_deferred_on_junction": 0,
+   "frames_lost_all_nodes": {
+    "interference_or_collision": 0,
+    "while_transmitting": 0
+   },
+   "per_rsu": [
+    {
+     "rsu": 0,
+     "node": "cluster_15027596_1719546613",
+     "status_received": 3342,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 1,
+     "node": "9276692666",
+     "status_received": 3032,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 2,
+     "node": "123455061",
+     "status_received": 2284,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 3,
+     "node": "1719559337",
+     "status_received": 1618,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 4,
+     "node": "123495471",
+     "status_received": 1315,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 5,
+     "node": "9786469530",
+     "status_received": 1185,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 6,
+     "node": "21490206",
+     "status_received": 1386,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 7,
+     "node": "20820632",
+     "status_received": 1250,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 8,
+     "node": "863795835-AddedOnRampNode",
+     "status_received": 1339,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 9,
+     "node": "15029454",
+     "status_received": 1117,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    }
+   ]
+  }
+ },
+ "rounds": [
+  {
+   "routing_run_id": "rt_v2x_veins_s8792_predictive_corrected_v2x_r0",
+   "round": 0,
+   "sim_time_s": 1500,
+   "as_of_index": 30440,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "39f2dac691a56838",
+   "raw_prediction_hash": "60108c57694e526a",
+   "future_cost_hash": "db6dc00a0f51c44c",
+   "priced_edges": 208,
+   "reroute_budget": 63,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "NO_ALTERNATIVE": 342,
+    "REROUTE": 36,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 251
+   },
+   "correction": {
+    "residual_edges": 0,
+    "propagated_edges": 0,
+    "by_kind_at_h0": {
+     "OBSERVED": 0,
+     "RESIDUAL_UPSTREAM": 0
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": []
+   },
+   "incidents_detected_so_far": 0,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.046,
+   "vehicles_considered": 629,
+   "decisions": {
+    "NO_ALTERNATIVE": 342,
+    "REROUTE": 36,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 251
+   },
+   "recommendations_sent": 36,
+   "statuses_known": 325,
+   "edges_with_current_speed": 171
+  }
+ ],
+ "routing_run_ids": [
+  "rt_v2x_veins_s8792_predictive_corrected_v2x_r0"
+ ],
+ "reroutes_applied": 0,
+ "out_dir": "evidence/veins_forecast_routing/20261012T223952Z/s8792/predictive_corrected_v2x",
+ "run_utc": "2026-10-12T22:43:09.750416+00:00"
+}

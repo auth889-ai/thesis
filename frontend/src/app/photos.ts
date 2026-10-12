@@ -22,5 +22,5 @@ export const PHOTOS = {
 } as const;
 
 export type PhotoKey = keyof typeof PHOTOS;
-export const photoUrl = (k: PhotoKey) => `/photos/${PHOTOS[k].id}.jpg`;
+export const photoUrl = (k: PhotoKey) => `${import.meta.env.BASE_URL}photos/${PHOTOS[k].id}.jpg`;
 export const photoPage = (k: PhotoKey) => `https://unsplash.com/photos/${PHOTOS[k].id}`;

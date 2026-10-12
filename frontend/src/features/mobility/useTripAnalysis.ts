@@ -2,6 +2,7 @@ import {useMutation, useQuery} from "@tanstack/react-query";
 import {useRef, useState} from "react";
 
 import {api, pollJob} from "@/lib/api";
+import {usePlaceSuggestions} from "@/lib/places";
 import type {TripJob, TripResult} from "./types";
 
 export const STAGES = ["Finding the places", "Reading traffic", "Forecasting", "Comparing routes"];
@@ -26,7 +27,8 @@ export function useTripAnalysis() {
 }
 
 export function usePlaces(city: string, search: string) {
-  return useQuery({queryKey: ["places", city, search], queryFn: () => api.places(city, search) as Promise<{places: {label: string}[]}>, staleTime: 60_000});
+  const s = usePlaceSuggestions(city, search);                        // after a pause in typing, at most once a second
+  return {data: {places: s.places}, isFetching: s.searching};
 }
 
 export function useCities() {

@@ -7,7 +7,7 @@ from pathlib import Path
 
 from fastapi import APIRouter
 
-from app import evidence_paths as config
+from core.common import evidence_paths as config
 
 router = APIRouter()
 KEY = "total_vehicle_hours_incl_never_inserted"
@@ -43,7 +43,7 @@ def experiment_stress(city: str = "la_c4_central_wide"):
     root = config.REPO / "results/v2x/stress" / city
     if not root.is_dir():
         return {"available": False, "city": city}
-    cc = _read(config.REPO / "backend/app/protocols/controller_config.json") or {}
+    cc = _read(config.REPO / "core/simulation/closed_loop/protocols/controller_config.json") or {}
     stress = cc.get("stress_scenario") or {}
     sweeps = {}
     for sj in sorted(root.glob("summary_*.json")):

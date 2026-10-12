@@ -142,7 +142,8 @@ repos:
     status: FETCHED
     venue: ICLR 2018
     license: MIT             # read from LICENSE at 602afd9d on 2026-10-03
-    note: TensorFlow original. If the TF1 environment proves unreproducible, the
+    note: >-
+          TensorFlow original. If the TF1 environment proves unreproducible, the
           BasicTS DCRNN implementation is the fallback and the substitution is
           recorded in the REPRODUCTION_PASS record — never silently swapped.
           2026-10-03 (phase T-P1): the BasicTS-legacy-baselines DCRNN config at
@@ -456,3 +457,15 @@ repos:
 
   # Forks the person pointed at (gusongen/sumo-rl a3eb923, sal0-h/LibSignal 0d4a29e) are
   # not pinned: the originals above are the official implementations.
+
+  - name: adaptive-traffic-signal-rl
+    subsystem: signals
+    url: https://github.com/Adityakumar1805/adaptive-traffic-signal-rl.git
+    ref: "v1.1.0"
+    sha: b62436b5d5fb1e5d07008d6f486f1a06a09ff64a
+    verified: "2026-10-06"
+    status: USED
+    paper: none
+    license: MIT
+    why: its emergency override and signal safety state machine are reused in backend/app/signals/preemption (two files, credited; third_party/SOURCES.md)
+

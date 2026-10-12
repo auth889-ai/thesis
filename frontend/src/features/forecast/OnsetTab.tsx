@@ -18,7 +18,7 @@ export function OnsetTab({datasetName}: {datasetName: string}) {
   const q = useQuery({queryKey: ["onset", datasetName], queryFn: () => api.onset(datasetName) as Promise<{datasets: Run[]}>, retry: false});
   if (q.isLoading) return <p className="muted">Loading the Protocol B run…</p>;
   const run = q.data?.datasets?.[0];
-  if (!run) return <p className="muted">No Protocol B run for this dataset yet. It is produced by one command on the committed data: <code>python -m app.forecasting.evaluation.evaluate_models --dataset {datasetName}</code>.</p>;
+  if (!run) return <p className="muted">No Protocol B run for this dataset yet. It is produced by one command on the committed data: <code>python -m core.ml.forecasting.evaluation.evaluate_models --dataset {datasetName}</code>.</p>;
   const rows = [...run.rows].sort((a, b) => (b.onset_detection_rate ?? -1) - (a.onset_detection_rate ?? -1));
   const best = rows[0];
   const p = run.protocol;

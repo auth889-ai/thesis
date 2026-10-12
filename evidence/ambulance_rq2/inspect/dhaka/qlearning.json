@@ -1,0 +1,214 @@
+{
+ "seeds": [
+  14,
+  18,
+  19,
+  21,
+  23
+ ],
+ "controlled_signals": 3,
+ "runs": {
+  "no_alert_s14": {
+   "travel_time_s": 299.0,
+   "stood_s": 28,
+   "by_light": {
+    "no light within 100 m ahead": 28
+   },
+   "where": [
+    [
+     "240107302#5",
+     11
+    ],
+    [
+     ":264894192_0",
+     6
+    ]
+   ]
+  },
+  "rl_signals_s14": {
+   "travel_time_s": 758.0,
+   "stood_s": 545,
+   "by_light": {
+    "no light within 100 m ahead": 545
+   },
+   "where": [
+    [
+     "240107302#5",
+     545
+    ]
+   ]
+  },
+  "no_alert_s18": {
+   "travel_time_s": 608.0,
+   "stood_s": 384,
+   "by_light": {
+    "no light within 100 m ahead": 384
+   },
+   "where": [
+    [
+     "240107302#5",
+     201
+    ],
+    [
+     "691209729#14",
+     183
+    ]
+   ]
+  },
+  "rl_signals_s18": {
+   "travel_time_s": 972.0,
+   "stood_s": 746,
+   "by_light": {
+    "no light within 100 m ahead": 746
+   },
+   "where": [
+    [
+     "240107302#5",
+     431
+    ],
+    [
+     ":8779042937_0",
+     315
+    ]
+   ]
+  },
+  "no_alert_s19": {
+   "travel_time_s": 241.0,
+   "stood_s": 27,
+   "by_light": {
+    "in the queue at a red (a Q-learning light)": 24,
+    "light ahead green (a Q-learning light), still held": 1,
+    "no light within 100 m ahead": 2
+   },
+   "where": [
+    [
+     "155271803#3",
+     25
+    ],
+    [
+     ":2320154999_2",
+     2
+    ]
+   ]
+  },
+  "rl_signals_s19": {
+   "travel_time_s": 520.0,
+   "stood_s": 305,
+   "by_light": {
+    "no light within 100 m ahead": 305
+   },
+   "where": [
+    [
+     ":8779042937_0",
+     269
+    ],
+    [
+     "565194019#7",
+     24
+    ]
+   ]
+  },
+  "no_alert_s21": {
+   "travel_time_s": 288.0,
+   "stood_s": 73,
+   "by_light": {
+    "no light within 100 m ahead": 51,
+    "in the queue at a red (a Q-learning light)": 21,
+    "light ahead green (a Q-learning light), still held": 1
+   },
+   "where": [
+    [
+     "240107302#5",
+     51
+    ],
+    [
+     "691209729#6",
+     22
+    ]
+   ]
+  },
+  "rl_signals_s21": {
+   "travel_time_s": 426.0,
+   "stood_s": 150,
+   "by_light": {
+    "no light within 100 m ahead": 150
+   },
+   "where": [
+    [
+     "691209729#14",
+     91
+    ],
+    [
+     "240107302#5",
+     40
+    ]
+   ]
+  },
+  "no_alert_s23": {
+   "travel_time_s": 401.0,
+   "stood_s": 187,
+   "by_light": {
+    "no light within 100 m ahead": 172,
+    "in the queue at a red (a Q-learning light)": 14,
+    "light ahead green (a Q-learning light), still held": 1
+   },
+   "where": [
+    [
+     "240107302#5",
+     171
+    ],
+    [
+     "155271803#3",
+     15
+    ]
+   ]
+  },
+  "rl_signals_s23": {
+   "travel_time_s": 531.0,
+   "stood_s": 319,
+   "by_light": {
+    "no light within 100 m ahead": 319
+   },
+   "where": [
+    [
+     ":8779042937_0",
+     275
+    ],
+    [
+     ":318321939_3",
+     44
+    ]
+   ]
+  }
+ },
+ "totals": {
+  "no_alert": {
+   "stood_s": 699,
+   "by_light": {
+    "no light within 100 m ahead": 637,
+    "in the queue at a red (a Q-learning light)": 59,
+    "light ahead green (a Q-learning light), still held": 3
+   }
+  },
+  "rl_signals": {
+   "stood_s": 2065,
+   "by_light": {
+    "no light within 100 m ahead": 2065
+   }
+  }
+ },
+ "queue_head_rl": {
+  "seconds": {
+   "queue head at no light": 1245,
+   "queue head at no light, waiting to change lane": 644,
+   "no stopped vehicle ahead": 26
+  },
+  "median_vehicles_to_head": 2
+ },
+ "next_light_rl": {
+  "green": 1962,
+  "red": 0,
+  "none_ahead": 103
+ },
+ "reading": "On the 5 seeds where the Q-learning signals made the ambulance slower at Dhaka density, it stood 2065 s in all (siren-only on the same seeds: 699 s). 0 of those seconds were within 100 m of a traffic light; the next light on its route was green for it in 1962 s, red in 0 s, and there was no light left ahead in 103 s. The queues it stood in were short (median 2 vehicles to the head) and their heads were not at a light; many ended at a vehicle waiting to change lane. So the lights did not hold the ambulance directly. The Q-learning controllers change when traffic is released around the route, which may load the junctions where it stood, but these logs do not show that path; the cause of the slowdown is not established."
+}

@@ -1,0 +1,2311 @@
+{
+ "generated_utc": "2026-10-09T02:39:07.425171+00:00",
+ "city": "Dhaka",
+ "dataset": "Dhaka twin, generated demand (SYNTHETIC_WHAT_IF, uncalibrated), OpenStreetMap network",
+ "question": "How much time does the ambulance alert save, at which traffic densities and equipped shares, against which baselines, and why?",
+ "ladder": [
+  {
+   "scale": 0.5,
+   "seeds": [
+    11,
+    12,
+    14,
+    15,
+    16
+   ],
+   "ambulance_not_arrived": 0,
+   "teleport_share": 0.0,
+   "gridlock": false,
+   "section_density_veh_km": 1.17,
+   "no_alert_travel_s": 190.4,
+   "vehicles": 451
+  },
+  {
+   "scale": 1,
+   "seeds": [
+    11,
+    13,
+    14,
+    15,
+    16
+   ],
+   "ambulance_not_arrived": 0,
+   "teleport_share": 0.0,
+   "gridlock": false,
+   "section_density_veh_km": 1.97,
+   "no_alert_travel_s": 207.8,
+   "vehicles": 900
+  },
+  {
+   "scale": 2,
+   "seeds": [
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "ambulance_not_arrived": 0,
+   "teleport_share": 0.0056,
+   "gridlock": false,
+   "section_density_veh_km": 3.88,
+   "no_alert_travel_s": 279.2,
+   "vehicles": 1800
+  },
+  {
+   "scale": 3,
+   "seeds": [
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "ambulance_not_arrived": 0,
+   "teleport_share": 0.0267,
+   "gridlock": false,
+   "section_density_veh_km": 4.54,
+   "no_alert_travel_s": 357.8,
+   "vehicles": 2700
+  },
+  {
+   "scale": 4,
+   "seeds": [
+    11,
+    12,
+    13,
+    14,
+    15
+   ],
+   "ambulance_not_arrived": 0,
+   "teleport_share": 0.0629,
+   "gridlock": true,
+   "section_density_veh_km": 4.53,
+   "no_alert_travel_s": 600.8,
+   "vehicles": 3599
+  }
+ ],
+ "saved": {
+  "alert": {
+   "0.25": {
+    "0.5": {
+     "saved_s": 0.0,
+     "saved_s_sd": 0.0,
+     "saved_s_median": 0.0,
+     "saved_pct": 0.0,
+     "saved_pct_median": 0.0,
+     "seeds": 10,
+     "saved_s_q25": 0.0,
+     "saved_s_q75": 0.0,
+     "slower_runs": 0
+    },
+    "1": {
+     "saved_s": 0.0,
+     "saved_s_sd": 0.0,
+     "saved_s_median": 0.0,
+     "saved_pct": 0.0,
+     "saved_pct_median": 0.0,
+     "seeds": 10,
+     "saved_s_q25": 0.0,
+     "saved_s_q75": 0.0,
+     "slower_runs": 0
+    },
+    "2": {
+     "saved_s": 0.6,
+     "saved_s_sd": 4.7,
+     "saved_s_median": 0.5,
+     "saved_pct": 0.3,
+     "saved_pct_median": 0.1,
+     "seeds": 10,
+     "saved_s_q25": -0.8,
+     "saved_s_q75": 2.8,
+     "slower_runs": 1
+    },
+    "3": {
+     "saved_s": 2.2,
+     "saved_s_sd": 8.5,
+     "saved_s_median": 0.0,
+     "saved_pct": 1.0,
+     "saved_pct_median": 0.0,
+     "seeds": 10,
+     "saved_s_q25": -2.5,
+     "saved_s_q75": 8.5,
+     "slower_runs": 1
+    },
+    "4": {
+     "saved_s": -2.6,
+     "saved_s_sd": 6.5,
+     "saved_s_median": 0.0,
+     "saved_pct": -0.3,
+     "saved_pct_median": 0.0,
+     "seeds": 10,
+     "saved_s_q25": -1.8,
+     "saved_s_q75": 0.0,
+     "slower_runs": 1
+    },
+    "dhaka": {
+     "saved_s": 15.8,
+     "saved_s_sd": 72.9,
+     "saved_s_median": 6.0,
+     "saved_pct": 3.3,
+     "saved_pct_median": 2.1,
+     "seeds": 10,
+     "saved_s_q25": -18.8,
+     "saved_s_q75": 40.0,
+     "slower_runs": 4
+    }
+   },
+   "0.5": {
+    "0.5": {
+     "saved_s": -2.1,
+     "saved_s_sd": 6.6,
+     "saved_s_median": 0.0,
+     "saved_pct": -1.1,
+     "saved_pct_median": 0.0,
+     "seeds": 10,
+     "saved_s_q25": -2.8,
+     "saved_s_q75": 1.0,
+     "slower_runs": 1
+    },
+    "1": {
+     "saved_s": -1.0,
+     "saved_s_sd": 3.3,
+     "saved_s_median": 0.0,
+     "saved_pct": -0.5,
+     "saved_pct_median": 0.0,
+     "seeds": 10,
+     "saved_s_q25": -3.0,
+     "saved_s_q75": 0.8,
+     "slower_runs": 1
+    },
+    "2": {
+     "saved_s": -0.4,
+     "saved_s_sd": 4.3,
+     "saved_s_median": 0.0,
+     "saved_pct": -0.2,
+     "saved_pct_median": 0.0,
+     "seeds": 10,
+     "saved_s_q25": -3.0,
+     "saved_s_q75": 1.0,
+     "slower_runs": 1
+    },
+    "3": {
+     "saved_s": 4.8,
+     "saved_s_sd": 12.0,
+     "saved_s_median": 1.5,
+     "saved_pct": 2.0,
+     "saved_pct_median": 0.7,
+     "seeds": 10,
+     "saved_s_q25": -0.8,
+     "saved_s_q75": 4.5,
+     "slower_runs": 1
+    },
+    "4": {
+     "saved_s": 56.5,
+     "saved_s_sd": 167.7,
+     "saved_s_median": 2.5,
+     "saved_pct": 5.4,
+     "saved_pct_median": 0.7,
+     "seeds": 10,
+     "saved_s_q25": -1.5,
+     "saved_s_q75": 5.0,
+     "slower_runs": 1
+    },
+    "dhaka": {
+     "saved_s": 47.8,
+     "saved_s_sd": 138.7,
+     "saved_s_median": 7.5,
+     "saved_pct": 4.8,
+     "saved_pct_median": 2.0,
+     "seeds": 10,
+     "saved_s_q25": -23.8,
+     "saved_s_q75": 124.0,
+     "slower_runs": 4
+    }
+   },
+   "0.75": {
+    "0.5": {
+     "saved_s": -1.7,
+     "saved_s_sd": 6.4,
+     "saved_s_median": 0.0,
+     "saved_pct": -0.9,
+     "saved_pct_median": 0.0,
+     "seeds": 10,
+     "saved_s_q25": -1.8,
+     "saved_s_q75": 1.8,
+     "slower_runs": 1
+    },
+    "1": {
+     "saved_s": -0.2,
+     "saved_s_sd": 5.5,
+     "saved_s_median": 0.0,
+     "saved_pct": -0.1,
+     "saved_pct_median": 0.0,
+     "seeds": 10,
+     "saved_s_q25": -2.5,
+     "saved_s_q75": 3.2,
+     "slower_runs": 2
+    },
+    "2": {
+     "saved_s": 0.9,
+     "saved_s_sd": 2.8,
+     "saved_s_median": 0.5,
+     "saved_pct": 0.4,
+     "saved_pct_median": 0.1,
+     "seeds": 10,
+     "saved_s_q25": 0.0,
+     "saved_s_q75": 3.0,
+     "slower_runs": 0
+    },
+    "3": {
+     "saved_s": 1.7,
+     "saved_s_sd": 20.6,
+     "saved_s_median": 3.0,
+     "saved_pct": 1.1,
+     "saved_pct_median": 1.3,
+     "seeds": 10,
+     "saved_s_q25": -1.0,
+     "saved_s_q75": 9.0,
+     "slower_runs": 1
+    },
+    "4": {
+     "saved_s": 2.6,
+     "saved_s_sd": 275.4,
+     "saved_s_median": 0.5,
+     "saved_pct": -13.5,
+     "saved_pct_median": 0.1,
+     "seeds": 10,
+     "saved_s_q25": -9.5,
+     "saved_s_q75": 5.2,
+     "slower_runs": 3
+    },
+    "dhaka": {
+     "saved_s": 70.3,
+     "saved_s_sd": 118.7,
+     "saved_s_median": 24.0,
+     "saved_pct": 11.2,
+     "saved_pct_median": 7.2,
+     "seeds": 10,
+     "saved_s_q25": 1.0,
+     "saved_s_q75": 72.5,
+     "slower_runs": 2
+    }
+   },
+   "1": {
+    "0.5": {
+     "saved_s": 2.3,
+     "saved_s_sd": 8.9,
+     "saved_s_median": -0.5,
+     "saved_pct": 1.1,
+     "saved_pct_median": -0.3,
+     "seeds": 10,
+     "saved_s_q25": -2.8,
+     "saved_s_q75": 2.5,
+     "slower_runs": 0
+    },
+    "1": {
+     "saved_s": 0.0,
+     "saved_s_sd": 4.3,
+     "saved_s_median": 0.5,
+     "saved_pct": -0.0,
+     "saved_pct_median": 0.2,
+     "seeds": 10,
+     "saved_s_q25": -0.8,
+     "saved_s_q75": 2.8,
+     "slower_runs": 1
+    },
+    "2": {
+     "saved_s": 2.6,
+     "saved_s_sd": 6.9,
+     "saved_s_median": 2.5,
+     "saved_pct": 1.1,
+     "saved_pct_median": 1.1,
+     "seeds": 10,
+     "saved_s_q25": -0.5,
+     "saved_s_q75": 4.0,
+     "slower_runs": 1
+    },
+    "3": {
+     "saved_s": -0.9,
+     "saved_s_sd": 24.6,
+     "saved_s_median": 3.5,
+     "saved_pct": -0.0,
+     "saved_pct_median": 1.2,
+     "seeds": 10,
+     "saved_s_q25": -3.8,
+     "saved_s_q75": 12.0,
+     "slower_runs": 2
+    },
+    "4": {
+     "saved_s": -37.8,
+     "saved_s_sd": 91.0,
+     "saved_s_median": -2.0,
+     "saved_pct": -8.1,
+     "saved_pct_median": -0.5,
+     "seeds": 10,
+     "saved_s_q25": -13.5,
+     "saved_s_q75": 6.0,
+     "slower_runs": 5
+    },
+    "dhaka": {
+     "saved_s": 60.4,
+     "saved_s_sd": 124.2,
+     "saved_s_median": 26.0,
+     "saved_pct": 7.4,
+     "saved_pct_median": 6.1,
+     "seeds": 10,
+     "saved_s_q25": -17.0,
+     "saved_s_q75": 39.8,
+     "slower_runs": 4
+    }
+   }
+  },
+  "alert_preemption": {
+   "0.25": {
+    "0.5": {
+     "saved_s": 2.4,
+     "saved_s_sd": 11.7,
+     "saved_s_median": -0.5,
+     "saved_pct": 1.0,
+     "saved_pct_median": -0.3,
+     "seeds": 10,
+     "saved_s_q25": -1.8,
+     "saved_s_q75": 1.8,
+     "slower_runs": 1
+    },
+    "1": {
+     "saved_s": 4.6,
+     "saved_s_sd": 14.2,
+     "saved_s_median": 4.5,
+     "saved_pct": 2.2,
+     "saved_pct_median": 2.1,
+     "seeds": 10,
+     "saved_s_q25": -7.5,
+     "saved_s_q75": 16.0,
+     "slower_runs": 4
+    },
+    "2": {
+     "saved_s": -1.1,
+     "saved_s_sd": 8.0,
+     "saved_s_median": 0.0,
+     "saved_pct": -0.6,
+     "saved_pct_median": -0.0,
+     "seeds": 10,
+     "saved_s_q25": -6.5,
+     "saved_s_q75": 5.2,
+     "slower_runs": 3
+    },
+    "3": {
+     "saved_s": 2.9,
+     "saved_s_sd": 17.2,
+     "saved_s_median": 1.5,
+     "saved_pct": 0.9,
+     "saved_pct_median": 0.5,
+     "seeds": 10,
+     "saved_s_q25": -7.0,
+     "saved_s_q75": 15.5,
+     "slower_runs": 3
+    },
+    "4": {
+     "saved_s": 0.5,
+     "saved_s_sd": 11.2,
+     "saved_s_median": -1.0,
+     "saved_pct": 0.8,
+     "saved_pct_median": -0.4,
+     "seeds": 10,
+     "saved_s_q25": -2.0,
+     "saved_s_q75": -0.2,
+     "slower_runs": 1
+    },
+    "dhaka": {
+     "saved_s": -31.0,
+     "saved_s_sd": 159.0,
+     "saved_s_median": 4.0,
+     "saved_pct": -15.6,
+     "saved_pct_median": -0.6,
+     "seeds": 10,
+     "saved_s_q25": -110.2,
+     "saved_s_q75": 63.0,
+     "slower_runs": 5
+    }
+   },
+   "0.5": {
+    "0.5": {
+     "saved_s": 1.8,
+     "saved_s_sd": 12.5,
+     "saved_s_median": 0.5,
+     "saved_pct": 0.7,
+     "saved_pct_median": 0.3,
+     "seeds": 10,
+     "saved_s_q25": -5.0,
+     "saved_s_q75": 2.5,
+     "slower_runs": 3
+    },
+    "1": {
+     "saved_s": 5.2,
+     "saved_s_sd": 12.8,
+     "saved_s_median": 8.0,
+     "saved_pct": 2.4,
+     "saved_pct_median": 3.8,
+     "seeds": 10,
+     "saved_s_q25": -5.2,
+     "saved_s_q75": 11.5,
+     "slower_runs": 3
+    },
+    "2": {
+     "saved_s": -1.5,
+     "saved_s_sd": 8.7,
+     "saved_s_median": 2.0,
+     "saved_pct": -0.8,
+     "saved_pct_median": 0.9,
+     "seeds": 10,
+     "saved_s_q25": -7.8,
+     "saved_s_q75": 3.8,
+     "slower_runs": 3
+    },
+    "3": {
+     "saved_s": 8.1,
+     "saved_s_sd": 13.8,
+     "saved_s_median": 6.0,
+     "saved_pct": 3.3,
+     "saved_pct_median": 2.2,
+     "seeds": 10,
+     "saved_s_q25": -4.2,
+     "saved_s_q75": 18.2,
+     "slower_runs": 3
+    },
+    "4": {
+     "saved_s": 57.2,
+     "saved_s_sd": 176.2,
+     "saved_s_median": 0.5,
+     "saved_pct": 4.8,
+     "saved_pct_median": 0.1,
+     "seeds": 10,
+     "saved_s_q25": -1.8,
+     "saved_s_q75": 8.0,
+     "slower_runs": 1
+    },
+    "dhaka": {
+     "saved_s": 32.5,
+     "saved_s_sd": 175.1,
+     "saved_s_median": 62.5,
+     "saved_pct": -2.1,
+     "saved_pct_median": 18.1,
+     "seeds": 10,
+     "saved_s_q25": -27.5,
+     "saved_s_q75": 130.5,
+     "slower_runs": 3
+    }
+   },
+   "0.75": {
+    "0.5": {
+     "saved_s": 0.7,
+     "saved_s_sd": 13.9,
+     "saved_s_median": -1.5,
+     "saved_pct": 0.1,
+     "saved_pct_median": -0.8,
+     "seeds": 10,
+     "saved_s_q25": -7.8,
+     "saved_s_q75": 6.2,
+     "slower_runs": 3
+    },
+    "1": {
+     "saved_s": 5.9,
+     "saved_s_sd": 11.9,
+     "saved_s_median": 4.0,
+     "saved_pct": 2.7,
+     "saved_pct_median": 1.9,
+     "seeds": 10,
+     "saved_s_q25": -2.8,
+     "saved_s_q75": 15.5,
+     "slower_runs": 2
+    },
+    "2": {
+     "saved_s": -0.5,
+     "saved_s_sd": 10.6,
+     "saved_s_median": -0.5,
+     "saved_pct": -0.5,
+     "saved_pct_median": -0.2,
+     "seeds": 10,
+     "saved_s_q25": -1.8,
+     "saved_s_q75": 5.8,
+     "slower_runs": 1
+    },
+    "3": {
+     "saved_s": -1.6,
+     "saved_s_sd": 20.5,
+     "saved_s_median": -2.0,
+     "saved_pct": 0.1,
+     "saved_pct_median": -0.3,
+     "seeds": 10,
+     "saved_s_q25": -7.5,
+     "saved_s_q75": 14.2,
+     "slower_runs": 4
+    },
+    "4": {
+     "saved_s": -59.3,
+     "saved_s_sd": 173.8,
+     "saved_s_median": 0.0,
+     "saved_pct": -17.8,
+     "saved_pct_median": -0.0,
+     "seeds": 10,
+     "saved_s_q25": -10.5,
+     "saved_s_q75": 5.8,
+     "slower_runs": 3
+    },
+    "dhaka": {
+     "saved_s": -62.1,
+     "saved_s_sd": 264.1,
+     "saved_s_median": 15.5,
+     "saved_pct": -8.9,
+     "saved_pct_median": 2.4,
+     "seeds": 10,
+     "saved_s_q25": -81.2,
+     "saved_s_q75": 36.5,
+     "slower_runs": 4
+    }
+   },
+   "1": {
+    "0.5": {
+     "saved_s": 2.0,
+     "saved_s_sd": 9.7,
+     "saved_s_median": 1.0,
+     "saved_pct": 0.9,
+     "saved_pct_median": 0.5,
+     "seeds": 10,
+     "saved_s_q25": -1.5,
+     "saved_s_q75": 3.8,
+     "slower_runs": 1
+    },
+    "1": {
+     "saved_s": 12.0,
+     "saved_s_sd": 7.7,
+     "saved_s_median": 12.0,
+     "saved_pct": 5.6,
+     "saved_pct_median": 5.6,
+     "seeds": 10,
+     "saved_s_q25": 7.0,
+     "saved_s_q75": 18.5,
+     "slower_runs": 0
+    },
+    "2": {
+     "saved_s": 3.6,
+     "saved_s_sd": 5.2,
+     "saved_s_median": 2.5,
+     "saved_pct": 1.4,
+     "saved_pct_median": 1.1,
+     "seeds": 10,
+     "saved_s_q25": 0.0,
+     "saved_s_q75": 7.5,
+     "slower_runs": 0
+    },
+    "3": {
+     "saved_s": -3.8,
+     "saved_s_sd": 21.1,
+     "saved_s_median": -3.0,
+     "saved_pct": -1.4,
+     "saved_pct_median": -0.6,
+     "seeds": 10,
+     "saved_s_q25": -10.2,
+     "saved_s_q75": 9.5,
+     "slower_runs": 5
+    },
+    "4": {
+     "saved_s": -2.7,
+     "saved_s_sd": 251.7,
+     "saved_s_median": 6.0,
+     "saved_pct": -13.0,
+     "saved_pct_median": 1.9,
+     "seeds": 10,
+     "saved_s_q25": -2.5,
+     "saved_s_q75": 8.8,
+     "slower_runs": 2
+    },
+    "dhaka": {
+     "saved_s": 18.3,
+     "saved_s_sd": 110.3,
+     "saved_s_median": 3.0,
+     "saved_pct": 0.3,
+     "saved_pct_median": 1.0,
+     "seeds": 10,
+     "saved_s_q25": -21.0,
+     "saved_s_q75": 32.5,
+     "slower_runs": 4
+    }
+   }
+  },
+  "rl_signals": {
+   "0": {
+    "0.5": {
+     "saved_s": 12.1,
+     "saved_s_sd": 10.3,
+     "saved_s_median": 11.0,
+     "saved_pct": 6.2,
+     "saved_pct_median": 5.9,
+     "seeds": 10,
+     "saved_s_q25": 9.2,
+     "saved_s_q75": 12.8,
+     "slower_runs": 0
+    },
+    "1": {
+     "saved_s": 31.1,
+     "saved_s_sd": 10.2,
+     "saved_s_median": 32.5,
+     "saved_pct": 14.7,
+     "saved_pct_median": 15.2,
+     "seeds": 10,
+     "saved_s_q25": 27.2,
+     "saved_s_q75": 39.2,
+     "slower_runs": 0
+    },
+    "2": {
+     "saved_s": -2.2,
+     "saved_s_sd": 186.1,
+     "saved_s_median": 36.0,
+     "saved_pct": -8.1,
+     "saved_pct_median": 16.4,
+     "seeds": 10,
+     "saved_s_q25": 31.8,
+     "saved_s_q75": 42.0,
+     "slower_runs": 2
+    },
+    "3": {
+     "saved_s": 10.7,
+     "saved_s_sd": 291.5,
+     "saved_s_median": 39.0,
+     "saved_pct": -16.1,
+     "saved_pct_median": 16.7,
+     "seeds": 10,
+     "saved_s_q25": -158.8,
+     "saved_s_q75": 82.8,
+     "slower_runs": 4
+    },
+    "4": {
+     "saved_s": 124.5,
+     "saved_s_sd": 402.5,
+     "saved_s_median": 92.5,
+     "saved_pct": -12.9,
+     "saved_pct_median": 24.0,
+     "seeds": 10,
+     "saved_s_q25": -168.8,
+     "saved_s_q75": 290.5,
+     "slower_runs": 4
+    },
+    "dhaka": {
+     "saved_s": -54.8,
+     "saved_s_sd": 264.4,
+     "saved_s_median": -49.5,
+     "saved_pct": -22.4,
+     "saved_pct_median": -9.4,
+     "seeds": 10,
+     "saved_s_q25": -243.8,
+     "saved_s_q75": 140.0,
+     "slower_runs": 5
+    }
+   }
+  },
+  "rl_signals_alert": {
+   "1": {
+    "0.5": {
+     "saved_s": 14.6,
+     "saved_s_sd": 11.6,
+     "saved_s_median": 11.5,
+     "saved_pct": 7.3,
+     "saved_pct_median": 6.2,
+     "seeds": 10,
+     "saved_s_q25": 9.2,
+     "saved_s_q75": 14.0,
+     "slower_runs": 0
+    },
+    "1": {
+     "saved_s": 32.5,
+     "saved_s_sd": 9.2,
+     "saved_s_median": 33.0,
+     "saved_pct": 15.4,
+     "saved_pct_median": 15.6,
+     "seeds": 10,
+     "saved_s_q25": 32.2,
+     "saved_s_q75": 39.0,
+     "slower_runs": 0
+    },
+    "2": {
+     "saved_s": -62.6,
+     "saved_s_sd": 297.2,
+     "saved_s_median": 36.0,
+     "saved_pct": -32.9,
+     "saved_pct_median": 16.0,
+     "seeds": 10,
+     "saved_s_q25": 25.8,
+     "saved_s_q75": 39.8,
+     "slower_runs": 2
+    },
+    "3": {
+     "saved_s": -15.9,
+     "saved_s_sd": 308.1,
+     "saved_s_median": -25.0,
+     "saved_pct": -25.4,
+     "saved_pct_median": -2.4,
+     "seeds": 10,
+     "saved_s_q25": -190.0,
+     "saved_s_q75": 80.0,
+     "slower_runs": 5
+    },
+    "4": {
+     "saved_s": 74.3,
+     "saved_s_sd": 439.3,
+     "saved_s_median": -15.5,
+     "saved_pct": -31.1,
+     "saved_pct_median": -6.5,
+     "seeds": 10,
+     "saved_s_q25": -292.5,
+     "saved_s_q75": 302.8,
+     "slower_runs": 5
+    },
+    "dhaka": {
+     "saved_s": 0.9,
+     "saved_s_sd": 255.4,
+     "saved_s_median": 33.5,
+     "saved_pct": -10.0,
+     "saved_pct_median": 12.4,
+     "seeds": 10,
+     "saved_s_q25": -135.0,
+     "saved_s_q75": 150.8,
+     "slower_runs": 4
+    }
+   }
+  }
+ },
+ "frontier": {
+  "alert": {
+   "lowest_share_that_helps": {
+    "0.5": null,
+    "1": null,
+    "2": null,
+    "3": null,
+    "4": null,
+    "dhaka": null
+   },
+   "stops_helping_at_scale": 0.5
+  },
+  "alert_preemption": {
+   "lowest_share_that_helps": {
+    "0.5": null,
+    "1": null,
+    "2": null,
+    "3": null,
+    "4": null,
+    "dhaka": 0.5
+   },
+   "stops_helping_at_scale": 0.5
+  }
+ },
+ "why": {
+  "saved_vs_free_width": {
+   "rho": -0.16,
+   "ci95": [
+    -0.248,
+    -0.062
+   ],
+   "n": 400
+  },
+  "saved_vs_queue": {
+   "rho": 0.179,
+   "ci95": [
+    0.081,
+    0.272
+   ],
+   "n": 400
+  },
+  "saved_vs_siren_blocked_s": {
+   "rho": 0.005,
+   "ci95": [
+    -0.093,
+    0.104
+   ],
+   "n": 400
+  },
+  "saved_vs_yield_share": {
+   "rho": -0.003,
+   "ci95": [
+    -0.098,
+    0.093
+   ],
+   "n": 364
+  },
+  "free_width_by_scale": {
+   "0.5": 8.42,
+   "1": 7.83,
+   "2": 7.71,
+   "3": 7.91,
+   "4": 8.34
+  },
+  "queue_by_scale": {
+   "0.5": 2.15,
+   "1": 3.11,
+   "2": 5.61,
+   "3": 3.14,
+   "4": 2.88
+  },
+  "yield_share_by_scale": {
+   "0.5": 0.595,
+   "1": 0.705,
+   "2": 0.8,
+   "3": 0.763,
+   "4": 0.834
+  }
+ },
+ "dhaka_anchor": {
+  "recorded_veh_km": 57.7,
+  "recorded_window": "DhaTraX INT, 2026-04-19 07:00-08:00, median of 5-minute intervals",
+  "closest_scale": 3,
+  "closest_simulated_veh_km": 4.54,
+  "reached_before_gridlock": false,
+  "caveat": "DhaTraX speeds and densities come from camera tracking whose calibration the authors did not validate; a camera density counts every vehicle in about 90 m, two- and three-wheelers included"
+ },
+ "arms": {
+  "alert": "Alert to vehicles",
+  "alert_preemption": "Alert + signal preemption",
+  "rl_signals": "Q-learning signals (sumo-rl), no alert",
+  "rl_signals_alert": "Q-learning signals (sumo-rl) + alert"
+ },
+ "help_pct": 10.0,
+ "runs": 684,
+ "paired_runs": 600,
+ "findings": {
+  "density": "With every vehicle equipped, the alert's median saving is -0.5 s (-0.3 %) at demand x0.5; 0.5 s (0.2 %) at demand x1; 2.5 s (1.1 %) at demand x2; 3.5 s (1.2 %) at demand x3; -2.0 s (-0.5 %) at demand x4.",
+  "stops": "No equipped share reaches a median saving of 10 % at any density.",
+  "why": "Time saved falls with the free width ahead of the ambulance in the siren-only run (Spearman rho -0.16, 95 % CI -0.248 to -0.062, 400 paired runs) and rises with the queue at the route's signals (rho 0.179, CI 0.081 to 0.272). It is not clearly related to the share of alerted vehicles that actually moved aside (rho -0.003, CI -0.098 to 0.093). It is not clearly related to how long the siren-only ambulance stood blocked (rho 0.005, CI -0.093 to 0.104). The free width ahead hardly changes with density (7.71-8.42 m over all levels): on this route there is room to move aside at every level, so room is not what limits the alert. Smarter signals do more: the Q-learning signals' median saving beats the alert to every vehicle at 5 of 5 densities, which suggests the ambulance's delay on this route sits at the junctions more than behind vehicles that could move aside.",
+  "backfire": "In 70 of 400 alert runs the ambulance was more than 5 s slower than with the siren alone (worst 552 s slower, at demand x4); these runs are kept in every mean, not dropped.",
+  "rl": "Q-learning signals without the alert: median saving 11.0 s at x0.5, 32.5 s at x1, 36.0 s at x2, 39.0 s at x3, 92.5 s at x4 against SUMO's own signal programmes (3 signals near the route controlled).",
+  "dhaka": "On the whole network, Dhaka's recorded density at the INT camera (57.7 vehicles/km, 07:00-08:00) is not reached before the simulation gridlocks: the densest run gives 4.54 vehicles/km on that section.",
+  "dhaka_density": "At the density the corridor reaches (54.37 vehicles/km on the INT section against the recorded 57.7), the alert to every vehicle saves a median 26.0 s (time saved, 25-75 %: -17.0 to 39.8 s) over 10 paired seeds, 4 of them slower than the siren alone; with signal preemption it saves a median 3.0 s (time saved, 25-75 %: -21.0 to 32.5 s); with Q-learning signals and no alert it costs a median 49.5 s (time saved, 25-75 %: -243.8 to 140.0 s). Only 653 vehicles an hour pass the section there, against 1184 recorded: the density matches, the flow does not.",
+  "why_dhaka": "At the Dhaka-density level, time saved is not clearly related to the free width ahead (rho -0.123, CI -0.367 to 0.129, 80 paired runs), is not clearly related to the queue at the route's signals (rho -0.063, CI -0.291 to 0.169) and rises with how long the siren-only ambulance stood blocked (rho 0.294, CI 0.052 to 0.498; median 86.0 s blocked). Free width ahead averages 7.11 m there (whole network: 7.71-8.42 m).",
+  "makeway": "Moving aside (make-way v2): alerted vehicles keep their own route lane changes, and only those within 100 m ahead of the ambulance move aside. No published distance at which drivers act on an electronic alert was found, so 50 m and 100 m were piloted at the Dhaka-density level and chosen by a rule fixed before the pilot (the longer, unless it still produced a circular wait). The rule as fixed rejected both, only on waits that also occur identically in the siren-only runs of the same seeds; the owner amended it after the pilot (a flagged wait counts only if the siren-only run of the same seed does not show it), which gives 100 m. Time saved was not used in the choice.",
+  "qlearning_dhaka": "On the 5 seeds where the Q-learning signals made the ambulance slower at Dhaka density, it stood 2065 s in all (siren-only on the same seeds: 699 s). 0 of those seconds were within 100 m of a traffic light; the next light on its route was green for it in 1962 s, red in 0 s, and there was no light left ahead in 103 s. The queues it stood in were short (median 2 vehicles to the head) and their heads were not at a light; many ended at a vehicle waiting to change lane. So the lights did not hold the ambulance directly. The Q-learning controllers change when traffic is released around the route, which may load the junctions where it stood, but these logs do not show that path; the cause of the slowdown is not established.",
+  "density_gap": "Why the simulation stays far below Dhaka's recorded density at the INT camera (57.7 vehicles/km, 07:00-08:00): (1) not the definition: both count every vehicle class on the whole road over about 90 m (89.2 m camera zone, 91.8 m simulated section); (2) not the space per vehicle: SUMO's lengths and gaps for this mix allow about 443.3 vehicles/km on those 3 lanes, and other roads in the same run reach 359.1 vehicles/km at gridlock; (3) partly lane discipline: with smaller lateral gaps for two-wheelers, rickshaws and CNGs the section's mean density rises from 4.8 to 24.82 vehicles/km, still below the recorded value; (4) mainly supply: only 260 vehicles an hour enter the section in the simulation, against 1184 recorded, because the generated trips do not load this road and the network gridlocks elsewhere first. So the whole-network ambulance results come from a simulation that does not reach Dhaka's recorded density on the road it measures. (5) Supply tested: a corridor 300 m around the route, loaded with the recorded counts at INT and BM and the smaller lateral gaps, overshoots at the full counts (200.3 vehicles/km on INT) and reaches 54.37 vehicles/km at x0.78 of the counts, inside the recorded range (36.5-126.6); but only 653 vehicles an hour pass, against 1184 recorded. The density is reached; the recorded flow at that density is not."
+ },
+ "dhaka_level": {
+  "reached": true,
+  "scale": 0.78,
+  "label": "Dhaka density",
+  "INT_density_median": 54.37,
+  "INT_density_q25": 42.7,
+  "INT_density_q75": 83.7,
+  "density_seeds": [
+   11,
+   12,
+   13,
+   14,
+   15
+  ],
+  "INT_entered_per_hour_median": 653,
+  "recorded": {
+   "density_median": 57.7,
+   "density_q25": 36.5,
+   "density_q75": 126.6,
+   "flow_veh_h_median": 1184
+  },
+  "full_counts_INT_density_median": 200.3,
+  "full_counts_INT_entered_median": 597,
+  "tried": [
+   {
+    "scale": 0.4,
+    "INT_density_median_over_seeds": 9.08,
+    "INT_entered_median": 477,
+    "within_recorded_iqr": false
+   },
+   {
+    "scale": 0.5,
+    "INT_density_median_over_seeds": 11.23,
+    "INT_entered_median": 543,
+    "within_recorded_iqr": false
+   },
+   {
+    "scale": 0.6,
+    "INT_density_median_over_seeds": 12.82,
+    "INT_entered_median": 614,
+    "within_recorded_iqr": false
+   },
+   {
+    "scale": 0.7,
+    "INT_density_median_over_seeds": 15.14,
+    "INT_entered_median": 654,
+    "within_recorded_iqr": false
+   },
+   {
+    "scale": 0.72,
+    "INT_density_median_over_seeds": 20.3,
+    "INT_entered_median": 686,
+    "within_recorded_iqr": false
+   },
+   {
+    "scale": 0.75,
+    "INT_density_median_over_seeds": 68.38,
+    "INT_entered_median": 659,
+    "within_recorded_iqr": true
+   },
+   {
+    "scale": 0.78,
+    "INT_density_median_over_seeds": 54.37,
+    "INT_entered_median": 653,
+    "within_recorded_iqr": true
+   },
+   {
+    "scale": 0.8,
+    "INT_density_median_over_seeds": 103.08,
+    "INT_entered_median": 610,
+    "within_recorded_iqr": true
+   }
+  ],
+  "edges_kept": 1198,
+  "edges_full": 6527,
+  "buffer_m": 300.0,
+  "signals_same_programme": true,
+  "sampled_trips": 3451,
+  "background_trips": 937
+ },
+ "why_dhaka": {
+  "saved_vs_free_width": {
+   "rho": -0.123,
+   "ci95": [
+    -0.367,
+    0.129
+   ],
+   "n": 80
+  },
+  "saved_vs_queue": {
+   "rho": -0.063,
+   "ci95": [
+    -0.291,
+    0.169
+   ],
+   "n": 80
+  },
+  "saved_vs_siren_blocked_s": {
+   "rho": 0.294,
+   "ci95": [
+    0.052,
+    0.498
+   ],
+   "n": 80
+  },
+  "saved_vs_yield_share": {
+   "rho": -0.155,
+   "ci95": [
+    -0.382,
+    0.077
+   ],
+   "n": 79
+  },
+  "free_width_m_mean": 7.11,
+  "queue_mean": 4.47,
+  "siren_blocked_s_median": 86.0
+ },
+ "plain": {
+  "level": "dhaka",
+  "trip_s": 346,
+  "alert_s": 26,
+  "alert_q25_s": -17.0,
+  "alert_reliable": false,
+  "signals_s": -49,
+  "signals_more": false,
+  "slower_runs": 4,
+  "alert_runs": 10,
+  "not_every_time": true
+ },
+ "city_id": "dhaka",
+ "makeway": {
+  "current": {
+   "version": 2,
+   "keep_strategic": true,
+   "distance_m": 100
+  },
+  "choice": {
+   "rule": "100 m unless it still produces the circular wait at Dhaka density (lane-end wait >= 60 s in a row, or an alerted blocker teleported); then 50 m; if both do, stop. Fixed before the pilot; time saved is not used.",
+   "why_not_a_cited_value": "no published distance at which drivers act on an electronic alert was found; the sources found describe siren audibility (8-12 m into a closed car at urban junctions, US DOT via EMS World; 10-50 m detection window, arXiv 2109.14797), the siren-only world",
+   "chosen_by_rule_as_fixed": null,
+   "amendment": {
+    "when": "2026-10-09, after the pilot, approved by the owner",
+    "why": "both distances were rejected only by waits that also occur, identically, in the siren-only runs of the same seeds (same lane-end waits, same blockers teleported), i.e. corridor congestion the alert did not cause",
+    "rule": "a flagged wait counts only if the siren-only run of the same seed does not show it",
+    "seeds_with_alert_caused_wait": {
+     "v2d100": [],
+     "v2d50": []
+    }
+   },
+   "chosen_distance_m": 100.0
+  }
+ },
+ "v1_record": {
+  "folder": "results/emergency/dhaka/rq2/record_v1_makeway_artefact",
+  "slowdown": {
+   "seeds": [
+    11,
+    12,
+    13,
+    15,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22
+   ],
+   "scale": 0.78,
+   "arms": {
+    "alert": {
+     "runs": 10,
+     "median_s": -230.0,
+     "q25_s": -291.8,
+     "q75_s": -20.8,
+     "slower_runs": 7
+    }
+   },
+   "variants": {
+    "near50": {
+     "what": "only vehicles within 50 m ahead move aside",
+     "runs": 10,
+     "median_s": 65.5,
+     "q25_s": -15.8,
+     "q75_s": 270.2,
+     "slower_runs": 3,
+     "crashed": 0,
+     "travel_s": {
+      "11": 239.0,
+      "12": 265.0,
+      "13": 598.0,
+      "15": 229.0,
+      "17": 281.0,
+      "18": 427.0,
+      "19": 261.0,
+      "20": 591.0,
+      "21": 517.0,
+      "22": 247.0
+     }
+    },
+    "nojunction": {
+     "what": "no vehicle keeps the make-way settings inside a junction",
+     "runs": 10,
+     "median_s": -230.0,
+     "q25_s": -291.8,
+     "q75_s": -20.8,
+     "slower_runs": 7,
+     "crashed": 0,
+     "travel_s": {
+      "11": 269.0,
+      "12": 578.0,
+      "13": 507.0,
+      "15": 490.0,
+      "17": 624.0,
+      "18": 760.0,
+      "19": 545.0,
+      "20": 573.0,
+      "21": 589.0,
+      "22": 987.0
+     }
+    },
+    "strategic": {
+     "what": "diagnostic: vehicles moving aside keep their own route lane changes",
+     "runs": 8,
+     "median_s": 37.0,
+     "q25_s": -2.5,
+     "q75_s": 108.5,
+     "slower_runs": 2,
+     "crashed": 2,
+     "travel_s": {
+      "11": 201.0,
+      "12": 284.0,
+      "13": 1292.0,
+      "15": 211.0,
+      "17": null,
+      "18": 447.0,
+      "19": 241.0,
+      "20": 358.0,
+      "21": null,
+      "22": 312.0
+     }
+    }
+   },
+   "reproduced": {
+    "logged_reruns_match_originals": true,
+    "rerun_seeds": [
+     12,
+     15,
+     19,
+     21
+    ],
+    "nojunction_identical_to_original_on_every_seed": true
+   },
+   "causes_in_slower_runs": {
+    "slower_seeds": [
+     12,
+     15,
+     18,
+     19,
+     20,
+     21,
+     22
+    ],
+    "seconds_stood": 2870,
+    "by_cause": {
+     "behind a vehicle waiting at a lane end it may not leave (alerted)": 1810,
+     "behind alerted vehicles, no such lane end in the 4 ahead": 932,
+     "behind vehicles that were not alerted": 66,
+     "nothing within 100 m ahead": 61,
+     "behind a vehicle waiting at a lane end it may not leave (not alerted)": 1
+    },
+    "lane_end_share": 0.631,
+    "blocking_vehicles_teleported": [
+     "cal0_223",
+     "cal300_73",
+     "cal600_215",
+     "cal600_253",
+     "cal900_104",
+     "veh427"
+    ]
+   },
+   "siren_only_runs_stood_behind_alerted": 0,
+   "reading": "In the 7 of 10 Dhaka-density runs where the alert to every vehicle made the ambulance slower, it stood 2870 s in all; 63 % of that time it was held by a chain of vehicles ending at an alerted vehicle that waited at the end of a lane it needed to leave. The make-way settings forbid that vehicle's own lane changes until the ambulance has passed it, and the ambulance cannot pass, so both wait until SUMO removes the vehicle after its 300 s teleport limit. A driver would not be expected to wait minutes at a lane end for an ambulance stuck behind them, and the wait ends only through the simulator's teleport, so this part is read as a simulation artefact of how moving aside is applied (our make-way rule, which copies SUMO's bluelight settings and holds them until the ambulance passes). Letting those vehicles keep their own lane changes turns the median into a saving of 37.0 s (25-75 %: -2.5 to 108.5 s, 8 runs, 2 slower, 2 crashed in SUMO); alerting only vehicles within 50 m ahead gives 65.5 s (-15.8 to 270.2 s, 3 of 10 slower); keeping junctions free of make-way changes nothing (median -230.0 s, the same runs). The other 37 % of the time the ambulance stood behind alerted vehicles with no such lane end among the four ahead, or with nothing alerted ahead; whether that is vehicles moving aside blocking each other, or the same wait further ahead, was not resolved. Ten seeds at one density: most of the slowdown at Dhaka density is a simulation artefact, and whether the alert helps there is not known."
+  },
+  "reading": "In the 7 of 10 Dhaka-density runs where the alert to every vehicle made the ambulance slower, it stood 2870 s in all; 63 % of that time it was held by a chain of vehicles ending at an alerted vehicle that waited at the end of a lane it needed to leave. The make-way settings forbid that vehicle's own lane changes until the ambulance has passed it, and the ambulance cannot pass, so both wait until SUMO removes the vehicle after its 300 s teleport limit. A driver would not be expected to wait minutes at a lane end for an ambulance stuck behind them, and the wait ends only through the simulator's teleport, so this part is read as a simulation artefact of how moving aside is applied (our make-way rule, which copies SUMO's bluelight settings and holds them until the ambulance passes). Letting those vehicles keep their own lane changes turns the median into a saving of 37.0 s (25-75 %: -2.5 to 108.5 s, 8 runs, 2 slower, 2 crashed in SUMO); alerting only vehicles within 50 m ahead gives 65.5 s (-15.8 to 270.2 s, 3 of 10 slower); keeping junctions free of make-way changes nothing (median -230.0 s, the same runs). The other 37 % of the time the ambulance stood behind alerted vehicles with no such lane end among the four ahead, or with nothing alerted ahead; whether that is vehicles moving aside blocking each other, or the same wait further ahead, was not resolved. Ten seeds at one density: most of the slowdown at Dhaka density is a simulation artefact, and whether the alert helps there is not known."
+ },
+ "old_vs_new": {
+  "alert": {
+   "0.25": {
+    "0.5": {
+     "v1": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": 0.0,
+      "saved_s_q75": 0.0,
+      "slower_runs": 0,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": 0.0,
+      "saved_s_q75": 0.0,
+      "slower_runs": 0,
+      "seeds": 10
+     }
+    },
+    "1": {
+     "v1": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": 0.0,
+      "saved_s_q75": 0.0,
+      "slower_runs": 0,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": 0.0,
+      "saved_s_q75": 0.0,
+      "slower_runs": 0,
+      "seeds": 10
+     }
+    },
+    "2": {
+     "v1": {
+      "saved_s_median": 3.0,
+      "saved_s_q25": -1.8,
+      "saved_s_q75": 5.5,
+      "slower_runs": 2,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.5,
+      "saved_s_q25": -0.8,
+      "saved_s_q75": 2.8,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "3": {
+     "v1": {
+      "saved_s_median": -4.5,
+      "saved_s_q25": -9.5,
+      "saved_s_q75": -1.2,
+      "slower_runs": 5,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": -2.5,
+      "saved_s_q75": 8.5,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "4": {
+     "v1": {
+      "saved_s_median": -3.0,
+      "saved_s_q25": -27.0,
+      "saved_s_q75": 1.5,
+      "slower_runs": 4,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": -1.8,
+      "saved_s_q75": 0.0,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "dhaka": {
+     "v1": {
+      "saved_s_median": 28.5,
+      "saved_s_q25": -20.5,
+      "saved_s_q75": 146.0,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 6.0,
+      "saved_s_q25": -18.8,
+      "saved_s_q75": 40.0,
+      "slower_runs": 4,
+      "seeds": 10
+     }
+    }
+   },
+   "0.5": {
+    "0.5": {
+     "v1": {
+      "saved_s_median": -1.0,
+      "saved_s_q25": -2.8,
+      "saved_s_q75": 5.0,
+      "slower_runs": 1,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": -2.8,
+      "saved_s_q75": 1.0,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "1": {
+     "v1": {
+      "saved_s_median": -0.5,
+      "saved_s_q25": -4.8,
+      "saved_s_q75": 6.2,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": -3.0,
+      "saved_s_q75": 0.8,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "2": {
+     "v1": {
+      "saved_s_median": -2.0,
+      "saved_s_q25": -15.5,
+      "saved_s_q75": 1.0,
+      "slower_runs": 4,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": -3.0,
+      "saved_s_q75": 1.0,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "3": {
+     "v1": {
+      "saved_s_median": 4.5,
+      "saved_s_q25": -1.0,
+      "saved_s_q75": 12.0,
+      "slower_runs": 1,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 1.5,
+      "saved_s_q25": -0.8,
+      "saved_s_q75": 4.5,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "4": {
+     "v1": {
+      "saved_s_median": -17.5,
+      "saved_s_q25": -37.8,
+      "saved_s_q75": 4.5,
+      "slower_runs": 6,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 2.5,
+      "saved_s_q25": -1.5,
+      "saved_s_q75": 5.0,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "dhaka": {
+     "v1": {
+      "saved_s_median": 57.5,
+      "saved_s_q25": 16.8,
+      "saved_s_q75": 140.0,
+      "slower_runs": 2,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 7.5,
+      "saved_s_q25": -23.8,
+      "saved_s_q75": 124.0,
+      "slower_runs": 4,
+      "seeds": 10
+     }
+    }
+   },
+   "0.75": {
+    "0.5": {
+     "v1": {
+      "saved_s_median": -1.5,
+      "saved_s_q25": -2.8,
+      "saved_s_q75": 1.5,
+      "slower_runs": 2,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": -1.8,
+      "saved_s_q75": 1.8,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "1": {
+     "v1": {
+      "saved_s_median": 12.5,
+      "saved_s_q25": 3.5,
+      "saved_s_q75": 22.5,
+      "slower_runs": 2,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": -2.5,
+      "saved_s_q75": 3.2,
+      "slower_runs": 2,
+      "seeds": 10
+     }
+    },
+    "2": {
+     "v1": {
+      "saved_s_median": -3.5,
+      "saved_s_q25": -11.2,
+      "saved_s_q75": 1.8,
+      "slower_runs": 5,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.5,
+      "saved_s_q25": 0.0,
+      "saved_s_q75": 3.0,
+      "slower_runs": 0,
+      "seeds": 10
+     }
+    },
+    "3": {
+     "v1": {
+      "saved_s_median": 10.5,
+      "saved_s_q25": 4.0,
+      "saved_s_q75": 21.0,
+      "slower_runs": 0,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 3.0,
+      "saved_s_q25": -1.0,
+      "saved_s_q75": 9.0,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "4": {
+     "v1": {
+      "saved_s_median": 8.5,
+      "saved_s_q25": -10.2,
+      "saved_s_q75": 76.5,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.5,
+      "saved_s_q25": -9.5,
+      "saved_s_q75": 5.2,
+      "slower_runs": 3,
+      "seeds": 10
+     }
+    },
+    "dhaka": {
+     "v1": {
+      "saved_s_median": -8.5,
+      "saved_s_q25": -302.0,
+      "saved_s_q75": 37.8,
+      "slower_runs": 5,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 24.0,
+      "saved_s_q25": 1.0,
+      "saved_s_q75": 72.5,
+      "slower_runs": 2,
+      "seeds": 10
+     }
+    }
+   },
+   "1": {
+    "0.5": {
+     "v1": {
+      "saved_s_median": -0.5,
+      "saved_s_q25": -5.0,
+      "saved_s_q75": 2.8,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": -0.5,
+      "saved_s_q25": -2.8,
+      "saved_s_q75": 2.5,
+      "slower_runs": 0,
+      "seeds": 10
+     }
+    },
+    "1": {
+     "v1": {
+      "saved_s_median": 23.0,
+      "saved_s_q25": 18.8,
+      "saved_s_q75": 28.5,
+      "slower_runs": 1,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.5,
+      "saved_s_q25": -0.8,
+      "saved_s_q75": 2.8,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "2": {
+     "v1": {
+      "saved_s_median": 7.0,
+      "saved_s_q25": -27.2,
+      "saved_s_q75": 14.2,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 2.5,
+      "saved_s_q25": -0.5,
+      "saved_s_q75": 4.0,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "3": {
+     "v1": {
+      "saved_s_median": 10.5,
+      "saved_s_q25": -19.8,
+      "saved_s_q75": 21.2,
+      "slower_runs": 4,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 3.5,
+      "saved_s_q25": -3.8,
+      "saved_s_q75": 12.0,
+      "slower_runs": 2,
+      "seeds": 10
+     }
+    },
+    "4": {
+     "v1": {
+      "saved_s_median": 53.5,
+      "saved_s_q25": -125.0,
+      "saved_s_q75": 173.5,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": -2.0,
+      "saved_s_q25": -13.5,
+      "saved_s_q75": 6.0,
+      "slower_runs": 5,
+      "seeds": 10
+     }
+    },
+    "dhaka": {
+     "v1": {
+      "saved_s_median": -230.0,
+      "saved_s_q25": -291.8,
+      "saved_s_q75": -20.8,
+      "slower_runs": 7,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 26.0,
+      "saved_s_q25": -17.0,
+      "saved_s_q75": 39.8,
+      "slower_runs": 4,
+      "seeds": 10
+     }
+    }
+   }
+  },
+  "alert_preemption": {
+   "0.25": {
+    "0.5": {
+     "v1": {
+      "saved_s_median": -0.5,
+      "saved_s_q25": -1.8,
+      "saved_s_q75": 1.8,
+      "slower_runs": 1,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": -0.5,
+      "saved_s_q25": -1.8,
+      "saved_s_q75": 1.8,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "1": {
+     "v1": {
+      "saved_s_median": 10.0,
+      "saved_s_q25": -4.5,
+      "saved_s_q75": 16.2,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 4.5,
+      "saved_s_q25": -7.5,
+      "saved_s_q75": 16.0,
+      "slower_runs": 4,
+      "seeds": 10
+     }
+    },
+    "2": {
+     "v1": {
+      "saved_s_median": 3.5,
+      "saved_s_q25": -3.2,
+      "saved_s_q75": 12.0,
+      "slower_runs": 2,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": -6.5,
+      "saved_s_q75": 5.2,
+      "slower_runs": 3,
+      "seeds": 10
+     }
+    },
+    "3": {
+     "v1": {
+      "saved_s_median": 3.0,
+      "saved_s_q25": -6.2,
+      "saved_s_q75": 22.0,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 1.5,
+      "saved_s_q25": -7.0,
+      "saved_s_q75": 15.5,
+      "slower_runs": 3,
+      "seeds": 10
+     }
+    },
+    "4": {
+     "v1": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": -21.2,
+      "saved_s_q75": 3.8,
+      "slower_runs": 4,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": -1.0,
+      "saved_s_q25": -2.0,
+      "saved_s_q75": -0.2,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "dhaka": {
+     "v1": {
+      "saved_s_median": 33.5,
+      "saved_s_q25": -13.0,
+      "saved_s_q75": 142.2,
+      "slower_runs": 4,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 4.0,
+      "saved_s_q25": -110.2,
+      "saved_s_q75": 63.0,
+      "slower_runs": 5,
+      "seeds": 10
+     }
+    }
+   },
+   "0.5": {
+    "0.5": {
+     "v1": {
+      "saved_s_median": 1.0,
+      "saved_s_q25": -10.5,
+      "saved_s_q75": 3.8,
+      "slower_runs": 4,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.5,
+      "saved_s_q25": -5.0,
+      "saved_s_q75": 2.5,
+      "slower_runs": 3,
+      "seeds": 10
+     }
+    },
+    "1": {
+     "v1": {
+      "saved_s_median": 8.5,
+      "saved_s_q25": 2.0,
+      "saved_s_q75": 22.8,
+      "slower_runs": 1,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 8.0,
+      "saved_s_q25": -5.2,
+      "saved_s_q75": 11.5,
+      "slower_runs": 3,
+      "seeds": 10
+     }
+    },
+    "2": {
+     "v1": {
+      "saved_s_median": -1.0,
+      "saved_s_q25": -11.2,
+      "saved_s_q75": 7.0,
+      "slower_runs": 4,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 2.0,
+      "saved_s_q25": -7.8,
+      "saved_s_q75": 3.8,
+      "slower_runs": 3,
+      "seeds": 10
+     }
+    },
+    "3": {
+     "v1": {
+      "saved_s_median": 8.0,
+      "saved_s_q25": 4.0,
+      "saved_s_q75": 16.8,
+      "slower_runs": 0,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 6.0,
+      "saved_s_q25": -4.2,
+      "saved_s_q75": 18.2,
+      "slower_runs": 3,
+      "seeds": 10
+     }
+    },
+    "4": {
+     "v1": {
+      "saved_s_median": -13.5,
+      "saved_s_q25": -185.2,
+      "saved_s_q75": 1.8,
+      "slower_runs": 5,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.5,
+      "saved_s_q25": -1.8,
+      "saved_s_q75": 8.0,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "dhaka": {
+     "v1": {
+      "saved_s_median": 34.0,
+      "saved_s_q25": 23.2,
+      "saved_s_q75": 57.2,
+      "slower_runs": 1,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 62.5,
+      "saved_s_q25": -27.5,
+      "saved_s_q75": 130.5,
+      "slower_runs": 3,
+      "seeds": 10
+     }
+    }
+   },
+   "0.75": {
+    "0.5": {
+     "v1": {
+      "saved_s_median": 1.0,
+      "saved_s_q25": -10.5,
+      "saved_s_q75": 3.0,
+      "slower_runs": 4,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": -1.5,
+      "saved_s_q25": -7.8,
+      "saved_s_q75": 6.2,
+      "slower_runs": 3,
+      "seeds": 10
+     }
+    },
+    "1": {
+     "v1": {
+      "saved_s_median": 10.5,
+      "saved_s_q25": 4.5,
+      "saved_s_q75": 23.0,
+      "slower_runs": 1,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 4.0,
+      "saved_s_q25": -2.8,
+      "saved_s_q75": 15.5,
+      "slower_runs": 2,
+      "seeds": 10
+     }
+    },
+    "2": {
+     "v1": {
+      "saved_s_median": 3.0,
+      "saved_s_q25": -12.0,
+      "saved_s_q75": 10.2,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": -0.5,
+      "saved_s_q25": -1.8,
+      "saved_s_q75": 5.8,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "3": {
+     "v1": {
+      "saved_s_median": 13.0,
+      "saved_s_q25": 10.2,
+      "saved_s_q75": 22.8,
+      "slower_runs": 0,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": -2.0,
+      "saved_s_q25": -7.5,
+      "saved_s_q75": 14.2,
+      "slower_runs": 4,
+      "seeds": 10
+     }
+    },
+    "4": {
+     "v1": {
+      "saved_s_median": 10.5,
+      "saved_s_q25": -3.5,
+      "saved_s_q75": 86.8,
+      "slower_runs": 2,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 0.0,
+      "saved_s_q25": -10.5,
+      "saved_s_q75": 5.8,
+      "slower_runs": 3,
+      "seeds": 10
+     }
+    },
+    "dhaka": {
+     "v1": {
+      "saved_s_median": 23.0,
+      "saved_s_q25": -158.5,
+      "saved_s_q75": 41.5,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 15.5,
+      "saved_s_q25": -81.2,
+      "saved_s_q75": 36.5,
+      "slower_runs": 4,
+      "seeds": 10
+     }
+    }
+   },
+   "1": {
+    "0.5": {
+     "v1": {
+      "saved_s_median": 1.0,
+      "saved_s_q25": -3.0,
+      "saved_s_q75": 7.2,
+      "slower_runs": 2,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 1.0,
+      "saved_s_q25": -1.5,
+      "saved_s_q75": 3.8,
+      "slower_runs": 1,
+      "seeds": 10
+     }
+    },
+    "1": {
+     "v1": {
+      "saved_s_median": 24.0,
+      "saved_s_q25": 12.5,
+      "saved_s_q75": 29.5,
+      "slower_runs": 0,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 12.0,
+      "saved_s_q25": 7.0,
+      "saved_s_q75": 18.5,
+      "slower_runs": 0,
+      "seeds": 10
+     }
+    },
+    "2": {
+     "v1": {
+      "saved_s_median": 14.5,
+      "saved_s_q25": -9.8,
+      "saved_s_q75": 20.0,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 2.5,
+      "saved_s_q25": 0.0,
+      "saved_s_q75": 7.5,
+      "slower_runs": 0,
+      "seeds": 10
+     }
+    },
+    "3": {
+     "v1": {
+      "saved_s_median": 18.5,
+      "saved_s_q25": 8.8,
+      "saved_s_q75": 174.2,
+      "slower_runs": 0,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": -3.0,
+      "saved_s_q25": -10.2,
+      "saved_s_q75": 9.5,
+      "slower_runs": 5,
+      "seeds": 10
+     }
+    },
+    "4": {
+     "v1": {
+      "saved_s_median": 24.5,
+      "saved_s_q25": -129.5,
+      "saved_s_q75": 151.5,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 6.0,
+      "saved_s_q25": -2.5,
+      "saved_s_q75": 8.8,
+      "slower_runs": 2,
+      "seeds": 10
+     }
+    },
+    "dhaka": {
+     "v1": {
+      "saved_s_median": 47.5,
+      "saved_s_q25": -164.0,
+      "saved_s_q75": 82.0,
+      "slower_runs": 3,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 3.0,
+      "saved_s_q25": -21.0,
+      "saved_s_q75": 32.5,
+      "slower_runs": 4,
+      "seeds": 10
+     }
+    }
+   }
+  },
+  "rl_signals_alert": {
+   "1": {
+    "0.5": {
+     "v1": {
+      "saved_s_median": 8.5,
+      "saved_s_q25": 3.5,
+      "saved_s_q75": 14.5,
+      "slower_runs": 0,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 11.5,
+      "saved_s_q25": 9.2,
+      "saved_s_q75": 14.0,
+      "slower_runs": 0,
+      "seeds": 10
+     }
+    },
+    "1": {
+     "v1": {
+      "saved_s_median": 29.5,
+      "saved_s_q25": 25.0,
+      "saved_s_q75": 37.5,
+      "slower_runs": 0,
+      "seeds": 12
+     },
+     "v2": {
+      "saved_s_median": 33.0,
+      "saved_s_q25": 32.2,
+      "saved_s_q75": 39.0,
+      "slower_runs": 0,
+      "seeds": 10
+     }
+    },
+    "2": {
+     "v1": {
+      "saved_s_median": 38.0,
+      "saved_s_q25": 29.0,
+      "saved_s_q75": 47.5,
+      "slower_runs": 1,
+      "seeds": 10
+     },
+     "v2": {
+      "saved_s_median": 36.0,
+      "saved_s_q25": 25.8,
+      "saved_s_q75": 39.8,
+      "slower_runs": 2,
+      "seeds": 10
+     }
+    },
+    "3": {
+     "v1": {
+      "saved_s_median": 41.0,
+      "saved_s_q25": -96.0,
+      "saved_s_q75": 101.0,
+      "slower_runs": 4,
+      "seeds": 13
+     },
+     "v2": {
+      "saved_s_median": -25.0,
+      "saved_s_q25": -190.0,
+      "saved_s_q75": 80.0,
+      "slower_runs": 5,
+      "seeds": 10
+     }
+    },
+    "4": {
+     "v1": {
+      "saved_s_median": 119.0,
+      "saved_s_q25": -493.5,
+      "saved_s_q75": 284.5,
+      "slower_runs": 4,
+      "seeds": 11
+     },
+     "v2": {
+      "saved_s_median": -15.5,
+      "saved_s_q25": -292.5,
+      "saved_s_q75": 302.8,
+      "slower_runs": 5,
+      "seeds": 10
+     }
+    },
+    "dhaka": {
+     "v1": {
+      "saved_s_median": 24.0,
+      "saved_s_q25": -103.5,
+      "saved_s_q75": 179.0,
+      "slower_runs": 5,
+      "seeds": 11
+     },
+     "v2": {
+      "saved_s_median": 33.5,
+      "saved_s_q25": -135.0,
+      "saved_s_q75": 150.8,
+      "slower_runs": 4,
+      "seeds": 10
+     }
+    }
+   }
+  }
+ },
+ "qlearning_dhaka": {
+  "seeds": [
+   14,
+   18,
+   19,
+   21,
+   23
+  ],
+  "controlled_signals": 3,
+  "runs": {
+   "no_alert_s14": {
+    "travel_time_s": 299.0,
+    "stood_s": 28,
+    "by_light": {
+     "no light within 100 m ahead": 28
+    },
+    "where": [
+     [
+      "240107302#5",
+      11
+     ],
+     [
+      ":264894192_0",
+      6
+     ]
+    ]
+   },
+   "rl_signals_s14": {
+    "travel_time_s": 758.0,
+    "stood_s": 545,
+    "by_light": {
+     "no light within 100 m ahead": 545
+    },
+    "where": [
+     [
+      "240107302#5",
+      545
+     ]
+    ]
+   },
+   "no_alert_s18": {
+    "travel_time_s": 608.0,
+    "stood_s": 384,
+    "by_light": {
+     "no light within 100 m ahead": 384
+    },
+    "where": [
+     [
+      "240107302#5",
+      201
+     ],
+     [
+      "691209729#14",
+      183
+     ]
+    ]
+   },
+   "rl_signals_s18": {
+    "travel_time_s": 972.0,
+    "stood_s": 746,
+    "by_light": {
+     "no light within 100 m ahead": 746
+    },
+    "where": [
+     [
+      "240107302#5",
+      431
+     ],
+     [
+      ":8779042937_0",
+      315
+     ]
+    ]
+   },
+   "no_alert_s19": {
+    "travel_time_s": 241.0,
+    "stood_s": 27,
+    "by_light": {
+     "in the queue at a red (a Q-learning light)": 24,
+     "light ahead green (a Q-learning light), still held": 1,
+     "no light within 100 m ahead": 2
+    },
+    "where": [
+     [
+      "155271803#3",
+      25
+     ],
+     [
+      ":2320154999_2",
+      2
+     ]
+    ]
+   },
+   "rl_signals_s19": {
+    "travel_time_s": 520.0,
+    "stood_s": 305,
+    "by_light": {
+     "no light within 100 m ahead": 305
+    },
+    "where": [
+     [
+      ":8779042937_0",
+      269
+     ],
+     [
+      "565194019#7",
+      24
+     ]
+    ]
+   },
+   "no_alert_s21": {
+    "travel_time_s": 288.0,
+    "stood_s": 73,
+    "by_light": {
+     "no light within 100 m ahead": 51,
+     "in the queue at a red (a Q-learning light)": 21,
+     "light ahead green (a Q-learning light), still held": 1
+    },
+    "where": [
+     [
+      "240107302#5",
+      51
+     ],
+     [
+      "691209729#6",
+      22
+     ]
+    ]
+   },
+   "rl_signals_s21": {
+    "travel_time_s": 426.0,
+    "stood_s": 150,
+    "by_light": {
+     "no light within 100 m ahead": 150
+    },
+    "where": [
+     [
+      "691209729#14",
+      91
+     ],
+     [
+      "240107302#5",
+      40
+     ]
+    ]
+   },
+   "no_alert_s23": {
+    "travel_time_s": 401.0,
+    "stood_s": 187,
+    "by_light": {
+     "no light within 100 m ahead": 172,
+     "in the queue at a red (a Q-learning light)": 14,
+     "light ahead green (a Q-learning light), still held": 1
+    },
+    "where": [
+     [
+      "240107302#5",
+      171
+     ],
+     [
+      "155271803#3",
+      15
+     ]
+    ]
+   },
+   "rl_signals_s23": {
+    "travel_time_s": 531.0,
+    "stood_s": 319,
+    "by_light": {
+     "no light within 100 m ahead": 319
+    },
+    "where": [
+     [
+      ":8779042937_0",
+      275
+     ],
+     [
+      ":318321939_3",
+      44
+     ]
+    ]
+   }
+  },
+  "totals": {
+   "no_alert": {
+    "stood_s": 699,
+    "by_light": {
+     "no light within 100 m ahead": 637,
+     "in the queue at a red (a Q-learning light)": 59,
+     "light ahead green (a Q-learning light), still held": 3
+    }
+   },
+   "rl_signals": {
+    "stood_s": 2065,
+    "by_light": {
+     "no light within 100 m ahead": 2065
+    }
+   }
+  },
+  "queue_head_rl": {
+   "seconds": {
+    "queue head at no light": 1245,
+    "queue head at no light, waiting to change lane": 644,
+    "no stopped vehicle ahead": 26
+   },
+   "median_vehicles_to_head": 2
+  },
+  "next_light_rl": {
+   "green": 1962,
+   "red": 0,
+   "none_ahead": 103
+  },
+  "reading": "On the 5 seeds where the Q-learning signals made the ambulance slower at Dhaka density, it stood 2065 s in all (siren-only on the same seeds: 699 s). 0 of those seconds were within 100 m of a traffic light; the next light on its route was green for it in 1962 s, red in 0 s, and there was no light left ahead in 103 s. The queues it stood in were short (median 2 vehicles to the head) and their heads were not at a light; many ended at a vehicle waiting to change lane. So the lights did not hold the ambulance directly. The Q-learning controllers change when traffic is released around the route, which may load the junctions where it stood, but these logs do not show that path; the cause of the slowdown is not established."
+ },
+ "density_gap": {
+  "text": "Why the simulation stays far below Dhaka's recorded density at the INT camera (57.7 vehicles/km, 07:00-08:00): (1) not the definition: both count every vehicle class on the whole road over about 90 m (89.2 m camera zone, 91.8 m simulated section); (2) not the space per vehicle: SUMO's lengths and gaps for this mix allow about 443.3 vehicles/km on those 3 lanes, and other roads in the same run reach 359.1 vehicles/km at gridlock; (3) partly lane discipline: with smaller lateral gaps for two-wheelers, rickshaws and CNGs the section's mean density rises from 4.8 to 24.82 vehicles/km, still below the recorded value; (4) mainly supply: only 260 vehicles an hour enter the section in the simulation, against 1184 recorded, because the generated trips do not load this road and the network gridlocks elsewhere first. So the whole-network ambulance results come from a simulation that does not reach Dhaka's recorded density on the road it measures. (5) Supply tested: a corridor 300 m around the route, loaded with the recorded counts at INT and BM and the smaller lateral gaps, overshoots at the full counts (200.3 vehicles/km on INT) and reaches 54.37 vehicles/km at x0.78 of the counts, inside the recorded range (36.5-126.6); but only 653 vehicles an hour pass, against 1184 recorded. The density is reached; the recorded flow at that density is not.",
+  "numbers": {
+   "recorded_veh_km": 57.7,
+   "recorded_flow_veh_h": 1184,
+   "sim_entered_veh_h": 260,
+   "sim_mean_veh_km": 4.8,
+   "tight_mean_veh_km": 24.82,
+   "jam_density_veh_km": 443.3,
+   "elsewhere_peak_veh_km": 359.1,
+   "corridor_veh_km": 54.37,
+   "corridor_full_veh_km": 200.3,
+   "corridor_scale": 0.78,
+   "corridor_flow_veh_h": 653
+  }
+ },
+ "figures": [
+  "results/emergency/dhaka/rq2/figures/rq2_density.png",
+  "results/emergency/dhaka/rq2/figures/rq2_share.png",
+  "results/emergency/dhaka/rq2/figures/rq2_why.png"
+ ],
+ "caveats": [
+  "all traffic is simulated (SUMO); the demand is generated, not calibrated to Dhaka counts",
+  "the ambulance's 3.4 km route crosses 2 signals; the Q-learning baseline controls the 3 signals within 500 m of it",
+  "ITS-G5 only in the sweep; C-V2X and 4G at one density are in the earlier table",
+  "SUMO 1.27.1's bluelight device crashes on some seeds; a crashed seed is replaced by the next one",
+  "the simulation does not reach Dhaka's recorded density on the INT section (see density_gap): every ambulance number here is from traffic lighter on that road than Dhaka's recorded morning, and is not a statement about Dhaka at its recorded density",
+  "Dhaka-density row: a corridor cut 300 m around the route (1198 of 6527 roads), with no traffic from the rest of the city",
+  "Dhaka-density row: one recorded day per camera (INT 2026-04-19, BM 2026-04-20), two different days merged into one 07:00-08:00 window",
+  "Dhaka-density row: the density matches (54.37 vs 57.7 vehicles/km) but the flow does not (653 vs 1184 vehicles/h): at the same density, traffic on the simulated section moves slower than the recorded traffic",
+  "Dhaka-density row: at the full recorded counts the corridor overshoots (200.3 vehicles/km on INT, 597 vehicles/h through); the counts are scaled to x0.78 to match the density, and the density reached does not rise smoothly with the scale (see tried scales)",
+  "Dhaka-density row: the route's signal programmes are unchanged by the cut",
+  "every alerting arm uses make-way v2 (configs/ambulance.yaml): alerted vehicles keep their own route lane changes and only those within 100 m ahead move aside; no published distance for an electronic alert exists, so 50 and 100 m were piloted and chosen by a rule fixed beforehand and amended once by the owner after the pilot (evidence/ambulance_rq2/makeway_v2/choice.json)",
+  "the make-way v1 results (a circular-wait artefact) are kept as a labelled record in record_v1_makeway_artefact/ and appear only in the old-vs-new table"
+ ]
+}

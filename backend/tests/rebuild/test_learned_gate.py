@@ -9,7 +9,7 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
-from app.protocols import learned_gate as lg  # noqa: E402
+from core.simulation.closed_loop.protocols import learned_gate as lg  # noqa: E402
 
 MAPPING = REPO / "data/cities/los_angeles_metr/sumo/sensor_to_edge.json"
 CKPT = REPO / "results/forecasting/checkpoints_cloud/city-user-los-angeles-gwnet"
@@ -18,7 +18,7 @@ needs_la = pytest.mark.skipif(not (MAPPING.exists() and CKPT.exists()), reason="
 
 def test_moment_is_inside_the_held_out_split_with_room_for_input_and_future():
     T = 4032
-    from app.forecasting.training import train_eval as te
+    from core.ml.forecasting.training import train_eval as te
     lo = te.splits(T)["test"][0]
     seen = set()
     for seed in list(range(301, 321)) + [101, 102, 103]:

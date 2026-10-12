@@ -13,23 +13,23 @@ from __future__ import annotations
 
 import pytest
 
-from app.common.registry import available, build, clear, register
-from app.common.provenance import RunProvenance
-from app.common.types import (LaneState, TrafficMetrics, TrafficObservation,
+from core.common.registry import available, build, clear, register
+from core.common.provenance import RunProvenance
+from core.common.types import (LaneState, TrafficMetrics, TrafficObservation,
                                     TrafficScenario, VehicleClass)
-from app.common.units import (flow_per_interval_to_vph, kmh_to_ms,
+from core.common.units import (flow_per_interval_to_vph, kmh_to_ms,
                                     percent_to_fraction, speed_from_flow_density)
-from app.interfaces.control import (SignalAction, SignalActionType, TrafficController)
-from app.interfaces.evaluation import ArmSetup, BenchmarkSpec
-from app.protocols.traffic_science import (CriticalPoint, MFDPoint,
+from core.common.interfaces.control import (SignalAction, SignalActionType, TrafficController)
+from core.common.interfaces.evaluation import ArmSetup, BenchmarkSpec
+from core.simulation.closed_loop.protocols.traffic_science import (CriticalPoint, MFDPoint,
                                                   distance_to_critical, network_speed)
-from app.interfaces.genai import CopilotAnswer, Evidence
-from app.interfaces.perception import BoundingBox, Detection, Detector
-from app.interfaces.routing import RouteDecision
-from app.interfaces.safety import (LAB01_VALIDATED_REFERENCE_PROFILE, SAFETY_PROFILES,
+from core.common.interfaces.genai import CopilotAnswer, Evidence
+from core.common.interfaces.perception import BoundingBox, Detection, Detector
+from core.common.interfaces.routing import RouteDecision
+from core.common.interfaces.safety import (LAB01_VALIDATED_REFERENCE_PROFILE, SAFETY_PROFILES,
                                           SafetyConstraints)
-from app.interfaces.simulation import SimulationBackend
-from app.interfaces.visualization import FigureSpec
+from core.common.interfaces.simulation import SimulationBackend
+from core.common.interfaces.visualization import FigureSpec
 
 
 # --------------------------------------------------------------------- units

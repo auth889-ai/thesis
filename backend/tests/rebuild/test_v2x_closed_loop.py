@@ -12,8 +12,8 @@ import pytest
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
 
-from app.networking.channel import Channel, connected           # noqa: E402
-from app.control.closed_loop import apply_recommendation      # noqa: E402
+from core.networking.v2x.channel import Channel, connected           # noqa: E402
+from core.simulation.closed_loop.control.closed_loop import apply_recommendation      # noqa: E402
 
 needs_sumo = pytest.mark.skipif(shutil.which("netgenerate") is None or shutil.which("sumo") is None, reason="SUMO binaries not installed")
 
@@ -31,7 +31,7 @@ def grid(tmp_path_factory):
 
 def _start(net, routes):
     import traci
-    from app.twin import runtime as pr
+    from core.simulation.twin import runtime as pr
     traci.start(["sumo", "-n", str(net), "-r", str(routes), "--no-step-log", "true", "--no-warnings", "true", "--step-length", "1"], port=pr.free_port(), label=f"t{id(routes)}{pr.free_port()}")
     return traci
 
@@ -97,8 +97,8 @@ def test_non_connected_vehicles_are_outside_the_message_population():
 
 @needs_sumo
 def test_observed_fusion_only_slows_edges_it_has_evidence_for_and_changes_the_cost_hash(grid):
-    from app.routing import edge_costs as ec
-    from app.control.closed_loop import fuse_observed
+    from core.simulation.routing import edge_costs as ec
+    from core.simulation.closed_loop.control.closed_loop import fuse_observed
     net, _ = grid
     cfg = ec.load_config()
     cmap = {"c1": {"edges": ["B0C0"]}}

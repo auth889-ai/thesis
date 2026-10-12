@@ -1,0 +1,129 @@
+{
+ "seeds": [
+  11,
+  12,
+  13,
+  15,
+  17,
+  18,
+  19,
+  20,
+  21,
+  22
+ ],
+ "scale": 0.78,
+ "arms": {
+  "alert": {
+   "runs": 10,
+   "median_s": -230.0,
+   "q25_s": -291.8,
+   "q75_s": -20.8,
+   "slower_runs": 7
+  }
+ },
+ "variants": {
+  "near50": {
+   "what": "only vehicles within 50 m ahead move aside",
+   "runs": 10,
+   "median_s": 65.5,
+   "q25_s": -15.8,
+   "q75_s": 270.2,
+   "slower_runs": 3,
+   "crashed": 0,
+   "travel_s": {
+    "11": 239.0,
+    "12": 265.0,
+    "13": 598.0,
+    "15": 229.0,
+    "17": 281.0,
+    "18": 427.0,
+    "19": 261.0,
+    "20": 591.0,
+    "21": 517.0,
+    "22": 247.0
+   }
+  },
+  "nojunction": {
+   "what": "no vehicle keeps the make-way settings inside a junction",
+   "runs": 10,
+   "median_s": -230.0,
+   "q25_s": -291.8,
+   "q75_s": -20.8,
+   "slower_runs": 7,
+   "crashed": 0,
+   "travel_s": {
+    "11": 269.0,
+    "12": 578.0,
+    "13": 507.0,
+    "15": 490.0,
+    "17": 624.0,
+    "18": 760.0,
+    "19": 545.0,
+    "20": 573.0,
+    "21": 589.0,
+    "22": 987.0
+   }
+  },
+  "strategic": {
+   "what": "diagnostic: vehicles moving aside keep their own route lane changes",
+   "runs": 8,
+   "median_s": 37.0,
+   "q25_s": -2.5,
+   "q75_s": 108.5,
+   "slower_runs": 2,
+   "crashed": 2,
+   "travel_s": {
+    "11": 201.0,
+    "12": 284.0,
+    "13": 1292.0,
+    "15": 211.0,
+    "17": null,
+    "18": 447.0,
+    "19": 241.0,
+    "20": 358.0,
+    "21": null,
+    "22": 312.0
+   }
+  }
+ },
+ "reproduced": {
+  "logged_reruns_match_originals": true,
+  "rerun_seeds": [
+   12,
+   15,
+   19,
+   21
+  ],
+  "nojunction_identical_to_original_on_every_seed": true
+ },
+ "causes_in_slower_runs": {
+  "slower_seeds": [
+   12,
+   15,
+   18,
+   19,
+   20,
+   21,
+   22
+  ],
+  "seconds_stood": 2870,
+  "by_cause": {
+   "behind a vehicle waiting at a lane end it may not leave (alerted)": 1810,
+   "behind alerted vehicles, no such lane end in the 4 ahead": 932,
+   "behind vehicles that were not alerted": 66,
+   "nothing within 100 m ahead": 61,
+   "behind a vehicle waiting at a lane end it may not leave (not alerted)": 1
+  },
+  "lane_end_share": 0.631,
+  "blocking_vehicles_teleported": [
+   "cal0_223",
+   "cal300_73",
+   "cal600_215",
+   "cal600_253",
+   "cal900_104",
+   "veh427"
+  ]
+ },
+ "siren_only_runs_stood_behind_alerted": 0,
+ "reading": "In the 7 of 10 Dhaka-density runs where the alert to every vehicle made the ambulance slower, it stood 2870 s in all; 63 % of that time it was held by a chain of vehicles ending at an alerted vehicle that waited at the end of a lane it needed to leave. The make-way settings forbid that vehicle's own lane changes until the ambulance has passed it, and the ambulance cannot pass, so both wait until SUMO removes the vehicle after its 300 s teleport limit. A driver would not be expected to wait minutes at a lane end for an ambulance stuck behind them, and the wait ends only through the simulator's teleport, so this part is read as a simulation artefact of how moving aside is applied (our make-way rule, which copies SUMO's bluelight settings and holds them until the ambulance passes). Letting those vehicles keep their own lane changes turns the median into a saving of 37.0 s (25-75 %: -2.5 to 108.5 s, 8 runs, 2 slower, 2 crashed in SUMO); alerting only vehicles within 50 m ahead gives 65.5 s (-15.8 to 270.2 s, 3 of 10 slower); keeping junctions free of make-way changes nothing (median -230.0 s, the same runs). The other 37 % of the time the ambulance stood behind alerted vehicles with no such lane end among the four ahead, or with nothing alerted ahead; whether that is vehicles moving aside blocking each other, or the same wait further ahead, was not resolved. Ten seeds at one density: most of the slowdown at Dhaka density is a simulation artefact, and whether the alert helps there is not known."
+}

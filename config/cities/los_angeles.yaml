@@ -1,0 +1,56 @@
+# Los Angeles, United States (the METR-LA evaluation city).
+city_id: los_angeles
+display_name:
+  en: Los Angeles
+  bn: লস অ্যাঞ্জেলেস      # machine-written transliteration, not reviewed by a native speaker
+country: United States
+bounding_box:            # a corridor-sized box, not the whole sensor area
+  south: 34.118
+  west: -118.377
+  north: 34.158
+  east: -118.337
+  source: "the 0.04 x 0.04 degree box holding the most METR-LA sensors (24 of 207), computed on a 0.005 degree grid from graph_sensor_locations.csv of liyaguang/DCRNN @ 602afd9d; the full sensor extent is 34.043..34.222 N, -118.537..-118.183 E"
+time_zone: America/Los_Angeles     # IANA tz database
+default_languages: [en]
+emergency_numbers:       # shown, never dialled
+  # 911 for all services: Wikipedia, "List of emergency telephone numbers", read 2026-10-04.
+  # 911.gov and fcc.gov refused the fetch (HTTP 403), so the official page is not the cited source.
+  police: "911"
+  fire: "911"
+  ambulance: "911"
+units:
+  speed: mph              # METR-LA reports speed in miles per hour
+  distance: mi
+drive_side: right         # not measured on a network here; the United States drives on the right
+vehicle_classes: null     # no fleet mix has been sourced for this city
+plugins: []
+datasets:
+  - id: METR_LA            # the app's dataset id (GET /api/predict-lab/datasets); the benchmark's name is METR-LA
+    kind: sensor_benchmark
+    source: "Li et al., DCRNN (ICLR 2018): 207 loop detectors, 5-minute speeds, March-June 2012"
+sumo:
+  prebuilt: null
+  build:                  # demand is generated (randomTrips), never a measurement of this city's traffic
+    seed: 11
+    period_s: 2.0
+    horizon_s: 1800
+live:
+  real_sources:
+    - kind: pems              # Caltrans PeMS, the source behind METR-LA; station ids are PeMS station ids
+      status: pending         # the account is being registered; the terms shown after login and how fresh the
+                              # downloadable data is have not been read, so nothing is fetched yet
+      note: "Caltrans PeMS (pems.dot.ca.gov): account pending; not read yet"
+      stations: "graph_sensor_locations.csv of liyaguang/DCRNN @ 602afd9d (sensor_id, latitude, longitude); 24 of its 207 stations lie in this box"
+routing:                   # whole-city routes on our own Valhalla server (MIT), built from the Geofabrik extract below (ODbL);
+                           # added 2026-10-06, third_party/SOURCES.md "Whole-city routing". The server address is the environment variable, never written here
+  engine: valhalla
+  url_env: TRAFFICTWIN_VALHALLA_URL_LOS_ANGELES
+  travelmux_url_env: TRAFFICTWIN_TRAVELMUX_URL_LOS_ANGELES   # the map app's directions: Headway's travelmux (Apache-2.0) in front of the Valhalla above
+  extract: north-america/us/california/socal
+  extract_date: "2026-10-05"
+  credit: "© OpenStreetMap contributors (ODbL) · routed by Valhalla (MIT)"
+forecast_layer:            # the map's forecast layer: recorded METR-LA speeds replayed at the same weekday and time, D2STGNN's forecast made then
+  kind: replay
+  dataset: METR-LA
+  file: results/forecasting/layer/metr_la_replay.npz
+  summary: results/forecasting/layer/summary.json

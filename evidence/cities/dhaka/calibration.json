@@ -1,0 +1,404 @@
+{
+ "city_id": "dhaka",
+ "generated_utc": "2026-10-05T21:06:47.403505+00:00",
+ "sumo": "Eclipse SUMO sumo 1.27.1",
+ "command": "PYTHONPATH=backend python -m app.twin.calibration --city dhaka --sumo-extra \"--lateral-resolution 0.8\"",
+ "what_is_calibrated": "only the 2 road sections the located DhaTraX sites measure, one direction each, on different days treated as one clock window. Traffic that touches none of them is the city's ordinary generated demand and is uncalibrated. Counts are the authors' detection and tracking pipeline on fixed-camera video; four-point calibration, not validated by the authors.",
+ "dataset": {
+  "name": "DhaTraX",
+  "version": "1.0",
+  "citation": "Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+  "licence": "CC BY 4.0"
+ },
+ "config": {
+  "dataset": "dhatrax",
+  "window_start": "07:00",
+  "duration_s": 3600,
+  "interval_s": 300,
+  "seed": 11,
+  "pool_period_s": 0.25,
+  "pool_fringe_factor": "5"
+ },
+ "candidate_routes": 14400,
+ "demand": {
+  "file": "data/cities/dhaka/sumo/dhaka.calibrated.rou.xml",
+  "sha256": "3543791543c794e455f02f38089955621416d5b98e9a6082b6570d9085b16bf9",
+  "sampled_through_counted_sections": 3576,
+  "background_uncalibrated": 1456,
+  "background_dropped_for_touching_a_counted_section": 344,
+  "vehicle_mix": {
+   "source": "DhaTraX v1.0, Traffic_Analysis/vehicle_class_composition_by_site.csv, the three sites pooled (69,083 crossings)",
+   "citation": "Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+   "simulated_as": "each class is drawn at its share and driven as the nearest SUMO vehicle class with SUMO's own default parameters for that class; SUMO has no CNG auto-rickshaw or cycle-rickshaw class, and no Dhaka-specific size, speed or lane behaviour is modelled",
+   "seed": 11,
+   "vehicles": 5032,
+   "classes": [
+    {
+     "name": "Car_Micro",
+     "sumo_class": "passenger",
+     "asked_pct": 33.15,
+     "vehicles": 1668,
+     "achieved_pct": 33.15
+    },
+    {
+     "name": "Motor_Cycle",
+     "sumo_class": "motorcycle",
+     "asked_pct": 29.88,
+     "vehicles": 1504,
+     "achieved_pct": 29.89
+    },
+    {
+     "name": "CNG",
+     "sumo_class": "taxi",
+     "asked_pct": 22.46,
+     "vehicles": 1130,
+     "achieved_pct": 22.46
+    },
+    {
+     "name": "Rickshaw",
+     "sumo_class": "bicycle",
+     "asked_pct": 4.39,
+     "vehicles": 221,
+     "achieved_pct": 4.39
+    },
+    {
+     "name": "Bus_Minibus",
+     "sumo_class": "bus",
+     "asked_pct": 4.06,
+     "vehicles": 204,
+     "achieved_pct": 4.05
+    },
+    {
+     "name": "Pickup_Truck",
+     "sumo_class": "delivery",
+     "asked_pct": 3.58,
+     "vehicles": 180,
+     "achieved_pct": 3.58
+    },
+    {
+     "name": "Van",
+     "sumo_class": "passenger",
+     "asked_pct": 0.9,
+     "vehicles": 45,
+     "achieved_pct": 0.89
+    },
+    {
+     "name": "Ambulance",
+     "sumo_class": "emergency",
+     "asked_pct": 0.79,
+     "vehicles": 40,
+     "achieved_pct": 0.79
+    },
+    {
+     "name": "Special_Purpose",
+     "sumo_class": "truck",
+     "asked_pct": 0.48,
+     "vehicles": 24,
+     "achieved_pct": 0.48
+    },
+    {
+     "name": "Bicycle",
+     "sumo_class": "bicycle",
+     "asked_pct": 0.31,
+     "vehicles": 16,
+     "achieved_pct": 0.32
+    }
+   ]
+  }
+ },
+ "sumo_extra": [
+  "--lateral-resolution",
+  "0.8"
+ ],
+ "check_seeds": [
+  11,
+  12,
+  13,
+  14,
+  15
+ ],
+ "simulation_runs": {
+  "11": {
+   "teleports": 211,
+   "inserted": 4981,
+   "waiting_to_insert_at_end": 47
+  },
+  "12": {
+   "teleports": 186,
+   "inserted": 4993,
+   "waiting_to_insert_at_end": 35
+  },
+  "13": {
+   "teleports": 174,
+   "inserted": 4984,
+   "waiting_to_insert_at_end": 44
+  },
+  "14": {
+   "teleports": 432,
+   "inserted": 4945,
+   "waiting_to_insert_at_end": 83
+  },
+  "15": {
+   "teleports": 180,
+   "inserted": 4989,
+   "waiting_to_insert_at_end": 39
+  }
+ },
+ "calibrated_to": "DhaTraX counts at 2 road sections, one direction each (BM on 2026-04-20, INT on 2026-04-19), 07:00 for 60 min; 20.8 % of 24 site-intervals within GEH 5 in simulation; every other section uncalibrated",
+ "sites": [
+  {
+   "site": "BM",
+   "day": "2026-04-20",
+   "section": "235293033#10",
+   "section_distance_m": 4.6,
+   "bearing_deg": 343.2,
+   "intervals_counted": 12,
+   "observed_total": 2361,
+   "sampler_total": 2361,
+   "simulated_total_mean": 1321.2,
+   "simulated_total_sd": 256.7,
+   "simulated_over_observed_pct": 56.0,
+   "intervals_within_geh_5_simulated": 1,
+   "intervals": [
+    {
+     "interval": 0,
+     "observed": 163,
+     "sampler": 163,
+     "geh_sampler": 0.0,
+     "simulated_mean": 42.4,
+     "simulated_sd": 1.3,
+     "geh_simulated": 41.22
+    },
+    {
+     "interval": 1,
+     "observed": 219,
+     "sampler": 219,
+     "geh_sampler": 0.0,
+     "simulated_mean": 135.4,
+     "simulated_sd": 4.7,
+     "geh_simulated": 21.76
+    },
+    {
+     "interval": 2,
+     "observed": 220,
+     "sampler": 220,
+     "geh_sampler": 0.0,
+     "simulated_mean": 128.2,
+     "simulated_sd": 8.7,
+     "geh_simulated": 24.1
+    },
+    {
+     "interval": 3,
+     "observed": 226,
+     "sampler": 226,
+     "geh_sampler": 0.0,
+     "simulated_mean": 130.6,
+     "simulated_sd": 28.2,
+     "geh_simulated": 24.75
+    },
+    {
+     "interval": 4,
+     "observed": 205,
+     "sampler": 205,
+     "geh_sampler": 0.0,
+     "simulated_mean": 95.0,
+     "simulated_sd": 45.4,
+     "geh_simulated": 31.11
+    },
+    {
+     "interval": 5,
+     "observed": 246,
+     "sampler": 246,
+     "geh_sampler": 0.0,
+     "simulated_mean": 78.2,
+     "simulated_sd": 44.4,
+     "geh_simulated": 45.66
+    },
+    {
+     "interval": 6,
+     "observed": 184,
+     "sampler": 184,
+     "geh_sampler": 0.0,
+     "simulated_mean": 109.8,
+     "simulated_sd": 62.1,
+     "geh_simulated": 21.21
+    },
+    {
+     "interval": 7,
+     "observed": 142,
+     "sampler": 142,
+     "geh_sampler": 0.0,
+     "simulated_mean": 148.6,
+     "simulated_sd": 32.2,
+     "geh_simulated": 1.9
+    },
+    {
+     "interval": 8,
+     "observed": 184,
+     "sampler": 184,
+     "geh_sampler": 0.0,
+     "simulated_mean": 121.4,
+     "simulated_sd": 37.9,
+     "geh_simulated": 17.55
+    },
+    {
+     "interval": 9,
+     "observed": 183,
+     "sampler": 183,
+     "geh_sampler": 0.0,
+     "simulated_mean": 132.0,
+     "simulated_sd": 40.4,
+     "geh_simulated": 14.08
+    },
+    {
+     "interval": 10,
+     "observed": 235,
+     "sampler": 235,
+     "geh_sampler": 0.0,
+     "simulated_mean": 122.0,
+     "simulated_sd": 38.5,
+     "geh_simulated": 29.3
+    },
+    {
+     "interval": 11,
+     "observed": 154,
+     "sampler": 154,
+     "geh_sampler": 0.0,
+     "simulated_mean": 77.6,
+     "simulated_sd": 64.7,
+     "geh_simulated": 24.59
+    }
+   ]
+  },
+  {
+   "site": "INT",
+   "day": "2026-04-19",
+   "section": "691209729#5",
+   "section_distance_m": 1.4,
+   "bearing_deg": 179.0,
+   "intervals_counted": 12,
+   "observed_total": 1230,
+   "sampler_total": 1230,
+   "simulated_total_mean": 1000.0,
+   "simulated_total_sd": 123.3,
+   "simulated_over_observed_pct": 81.3,
+   "intervals_within_geh_5_simulated": 4,
+   "intervals": [
+    {
+     "interval": 0,
+     "observed": 86,
+     "sampler": 86,
+     "geh_sampler": 0.0,
+     "simulated_mean": 37.4,
+     "simulated_sd": 1.7,
+     "geh_simulated": 21.43
+    },
+    {
+     "interval": 1,
+     "observed": 101,
+     "sampler": 101,
+     "geh_sampler": 0.0,
+     "simulated_mean": 90.8,
+     "simulated_sd": 4.6,
+     "geh_simulated": 3.61
+    },
+    {
+     "interval": 2,
+     "observed": 86,
+     "sampler": 86,
+     "geh_sampler": 0.0,
+     "simulated_mean": 69.0,
+     "simulated_sd": 22.1,
+     "geh_simulated": 6.69
+    },
+    {
+     "interval": 3,
+     "observed": 96,
+     "sampler": 96,
+     "geh_sampler": 0.0,
+     "simulated_mean": 70.0,
+     "simulated_sd": 14.7,
+     "geh_simulated": 9.89
+    },
+    {
+     "interval": 4,
+     "observed": 92,
+     "sampler": 92,
+     "geh_sampler": 0.0,
+     "simulated_mean": 73.6,
+     "simulated_sd": 19.4,
+     "geh_simulated": 7.0
+    },
+    {
+     "interval": 5,
+     "observed": 86,
+     "sampler": 86,
+     "geh_sampler": 0.0,
+     "simulated_mean": 76.0,
+     "simulated_sd": 29.4,
+     "geh_simulated": 3.85
+    },
+    {
+     "interval": 6,
+     "observed": 95,
+     "sampler": 95,
+     "geh_sampler": 0.0,
+     "simulated_mean": 77.0,
+     "simulated_sd": 25.3,
+     "geh_simulated": 6.72
+    },
+    {
+     "interval": 7,
+     "observed": 101,
+     "sampler": 101,
+     "geh_sampler": 0.0,
+     "simulated_mean": 121.8,
+     "simulated_sd": 12.7,
+     "geh_simulated": 6.83
+    },
+    {
+     "interval": 8,
+     "observed": 128,
+     "sampler": 128,
+     "geh_sampler": 0.0,
+     "simulated_mean": 92.8,
+     "simulated_sd": 15.0,
+     "geh_simulated": 11.61
+    },
+    {
+     "interval": 9,
+     "observed": 102,
+     "sampler": 102,
+     "geh_sampler": 0.0,
+     "simulated_mean": 100.6,
+     "simulated_sd": 23.0,
+     "geh_simulated": 0.48
+    },
+    {
+     "interval": 10,
+     "observed": 109,
+     "sampler": 109,
+     "geh_sampler": 0.0,
+     "simulated_mean": 107.8,
+     "simulated_sd": 35.0,
+     "geh_simulated": 0.4
+    },
+    {
+     "interval": 11,
+     "observed": 148,
+     "sampler": 148,
+     "geh_sampler": 0.0,
+     "simulated_mean": 83.2,
+     "simulated_sd": 44.5,
+     "geh_simulated": 20.88
+    }
+   ]
+  }
+ ],
+ "overall": {
+  "site_intervals": 24,
+  "within_geh_5_sampler_pct": 100.0,
+  "within_geh_5_simulated_pct": 20.8,
+  "geh_definition": "GEH on hourly rates, each interval's count scaled to an hour; 5 is the usual acceptance threshold"
+ }
+}

@@ -1,0 +1,818 @@
+{
+ "simulation_run_id": "sim_veins_s201_predictive_corrected_v2x",
+ "arm": "predictive_corrected_v2x",
+ "seed": 201,
+ "profile": "veins_802.11p",
+ "penetration": 0.3,
+ "moment": "prepeak",
+ "config_hash": "ea08dddedc14",
+ "network_hash": "0d81df27ab2d",
+ "sumo": "1.21.0 --num-clients 2 (Veins order 1, this loop order 2)",
+ "fork": null,
+ "warm_up_s": 1200,
+ "design": "Santamaria, Fazio, Raimondo, Tropea, De Rango, IEEE TVT 68(5) 2019, doi:10.1109/TVT.2019.2905753 (design: RSUs + 802.11p + predictive rerouting; no code released)",
+ "information": "gwnet+correction",
+ "state": "ok",
+ "crash": null,
+ "veins_exit": 0,
+ "metrics": {
+  "arrived": 3162,
+  "unfinished_at_horizon": 3343,
+  "unfinished": 3343,
+  "total_vehicle_hours": 1055.9272222222223,
+  "mean_travel_time_all": 584.371714066103,
+  "mean_travel_time_s": 660.4576217583808,
+  "p95_travel_time_s": 1299.0,
+  "mean_waiting_s": 123.6831119544592,
+  "total_waiting_s": 391086.0,
+  "mean_time_loss_s": 258.69817836812143,
+  "mean_depart_delay_s": 0.6782005060088551,
+  "vehicles_rerouted_at_least_once": 1,
+  "teleports": 6,
+  "loaded": 12480,
+  "inserted": 6505,
+  "running_at_end": 3343,
+  "waiting_to_insert_at_end": 12,
+  "mean_queue_veh": 435.47,
+  "max_queue_veh": 1115.0,
+  "mean_running_veh": 1817.43,
+  "queue_steps": 2110,
+  "never_inserted": 0,
+  "never_inserted_vehicle_hours": 0.0,
+  "congestion": {
+   "major_edges": 4952,
+   "teleport_reasons": {
+    "total": 6,
+    "jam": 0,
+    "yield": 2,
+    "wrongLane": 4
+   },
+   "busiest_interval_utilisation": {
+    "p50": 0.02,
+    "p90": 0.113,
+    "max": 0.78,
+    "share_ge_0.5": 0.0,
+    "share_ge_0.7": 0.0,
+    "share_ge_0.9": 0.0
+   },
+   "mean_occupancy_pct_major": 1.25,
+   "spillback_major_edges_occ_ge_80": 0,
+   "spillback_share": 0.0,
+   "max_running_vehicles": 3343,
+   "max_halting_vehicles": 1115,
+   "mean_halting_vehicles": 435.5,
+   "mean_speed_mps": 11.56,
+   "min_mean_speed_mps": 0.0,
+   "loaded_mean_speed_mps": 11.22,
+   "loaded_min_speed_mps": 9.18,
+   "loaded_mean_halting_share": 0.229,
+   "loaded_max_halting_share": 0.339,
+   "loaded_steps": 1674
+  },
+  "total_vehicle_hours_incl_never_inserted": 1055.9272,
+  "wall_s": 217.9
+ },
+ "network": {
+  "link": "Veins 5.3.1 IEEE 802.11p (packet level), 20 mW, 6 Mbit/s, no obstacle shadowing on the LA twin",
+  "uplink": {
+   "messages_tx": 101385,
+   "messages_rx_at_rsus": 115474,
+   "unique_to_server": 52981,
+   "duplicates_two_rsus": 23851,
+   "delivery_ratio_unique": 0.5226
+  },
+  "downlink": {
+   "advice_decided": 183,
+   "still_pending_at_end": 71,
+   "handed_to_rsu": 23,
+   "broadcast_by_rsus": 22,
+   "received_by_car": 19,
+   "applied": 15,
+   "inapplicable": 4,
+   "expired_no_rsu_in_reach": 89,
+   "delivery_ratio": 0.8261
+  },
+  "connected_vehicles": 1934,
+  "penetration_configured": 0.3,
+  "rsus": 60,
+  "rsu_reach_m": 600.0,
+  "reroutes_applied": 15,
+  "veins": {
+   "source": "Veins scalars (results/*.sca), its PHY/MAC",
+   "nodes": 1935,
+   "status_sent": 101385,
+   "status_received_at_rsus": 115474,
+   "advice_sent_by_rsus": 22,
+   "advice_received": 19,
+   "advice_applied": 15,
+   "advice_inapplicable": 4,
+   "advice_deferred_on_junction": 2,
+   "frames_lost_all_nodes": {
+    "interference_or_collision": 0,
+    "while_transmitting": 0
+   },
+   "per_rsu": [
+    {
+     "rsu": 0,
+     "node": "cluster_15027596_1719546613",
+     "status_received": 6221,
+     "advice_sent": 2,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 1,
+     "node": "9276692666",
+     "status_received": 5750,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 2,
+     "node": "123455061",
+     "status_received": 3762,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 3,
+     "node": "1719559337",
+     "status_received": 2948,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 4,
+     "node": "123495471",
+     "status_received": 2607,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 5,
+     "node": "9786469530",
+     "status_received": 2529,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 6,
+     "node": "21490206",
+     "status_received": 3826,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 7,
+     "node": "20820632",
+     "status_received": 1962,
+     "advice_sent": 1,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 8,
+     "node": "863795835-AddedOnRampNode",
+     "status_received": 2123,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 9,
+     "node": "15029454",
+     "status_received": 2544,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 10,
+     "node": "298583385",
+     "status_received": 1646,
+     "advice_sent": 1,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 11,
+     "node": "1852134918",
+     "status_received": 2866,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 12,
+     "node": "4073554455",
+     "status_received": 7085,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 13,
+     "node": "1686584226",
+     "status_received": 1721,
+     "advice_sent": 2,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 14,
+     "node": "1233732679",
+     "status_received": 2277,
+     "advice_sent": 1,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 15,
+     "node": "1956040650",
+     "status_received": 1944,
+     "advice_sent": 3,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 16,
+     "node": "1718378908",
+     "status_received": 1822,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 17,
+     "node": "403618471",
+     "status_received": 2169,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 18,
+     "node": "20189446",
+     "status_received": 1874,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 19,
+     "node": "1614923794",
+     "status_received": 2075,
+     "advice_sent": 1,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 20,
+     "node": "28112699",
+     "status_received": 1434,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 21,
+     "node": "364873626",
+     "status_received": 1959,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 22,
+     "node": "20954504",
+     "status_received": 1443,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 23,
+     "node": "2381944429",
+     "status_received": 3124,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 24,
+     "node": "1967796670",
+     "status_received": 1379,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 25,
+     "node": "4072114565",
+     "status_received": 1793,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 26,
+     "node": "cluster_10057746599_13424054215",
+     "status_received": 803,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 27,
+     "node": "25712278",
+     "status_received": 1046,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 28,
+     "node": "382650862",
+     "status_received": 1099,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 29,
+     "node": "166999198#1-AddedOffRampNode",
+     "status_received": 899,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 30,
+     "node": "863801551-AddedOnRampNode",
+     "status_received": 1511,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 31,
+     "node": "493139643",
+     "status_received": 950,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 32,
+     "node": "3628053838",
+     "status_received": 2160,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 33,
+     "node": "863796619-AddedOnRampNode",
+     "status_received": 1179,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 34,
+     "node": "6810568403",
+     "status_received": 1749,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 35,
+     "node": "21490248",
+     "status_received": 5363,
+     "advice_sent": 5,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 36,
+     "node": "1839311946",
+     "status_received": 1423,
+     "advice_sent": 1,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 37,
+     "node": "cluster_13424058350_13424058351",
+     "status_received": 1266,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 38,
+     "node": "cluster_1830231468_1830231489_9276692628",
+     "status_received": 1129,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 39,
+     "node": "122657733",
+     "status_received": 949,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 40,
+     "node": "123065648",
+     "status_received": 1274,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 41,
+     "node": "156415224-AddedOffRampNode",
+     "status_received": 1376,
+     "advice_sent": 1,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 42,
+     "node": "26511795",
+     "status_received": 561,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 43,
+     "node": "26428271",
+     "status_received": 1686,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 44,
+     "node": "18199065",
+     "status_received": 612,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 45,
+     "node": "13604342488",
+     "status_received": 1478,
+     "advice_sent": 1,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 46,
+     "node": "13890125",
+     "status_received": 974,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 47,
+     "node": "291676550",
+     "status_received": 1352,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 48,
+     "node": "1783926563",
+     "status_received": 1040,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 49,
+     "node": "291676987",
+     "status_received": 1527,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 50,
+     "node": "1376737817",
+     "status_received": 1174,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 51,
+     "node": "1718672392",
+     "status_received": 1708,
+     "advice_sent": 2,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 52,
+     "node": "19668613",
+     "status_received": 894,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 53,
+     "node": "4072114572",
+     "status_received": 1711,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 54,
+     "node": "1734644776",
+     "status_received": 1011,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 55,
+     "node": "1956040672",
+     "status_received": 1094,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 56,
+     "node": "1785835452",
+     "status_received": 480,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 57,
+     "node": "383849340",
+     "status_received": 1015,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 58,
+     "node": "537019608",
+     "status_received": 760,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 59,
+     "node": "28112694",
+     "status_received": 1338,
+     "advice_sent": 1,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    }
+   ]
+  }
+ },
+ "rounds": [
+  {
+   "routing_run_id": "rt_v2x_veins_s201_predictive_corrected_v2x_r0",
+   "round": 0,
+   "sim_time_s": 1500,
+   "as_of_index": 28424,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "9ca2152be1ee36ef",
+   "raw_prediction_hash": "a166e3f7b70b5a33",
+   "future_cost_hash": "9dea6ef5954717db",
+   "priced_edges": 224,
+   "reroute_budget": 64,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 260,
+    "NO_ALTERNATIVE": 318,
+    "REROUTE": 54
+   },
+   "correction": {
+    "residual_edges": 15,
+    "propagated_edges": 42,
+    "by_kind_at_h0": {
+     "OBSERVED": 15,
+     "RESIDUAL_UPSTREAM": 42
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -21.54,
+      "1023269928"
+     ],
+     [
+      -11.93,
+      "123461841-AddedOffRampEdge"
+     ],
+     [
+      -9.57,
+      "866648659-AddedOnRampEdge"
+     ],
+     [
+      -8.41,
+      "32455824"
+     ],
+     [
+      -8.03,
+      "863796619-AddedOnRampEdge"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 6,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.069,
+   "vehicles_considered": 632,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 260,
+    "NO_ALTERNATIVE": 318,
+    "REROUTE": 54
+   },
+   "recommendations_sent": 54,
+   "statuses_known": 818,
+   "edges_with_current_speed": 869
+  },
+  {
+   "routing_run_id": "rt_v2x_veins_s201_predictive_corrected_v2x_r1",
+   "round": 1,
+   "sim_time_s": 1800,
+   "as_of_index": 28425,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "5ffd9fc0881d9863",
+   "raw_prediction_hash": "f59fc07b42431864",
+   "future_cost_hash": "7ccf497248c3b2dd",
+   "priced_edges": 225,
+   "reroute_budget": 79,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "NO_ALTERNATIVE": 392,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 335,
+    "REROUTE": 57
+   },
+   "correction": {
+    "residual_edges": 18,
+    "propagated_edges": 47,
+    "by_kind_at_h0": {
+     "OBSERVED": 18,
+     "RESIDUAL_UPSTREAM": 47
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -19.4,
+      "32240364-AddedOffRampEdge"
+     ],
+     [
+      -13.26,
+      "1023269928"
+     ],
+     [
+      -11.57,
+      "156415539#1"
+     ],
+     [
+      -10.4,
+      "607802967"
+     ],
+     [
+      -9.2,
+      "863726232"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 11,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.039,
+   "vehicles_considered": 784,
+   "decisions": {
+    "NO_ALTERNATIVE": 392,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 335,
+    "REROUTE": 57
+   },
+   "recommendations_sent": 57,
+   "statuses_known": 1184,
+   "edges_with_current_speed": 936
+  },
+  {
+   "routing_run_id": "rt_v2x_veins_s201_predictive_corrected_v2x_r2",
+   "round": 2,
+   "sim_time_s": 2100,
+   "as_of_index": 28426,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "ebfaeee4b430b968",
+   "raw_prediction_hash": "abe3437c4398f25b",
+   "future_cost_hash": "302093f753fef2ef",
+   "priced_edges": 222,
+   "reroute_budget": 87,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "REROUTE": 72,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 343,
+    "NO_ALTERNATIVE": 450
+   },
+   "correction": {
+    "residual_edges": 13,
+    "propagated_edges": 32,
+    "by_kind_at_h0": {
+     "OBSERVED": 13,
+     "RESIDUAL_UPSTREAM": 32
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -13.9,
+      "156415539#2-AddedOnRampEdge"
+     ],
+     [
+      -11.2,
+      "32240064#1"
+     ],
+     [
+      -7.36,
+      "1023269928"
+     ],
+     [
+      -7.32,
+      "36040739-AddedOnRampEdge"
+     ],
+     [
+      -6.28,
+      "32240077"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 11,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.041,
+   "vehicles_considered": 865,
+   "decisions": {
+    "REROUTE": 72,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 343,
+    "NO_ALTERNATIVE": 450
+   },
+   "recommendations_sent": 72,
+   "statuses_known": 1524,
+   "edges_with_current_speed": 914
+  }
+ ],
+ "routing_run_ids": [
+  "rt_v2x_veins_s201_predictive_corrected_v2x_r0",
+  "rt_v2x_veins_s201_predictive_corrected_v2x_r1",
+  "rt_v2x_veins_s201_predictive_corrected_v2x_r2"
+ ],
+ "reroutes_applied": 15,
+ "out_dir": "evidence/veins_forecast_routing/20261012T143208Z/s201/predictive_corrected_v2x",
+ "run_utc": "2026-10-12T14:38:37.893517+00:00"
+}

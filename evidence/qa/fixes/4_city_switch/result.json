@@ -1,0 +1,58 @@
+{
+ "fix": "4_city_switch",
+ "ranks": "4",
+ "change": "removed maps ignored: components/mapReady.ts (whenStyled never draws on a removed map; useMapInstance returns to null on the map's remove event); Home and Emergency map hooks skip a removed map. QA script: route sentence read in the city's own units (miles in LA). F10 in LA still fails until rank 6 is fixed",
+ "regression_test": "frontend/src/components/mapReady.test.ts (4 tests)",
+ "before_pass": "18/32",
+ "after_pass": "6/8",
+ "after_runs": [
+  {
+   "run": "F10-desktop-los_angeles-1",
+   "ok": false,
+   "ms": 155832,
+   "reason": "no route sentence after going offline and reloading; no map offline"
+  },
+  {
+   "run": "F10-phone-los_angeles-1",
+   "ok": false,
+   "ms": 134482,
+   "reason": "no route sentence after going offline and reloading; no map offline"
+  },
+  {
+   "run": "F3-desktop-los_angeles-1",
+   "ok": true,
+   "ms": 18011,
+   "reason": null
+  },
+  {
+   "run": "F3-phone-los_angeles-1",
+   "ok": true,
+   "ms": 17737,
+   "reason": null
+  },
+  {
+   "run": "F4-desktop-los_angeles-1",
+   "ok": true,
+   "ms": 42727,
+   "reason": null
+  },
+  {
+   "run": "F4-phone-los_angeles-1",
+   "ok": true,
+   "ms": 45783,
+   "reason": null
+  },
+  {
+   "run": "F5-desktop-los_angeles-1",
+   "ok": true,
+   "ms": 9471,
+   "reason": null
+  },
+  {
+   "run": "F5-phone-los_angeles-1",
+   "ok": true,
+   "ms": 9297,
+   "reason": null
+  }
+ ]
+}

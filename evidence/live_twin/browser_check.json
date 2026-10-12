@@ -1,0 +1,101 @@
+{
+ "base": "http://127.0.0.1:8011/",
+ "when": "2026-10-10T04:45:37.789Z",
+ "checks": [
+  {
+   "name": "seed from the clock is shown",
+   "ok": true,
+   "detail": "Seed 1791607538 (from the clock at start)"
+  },
+  {
+   "name": "the twin runs after its warm-up",
+   "ok": true
+  },
+  {
+   "name": "labelled SIMULATION",
+   "ok": true,
+   "detail": "SIMULATION"
+  },
+  {
+   "name": "the info line states the difference from the thesis runs (no bluelight device)",
+   "ok": true,
+   "detail": "Traffic: Generated traffic fitted to DhaTraX's recorded counts at two sections, 07:00-08:00 (RQ2b corridor), repeated hour after hour. Base scale 0.78. Unlike the thesis runs, the ambulance here drives without SUMO's bluelight device (it made SUMO crash on this network): it gets green signals through preemption and cars make way by rule v2, but it does not run red lights by itself."
+  },
+  {
+   "name": "one twin per visitor (a second start returns the same twin)",
+   "ok": true,
+   "detail": "twin-719d8f2008"
+  },
+  {
+   "name": "a click places a crash (the nearest car stops and blocks its lane)",
+   "ok": true,
+   "detail": "minute 21: Crash on স্যার সৈয়দ সড়ক: its lane is blocked."
+  },
+  {
+   "name": "a click starts an ambulance",
+   "ok": true,
+   "detail": "minute 22: Ambulance started: 3.9 km, alerts over its_g5."
+  },
+  {
+   "name": "the alert spreads: messages sent and delivered, cars alerted",
+   "ok": true,
+   "detail": "sent 2, delivered 2, alerted 1"
+  },
+  {
+   "name": "the demand slider changes the running simulation",
+   "ok": true,
+   "detail": "minute 22: Traffic demand ×1.5."
+  },
+  {
+   "name": "the three forecasters are scored live",
+   "ok": true
+  },
+  {
+   "name": "the page keeps up with the server (within 60 simulated seconds)",
+   "ok": true,
+   "detail": "page Running · simulated 39:42, server 2386 s"
+  },
+  {
+   "name": "phone: its own twin runs, no sideways scroll",
+   "ok": true,
+   "detail": "running true, no sideways scroll true"
+  },
+  {
+   "name": "Stop ends the twin",
+   "ok": true
+  },
+  {
+   "name": "no page errors",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "errors": [],
+ "twin": {
+  "id": "twin-719d8f2008",
+  "seed": 1791607538,
+  "roads": 170
+ },
+ "counts_after_ambulance": "Ambulancedriving · ITS-G5 (802.11p)Messages sent 2, delivered 2Cars alerted 1 (making way now 1)Signals green for it now: 0Ambulance time so far: 9 sCrashes: 1 · vehicles on the map: 783",
+ "forecast_table": "\tERROR, LAST 10 MINUTES (KM/H)\tERROR SINCE THE START (KM/H)\nOnline (River, learning)\t18.057\t18.057\nChronos-Bolt (zero-shot)\t15.568\t15.568\nNo change\t18.057\t18.057",
+ "events": [
+  "minute 22: Traffic demand ×1.5.",
+  "minute 22: Ambulance started: 3.9 km, alerts over its_g5.",
+  "minute 21: Crash on স্যার সৈয়দ সড়ক: its lane is blocked.",
+  "minute 21: No car within 100 m of that point on this road; click where cars are.",
+  "minute 20: No car within 100 m of that point on this road; click where cars are.",
+  "minute 20: No car within 100 m of that point on this road; click where cars are.",
+  "minute 19: No car within 100 m of that point on this road; click where cars are.",
+  "minute 19: No car within 100 m of that point on this road; click where cars are.",
+  "minute 18: No car within 100 m of that point on this road; click where cars are.",
+  "minute 17: No car within 100 m of that point on this road; click where cars are.",
+  "minute 17: No car within 100 m of that point on this road; click where cars are.",
+  "minute 16: No car within 100 m of that point on this road; click where cars are.",
+  "minute 16: No car within 100 m of that point on this road; click where cars are.",
+  "minute 15: No car within 100 m of that point on this road; click where cars are."
+ ],
+ "status": "Running · simulated 39:42",
+ "server_t": 2386,
+ "page_t": "Running · simulated 39:42",
+ "message": null
+}

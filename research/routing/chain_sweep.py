@@ -21,7 +21,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
 
-from app.protocols.chains import integrated_chain as ic     # noqa: E402
+from core.simulation.closed_loop.protocols.chains import integrated_chain as ic     # noqa: E402
 
 RESULTS = REPO / "results/routing"
 COMPLIANCE = [0.0, 0.1, 0.2, 0.4, 0.6, 0.8, 1.0]

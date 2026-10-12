@@ -1,0 +1,10 @@
+/* The focused Home: three large cards, stacked on a phone, side by side on a wide screen. */
+.focus-home { display: grid; gap: 16px; grid-template-columns: 1fr; }
+@media (min-width: 1100px) { .focus-home { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; } }
+.focus-home .card h2, .focus-home .card h3 { font-size: 1.35rem; }
+.big-action { font-size: 1.15rem; padding: 14px 22px; min-height: 52px; }
+.focus-big .plain-sentence { font-size: 1.2rem; font-weight: 600; }
+.focus-input { font-size: 1.1rem; padding: 12px 14px; min-height: 48px; width: 100%; box-sizing: border-box; }
+.focus-suggest { display: flex; flex-direction: column; gap: 6px; margin: 6px 0; }
+.focus-suggest .chip { text-align: left; width: 100%; }
+.focus-map .map.home-map { height: 240px; }

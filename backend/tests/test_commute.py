@@ -17,13 +17,13 @@ def _rows(n_days=3, speeds=(10.0, 4.0)):
         t = t0 + timedelta(minutes=15 * i)
         local_h = (t + timedelta(hours=6)).hour
         b = speeds[1] if 7 <= local_h < 10 else speeds[0]
-        rows.append({"t": t.timestamp(), "utc": t.isoformat(), "provider": "amazon_location", "v": [speeds[0], b]})
+        rows.append({"t": t.timestamp(), "utc": t.isoformat(), "provider": "probes", "v": [speeds[0], b]})
     return rows, nodes
 
 
 def test_profiles_come_from_own_readings_only(monkeypatch):
     from app.commute import history
-    from app.data.live_providers import observatory as obs
+    from core.common.data.live_providers import observatory as obs
     rows, nodes = _rows()
     rows.append({"t": 0, "utc": "2026-09-05T08:00:00+00:00", "provider": "google", "v": [1.0, 1.0]})     # must be ignored
     monkeypatch.setattr(obs.observatory, "series", lambda city: (rows, nodes))
@@ -37,7 +37,7 @@ def test_profiles_come_from_own_readings_only(monkeypatch):
 
 def test_plan_uses_own_history_and_says_when_there_is_none(monkeypatch):
     from app.commute import history, service
-    from app.data.live_providers import observatory as obs
+    from core.common.data.live_providers import observatory as obs
     rows, nodes = _rows()
     monkeypatch.setattr(obs.observatory, "series", lambda city: (rows, nodes))
     monkeypatch.setattr(obs.observatory, "cities", lambda: ["dhaka"])
@@ -56,7 +56,8 @@ def test_plan_uses_own_history_and_says_when_there_is_none(monkeypatch):
     history.forget()
     r2 = service.plan("gazipur", "Farmgate", "Shahbagh", now + timedelta(hours=1), now=now, tz=DHAKA)
     assert r2["provenance"]["kind"] == "ROUTING_ONLY" and r2["recommended"]["on_time_probability"] is None
-    assert r2["coverage"]["watched"] is False and "watch this route" in r2["coverage"]["action"]
+    assert r2["coverage"]["watched"] is False and "no observed traffic for this city yet" in r2["coverage"]["action"]
+    assert "free-flow route time" in r2["provenance"]["traffic"] and r2["routes"][0]["static_s"] == 600.0     # the free-flow time stays, labelled
 
 
 def test_plan_refuses_a_past_deadline():
@@ -67,11 +68,11 @@ def test_plan_refuses_a_past_deadline():
 
 def test_watch_route_adds_a_corridor_and_starts_the_recorder(monkeypatch, tmp_path):
     from app.commute import service
-    from app.data import city_corridors
-    from app.data.live_providers import observatory as obs
+    from core.common.data import city_corridors
+    from core.common.data.live_providers import observatory as obs
     monkeypatch.setattr(city_corridors, "corridors_file", lambda cid: tmp_path / f"{cid}.json")
     monkeypatch.setattr(city_corridors, "derive", lambda cid, k: [])
-    monkeypatch.setattr("app.routing.trip_analysis.resolve_place", lambda place, city: {"lat": 23.9, "lng": 90.4, "label": place})
+    monkeypatch.setattr("core.simulation.routing.trip_analysis.resolve_place", lambda place, city: {"lat": 23.9, "lng": 90.4, "label": place})
     started = []
     monkeypatch.setattr(obs.observatory, "start", lambda cid: started.append(cid) or {"running": True})
     r = service.watch_route("Gazipur", "Tongi", "Joydebpur")

@@ -1,0 +1,263 @@
+{
+ "what": "IncidentNet's XGBoost detection code on our Dhaka corridor camera rows, their way and ours",
+ "label": "IncidentNet code, our scenario - not a reproduction",
+ "source": {
+  "repo": "https://github.com/MPSLab-ASU/IncidentNet",
+  "commit": "7d73a229db024f7c4ed4fb29853c9b523863b3c7",
+  "licence": "Apache-2.0",
+  "files": [
+   "third_party/incidentnet/models/xgboost/training_scripts/xgboost_incident_detect_train.py",
+   "third_party/incidentnet/models/xgboost/eval_scripts/xgboost_incident_detect_eval.py"
+  ],
+  "files_sha256": {
+   "third_party/incidentnet/models/xgboost/training_scripts/xgboost_incident_detect_train.py": "a464ae835f734560781f404e7c8d6a62e57a07ce5e2e0067652d98600ca58b84",
+   "third_party/incidentnet/models/xgboost/eval_scripts/xgboost_incident_detect_eval.py": "81eaed66026a9854aeb67054529da1bea44a01b955d2340960053d1625a761e0"
+  },
+  "xgboost_version": "3.4.1"
+ },
+ "paper_for_context_only": {
+  "detection_pct": 98.0,
+  "false_alarm_pct": 6.26,
+  "time_to_detect_s": 197,
+  "where": "arXiv 2408.00996, urban scenario (Tempe); not reproducible from the repo"
+ },
+ "their_way": {
+  "what": "their xgboost_incident_detect_train() unchanged on all our camera rows: df[299:] warm-up drop, random 80/20 row split (no seed), balanced weights, XGBClassifier() defaults",
+  "rows_total": 1200,
+  "rows_after_their_drop": 901,
+  "positives_after_drop": 241,
+  "repeats": 5,
+  "runs": [
+   {
+    "accuracy": 0.7514,
+    "precision": 0.3462,
+    "f1": 0.2857,
+    "recall": 0.2432
+   },
+   {
+    "accuracy": 0.7072,
+    "precision": 0.4,
+    "f1": 0.3457,
+    "recall": 0.3043
+   },
+   {
+    "accuracy": 0.7017,
+    "precision": 0.4048,
+    "f1": 0.3864,
+    "recall": 0.3696
+   },
+   {
+    "accuracy": 0.7403,
+    "precision": 0.4722,
+    "f1": 0.4198,
+    "recall": 0.3778
+   },
+   {
+    "accuracy": 0.6851,
+    "precision": 0.4412,
+    "f1": 0.3448,
+    "recall": 0.283
+   }
+  ],
+  "accuracy_mean": 0.7171,
+  "precision_mean": 0.4129,
+  "f1_mean": 0.3565,
+  "recall_mean": 0.3156,
+  "accuracy_sd": 0.0248,
+  "precision_sd": 0.0424,
+  "f1_sd": 0.0451,
+  "recall_sd": 0.0514
+ },
+ "our_protocol_their_recipe": {
+  "what": "their recipe (standardise, balanced weights, XGBClassifier() defaults) fitted on the training seeds only; scored on the held-out seeds",
+  "train_rows": 600,
+  "train_positives": 163,
+  "seeds": [
+   11,
+   12,
+   13,
+   14,
+   15
+  ],
+  "points": [
+   {
+    "threshold": 0.02,
+    "incidents": 20,
+    "detected": 14,
+    "detection_rate": 0.7,
+    "false_alarms": 36,
+    "false_alarms_per_pair_hour": 8.64,
+    "time_to_detect_s_mean": 119.0
+   },
+   {
+    "threshold": 0.05,
+    "incidents": 20,
+    "detected": 14,
+    "detection_rate": 0.7,
+    "false_alarms": 35,
+    "false_alarms_per_pair_hour": 8.4,
+    "time_to_detect_s_mean": 111.9
+   },
+   {
+    "threshold": 0.1,
+    "incidents": 20,
+    "detected": 13,
+    "detection_rate": 0.65,
+    "false_alarms": 34,
+    "false_alarms_per_pair_hour": 8.16,
+    "time_to_detect_s_mean": 100.2
+   },
+   {
+    "threshold": 0.15,
+    "incidents": 20,
+    "detected": 14,
+    "detection_rate": 0.7,
+    "false_alarms": 30,
+    "false_alarms_per_pair_hour": 7.2,
+    "time_to_detect_s_mean": 98.2
+   },
+   {
+    "threshold": 0.2,
+    "incidents": 20,
+    "detected": 13,
+    "detection_rate": 0.65,
+    "false_alarms": 31,
+    "false_alarms_per_pair_hour": 7.44,
+    "time_to_detect_s_mean": 101.0
+   },
+   {
+    "threshold": 0.3,
+    "incidents": 20,
+    "detected": 12,
+    "detection_rate": 0.6,
+    "false_alarms": 31,
+    "false_alarms_per_pair_hour": 7.44,
+    "time_to_detect_s_mean": 114.5
+   },
+   {
+    "threshold": 0.4,
+    "incidents": 20,
+    "detected": 10,
+    "detection_rate": 0.5,
+    "false_alarms": 28,
+    "false_alarms_per_pair_hour": 6.72,
+    "time_to_detect_s_mean": 92.0
+   },
+   {
+    "threshold": 0.5,
+    "incidents": 20,
+    "detected": 12,
+    "detection_rate": 0.6,
+    "false_alarms": 25,
+    "false_alarms_per_pair_hour": 6.0,
+    "time_to_detect_s_mean": 94.3
+   },
+   {
+    "threshold": 0.6,
+    "incidents": 20,
+    "detected": 12,
+    "detection_rate": 0.6,
+    "false_alarms": 23,
+    "false_alarms_per_pair_hour": 5.52,
+    "time_to_detect_s_mean": 85.0
+   },
+   {
+    "threshold": 0.7,
+    "incidents": 20,
+    "detected": 11,
+    "detection_rate": 0.55,
+    "false_alarms": 20,
+    "false_alarms_per_pair_hour": 4.8,
+    "time_to_detect_s_mean": 81.8
+   },
+   {
+    "threshold": 0.8,
+    "incidents": 20,
+    "detected": 7,
+    "detection_rate": 0.35,
+    "false_alarms": 18,
+    "false_alarms_per_pair_hour": 4.32,
+    "time_to_detect_s_mean": 96.2
+   },
+   {
+    "threshold": 0.9,
+    "incidents": 20,
+    "detected": 4,
+    "detection_rate": 0.2,
+    "false_alarms": 16,
+    "false_alarms_per_pair_hour": 3.84,
+    "time_to_detect_s_mean": 143.8
+   },
+   {
+    "threshold": 0.95,
+    "incidents": 20,
+    "detected": 3,
+    "detection_rate": 0.15,
+    "false_alarms": 12,
+    "false_alarms_per_pair_hour": 2.88,
+    "time_to_detect_s_mean": 101.3
+   },
+   {
+    "threshold": 0.98,
+    "incidents": 20,
+    "detected": 2,
+    "detection_rate": 0.1,
+    "false_alarms": 4,
+    "false_alarms_per_pair_hour": 0.96,
+    "time_to_detect_s_mean": 45.5
+   },
+   {
+    "threshold": 0.99,
+    "incidents": 20,
+    "detected": 1,
+    "detection_rate": 0.05,
+    "false_alarms": 1,
+    "false_alarms_per_pair_hour": 0.24,
+    "time_to_detect_s_mean": 243.0
+   }
+  ],
+  "their_protocol": {
+   "prediction_rate_rows": 1,
+   "rows": 600,
+   "incidents_in_series": 20,
+   "detection_pct": 90.0,
+   "false_alarm_pct_of_predictions": 0.67,
+   "time_to_detect_rows_mean": 2.0,
+   "time_to_detect_s_mean": 60.0,
+   "caveat": "their false-alarm rule looks back 1 000 rows (1 000 s at their 1 Hz; 8.3 h at our 30 s rows), so after the first incident in the series almost no positive can count as false"
+  },
+  "model_params": {
+   "objective": "binary:logistic",
+   "learning_rate": null,
+   "max_depth": null,
+   "n_estimators": null,
+   "random_state": null
+  }
+ },
+ "their_eval_entry_point_as_written": "TypeError: evaluate() takes 2 positional arguments but 4 were given",
+ "j2_camera_model_best_point": {
+  "threshold": 0.2,
+  "incidents": 20,
+  "detected": 14,
+  "detection_rate": 0.7,
+  "false_alarms": 32,
+  "false_alarms_per_pair_hour": 7.68,
+  "time_to_detect_s_mean": 95.0
+ },
+ "incidentnet_recipe_best_point": {
+  "threshold": 0.15,
+  "incidents": 20,
+  "detected": 14,
+  "detection_rate": 0.7,
+  "false_alarms": 30,
+  "false_alarms_per_pair_hour": 7.2,
+  "time_to_detect_s_mean": 98.2
+ },
+ "inputs": {
+  "camera_train": "data/aid/camera_train.csv",
+  "camera_test": "data/aid/camera_test.csv",
+  "incidents": "results/aid/camera_eval_summary.json",
+  "camera_test_sha256": "753ca7c25b3db8ebfa0729d19a0aeb953cc158cf8ccd4401ef02b081c7e4e165"
+ },
+ "when": "2026-10-11T10:58:28+00:00"
+}

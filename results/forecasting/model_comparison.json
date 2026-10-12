@@ -1,7 +1,7 @@
 [
  {
   "dataset": "METR-LA",
-  "generated_utc": "2026-10-03T19:25:53.683254+00:00",
+  "generated_utc": "2026-10-07T23:21:32.708520+00:00",
   "protocol": {
    "windows": 120,
    "context_steps": 96,
@@ -20,15 +20,14 @@
    "seed": 11,
    "stage_seconds": {
     "baselines": 3.6,
-    "trees": 6.2,
-    "chronos2": 66.9,
-    "checkpoints": 13.1
+    "trees": 6.1,
+    "chronos": 22.4,
+    "chronos2": 65.1,
+    "timesfm": 1712.5,
+    "checkpoints": 14.7
    },
    "isolation": "each model family runs in its own process: torch and the tree libraries deadlock when they share an interpreter",
-   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless",
-   "merged_stages": [
-    "_stage_METR-LA_test_w120_n207_s11_checkpoints.npz"
-   ]
+   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless"
   },
   "nodes": 207,
   "timesteps": 34272,
@@ -277,6 +276,67 @@
      "max_possible_lead_min": 60
     }
    },
+   "chronos": {
+    "horizons": {
+     "5": {
+      "mae": 3.0442,
+      "rmse": 5.0063,
+      "mape_pct": 7.988,
+      "congestion_mae": 4.8954,
+      "freeflow_mae": 2.6105,
+      "congestion_precision": 0.8992,
+      "congestion_recall": 0.9039,
+      "congestion_f1": 0.9015,
+      "n_observed": 23910,
+      "n_congested": 4538
+     },
+     "15": {
+      "mae": 4.1735,
+      "rmse": 7.3378,
+      "mape_pct": 11.196,
+      "congestion_mae": 7.043,
+      "freeflow_mae": 3.5174,
+      "congestion_precision": 0.8301,
+      "congestion_recall": 0.8443,
+      "congestion_f1": 0.8372,
+      "n_observed": 23918,
+      "n_congested": 4451
+     },
+     "30": {
+      "mae": 5.5273,
+      "rmse": 9.6985,
+      "mape_pct": 14.72,
+      "congestion_mae": 9.2002,
+      "freeflow_mae": 4.7168,
+      "congestion_precision": 0.7304,
+      "congestion_recall": 0.7841,
+      "congestion_f1": 0.7563,
+      "n_observed": 23929,
+      "n_congested": 4326
+     },
+     "60": {
+      "mae": 7.8153,
+      "rmse": 13.1486,
+      "mape_pct": 19.534,
+      "congestion_mae": 12.1813,
+      "freeflow_mae": 6.943,
+      "congestion_precision": 0.5543,
+      "congestion_recall": 0.6947,
+      "congestion_f1": 0.6166,
+      "n_observed": 23960,
+      "n_congested": 3990
+     }
+    },
+    "onset_lead": {
+     "events": 386,
+     "warned": 136,
+     "missed": 250,
+     "detection_rate": 0.3523,
+     "mean_lead_min": 56.36,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
    "chronos2": {
     "horizons": {
      "5": {
@@ -395,6 +455,128 @@
      "missed": 252,
      "detection_rate": 0.3472,
      "mean_lead_min": 51.31,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "timesfm": {
+    "horizons": {
+     "5": {
+      "mae": 2.8838,
+      "rmse": 4.9839,
+      "mape_pct": 7.904,
+      "congestion_mae": 5.109,
+      "freeflow_mae": 2.3625,
+      "congestion_precision": 0.9044,
+      "congestion_recall": 0.8969,
+      "congestion_f1": 0.9006,
+      "n_observed": 23910,
+      "n_congested": 4538
+     },
+     "15": {
+      "mae": 3.8769,
+      "rmse": 7.2397,
+      "mape_pct": 11.032,
+      "congestion_mae": 7.5596,
+      "freeflow_mae": 3.0348,
+      "congestion_precision": 0.8411,
+      "congestion_recall": 0.8254,
+      "congestion_f1": 0.8332,
+      "n_observed": 23918,
+      "n_congested": 4451
+     },
+     "30": {
+      "mae": 4.926,
+      "rmse": 9.3344,
+      "mape_pct": 14.27,
+      "congestion_mae": 10.1158,
+      "freeflow_mae": 3.7807,
+      "congestion_precision": 0.7645,
+      "congestion_recall": 0.749,
+      "congestion_f1": 0.7567,
+      "n_observed": 23929,
+      "n_congested": 4326
+     },
+     "60": {
+      "mae": 6.5636,
+      "rmse": 12.1346,
+      "mape_pct": 18.502,
+      "congestion_mae": 14.0162,
+      "freeflow_mae": 5.0746,
+      "congestion_precision": 0.6276,
+      "congestion_recall": 0.6331,
+      "congestion_f1": 0.6303,
+      "n_observed": 23960,
+      "n_congested": 3990
+     }
+    },
+    "onset_lead": {
+     "events": 386,
+     "warned": 121,
+     "missed": 265,
+     "detection_rate": 0.3135,
+     "mean_lead_min": 54.92,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "D2STGNN": {
+    "horizons": {
+     "5": {
+      "mae": 2.2727,
+      "rmse": 3.8204,
+      "mape_pct": 5.917,
+      "congestion_mae": 3.6153,
+      "freeflow_mae": 1.9582,
+      "congestion_precision": 0.9287,
+      "congestion_recall": 0.933,
+      "congestion_f1": 0.9309,
+      "n_observed": 23910,
+      "n_congested": 4538
+     },
+     "15": {
+      "mae": 2.7732,
+      "rmse": 4.9928,
+      "mape_pct": 7.551,
+      "congestion_mae": 4.824,
+      "freeflow_mae": 2.3043,
+      "congestion_precision": 0.8981,
+      "congestion_recall": 0.911,
+      "congestion_f1": 0.9045,
+      "n_observed": 23918,
+      "n_congested": 4451
+     },
+     "30": {
+      "mae": 3.0826,
+      "rmse": 5.7869,
+      "mape_pct": 8.703,
+      "congestion_mae": 5.6146,
+      "freeflow_mae": 2.5239,
+      "congestion_precision": 0.8747,
+      "congestion_recall": 0.8957,
+      "congestion_f1": 0.8851,
+      "n_observed": 23929,
+      "n_congested": 4326
+     },
+     "60": {
+      "mae": 3.3004,
+      "rmse": 6.4281,
+      "mape_pct": 9.268,
+      "congestion_mae": 6.4266,
+      "freeflow_mae": 2.6758,
+      "congestion_precision": 0.8459,
+      "congestion_recall": 0.8802,
+      "congestion_f1": 0.8627,
+      "n_observed": 23960,
+      "n_congested": 3990
+     }
+    },
+    "onset_lead": {
+     "events": 386,
+     "warned": 269,
+     "missed": 117,
+     "detection_rate": 0.6969,
+     "mean_lead_min": 48.72,
      "median_lead_min": 60.0,
      "max_possible_lead_min": 60
     }
@@ -703,73 +885,12 @@
      "median_lead_min": 60.0,
      "max_possible_lead_min": 60
     }
-   },
-   "D2STGNN": {
-    "horizons": {
-     "5": {
-      "mae": 2.2727,
-      "rmse": 3.8204,
-      "mape_pct": 5.917,
-      "congestion_mae": 3.6153,
-      "freeflow_mae": 1.9582,
-      "congestion_precision": 0.9287,
-      "congestion_recall": 0.933,
-      "congestion_f1": 0.9309,
-      "n_observed": 23910,
-      "n_congested": 4538
-     },
-     "15": {
-      "mae": 2.7732,
-      "rmse": 4.9928,
-      "mape_pct": 7.551,
-      "congestion_mae": 4.824,
-      "freeflow_mae": 2.3043,
-      "congestion_precision": 0.8981,
-      "congestion_recall": 0.911,
-      "congestion_f1": 0.9045,
-      "n_observed": 23918,
-      "n_congested": 4451
-     },
-     "30": {
-      "mae": 3.0826,
-      "rmse": 5.7869,
-      "mape_pct": 8.703,
-      "congestion_mae": 5.6146,
-      "freeflow_mae": 2.5239,
-      "congestion_precision": 0.8747,
-      "congestion_recall": 0.8957,
-      "congestion_f1": 0.8851,
-      "n_observed": 23929,
-      "n_congested": 4326
-     },
-     "60": {
-      "mae": 3.3004,
-      "rmse": 6.4281,
-      "mape_pct": 9.268,
-      "congestion_mae": 6.4266,
-      "freeflow_mae": 2.6758,
-      "congestion_precision": 0.8459,
-      "congestion_recall": 0.8802,
-      "congestion_f1": 0.8627,
-      "n_observed": 23960,
-      "n_congested": 3990
-     }
-    },
-    "onset_lead": {
-     "events": 386,
-     "warned": 269,
-     "missed": 117,
-     "detection_rate": 0.6969,
-     "mean_lead_min": 48.72,
-     "median_lead_min": 60.0,
-     "max_possible_lead_min": 60
-    }
    }
   }
  },
  {
   "dataset": "METR-LA",
-  "generated_utc": "2026-10-03T19:26:11.870600+00:00",
+  "generated_utc": "2026-10-07T23:57:06.178207+00:00",
   "protocol": {
    "windows": 120,
    "context_steps": 96,
@@ -787,16 +908,15 @@
    "trees_trained_on": "TRAIN split only",
    "seed": 23,
    "stage_seconds": {
-    "baselines": 4.1,
-    "trees": 6.5,
-    "chronos2": 68.4,
-    "checkpoints": 12.7
+    "baselines": 3.3,
+    "trees": 5.8,
+    "chronos": 22.6,
+    "chronos2": 66.4,
+    "timesfm": 2005.5,
+    "checkpoints": 14.8
    },
    "isolation": "each model family runs in its own process: torch and the tree libraries deadlock when they share an interpreter",
-   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless",
-   "merged_stages": [
-    "_stage_METR-LA_test_w120_n207_s23_checkpoints.npz"
-   ]
+   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless"
   },
   "nodes": 207,
   "timesteps": 34272,
@@ -1045,6 +1165,67 @@
      "max_possible_lead_min": 60
     }
    },
+   "chronos": {
+    "horizons": {
+     "5": {
+      "mae": 3.2797,
+      "rmse": 5.7278,
+      "mape_pct": 10.484,
+      "congestion_mae": 5.8927,
+      "freeflow_mae": 2.465,
+      "congestion_precision": 0.9156,
+      "congestion_recall": 0.8725,
+      "congestion_f1": 0.8935,
+      "n_observed": 20231,
+      "n_congested": 4809
+     },
+     "15": {
+      "mae": 4.4268,
+      "rmse": 8.0843,
+      "mape_pct": 14.394,
+      "congestion_mae": 8.473,
+      "freeflow_mae": 3.164,
+      "congestion_precision": 0.873,
+      "congestion_recall": 0.7941,
+      "congestion_f1": 0.8317,
+      "n_observed": 20272,
+      "n_congested": 4822
+     },
+     "30": {
+      "mae": 5.5129,
+      "rmse": 9.9514,
+      "mape_pct": 18.112,
+      "congestion_mae": 10.8334,
+      "freeflow_mae": 3.8597,
+      "congestion_precision": 0.8203,
+      "congestion_recall": 0.7201,
+      "congestion_f1": 0.7669,
+      "n_observed": 20328,
+      "n_congested": 4819
+     },
+     "60": {
+      "mae": 7.427,
+      "rmse": 12.9463,
+      "mape_pct": 23.887,
+      "congestion_mae": 14.7031,
+      "freeflow_mae": 5.2455,
+      "congestion_precision": 0.6809,
+      "congestion_recall": 0.5886,
+      "congestion_f1": 0.6314,
+      "n_observed": 20445,
+      "n_congested": 4716
+     }
+    },
+    "onset_lead": {
+     "events": 508,
+     "warned": 146,
+     "missed": 362,
+     "detection_rate": 0.2874,
+     "mean_lead_min": 52.12,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
    "chronos2": {
     "horizons": {
      "5": {
@@ -1163,6 +1344,128 @@
      "missed": 323,
      "detection_rate": 0.3642,
      "mean_lead_min": 52.38,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "timesfm": {
+    "horizons": {
+     "5": {
+      "mae": 3.1427,
+      "rmse": 5.726,
+      "mape_pct": 10.121,
+      "congestion_mae": 5.7849,
+      "freeflow_mae": 2.3188,
+      "congestion_precision": 0.9138,
+      "congestion_recall": 0.8713,
+      "congestion_f1": 0.8921,
+      "n_observed": 20231,
+      "n_congested": 4809
+     },
+     "15": {
+      "mae": 4.2348,
+      "rmse": 7.9951,
+      "mape_pct": 13.619,
+      "congestion_mae": 8.1555,
+      "freeflow_mae": 3.0112,
+      "congestion_precision": 0.8707,
+      "congestion_recall": 0.8032,
+      "congestion_f1": 0.8356,
+      "n_observed": 20272,
+      "n_congested": 4822
+     },
+     "30": {
+      "mae": 5.2046,
+      "rmse": 9.7669,
+      "mape_pct": 16.831,
+      "congestion_mae": 10.4091,
+      "freeflow_mae": 3.5874,
+      "congestion_precision": 0.8243,
+      "congestion_recall": 0.735,
+      "congestion_f1": 0.7771,
+      "n_observed": 20328,
+      "n_congested": 4819
+     },
+     "60": {
+      "mae": 6.8759,
+      "rmse": 12.3864,
+      "mape_pct": 22.135,
+      "congestion_mae": 14.4256,
+      "freeflow_mae": 4.6123,
+      "congestion_precision": 0.7153,
+      "congestion_recall": 0.6041,
+      "congestion_f1": 0.655,
+      "n_observed": 20445,
+      "n_congested": 4716
+     }
+    },
+    "onset_lead": {
+     "events": 508,
+     "warned": 147,
+     "missed": 361,
+     "detection_rate": 0.2894,
+     "mean_lead_min": 56.39,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "D2STGNN": {
+    "horizons": {
+     "5": {
+      "mae": 2.4775,
+      "rmse": 4.5183,
+      "mape_pct": 7.658,
+      "congestion_mae": 4.0887,
+      "freeflow_mae": 1.9751,
+      "congestion_precision": 0.9276,
+      "congestion_recall": 0.9239,
+      "congestion_f1": 0.9257,
+      "n_observed": 20231,
+      "n_congested": 4809
+     },
+     "15": {
+      "mae": 3.2202,
+      "rmse": 6.1783,
+      "mape_pct": 10.285,
+      "congestion_mae": 5.8502,
+      "freeflow_mae": 2.3993,
+      "congestion_precision": 0.8911,
+      "congestion_recall": 0.8739,
+      "congestion_f1": 0.8824,
+      "n_observed": 20272,
+      "n_congested": 4822
+     },
+     "30": {
+      "mae": 3.5837,
+      "rmse": 6.94,
+      "mape_pct": 11.636,
+      "congestion_mae": 6.8893,
+      "freeflow_mae": 2.5566,
+      "congestion_precision": 0.8797,
+      "congestion_recall": 0.8456,
+      "congestion_f1": 0.8623,
+      "n_observed": 20328,
+      "n_congested": 4819
+     },
+     "60": {
+      "mae": 4.0306,
+      "rmse": 7.8658,
+      "mape_pct": 13.613,
+      "congestion_mae": 8.4497,
+      "freeflow_mae": 2.7056,
+      "congestion_precision": 0.8649,
+      "congestion_recall": 0.7916,
+      "congestion_f1": 0.8266,
+      "n_observed": 20445,
+      "n_congested": 4716
+     }
+    },
+    "onset_lead": {
+     "events": 508,
+     "warned": 332,
+     "missed": 176,
+     "detection_rate": 0.6535,
+     "mean_lead_min": 48.43,
      "median_lead_min": 60.0,
      "max_possible_lead_min": 60
     }
@@ -1471,73 +1774,12 @@
      "median_lead_min": 60.0,
      "max_possible_lead_min": 60
     }
-   },
-   "D2STGNN": {
-    "horizons": {
-     "5": {
-      "mae": 2.4775,
-      "rmse": 4.5183,
-      "mape_pct": 7.658,
-      "congestion_mae": 4.0887,
-      "freeflow_mae": 1.9751,
-      "congestion_precision": 0.9276,
-      "congestion_recall": 0.9239,
-      "congestion_f1": 0.9257,
-      "n_observed": 20231,
-      "n_congested": 4809
-     },
-     "15": {
-      "mae": 3.2202,
-      "rmse": 6.1783,
-      "mape_pct": 10.285,
-      "congestion_mae": 5.8502,
-      "freeflow_mae": 2.3993,
-      "congestion_precision": 0.8911,
-      "congestion_recall": 0.8739,
-      "congestion_f1": 0.8824,
-      "n_observed": 20272,
-      "n_congested": 4822
-     },
-     "30": {
-      "mae": 3.5837,
-      "rmse": 6.94,
-      "mape_pct": 11.636,
-      "congestion_mae": 6.8893,
-      "freeflow_mae": 2.5566,
-      "congestion_precision": 0.8797,
-      "congestion_recall": 0.8456,
-      "congestion_f1": 0.8623,
-      "n_observed": 20328,
-      "n_congested": 4819
-     },
-     "60": {
-      "mae": 4.0306,
-      "rmse": 7.8658,
-      "mape_pct": 13.613,
-      "congestion_mae": 8.4497,
-      "freeflow_mae": 2.7056,
-      "congestion_precision": 0.8649,
-      "congestion_recall": 0.7916,
-      "congestion_f1": 0.8266,
-      "n_observed": 20445,
-      "n_congested": 4716
-     }
-    },
-    "onset_lead": {
-     "events": 508,
-     "warned": 332,
-     "missed": 176,
-     "detection_rate": 0.6535,
-     "mean_lead_min": 48.43,
-     "median_lead_min": 60.0,
-     "max_possible_lead_min": 60
-    }
    }
   }
  },
  {
   "dataset": "METR-LA",
-  "generated_utc": "2026-10-03T19:26:29.954213+00:00",
+  "generated_utc": "2026-10-08T00:31:11.960530+00:00",
   "protocol": {
    "windows": 120,
    "context_steps": 96,
@@ -1555,16 +1797,15 @@
    "trees_trained_on": "TRAIN split only",
    "seed": 37,
    "stage_seconds": {
-    "baselines": 3.5,
-    "trees": 6.3,
-    "chronos2": 66.3,
-    "checkpoints": 12.2
+    "baselines": 3.3,
+    "trees": 5.8,
+    "chronos": 21.8,
+    "chronos2": 65.1,
+    "timesfm": 1934.7,
+    "checkpoints": 14.4
    },
    "isolation": "each model family runs in its own process: torch and the tree libraries deadlock when they share an interpreter",
-   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless",
-   "merged_stages": [
-    "_stage_METR-LA_test_w120_n207_s37_checkpoints.npz"
-   ]
+   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless"
   },
   "nodes": 207,
   "timesteps": 34272,
@@ -1813,6 +2054,67 @@
      "max_possible_lead_min": 60
     }
    },
+   "chronos": {
+    "horizons": {
+     "5": {
+      "mae": 2.7705,
+      "rmse": 4.8947,
+      "mape_pct": 7.261,
+      "congestion_mae": 6.4262,
+      "freeflow_mae": 2.1394,
+      "congestion_precision": 0.8908,
+      "congestion_recall": 0.8167,
+      "congestion_f1": 0.8521,
+      "n_observed": 24421,
+      "n_congested": 3595
+     },
+     "15": {
+      "mae": 3.8297,
+      "rmse": 7.3497,
+      "mape_pct": 11.201,
+      "congestion_mae": 10.3473,
+      "freeflow_mae": 2.6565,
+      "congestion_precision": 0.8547,
+      "congestion_recall": 0.6932,
+      "congestion_f1": 0.7655,
+      "n_observed": 24418,
+      "n_congested": 3725
+     },
+     "30": {
+      "mae": 5.0034,
+      "rmse": 9.4458,
+      "mape_pct": 15.667,
+      "congestion_mae": 14.2035,
+      "freeflow_mae": 3.2325,
+      "congestion_precision": 0.8087,
+      "congestion_recall": 0.5684,
+      "congestion_f1": 0.6676,
+      "n_observed": 24414,
+      "n_congested": 3941
+     },
+     "60": {
+      "mae": 6.8066,
+      "rmse": 12.2122,
+      "mape_pct": 23.025,
+      "congestion_mae": 19.1148,
+      "freeflow_mae": 4.0586,
+      "congestion_precision": 0.7288,
+      "congestion_recall": 0.4255,
+      "congestion_f1": 0.5373,
+      "n_observed": 24404,
+      "n_congested": 4454
+     }
+    },
+    "onset_lead": {
+     "events": 497,
+     "warned": 73,
+     "missed": 424,
+     "detection_rate": 0.1469,
+     "mean_lead_min": 35.07,
+     "median_lead_min": 30.0,
+     "max_possible_lead_min": 60
+    }
+   },
    "chronos2": {
     "horizons": {
      "5": {
@@ -1932,6 +2234,128 @@
      "detection_rate": 0.2072,
      "mean_lead_min": 35.19,
      "median_lead_min": 30.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "timesfm": {
+    "horizons": {
+     "5": {
+      "mae": 2.7528,
+      "rmse": 5.0792,
+      "mape_pct": 7.409,
+      "congestion_mae": 6.7843,
+      "freeflow_mae": 2.0568,
+      "congestion_precision": 0.8978,
+      "congestion_recall": 0.7964,
+      "congestion_f1": 0.844,
+      "n_observed": 24421,
+      "n_congested": 3595
+     },
+     "15": {
+      "mae": 3.8134,
+      "rmse": 7.5341,
+      "mape_pct": 11.472,
+      "congestion_mae": 10.9043,
+      "freeflow_mae": 2.537,
+      "congestion_precision": 0.8582,
+      "congestion_recall": 0.6709,
+      "congestion_f1": 0.7531,
+      "n_observed": 24418,
+      "n_congested": 3725
+     },
+     "30": {
+      "mae": 4.9589,
+      "rmse": 9.672,
+      "mape_pct": 16.074,
+      "congestion_mae": 15.0308,
+      "freeflow_mae": 3.0201,
+      "congestion_precision": 0.8079,
+      "congestion_recall": 0.5389,
+      "congestion_f1": 0.6466,
+      "n_observed": 24414,
+      "n_congested": 3941
+     },
+     "60": {
+      "mae": 6.7178,
+      "rmse": 12.4303,
+      "mape_pct": 24.08,
+      "congestion_mae": 20.7354,
+      "freeflow_mae": 3.5882,
+      "congestion_precision": 0.7567,
+      "congestion_recall": 0.3806,
+      "congestion_f1": 0.5064,
+      "n_observed": 24404,
+      "n_congested": 4454
+     }
+    },
+    "onset_lead": {
+     "events": 497,
+     "warned": 68,
+     "missed": 429,
+     "detection_rate": 0.1368,
+     "mean_lead_min": 47.35,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "D2STGNN": {
+    "horizons": {
+     "5": {
+      "mae": 2.1445,
+      "rmse": 3.7765,
+      "mape_pct": 5.238,
+      "congestion_mae": 4.2101,
+      "freeflow_mae": 1.788,
+      "congestion_precision": 0.8972,
+      "congestion_recall": 0.8985,
+      "congestion_f1": 0.8978,
+      "n_observed": 24421,
+      "n_congested": 3595
+     },
+     "15": {
+      "mae": 2.8209,
+      "rmse": 5.5825,
+      "mape_pct": 7.506,
+      "congestion_mae": 6.4054,
+      "freeflow_mae": 2.1757,
+      "congestion_precision": 0.8575,
+      "congestion_recall": 0.8403,
+      "congestion_f1": 0.8488,
+      "n_observed": 24418,
+      "n_congested": 3725
+     },
+     "30": {
+      "mae": 3.3873,
+      "rmse": 7.0133,
+      "mape_pct": 9.592,
+      "congestion_mae": 8.2258,
+      "freeflow_mae": 2.4559,
+      "congestion_precision": 0.8236,
+      "congestion_recall": 0.7833,
+      "congestion_f1": 0.803,
+      "n_observed": 24414,
+      "n_congested": 3941
+     },
+     "60": {
+      "mae": 4.0063,
+      "rmse": 8.2227,
+      "mape_pct": 12.125,
+      "congestion_mae": 9.5385,
+      "freeflow_mae": 2.7712,
+      "congestion_precision": 0.8275,
+      "congestion_recall": 0.7423,
+      "congestion_f1": 0.7826,
+      "n_observed": 24404,
+      "n_congested": 4454
+     }
+    },
+    "onset_lead": {
+     "events": 497,
+     "warned": 347,
+     "missed": 150,
+     "detection_rate": 0.6982,
+     "mean_lead_min": 50.81,
+     "median_lead_min": 60.0,
      "max_possible_lead_min": 60
     }
    },
@@ -2236,67 +2660,6 @@
      "missed": 284,
      "detection_rate": 0.4286,
      "mean_lead_min": 56.29,
-     "median_lead_min": 60.0,
-     "max_possible_lead_min": 60
-    }
-   },
-   "D2STGNN": {
-    "horizons": {
-     "5": {
-      "mae": 2.1445,
-      "rmse": 3.7765,
-      "mape_pct": 5.238,
-      "congestion_mae": 4.2101,
-      "freeflow_mae": 1.788,
-      "congestion_precision": 0.8972,
-      "congestion_recall": 0.8985,
-      "congestion_f1": 0.8978,
-      "n_observed": 24421,
-      "n_congested": 3595
-     },
-     "15": {
-      "mae": 2.8209,
-      "rmse": 5.5825,
-      "mape_pct": 7.506,
-      "congestion_mae": 6.4054,
-      "freeflow_mae": 2.1757,
-      "congestion_precision": 0.8575,
-      "congestion_recall": 0.8403,
-      "congestion_f1": 0.8488,
-      "n_observed": 24418,
-      "n_congested": 3725
-     },
-     "30": {
-      "mae": 3.3873,
-      "rmse": 7.0133,
-      "mape_pct": 9.592,
-      "congestion_mae": 8.2258,
-      "freeflow_mae": 2.4559,
-      "congestion_precision": 0.8236,
-      "congestion_recall": 0.7833,
-      "congestion_f1": 0.803,
-      "n_observed": 24414,
-      "n_congested": 3941
-     },
-     "60": {
-      "mae": 4.0063,
-      "rmse": 8.2227,
-      "mape_pct": 12.125,
-      "congestion_mae": 9.5385,
-      "freeflow_mae": 2.7712,
-      "congestion_precision": 0.8275,
-      "congestion_recall": 0.7423,
-      "congestion_f1": 0.7826,
-      "n_observed": 24404,
-      "n_congested": 4454
-     }
-    },
-    "onset_lead": {
-     "events": 497,
-     "warned": 347,
-     "missed": 150,
-     "detection_rate": 0.6982,
-     "mean_lead_min": 50.81,
      "median_lead_min": 60.0,
      "max_possible_lead_min": 60
     }
@@ -3191,6 +3554,2109 @@
      "detection_rate": 0.7285,
      "mean_lead_min": 48.18,
      "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   }
+  }
+ },
+ {
+  "dataset": "PEMS-BAY",
+  "generated_utc": "2026-10-08T01:28:36.448076+00:00",
+  "protocol": {
+   "windows": 120,
+   "context_steps": 96,
+   "nodes_scored": 325,
+   "horizons_min": [
+    5,
+    15,
+    30,
+    60
+   ],
+   "bin_min": 5,
+   "split": "chronological 70 / 10 / 20; a CONTIGUOUS block of consecutive windows from the TEST region, so onset transitions are real",
+   "congestion_threshold": "0.6 x per-node free-flow (85th percentile of that node's TRAIN-split observed values)",
+   "missing": "values of 0.0 are sensor outages and are excluded from every metric",
+   "trees_trained_on": "TRAIN split only",
+   "seed": 11,
+   "stage_seconds": {
+    "baselines": 7.3,
+    "trees": 5.2,
+    "chronos": 30.6,
+    "chronos2": 99.0,
+    "timesfm": 3291.1,
+    "checkpoints": 10.4
+   },
+   "isolation": "each model family runs in its own process: torch and the tree libraries deadlock when they share an interpreter",
+   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless"
+  },
+  "nodes": 325,
+  "timesteps": 52116,
+  "results": {
+   "persistence": {
+    "horizons": {
+     "5": {
+      "mae": 0.9032,
+      "rmse": 1.5891,
+      "mape_pct": 1.433,
+      "congestion_mae": 4.4527,
+      "freeflow_mae": 0.8878,
+      "congestion_precision": 0.9191,
+      "congestion_recall": 0.7396,
+      "congestion_f1": 0.8197,
+      "n_observed": 39000,
+      "n_congested": 169
+     },
+     "15": {
+      "mae": 1.2527,
+      "rmse": 2.4166,
+      "mape_pct": 2.103,
+      "congestion_mae": 11.0297,
+      "freeflow_mae": 1.1924,
+      "congestion_precision": 0.8897,
+      "congestion_recall": 0.5063,
+      "congestion_f1": 0.6453,
+      "n_observed": 39000,
+      "n_congested": 239
+     },
+     "30": {
+      "mae": 1.6231,
+      "rmse": 3.4085,
+      "mape_pct": 2.964,
+      "congestion_mae": 17.3821,
+      "freeflow_mae": 1.463,
+      "congestion_precision": 0.8971,
+      "congestion_recall": 0.3112,
+      "congestion_f1": 0.4621,
+      "n_observed": 39000,
+      "n_congested": 392
+     },
+     "60": {
+      "mae": 2.4183,
+      "rmse": 5.6189,
+      "mape_pct": 5.407,
+      "congestion_mae": 26.6512,
+      "freeflow_mae": 1.866,
+      "congestion_precision": 0.8456,
+      "congestion_recall": 0.1323,
+      "congestion_f1": 0.2289,
+      "n_observed": 39000,
+      "n_congested": 869
+     }
+    },
+    "onset_lead": {
+     "events": 44,
+     "warned": 0,
+     "missed": 44,
+     "mean_lead_min": null
+    }
+   },
+   "historical_average": {
+    "horizons": {
+     "5": {
+      "mae": 1.615,
+      "rmse": 3.0758,
+      "mape_pct": 2.764,
+      "congestion_mae": 25.7518,
+      "freeflow_mae": 1.51,
+      "congestion_precision": 0.0,
+      "congestion_recall": 0.0,
+      "congestion_f1": 0.0,
+      "n_observed": 39000,
+      "n_congested": 169
+     },
+     "15": {
+      "mae": 1.6838,
+      "rmse": 3.342,
+      "mape_pct": 3.004,
+      "congestion_mae": 25.9181,
+      "freeflow_mae": 1.5344,
+      "congestion_precision": 0.0,
+      "congestion_recall": 0.0,
+      "congestion_f1": 0.0,
+      "n_observed": 39000,
+      "n_congested": 239
+     },
+     "30": {
+      "mae": 1.8036,
+      "rmse": 3.759,
+      "mape_pct": 3.446,
+      "congestion_mae": 25.2913,
+      "freeflow_mae": 1.5651,
+      "congestion_precision": 0.0,
+      "congestion_recall": 0.0,
+      "congestion_f1": 0.0,
+      "n_observed": 39000,
+      "n_congested": 392
+     },
+     "60": {
+      "mae": 2.1421,
+      "rmse": 4.7605,
+      "mape_pct": 4.864,
+      "congestion_mae": 24.4929,
+      "freeflow_mae": 1.6327,
+      "congestion_precision": 1.0,
+      "congestion_recall": 0.0311,
+      "congestion_f1": 0.0603,
+      "n_observed": 39000,
+      "n_congested": 869
+     }
+    },
+    "onset_lead": {
+     "events": 44,
+     "warned": 1,
+     "missed": 43,
+     "detection_rate": 0.0227,
+     "mean_lead_min": 60.0,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "random_forest": {
+    "horizons": {
+     "5": {
+      "mae": 0.8657,
+      "rmse": 1.5617,
+      "mape_pct": 1.372,
+      "congestion_mae": 3.9638,
+      "freeflow_mae": 0.8522,
+      "congestion_precision": 0.8519,
+      "congestion_recall": 0.8166,
+      "congestion_f1": 0.8338,
+      "n_observed": 39000,
+      "n_congested": 169
+     },
+     "15": {
+      "mae": 1.2184,
+      "rmse": 2.3955,
+      "mape_pct": 2.054,
+      "congestion_mae": 11.4772,
+      "freeflow_mae": 1.1552,
+      "congestion_precision": 0.7987,
+      "congestion_recall": 0.4979,
+      "congestion_f1": 0.6134,
+      "n_observed": 39000,
+      "n_congested": 239
+     },
+     "30": {
+      "mae": 1.5848,
+      "rmse": 3.2639,
+      "mape_pct": 2.871,
+      "congestion_mae": 16.4646,
+      "freeflow_mae": 1.4337,
+      "congestion_precision": 0.8431,
+      "congestion_recall": 0.3291,
+      "congestion_f1": 0.4734,
+      "n_observed": 39000,
+      "n_congested": 392
+     },
+     "60": {
+      "mae": 2.3365,
+      "rmse": 5.0526,
+      "mape_pct": 5.056,
+      "congestion_mae": 22.8538,
+      "freeflow_mae": 1.869,
+      "congestion_precision": 0.84,
+      "congestion_recall": 0.145,
+      "congestion_f1": 0.2473,
+      "n_observed": 39000,
+      "n_congested": 869
+     }
+    },
+    "onset_lead": {
+     "events": 44,
+     "warned": 27,
+     "missed": 17,
+     "detection_rate": 0.6136,
+     "mean_lead_min": 47.59,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "xgboost": {
+    "horizons": {
+     "5": {
+      "mae": 0.8624,
+      "rmse": 1.5547,
+      "mape_pct": 1.369,
+      "congestion_mae": 4.1182,
+      "freeflow_mae": 0.8482,
+      "congestion_precision": 0.8831,
+      "congestion_recall": 0.8047,
+      "congestion_f1": 0.8421,
+      "n_observed": 39000,
+      "n_congested": 169
+     },
+     "15": {
+      "mae": 1.1978,
+      "rmse": 2.3544,
+      "mape_pct": 2.02,
+      "congestion_mae": 11.2945,
+      "freeflow_mae": 1.1355,
+      "congestion_precision": 0.7933,
+      "congestion_recall": 0.4979,
+      "congestion_f1": 0.6118,
+      "n_observed": 39000,
+      "n_congested": 239
+     },
+     "30": {
+      "mae": 1.5612,
+      "rmse": 3.2553,
+      "mape_pct": 2.851,
+      "congestion_mae": 16.9195,
+      "freeflow_mae": 1.4052,
+      "congestion_precision": 0.8298,
+      "congestion_recall": 0.2985,
+      "congestion_f1": 0.439,
+      "n_observed": 39000,
+      "n_congested": 392
+     },
+     "60": {
+      "mae": 2.2886,
+      "rmse": 5.0315,
+      "mape_pct": 4.982,
+      "congestion_mae": 22.9041,
+      "freeflow_mae": 1.8188,
+      "congestion_precision": 0.7697,
+      "congestion_recall": 0.1577,
+      "congestion_f1": 0.2617,
+      "n_observed": 39000,
+      "n_congested": 869
+     }
+    },
+    "onset_lead": {
+     "events": 44,
+     "warned": 28,
+     "missed": 16,
+     "detection_rate": 0.6364,
+     "mean_lead_min": 47.14,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "chronos": {
+    "horizons": {
+     "5": {
+      "mae": 0.9475,
+      "rmse": 1.6149,
+      "mape_pct": 1.509,
+      "congestion_mae": 4.9864,
+      "freeflow_mae": 0.9299,
+      "congestion_precision": 0.8851,
+      "congestion_recall": 0.7751,
+      "congestion_f1": 0.8265,
+      "n_observed": 39000,
+      "n_congested": 169
+     },
+     "15": {
+      "mae": 1.3335,
+      "rmse": 2.5328,
+      "mape_pct": 2.238,
+      "congestion_mae": 11.5912,
+      "freeflow_mae": 1.2702,
+      "congestion_precision": 0.8897,
+      "congestion_recall": 0.5063,
+      "congestion_f1": 0.6453,
+      "n_observed": 39000,
+      "n_congested": 239
+     },
+     "30": {
+      "mae": 1.857,
+      "rmse": 3.9761,
+      "mape_pct": 3.352,
+      "congestion_mae": 18.7321,
+      "freeflow_mae": 1.6856,
+      "congestion_precision": 0.6395,
+      "congestion_recall": 0.2806,
+      "congestion_f1": 0.3901,
+      "n_observed": 39000,
+      "n_congested": 392
+     },
+     "60": {
+      "mae": 3.0748,
+      "rmse": 7.0216,
+      "mape_pct": 6.493,
+      "congestion_mae": 28.125,
+      "freeflow_mae": 2.5039,
+      "congestion_precision": 0.2195,
+      "congestion_recall": 0.1139,
+      "congestion_f1": 0.15,
+      "n_observed": 39000,
+      "n_congested": 869
+     }
+    },
+    "onset_lead": {
+     "events": 44,
+     "warned": 8,
+     "missed": 36,
+     "detection_rate": 0.1818,
+     "mean_lead_min": 38.75,
+     "median_lead_min": 45.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "chronos2": {
+    "horizons": {
+     "5": {
+      "mae": 0.9266,
+      "rmse": 2.6614,
+      "mape_pct": 1.559,
+      "congestion_mae": 14.589,
+      "freeflow_mae": 0.8671,
+      "congestion_precision": 0.8011,
+      "congestion_recall": 0.8343,
+      "congestion_f1": 0.8174,
+      "n_observed": 39000,
+      "n_congested": 169
+     },
+     "15": {
+      "mae": 1.3028,
+      "rmse": 4.3408,
+      "mape_pct": 2.325,
+      "congestion_mae": 20.5448,
+      "freeflow_mae": 1.1841,
+      "congestion_precision": 0.7989,
+      "congestion_recall": 0.6151,
+      "congestion_f1": 0.695,
+      "n_observed": 39000,
+      "n_congested": 239
+     },
+     "30": {
+      "mae": 1.7954,
+      "rmse": 6.8311,
+      "mape_pct": 3.543,
+      "congestion_mae": 27.5004,
+      "freeflow_mae": 1.5344,
+      "congestion_precision": 0.6884,
+      "congestion_recall": 0.3776,
+      "congestion_f1": 0.4876,
+      "n_observed": 39000,
+      "n_congested": 392
+     },
+     "60": {
+      "mae": 2.8993,
+      "rmse": 10.3205,
+      "mape_pct": 6.914,
+      "congestion_mae": 35.2958,
+      "freeflow_mae": 2.161,
+      "congestion_precision": 0.5064,
+      "congestion_recall": 0.183,
+      "congestion_f1": 0.2688,
+      "n_observed": 39000,
+      "n_congested": 869
+     }
+    },
+    "onset_lead": {
+     "events": 44,
+     "warned": 21,
+     "missed": 23,
+     "detection_rate": 0.4773,
+     "mean_lead_min": 58.57,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "chronos2_mv": {
+    "horizons": {
+     "5": {
+      "mae": 0.846,
+      "rmse": 1.598,
+      "mape_pct": 1.374,
+      "congestion_mae": 6.5944,
+      "freeflow_mae": 0.821,
+      "congestion_precision": 0.9248,
+      "congestion_recall": 0.7278,
+      "congestion_f1": 0.8146,
+      "n_observed": 39000,
+      "n_congested": 169
+     },
+     "15": {
+      "mae": 1.1737,
+      "rmse": 2.4753,
+      "mape_pct": 2.033,
+      "congestion_mae": 13.7881,
+      "freeflow_mae": 1.0959,
+      "congestion_precision": 0.9412,
+      "congestion_recall": 0.4686,
+      "congestion_f1": 0.6257,
+      "n_observed": 39000,
+      "n_congested": 239
+     },
+     "30": {
+      "mae": 1.5694,
+      "rmse": 3.6446,
+      "mape_pct": 3.012,
+      "congestion_mae": 22.1141,
+      "freeflow_mae": 1.3608,
+      "congestion_precision": 0.907,
+      "congestion_recall": 0.199,
+      "congestion_f1": 0.3264,
+      "n_observed": 39000,
+      "n_congested": 392
+     },
+     "60": {
+      "mae": 2.4699,
+      "rmse": 6.233,
+      "mape_pct": 5.896,
+      "congestion_mae": 33.2484,
+      "freeflow_mae": 1.7685,
+      "congestion_precision": 1.0,
+      "congestion_recall": 0.0253,
+      "congestion_f1": 0.0494,
+      "n_observed": 39000,
+      "n_congested": 869
+     }
+    },
+    "onset_lead": {
+     "events": 44,
+     "warned": 9,
+     "missed": 35,
+     "detection_rate": 0.2045,
+     "mean_lead_min": 26.67,
+     "median_lead_min": 30.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "timesfm": {
+    "horizons": {
+     "5": {
+      "mae": 0.8757,
+      "rmse": 1.6372,
+      "mape_pct": 1.432,
+      "congestion_mae": 7.5456,
+      "freeflow_mae": 0.8467,
+      "congestion_precision": 0.972,
+      "congestion_recall": 0.6154,
+      "congestion_f1": 0.7536,
+      "n_observed": 39000,
+      "n_congested": 169
+     },
+     "15": {
+      "mae": 1.226,
+      "rmse": 2.5705,
+      "mape_pct": 2.148,
+      "congestion_mae": 15.6202,
+      "freeflow_mae": 1.1372,
+      "congestion_precision": 0.9518,
+      "congestion_recall": 0.3305,
+      "congestion_f1": 0.4907,
+      "n_observed": 39000,
+      "n_congested": 239
+     },
+     "30": {
+      "mae": 1.6051,
+      "rmse": 3.7351,
+      "mape_pct": 3.108,
+      "congestion_mae": 23.0529,
+      "freeflow_mae": 1.3873,
+      "congestion_precision": 0.9688,
+      "congestion_recall": 0.1582,
+      "congestion_f1": 0.2719,
+      "n_observed": 39000,
+      "n_congested": 392
+     },
+     "60": {
+      "mae": 2.4332,
+      "rmse": 6.1016,
+      "mape_pct": 5.815,
+      "congestion_mae": 31.7537,
+      "freeflow_mae": 1.765,
+      "congestion_precision": 0.7727,
+      "congestion_recall": 0.0391,
+      "congestion_f1": 0.0745,
+      "n_observed": 39000,
+      "n_congested": 869
+     }
+    },
+    "onset_lead": {
+     "events": 44,
+     "warned": 4,
+     "missed": 40,
+     "detection_rate": 0.0909,
+     "mean_lead_min": 31.25,
+     "median_lead_min": 30.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "DCRNN": {
+    "horizons": {
+     "5": {
+      "mae": 0.7614,
+      "rmse": 1.3754,
+      "mape_pct": 1.214,
+      "congestion_mae": 3.5862,
+      "freeflow_mae": 0.7491,
+      "congestion_precision": 0.8938,
+      "congestion_recall": 0.8462,
+      "congestion_f1": 0.8693,
+      "n_observed": 39000,
+      "n_congested": 169
+     },
+     "15": {
+      "mae": 0.9833,
+      "rmse": 1.8905,
+      "mape_pct": 1.632,
+      "congestion_mae": 6.9569,
+      "freeflow_mae": 0.9464,
+      "congestion_precision": 0.8349,
+      "congestion_recall": 0.7406,
+      "congestion_f1": 0.7849,
+      "n_observed": 39000,
+      "n_congested": 239
+     },
+     "30": {
+      "mae": 1.1351,
+      "rmse": 2.32,
+      "mape_pct": 1.975,
+      "congestion_mae": 8.3236,
+      "freeflow_mae": 1.0621,
+      "congestion_precision": 0.7901,
+      "congestion_recall": 0.6913,
+      "congestion_f1": 0.7374,
+      "n_observed": 39000,
+      "n_congested": 392
+     },
+     "60": {
+      "mae": 1.3777,
+      "rmse": 3.0229,
+      "mape_pct": 2.688,
+      "congestion_mae": 8.9394,
+      "freeflow_mae": 1.2054,
+      "congestion_precision": 0.8455,
+      "congestion_recall": 0.6674,
+      "congestion_f1": 0.746,
+      "n_observed": 39000,
+      "n_congested": 869
+     }
+    },
+    "onset_lead": {
+     "events": 44,
+     "warned": 34,
+     "missed": 10,
+     "detection_rate": 0.7727,
+     "mean_lead_min": 59.12,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "GWNet": {
+    "horizons": {
+     "5": {
+      "mae": 0.7734,
+      "rmse": 1.3815,
+      "mape_pct": 1.228,
+      "congestion_mae": 3.1674,
+      "freeflow_mae": 0.763,
+      "congestion_precision": 0.8371,
+      "congestion_recall": 0.8817,
+      "congestion_f1": 0.8588,
+      "n_observed": 39000,
+      "n_congested": 169
+     },
+     "15": {
+      "mae": 0.9939,
+      "rmse": 1.9294,
+      "mape_pct": 1.649,
+      "congestion_mae": 6.7705,
+      "freeflow_mae": 0.9583,
+      "congestion_precision": 0.7939,
+      "congestion_recall": 0.7573,
+      "congestion_f1": 0.7752,
+      "n_observed": 39000,
+      "n_congested": 239
+     },
+     "30": {
+      "mae": 1.1341,
+      "rmse": 2.3217,
+      "mape_pct": 1.966,
+      "congestion_mae": 7.7565,
+      "freeflow_mae": 1.0669,
+      "congestion_precision": 0.8024,
+      "congestion_recall": 0.6837,
+      "congestion_f1": 0.7383,
+      "n_observed": 39000,
+      "n_congested": 392
+     },
+     "60": {
+      "mae": 1.3508,
+      "rmse": 2.8306,
+      "mape_pct": 2.605,
+      "congestion_mae": 8.3884,
+      "freeflow_mae": 1.1904,
+      "congestion_precision": 0.9258,
+      "congestion_recall": 0.6743,
+      "congestion_f1": 0.7803,
+      "n_observed": 39000,
+      "n_congested": 869
+     }
+    },
+    "onset_lead": {
+     "events": 44,
+     "warned": 36,
+     "missed": 8,
+     "detection_rate": 0.8182,
+     "mean_lead_min": 59.17,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "STID": {
+    "horizons": {
+     "5": {
+      "mae": 0.7653,
+      "rmse": 1.3728,
+      "mape_pct": 1.212,
+      "congestion_mae": 3.0319,
+      "freeflow_mae": 0.7554,
+      "congestion_precision": 0.8698,
+      "congestion_recall": 0.8698,
+      "congestion_f1": 0.8698,
+      "n_observed": 39000,
+      "n_congested": 169
+     },
+     "15": {
+      "mae": 0.9701,
+      "rmse": 1.8818,
+      "mape_pct": 1.609,
+      "congestion_mae": 6.8029,
+      "freeflow_mae": 0.9341,
+      "congestion_precision": 0.7991,
+      "congestion_recall": 0.7155,
+      "congestion_f1": 0.755,
+      "n_observed": 39000,
+      "n_congested": 239
+     },
+     "30": {
+      "mae": 1.1022,
+      "rmse": 2.2549,
+      "mape_pct": 1.909,
+      "congestion_mae": 7.5771,
+      "freeflow_mae": 1.0364,
+      "congestion_precision": 0.8333,
+      "congestion_recall": 0.7143,
+      "congestion_f1": 0.7692,
+      "n_observed": 39000,
+      "n_congested": 392
+     },
+     "60": {
+      "mae": 1.3065,
+      "rmse": 2.7328,
+      "mape_pct": 2.515,
+      "congestion_mae": 8.0873,
+      "freeflow_mae": 1.152,
+      "congestion_precision": 0.8831,
+      "congestion_recall": 0.7043,
+      "congestion_f1": 0.7836,
+      "n_observed": 39000,
+      "n_congested": 869
+     }
+    },
+    "onset_lead": {
+     "events": 44,
+     "warned": 36,
+     "missed": 8,
+     "detection_rate": 0.8182,
+     "mean_lead_min": 56.94,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   }
+  }
+ },
+ {
+  "dataset": "PEMS-BAY",
+  "generated_utc": "2026-10-08T02:38:39.984731+00:00",
+  "protocol": {
+   "windows": 120,
+   "context_steps": 96,
+   "nodes_scored": 325,
+   "horizons_min": [
+    5,
+    15,
+    30,
+    60
+   ],
+   "bin_min": 5,
+   "split": "chronological 70 / 10 / 20; a CONTIGUOUS block of consecutive windows from the TEST region, so onset transitions are real",
+   "congestion_threshold": "0.6 x per-node free-flow (85th percentile of that node's TRAIN-split observed values)",
+   "missing": "values of 0.0 are sensor outages and are excluded from every metric",
+   "trees_trained_on": "TRAIN split only",
+   "seed": 23,
+   "stage_seconds": {
+    "baselines": 7.3,
+    "trees": 5.3,
+    "chronos": 30.8,
+    "chronos2": 98.8,
+    "timesfm": 4046.9,
+    "checkpoints": 13.7
+   },
+   "isolation": "each model family runs in its own process: torch and the tree libraries deadlock when they share an interpreter",
+   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless"
+  },
+  "nodes": 325,
+  "timesteps": 52116,
+  "results": {
+   "persistence": {
+    "horizons": {
+     "5": {
+      "mae": 0.7191,
+      "rmse": 1.2228,
+      "mape_pct": 1.213,
+      "congestion_mae": 2.3221,
+      "freeflow_mae": 0.6996,
+      "congestion_precision": 0.9275,
+      "congestion_recall": 0.9315,
+      "congestion_f1": 0.9295,
+      "n_observed": 39000,
+      "n_congested": 467
+     },
+     "15": {
+      "mae": 1.086,
+      "rmse": 2.1254,
+      "mape_pct": 1.886,
+      "congestion_mae": 5.036,
+      "freeflow_mae": 1.0387,
+      "congestion_precision": 0.823,
+      "congestion_recall": 0.8373,
+      "congestion_f1": 0.8301,
+      "n_observed": 39000,
+      "n_congested": 461
+     },
+     "30": {
+      "mae": 1.3176,
+      "rmse": 2.8273,
+      "mape_pct": 2.348,
+      "congestion_mae": 7.6481,
+      "freeflow_mae": 1.2442,
+      "congestion_precision": 0.7249,
+      "congestion_recall": 0.7606,
+      "congestion_f1": 0.7424,
+      "n_observed": 39000,
+      "n_congested": 447
+     },
+     "60": {
+      "mae": 1.5746,
+      "rmse": 3.4989,
+      "mape_pct": 2.813,
+      "congestion_mae": 10.0762,
+      "freeflow_mae": 1.483,
+      "congestion_precision": 0.6077,
+      "congestion_recall": 0.6851,
+      "congestion_f1": 0.6441,
+      "n_observed": 39000,
+      "n_congested": 416
+     }
+    },
+    "onset_lead": {
+     "events": 31,
+     "warned": 0,
+     "missed": 31,
+     "mean_lead_min": null
+    }
+   },
+   "historical_average": {
+    "horizons": {
+     "5": {
+      "mae": 5.6252,
+      "rmse": 9.2751,
+      "mape_pct": 9.801,
+      "congestion_mae": 27.1758,
+      "freeflow_mae": 5.364,
+      "congestion_precision": 0.0333,
+      "congestion_recall": 0.0899,
+      "congestion_f1": 0.0486,
+      "n_observed": 39000,
+      "n_congested": 467
+     },
+     "15": {
+      "mae": 5.5993,
+      "rmse": 9.2257,
+      "mape_pct": 9.745,
+      "congestion_mae": 27.1128,
+      "freeflow_mae": 5.342,
+      "congestion_precision": 0.032,
+      "congestion_recall": 0.0868,
+      "congestion_f1": 0.0468,
+      "n_observed": 39000,
+      "n_congested": 461
+     },
+     "30": {
+      "mae": 5.5599,
+      "rmse": 9.153,
+      "mape_pct": 9.652,
+      "congestion_mae": 27.1034,
+      "freeflow_mae": 5.3102,
+      "congestion_precision": 0.03,
+      "congestion_recall": 0.0828,
+      "congestion_f1": 0.044,
+      "n_observed": 39000,
+      "n_congested": 447
+     },
+     "60": {
+      "mae": 5.4718,
+      "rmse": 9.0129,
+      "mape_pct": 9.395,
+      "congestion_mae": 26.5997,
+      "freeflow_mae": 5.244,
+      "congestion_precision": 0.0301,
+      "congestion_recall": 0.0889,
+      "congestion_f1": 0.045,
+      "n_observed": 39000,
+      "n_congested": 416
+     }
+    },
+    "onset_lead": {
+     "events": 31,
+     "warned": 0,
+     "missed": 31,
+     "mean_lead_min": null
+    }
+   },
+   "random_forest": {
+    "horizons": {
+     "5": {
+      "mae": 0.7157,
+      "rmse": 1.2182,
+      "mape_pct": 1.216,
+      "congestion_mae": 2.5476,
+      "freeflow_mae": 0.6935,
+      "congestion_precision": 0.9309,
+      "congestion_recall": 0.9229,
+      "congestion_f1": 0.9269,
+      "n_observed": 39000,
+      "n_congested": 467
+     },
+     "15": {
+      "mae": 1.081,
+      "rmse": 2.1252,
+      "mape_pct": 1.907,
+      "congestion_mae": 5.9285,
+      "freeflow_mae": 1.0231,
+      "congestion_precision": 0.8278,
+      "congestion_recall": 0.8134,
+      "congestion_f1": 0.8206,
+      "n_observed": 39000,
+      "n_congested": 461
+     },
+     "30": {
+      "mae": 1.3643,
+      "rmse": 2.8342,
+      "mape_pct": 2.478,
+      "congestion_mae": 9.8645,
+      "freeflow_mae": 1.2657,
+      "congestion_precision": 0.7339,
+      "congestion_recall": 0.6353,
+      "congestion_f1": 0.6811,
+      "n_observed": 39000,
+      "n_congested": 447
+     },
+     "60": {
+      "mae": 1.7659,
+      "rmse": 3.5376,
+      "mape_pct": 3.215,
+      "congestion_mae": 13.5878,
+      "freeflow_mae": 1.6384,
+      "congestion_precision": 0.6577,
+      "congestion_recall": 0.5264,
+      "congestion_f1": 0.5848,
+      "n_observed": 39000,
+      "n_congested": 416
+     }
+    },
+    "onset_lead": {
+     "events": 31,
+     "warned": 11,
+     "missed": 20,
+     "detection_rate": 0.3548,
+     "mean_lead_min": 42.27,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "xgboost": {
+    "horizons": {
+     "5": {
+      "mae": 0.7174,
+      "rmse": 1.222,
+      "mape_pct": 1.235,
+      "congestion_mae": 2.6657,
+      "freeflow_mae": 0.6938,
+      "congestion_precision": 0.9374,
+      "congestion_recall": 0.9293,
+      "congestion_f1": 0.9333,
+      "n_observed": 39000,
+      "n_congested": 467
+     },
+     "15": {
+      "mae": 1.0794,
+      "rmse": 2.1351,
+      "mape_pct": 1.925,
+      "congestion_mae": 6.1344,
+      "freeflow_mae": 1.0189,
+      "congestion_precision": 0.8212,
+      "congestion_recall": 0.8069,
+      "congestion_f1": 0.814,
+      "n_observed": 39000,
+      "n_congested": 461
+     },
+     "30": {
+      "mae": 1.3616,
+      "rmse": 2.8313,
+      "mape_pct": 2.495,
+      "congestion_mae": 10.122,
+      "freeflow_mae": 1.26,
+      "congestion_precision": 0.7297,
+      "congestion_recall": 0.6219,
+      "congestion_f1": 0.6715,
+      "n_observed": 39000,
+      "n_congested": 447
+     },
+     "60": {
+      "mae": 1.7638,
+      "rmse": 3.4925,
+      "mape_pct": 3.227,
+      "congestion_mae": 13.9546,
+      "freeflow_mae": 1.6324,
+      "congestion_precision": 0.6491,
+      "congestion_recall": 0.5024,
+      "congestion_f1": 0.5664,
+      "n_observed": 39000,
+      "n_congested": 416
+     }
+    },
+    "onset_lead": {
+     "events": 31,
+     "warned": 14,
+     "missed": 17,
+     "detection_rate": 0.4516,
+     "mean_lead_min": 35.36,
+     "median_lead_min": 30.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "chronos": {
+    "horizons": {
+     "5": {
+      "mae": 0.7212,
+      "rmse": 1.2436,
+      "mape_pct": 1.232,
+      "congestion_mae": 2.745,
+      "freeflow_mae": 0.6967,
+      "congestion_precision": 0.9281,
+      "congestion_recall": 0.9122,
+      "congestion_f1": 0.9201,
+      "n_observed": 39000,
+      "n_congested": 467
+     },
+     "15": {
+      "mae": 1.0582,
+      "rmse": 2.1091,
+      "mape_pct": 1.875,
+      "congestion_mae": 5.8692,
+      "freeflow_mae": 1.0007,
+      "congestion_precision": 0.8333,
+      "congestion_recall": 0.8026,
+      "congestion_f1": 0.8177,
+      "n_observed": 39000,
+      "n_congested": 461
+     },
+     "30": {
+      "mae": 1.304,
+      "rmse": 2.7963,
+      "mape_pct": 2.371,
+      "congestion_mae": 8.9039,
+      "freeflow_mae": 1.2159,
+      "congestion_precision": 0.7382,
+      "congestion_recall": 0.7002,
+      "congestion_f1": 0.7187,
+      "n_observed": 39000,
+      "n_congested": 447
+     },
+     "60": {
+      "mae": 1.6117,
+      "rmse": 3.4411,
+      "mape_pct": 2.915,
+      "congestion_mae": 11.6184,
+      "freeflow_mae": 1.5038,
+      "congestion_precision": 0.6272,
+      "congestion_recall": 0.5986,
+      "congestion_f1": 0.6125,
+      "n_observed": 39000,
+      "n_congested": 416
+     }
+    },
+    "onset_lead": {
+     "events": 31,
+     "warned": 3,
+     "missed": 28,
+     "detection_rate": 0.0968,
+     "mean_lead_min": 30.0,
+     "median_lead_min": 15.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "chronos2": {
+    "horizons": {
+     "5": {
+      "mae": 0.7062,
+      "rmse": 1.2471,
+      "mape_pct": 1.206,
+      "congestion_mae": 2.5861,
+      "freeflow_mae": 0.6834,
+      "congestion_precision": 0.9269,
+      "congestion_recall": 0.9229,
+      "congestion_f1": 0.9249,
+      "n_observed": 39000,
+      "n_congested": 467
+     },
+     "15": {
+      "mae": 1.0309,
+      "rmse": 2.1098,
+      "mape_pct": 1.825,
+      "congestion_mae": 5.6797,
+      "freeflow_mae": 0.9753,
+      "congestion_precision": 0.8446,
+      "congestion_recall": 0.8134,
+      "congestion_f1": 0.8287,
+      "n_observed": 39000,
+      "n_congested": 461
+     },
+     "30": {
+      "mae": 1.2691,
+      "rmse": 2.846,
+      "mape_pct": 2.321,
+      "congestion_mae": 9.0488,
+      "freeflow_mae": 1.1789,
+      "congestion_precision": 0.7512,
+      "congestion_recall": 0.7025,
+      "congestion_f1": 0.726,
+      "n_observed": 39000,
+      "n_congested": 447
+     },
+     "60": {
+      "mae": 1.55,
+      "rmse": 3.4834,
+      "mape_pct": 2.838,
+      "congestion_mae": 12.308,
+      "freeflow_mae": 1.434,
+      "congestion_precision": 0.6414,
+      "congestion_recall": 0.6106,
+      "congestion_f1": 0.6256,
+      "n_observed": 39000,
+      "n_congested": 416
+     }
+    },
+    "onset_lead": {
+     "events": 31,
+     "warned": 4,
+     "missed": 27,
+     "detection_rate": 0.129,
+     "mean_lead_min": 10.0,
+     "median_lead_min": 10.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "chronos2_mv": {
+    "horizons": {
+     "5": {
+      "mae": 0.6974,
+      "rmse": 1.2062,
+      "mape_pct": 1.198,
+      "congestion_mae": 2.6806,
+      "freeflow_mae": 0.6733,
+      "congestion_precision": 0.9368,
+      "congestion_recall": 0.9208,
+      "congestion_f1": 0.9287,
+      "n_observed": 39000,
+      "n_congested": 467
+     },
+     "15": {
+      "mae": 1.0083,
+      "rmse": 2.025,
+      "mape_pct": 1.791,
+      "congestion_mae": 5.6128,
+      "freeflow_mae": 0.9532,
+      "congestion_precision": 0.8549,
+      "congestion_recall": 0.8178,
+      "congestion_f1": 0.8359,
+      "n_observed": 39000,
+      "n_congested": 461
+     },
+     "30": {
+      "mae": 1.2291,
+      "rmse": 2.7315,
+      "mape_pct": 2.26,
+      "congestion_mae": 8.9821,
+      "freeflow_mae": 1.1392,
+      "congestion_precision": 0.7566,
+      "congestion_recall": 0.7092,
+      "congestion_f1": 0.7321,
+      "n_observed": 39000,
+      "n_congested": 447
+     },
+     "60": {
+      "mae": 1.4981,
+      "rmse": 3.3187,
+      "mape_pct": 2.763,
+      "congestion_mae": 11.9805,
+      "freeflow_mae": 1.3851,
+      "congestion_precision": 0.659,
+      "congestion_recall": 0.6226,
+      "congestion_f1": 0.6403,
+      "n_observed": 39000,
+      "n_congested": 416
+     }
+    },
+    "onset_lead": {
+     "events": 31,
+     "warned": 3,
+     "missed": 28,
+     "detection_rate": 0.0968,
+     "mean_lead_min": 60.0,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "timesfm": {
+    "horizons": {
+     "5": {
+      "mae": 0.7059,
+      "rmse": 1.2565,
+      "mape_pct": 1.209,
+      "congestion_mae": 2.8654,
+      "freeflow_mae": 0.6797,
+      "congestion_precision": 0.9418,
+      "congestion_recall": 0.9015,
+      "congestion_f1": 0.9212,
+      "n_observed": 39000,
+      "n_congested": 467
+     },
+     "15": {
+      "mae": 1.0192,
+      "rmse": 2.0701,
+      "mape_pct": 1.814,
+      "congestion_mae": 6.018,
+      "freeflow_mae": 0.9594,
+      "congestion_precision": 0.8578,
+      "congestion_recall": 0.7983,
+      "congestion_f1": 0.827,
+      "n_observed": 39000,
+      "n_congested": 461
+     },
+     "30": {
+      "mae": 1.2384,
+      "rmse": 2.704,
+      "mape_pct": 2.274,
+      "congestion_mae": 9.2232,
+      "freeflow_mae": 1.1458,
+      "congestion_precision": 0.7825,
+      "congestion_recall": 0.7002,
+      "congestion_f1": 0.7391,
+      "n_observed": 39000,
+      "n_congested": 447
+     },
+     "60": {
+      "mae": 1.5096,
+      "rmse": 3.2473,
+      "mape_pct": 2.81,
+      "congestion_mae": 12.758,
+      "freeflow_mae": 1.3883,
+      "congestion_precision": 0.6854,
+      "congestion_recall": 0.5865,
+      "congestion_f1": 0.6321,
+      "n_observed": 39000,
+      "n_congested": 416
+     }
+    },
+    "onset_lead": {
+     "events": 31,
+     "warned": 1,
+     "missed": 30,
+     "detection_rate": 0.0323,
+     "mean_lead_min": 15.0,
+     "median_lead_min": 15.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "DCRNN": {
+    "horizons": {
+     "5": {
+      "mae": 0.6697,
+      "rmse": 1.1338,
+      "mape_pct": 1.14,
+      "congestion_mae": 2.3193,
+      "freeflow_mae": 0.6497,
+      "congestion_precision": 0.9496,
+      "congestion_recall": 0.9272,
+      "congestion_f1": 0.9382,
+      "n_observed": 39000,
+      "n_congested": 467
+     },
+     "15": {
+      "mae": 0.9758,
+      "rmse": 1.937,
+      "mape_pct": 1.754,
+      "congestion_mae": 5.7342,
+      "freeflow_mae": 0.9189,
+      "congestion_precision": 0.8782,
+      "congestion_recall": 0.8286,
+      "congestion_f1": 0.8527,
+      "n_observed": 39000,
+      "n_congested": 461
+     },
+     "30": {
+      "mae": 1.1678,
+      "rmse": 2.4786,
+      "mape_pct": 2.2,
+      "congestion_mae": 9.4769,
+      "freeflow_mae": 1.0715,
+      "congestion_precision": 0.8504,
+      "congestion_recall": 0.7248,
+      "congestion_f1": 0.7826,
+      "n_observed": 39000,
+      "n_congested": 447
+     },
+     "60": {
+      "mae": 1.3798,
+      "rmse": 3.1014,
+      "mape_pct": 2.702,
+      "congestion_mae": 14.2296,
+      "freeflow_mae": 1.2413,
+      "congestion_precision": 0.7358,
+      "congestion_recall": 0.5288,
+      "congestion_f1": 0.6154,
+      "n_observed": 39000,
+      "n_congested": 416
+     }
+    },
+    "onset_lead": {
+     "events": 31,
+     "warned": 9,
+     "missed": 22,
+     "detection_rate": 0.2903,
+     "mean_lead_min": 26.67,
+     "median_lead_min": 15.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "GWNet": {
+    "horizons": {
+     "5": {
+      "mae": 0.6732,
+      "rmse": 1.1392,
+      "mape_pct": 1.141,
+      "congestion_mae": 2.2446,
+      "freeflow_mae": 0.6541,
+      "congestion_precision": 0.9485,
+      "congestion_recall": 0.9465,
+      "congestion_f1": 0.9475,
+      "n_observed": 39000,
+      "n_congested": 467
+     },
+     "15": {
+      "mae": 0.9684,
+      "rmse": 1.9461,
+      "mape_pct": 1.724,
+      "congestion_mae": 5.6974,
+      "freeflow_mae": 0.9118,
+      "congestion_precision": 0.8843,
+      "congestion_recall": 0.8286,
+      "congestion_f1": 0.8555,
+      "n_observed": 39000,
+      "n_congested": 461
+     },
+     "30": {
+      "mae": 1.1545,
+      "rmse": 2.5631,
+      "mape_pct": 2.166,
+      "congestion_mae": 9.5909,
+      "freeflow_mae": 1.0567,
+      "congestion_precision": 0.8149,
+      "congestion_recall": 0.7092,
+      "congestion_f1": 0.7584,
+      "n_observed": 39000,
+      "n_congested": 447
+     },
+     "60": {
+      "mae": 1.3252,
+      "rmse": 2.9664,
+      "mape_pct": 2.528,
+      "congestion_mae": 12.7028,
+      "freeflow_mae": 1.2026,
+      "congestion_precision": 0.7785,
+      "congestion_recall": 0.6082,
+      "congestion_f1": 0.6829,
+      "n_observed": 39000,
+      "n_congested": 416
+     }
+    },
+    "onset_lead": {
+     "events": 31,
+     "warned": 8,
+     "missed": 23,
+     "detection_rate": 0.2581,
+     "mean_lead_min": 17.5,
+     "median_lead_min": 10.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "STID": {
+    "horizons": {
+     "5": {
+      "mae": 0.6695,
+      "rmse": 1.1305,
+      "mape_pct": 1.131,
+      "congestion_mae": 2.2113,
+      "freeflow_mae": 0.6508,
+      "congestion_precision": 0.9416,
+      "congestion_recall": 0.9315,
+      "congestion_f1": 0.9365,
+      "n_observed": 39000,
+      "n_congested": 467
+     },
+     "15": {
+      "mae": 0.9619,
+      "rmse": 1.9185,
+      "mape_pct": 1.7,
+      "congestion_mae": 5.3826,
+      "freeflow_mae": 0.9091,
+      "congestion_precision": 0.8855,
+      "congestion_recall": 0.8221,
+      "congestion_f1": 0.8526,
+      "n_observed": 39000,
+      "n_congested": 461
+     },
+     "30": {
+      "mae": 1.1342,
+      "rmse": 2.4711,
+      "mape_pct": 2.107,
+      "congestion_mae": 9.0904,
+      "freeflow_mae": 1.0419,
+      "congestion_precision": 0.8405,
+      "congestion_recall": 0.6957,
+      "congestion_f1": 0.7613,
+      "n_observed": 39000,
+      "n_congested": 447
+     },
+     "60": {
+      "mae": 1.3043,
+      "rmse": 2.8425,
+      "mape_pct": 2.532,
+      "congestion_mae": 12.7979,
+      "freeflow_mae": 1.1804,
+      "congestion_precision": 0.864,
+      "congestion_recall": 0.5649,
+      "congestion_f1": 0.6831,
+      "n_observed": 39000,
+      "n_congested": 416
+     }
+    },
+    "onset_lead": {
+     "events": 31,
+     "warned": 7,
+     "missed": 24,
+     "detection_rate": 0.2258,
+     "mean_lead_min": 17.14,
+     "median_lead_min": 15.0,
+     "max_possible_lead_min": 60
+    }
+   }
+  }
+ },
+ {
+  "dataset": "PEMS-BAY",
+  "generated_utc": "2026-10-08T05:05:30.163180+00:00",
+  "protocol": {
+   "windows": 120,
+   "context_steps": 96,
+   "nodes_scored": 325,
+   "horizons_min": [
+    5,
+    15,
+    30,
+    60
+   ],
+   "bin_min": 5,
+   "split": "chronological 70 / 10 / 20; a CONTIGUOUS block of consecutive windows from the TEST region, so onset transitions are real",
+   "congestion_threshold": "0.6 x per-node free-flow (85th percentile of that node's TRAIN-split observed values)",
+   "missing": "values of 0.0 are sensor outages and are excluded from every metric",
+   "trees_trained_on": "TRAIN split only",
+   "seed": 37,
+   "stage_seconds": {
+    "baselines": 7.3,
+    "trees": 8.0,
+    "chronos": 31.5,
+    "chronos2": 5494.1,
+    "timesfm": 3258.0,
+    "checkpoints": 10.3
+   },
+   "isolation": "each model family runs in its own process: torch and the tree libraries deadlock when they share an interpreter",
+   "not_compared_with": "OpenCity \u2014 it is scored on a 288-step horizon under its authors' split; mixing protocols would be meaningless"
+  },
+  "nodes": 325,
+  "timesteps": 52116,
+  "results": {
+   "persistence": {
+    "horizons": {
+     "5": {
+      "mae": 0.9205,
+      "rmse": 1.738,
+      "mape_pct": 1.533,
+      "congestion_mae": 2.6525,
+      "freeflow_mae": 0.8935,
+      "congestion_precision": 0.8276,
+      "congestion_recall": 0.9314,
+      "congestion_f1": 0.8765,
+      "n_observed": 39000,
+      "n_congested": 598
+     },
+     "15": {
+      "mae": 1.3399,
+      "rmse": 2.9882,
+      "mape_pct": 2.244,
+      "congestion_mae": 4.8158,
+      "freeflow_mae": 1.2982,
+      "congestion_precision": 0.6122,
+      "congestion_recall": 0.8898,
+      "congestion_f1": 0.7254,
+      "n_observed": 39000,
+      "n_congested": 463
+     },
+     "30": {
+      "mae": 1.688,
+      "rmse": 4.177,
+      "mape_pct": 2.758,
+      "congestion_mae": 7.0805,
+      "freeflow_mae": 1.6464,
+      "congestion_precision": 0.373,
+      "congestion_recall": 0.8423,
+      "congestion_f1": 0.517,
+      "n_observed": 39000,
+      "n_congested": 298
+     },
+     "60": {
+      "mae": 2.1571,
+      "rmse": 5.6719,
+      "mape_pct": 3.366,
+      "congestion_mae": 17.6293,
+      "freeflow_mae": 2.1341,
+      "congestion_precision": 0.0371,
+      "congestion_recall": 0.431,
+      "congestion_f1": 0.0684,
+      "n_observed": 39000,
+      "n_congested": 58
+     }
+    },
+    "onset_lead": {
+     "events": 38,
+     "warned": 0,
+     "missed": 38,
+     "mean_lead_min": null
+    }
+   },
+   "historical_average": {
+    "horizons": {
+     "5": {
+      "mae": 2.1188,
+      "rmse": 4.1106,
+      "mape_pct": 4.313,
+      "congestion_mae": 19.8656,
+      "freeflow_mae": 1.8424,
+      "congestion_precision": 0.875,
+      "congestion_recall": 0.1522,
+      "congestion_f1": 0.2593,
+      "n_observed": 39000,
+      "n_congested": 598
+     },
+     "15": {
+      "mae": 2.0334,
+      "rmse": 3.9122,
+      "mape_pct": 3.983,
+      "congestion_mae": 20.6023,
+      "freeflow_mae": 1.8103,
+      "congestion_precision": 0.9,
+      "congestion_recall": 0.1166,
+      "congestion_f1": 0.2065,
+      "n_observed": 39000,
+      "n_congested": 463
+     },
+     "30": {
+      "mae": 1.9086,
+      "rmse": 3.5773,
+      "mape_pct": 3.445,
+      "congestion_mae": 21.2882,
+      "freeflow_mae": 1.7594,
+      "congestion_precision": 1.0,
+      "congestion_recall": 0.104,
+      "congestion_f1": 0.1884,
+      "n_observed": 39000,
+      "n_congested": 298
+     },
+     "60": {
+      "mae": 1.6731,
+      "rmse": 2.9335,
+      "mape_pct": 2.643,
+      "congestion_mae": 24.5625,
+      "freeflow_mae": 1.639,
+      "congestion_precision": 1.0,
+      "congestion_recall": 0.1034,
+      "congestion_f1": 0.1875,
+      "n_observed": 39000,
+      "n_congested": 58
+     }
+    },
+    "onset_lead": {
+     "events": 38,
+     "warned": 0,
+     "missed": 38,
+     "mean_lead_min": null
+    }
+   },
+   "random_forest": {
+    "horizons": {
+     "5": {
+      "mae": 0.8573,
+      "rmse": 1.6191,
+      "mape_pct": 1.436,
+      "congestion_mae": 2.8348,
+      "freeflow_mae": 0.8265,
+      "congestion_precision": 0.8447,
+      "congestion_recall": 0.9097,
+      "congestion_f1": 0.876,
+      "n_observed": 39000,
+      "n_congested": 598
+     },
+     "15": {
+      "mae": 1.2266,
+      "rmse": 2.6283,
+      "mape_pct": 2.098,
+      "congestion_mae": 5.7423,
+      "freeflow_mae": 1.1724,
+      "congestion_precision": 0.6729,
+      "congestion_recall": 0.8531,
+      "congestion_f1": 0.7524,
+      "n_observed": 39000,
+      "n_congested": 463
+     },
+     "30": {
+      "mae": 1.5859,
+      "rmse": 3.5663,
+      "mape_pct": 2.682,
+      "congestion_mae": 10.1116,
+      "freeflow_mae": 1.5203,
+      "congestion_precision": 0.4486,
+      "congestion_recall": 0.6879,
+      "congestion_f1": 0.543,
+      "n_observed": 39000,
+      "n_congested": 298
+     },
+     "60": {
+      "mae": 2.0117,
+      "rmse": 4.26,
+      "mape_pct": 3.118,
+      "congestion_mae": 21.218,
+      "freeflow_mae": 1.9831,
+      "congestion_precision": 0.0335,
+      "congestion_recall": 0.1552,
+      "congestion_f1": 0.055,
+      "n_observed": 39000,
+      "n_congested": 58
+     }
+    },
+    "onset_lead": {
+     "events": 38,
+     "warned": 8,
+     "missed": 30,
+     "detection_rate": 0.2105,
+     "mean_lead_min": 21.88,
+     "median_lead_min": 15.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "xgboost": {
+    "horizons": {
+     "5": {
+      "mae": 0.8548,
+      "rmse": 1.6168,
+      "mape_pct": 1.462,
+      "congestion_mae": 3.1517,
+      "freeflow_mae": 0.819,
+      "congestion_precision": 0.8537,
+      "congestion_recall": 0.898,
+      "congestion_f1": 0.8753,
+      "n_observed": 39000,
+      "n_congested": 598
+     },
+     "15": {
+      "mae": 1.2088,
+      "rmse": 2.6022,
+      "mape_pct": 2.095,
+      "congestion_mae": 6.0418,
+      "freeflow_mae": 1.1508,
+      "congestion_precision": 0.6667,
+      "congestion_recall": 0.8294,
+      "congestion_f1": 0.7392,
+      "n_observed": 39000,
+      "n_congested": 463
+     },
+     "30": {
+      "mae": 1.5387,
+      "rmse": 3.5636,
+      "mape_pct": 2.633,
+      "congestion_mae": 10.7992,
+      "freeflow_mae": 1.4674,
+      "congestion_precision": 0.4267,
+      "congestion_recall": 0.6443,
+      "congestion_f1": 0.5134,
+      "n_observed": 39000,
+      "n_congested": 298
+     },
+     "60": {
+      "mae": 1.9378,
+      "rmse": 4.2117,
+      "mape_pct": 3.013,
+      "congestion_mae": 21.4063,
+      "freeflow_mae": 1.9088,
+      "congestion_precision": 0.049,
+      "congestion_recall": 0.2414,
+      "congestion_f1": 0.0814,
+      "n_observed": 39000,
+      "n_congested": 58
+     }
+    },
+    "onset_lead": {
+     "events": 38,
+     "warned": 5,
+     "missed": 33,
+     "detection_rate": 0.1316,
+     "mean_lead_min": 14.0,
+     "median_lead_min": 15.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "chronos": {
+    "horizons": {
+     "5": {
+      "mae": 0.9923,
+      "rmse": 1.7261,
+      "mape_pct": 1.646,
+      "congestion_mae": 2.9475,
+      "freeflow_mae": 0.9618,
+      "congestion_precision": 0.8482,
+      "congestion_recall": 0.9247,
+      "congestion_f1": 0.8848,
+      "n_observed": 39000,
+      "n_congested": 598
+     },
+     "15": {
+      "mae": 1.4413,
+      "rmse": 2.9628,
+      "mape_pct": 2.404,
+      "congestion_mae": 5.4345,
+      "freeflow_mae": 1.3933,
+      "congestion_precision": 0.6229,
+      "congestion_recall": 0.8704,
+      "congestion_f1": 0.7261,
+      "n_observed": 39000,
+      "n_congested": 463
+     },
+     "30": {
+      "mae": 2.0058,
+      "rmse": 4.5169,
+      "mape_pct": 3.242,
+      "congestion_mae": 8.0555,
+      "freeflow_mae": 1.9592,
+      "congestion_precision": 0.3529,
+      "congestion_recall": 0.8054,
+      "congestion_f1": 0.4908,
+      "n_observed": 39000,
+      "n_congested": 298
+     },
+     "60": {
+      "mae": 3.0109,
+      "rmse": 7.0396,
+      "mape_pct": 4.621,
+      "congestion_mae": 16.6577,
+      "freeflow_mae": 2.9906,
+      "congestion_precision": 0.0241,
+      "congestion_recall": 0.4138,
+      "congestion_f1": 0.0455,
+      "n_observed": 39000,
+      "n_congested": 58
+     }
+    },
+    "onset_lead": {
+     "events": 38,
+     "warned": 7,
+     "missed": 31,
+     "detection_rate": 0.1842,
+     "mean_lead_min": 42.86,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "chronos2": {
+    "horizons": {
+     "5": {
+      "mae": 0.8843,
+      "rmse": 1.6416,
+      "mape_pct": 1.476,
+      "congestion_mae": 2.6619,
+      "freeflow_mae": 0.8566,
+      "congestion_precision": 0.8502,
+      "congestion_recall": 0.9298,
+      "congestion_f1": 0.8882,
+      "n_observed": 39000,
+      "n_congested": 598
+     },
+     "15": {
+      "mae": 1.2854,
+      "rmse": 2.8332,
+      "mape_pct": 2.164,
+      "congestion_mae": 5.1815,
+      "freeflow_mae": 1.2386,
+      "congestion_precision": 0.6225,
+      "congestion_recall": 0.8618,
+      "congestion_f1": 0.7228,
+      "n_observed": 39000,
+      "n_congested": 463
+     },
+     "30": {
+      "mae": 1.7347,
+      "rmse": 4.2288,
+      "mape_pct": 2.823,
+      "congestion_mae": 7.547,
+      "freeflow_mae": 1.6899,
+      "congestion_precision": 0.3455,
+      "congestion_recall": 0.7953,
+      "congestion_f1": 0.4817,
+      "n_observed": 39000,
+      "n_congested": 298
+     },
+     "60": {
+      "mae": 2.4989,
+      "rmse": 6.2568,
+      "mape_pct": 3.862,
+      "congestion_mae": 16.5768,
+      "freeflow_mae": 2.478,
+      "congestion_precision": 0.0297,
+      "congestion_recall": 0.431,
+      "congestion_f1": 0.0555,
+      "n_observed": 39000,
+      "n_congested": 58
+     }
+    },
+    "onset_lead": {
+     "events": 38,
+     "warned": 10,
+     "missed": 28,
+     "detection_rate": 0.2632,
+     "mean_lead_min": 34.0,
+     "median_lead_min": 30.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "chronos2_mv": {
+    "horizons": {
+     "5": {
+      "mae": 0.8395,
+      "rmse": 1.5669,
+      "mape_pct": 1.41,
+      "congestion_mae": 2.7565,
+      "freeflow_mae": 0.8096,
+      "congestion_precision": 0.8619,
+      "congestion_recall": 0.9181,
+      "congestion_f1": 0.8891,
+      "n_observed": 39000,
+      "n_congested": 598
+     },
+     "15": {
+      "mae": 1.1813,
+      "rmse": 2.6101,
+      "mape_pct": 2.015,
+      "congestion_mae": 5.3094,
+      "freeflow_mae": 1.1317,
+      "congestion_precision": 0.6474,
+      "congestion_recall": 0.8445,
+      "congestion_f1": 0.7329,
+      "n_observed": 39000,
+      "n_congested": 463
+     },
+     "30": {
+      "mae": 1.5002,
+      "rmse": 3.6522,
+      "mape_pct": 2.489,
+      "congestion_mae": 7.7733,
+      "freeflow_mae": 1.4519,
+      "congestion_precision": 0.407,
+      "congestion_recall": 0.7785,
+      "congestion_f1": 0.5346,
+      "n_observed": 39000,
+      "n_congested": 298
+     },
+     "60": {
+      "mae": 1.9081,
+      "rmse": 4.8255,
+      "mape_pct": 2.972,
+      "congestion_mae": 16.7779,
+      "freeflow_mae": 1.886,
+      "congestion_precision": 0.0464,
+      "congestion_recall": 0.3966,
+      "congestion_f1": 0.083,
+      "n_observed": 39000,
+      "n_congested": 58
+     }
+    },
+    "onset_lead": {
+     "events": 38,
+     "warned": 3,
+     "missed": 35,
+     "detection_rate": 0.0789,
+     "mean_lead_min": 41.67,
+     "median_lead_min": 60.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "timesfm": {
+    "horizons": {
+     "5": {
+      "mae": 0.8494,
+      "rmse": 1.6242,
+      "mape_pct": 1.429,
+      "congestion_mae": 2.7782,
+      "freeflow_mae": 0.8194,
+      "congestion_precision": 0.8397,
+      "congestion_recall": 0.9197,
+      "congestion_f1": 0.8779,
+      "n_observed": 39000,
+      "n_congested": 598
+     },
+     "15": {
+      "mae": 1.2279,
+      "rmse": 2.7986,
+      "mape_pct": 2.079,
+      "congestion_mae": 5.1382,
+      "freeflow_mae": 1.1809,
+      "congestion_precision": 0.6317,
+      "congestion_recall": 0.8704,
+      "congestion_f1": 0.7321,
+      "n_observed": 39000,
+      "n_congested": 463
+     },
+     "30": {
+      "mae": 1.5605,
+      "rmse": 3.8956,
+      "mape_pct": 2.566,
+      "congestion_mae": 7.3132,
+      "freeflow_mae": 1.5162,
+      "congestion_precision": 0.402,
+      "congestion_recall": 0.8255,
+      "congestion_f1": 0.5407,
+      "n_observed": 39000,
+      "n_congested": 298
+     },
+     "60": {
+      "mae": 1.9888,
+      "rmse": 5.1497,
+      "mape_pct": 3.107,
+      "congestion_mae": 18.5683,
+      "freeflow_mae": 1.9641,
+      "congestion_precision": 0.0419,
+      "congestion_recall": 0.3966,
+      "congestion_f1": 0.0758,
+      "n_observed": 39000,
+      "n_congested": 58
+     }
+    },
+    "onset_lead": {
+     "events": 38,
+     "warned": 3,
+     "missed": 35,
+     "detection_rate": 0.0789,
+     "mean_lead_min": 35.0,
+     "median_lead_min": 30.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "DCRNN": {
+    "horizons": {
+     "5": {
+      "mae": 0.759,
+      "rmse": 1.445,
+      "mape_pct": 1.279,
+      "congestion_mae": 2.8255,
+      "freeflow_mae": 0.7268,
+      "congestion_precision": 0.9037,
+      "congestion_recall": 0.8946,
+      "congestion_f1": 0.8992,
+      "n_observed": 39000,
+      "n_congested": 598
+     },
+     "15": {
+      "mae": 1.018,
+      "rmse": 2.1717,
+      "mape_pct": 1.797,
+      "congestion_mae": 7.5067,
+      "freeflow_mae": 0.94,
+      "congestion_precision": 0.8436,
+      "congestion_recall": 0.7106,
+      "congestion_f1": 0.7714,
+      "n_observed": 39000,
+      "n_congested": 463
+     },
+     "30": {
+      "mae": 1.1638,
+      "rmse": 2.757,
+      "mape_pct": 2.075,
+      "congestion_mae": 15.3385,
+      "freeflow_mae": 1.0546,
+      "congestion_precision": 0.7529,
+      "congestion_recall": 0.4396,
+      "congestion_f1": 0.5551,
+      "n_observed": 39000,
+      "n_congested": 298
+     },
+     "60": {
+      "mae": 1.1738,
+      "rmse": 2.8199,
+      "mape_pct": 1.901,
+      "congestion_mae": 24.7802,
+      "freeflow_mae": 1.1386,
+      "congestion_precision": 0.1587,
+      "congestion_recall": 0.1724,
+      "congestion_f1": 0.1653,
+      "n_observed": 39000,
+      "n_congested": 58
+     }
+    },
+    "onset_lead": {
+     "events": 38,
+     "warned": 3,
+     "missed": 35,
+     "detection_rate": 0.0789,
+     "mean_lead_min": 20.0,
+     "median_lead_min": 15.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "GWNet": {
+    "horizons": {
+     "5": {
+      "mae": 0.7703,
+      "rmse": 1.4572,
+      "mape_pct": 1.294,
+      "congestion_mae": 2.7294,
+      "freeflow_mae": 0.7398,
+      "congestion_precision": 0.8978,
+      "congestion_recall": 0.8963,
+      "congestion_f1": 0.8971,
+      "n_observed": 39000,
+      "n_congested": 598
+     },
+     "15": {
+      "mae": 1.0225,
+      "rmse": 2.1699,
+      "mape_pct": 1.79,
+      "congestion_mae": 6.586,
+      "freeflow_mae": 0.9556,
+      "congestion_precision": 0.8376,
+      "congestion_recall": 0.7797,
+      "congestion_f1": 0.8076,
+      "n_observed": 39000,
+      "n_congested": 463
+     },
+     "30": {
+      "mae": 1.1602,
+      "rmse": 2.6551,
+      "mape_pct": 2.073,
+      "congestion_mae": 13.4042,
+      "freeflow_mae": 1.0659,
+      "congestion_precision": 0.6854,
+      "congestion_recall": 0.4899,
+      "congestion_f1": 0.5714,
+      "n_observed": 39000,
+      "n_congested": 298
+     },
+     "60": {
+      "mae": 1.1439,
+      "rmse": 2.431,
+      "mape_pct": 1.846,
+      "congestion_mae": 22.3628,
+      "freeflow_mae": 1.1123,
+      "congestion_precision": 0.3488,
+      "congestion_recall": 0.2586,
+      "congestion_f1": 0.297,
+      "n_observed": 39000,
+      "n_congested": 58
+     }
+    },
+    "onset_lead": {
+     "events": 38,
+     "warned": 3,
+     "missed": 35,
+     "detection_rate": 0.0789,
+     "mean_lead_min": 13.33,
+     "median_lead_min": 5.0,
+     "max_possible_lead_min": 60
+    }
+   },
+   "STID": {
+    "horizons": {
+     "5": {
+      "mae": 0.7756,
+      "rmse": 1.4734,
+      "mape_pct": 1.321,
+      "congestion_mae": 2.9353,
+      "freeflow_mae": 0.742,
+      "congestion_precision": 0.8848,
+      "congestion_recall": 0.8863,
+      "congestion_f1": 0.8855,
+      "n_observed": 39000,
+      "n_congested": 598
+     },
+     "15": {
+      "mae": 1.048,
+      "rmse": 2.2509,
+      "mape_pct": 1.97,
+      "congestion_mae": 9.3713,
+      "freeflow_mae": 0.948,
+      "congestion_precision": 0.8529,
+      "congestion_recall": 0.6134,
+      "congestion_f1": 0.7136,
+      "n_observed": 39000,
+      "n_congested": 463
+     },
+     "30": {
+      "mae": 1.1685,
+      "rmse": 2.8007,
+      "mape_pct": 2.285,
+      "congestion_mae": 19.7657,
+      "freeflow_mae": 1.0253,
+      "congestion_precision": 0.8804,
+      "congestion_recall": 0.2718,
+      "congestion_f1": 0.4154,
+      "n_observed": 39000,
+      "n_congested": 298
+     },
+     "60": {
+      "mae": 1.0921,
+      "rmse": 2.2192,
+      "mape_pct": 1.766,
+      "congestion_mae": 23.8618,
+      "freeflow_mae": 1.0582,
+      "congestion_precision": 0.8462,
+      "congestion_recall": 0.1897,
+      "congestion_f1": 0.3099,
+      "n_observed": 39000,
+      "n_congested": 58
+     }
+    },
+    "onset_lead": {
+     "events": 38,
+     "warned": 2,
+     "missed": 36,
+     "detection_rate": 0.0526,
+     "mean_lead_min": 17.5,
+     "median_lead_min": 17.5,
      "max_possible_lead_min": 60
     }
    }

@@ -29,7 +29,7 @@ import json
 import sys
 from pathlib import Path
 
-from app.paths import REPO
+from core.common.paths import REPO
 OUT_JSON = REPO / "results/upstream/REPRODUCTIONS.json"
 OUT_MD = REPO / "results/upstream/REPRODUCTIONS.md"
 TOLERANCE = 0.05

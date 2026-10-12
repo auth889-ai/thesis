@@ -8,9 +8,9 @@ from pathlib import Path
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
-from app.forecasting.live import record_live as rec  # noqa: E402
-from app.data.live_providers.google_providers import GoogleDataPolicy  # noqa: E402
-from app.data.live_providers.providers import DHAKA_R1_CORRIDORS, ObservationStore  # noqa: E402
+from core.ml.forecasting.live import record_live as rec  # noqa: E402
+from core.common.data.live_providers.google_providers import GoogleDataPolicy  # noqa: E402
+from core.common.data.live_providers.providers import DHAKA_R1_CORRIDORS, ObservationStore  # noqa: E402
 
 PY = sys.executable
 ALLOWED = {"corridor_id", "captured_utc", "request_latency_ms", "congestion_state",
@@ -20,7 +20,7 @@ GOOGLE_CONTENT = {"duration", "staticDuration", "distanceMeters", "speedReadingI
 
 
 def run(tmp: Path, *args) -> subprocess.CompletedProcess:
-    return subprocess.run([PY, "-m", "app.forecasting.live.record_live", "--out", str(tmp), *args],
+    return subprocess.run([PY, "-m", "core.ml.forecasting.live.record_live", "--out", str(tmp), *args],
                           capture_output=True, text=True)
 
 

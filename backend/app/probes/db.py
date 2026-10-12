@@ -30,10 +30,13 @@ class ProbePointRow(Base):
     accuracy_m: Mapped[float | None] = mapped_column(Float)
     heading: Mapped[float | None] = mapped_column(Float)
     speed_kmh: Mapped[float | None] = mapped_column(Float)                     # from the device, or derived from the previous fix
+    net_type: Mapped[str | None] = mapped_column(String(12))                   # the signal history: navigator.connection.effectiveType, when the device gave it
+    downlink_mbps: Mapped[float | None] = mapped_column(Float)
+    rtt_ms: Mapped[float | None] = mapped_column(Float)
     snapped_lat: Mapped[float | None] = mapped_column(Float)
     snapped_lng: Mapped[float | None] = mapped_column(Float)
     snap_confidence: Mapped[float | None] = mapped_column(Float)
-    snapper: Mapped[str] = mapped_column(String(32), default="none")          # amazon_location | none
+    snapper: Mapped[str] = mapped_column(String(32), default="none")          # valhalla | amazon_location | none
     cell: Mapped[str | None] = mapped_column(String(32), index=True)
 
 
@@ -48,4 +51,7 @@ class ProbeCellRow(Base):
     n_devices: Mapped[int] = mapped_column(Integer, default=0)
     mean_speed_kmh: Mapped[float | None] = mapped_column(Float)
     p50_speed_kmh: Mapped[float | None] = mapped_column(Float)
+    n_signal: Mapped[int] = mapped_column(Integer, default=0)                   # fixes in this bin that carried a signal reading
+    weak_signal: Mapped[int] = mapped_column(Integer, default=0)                # of those, how many were slow-2g / 2g or under 0.5 Mbit/s
+    mean_downlink_mbps: Mapped[float | None] = mapped_column(Float)
     updated_at: Mapped[datetime] = mapped_column(UTC)

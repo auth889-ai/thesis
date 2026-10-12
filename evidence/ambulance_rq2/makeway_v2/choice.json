@@ -1,0 +1,204 @@
+{
+ "rule": "100 m unless it still produces the circular wait at Dhaka density (lane-end wait >= 60 s in a row, or an alerted blocker teleported); then 50 m; if both do, stop. Fixed before the pilot; time saved is not used.",
+ "why_not_a_cited_value": "no published distance at which drivers act on an electronic alert was found; the sources found describe siren audibility (8-12 m into a closed car at urban junctions, US DOT via EMS World; 10-50 m detection window, arXiv 2109.14797), the siren-only world",
+ "seeds_with_circular_wait": {
+  "v2d100": [
+   17,
+   22
+  ],
+  "v2d50": [
+   17,
+   22
+  ]
+ },
+ "chosen_by_rule_as_fixed": null,
+ "amendment": {
+  "when": "2026-10-09, after the pilot, approved by the owner",
+  "why": "both distances were rejected only by waits that also occur, identically, in the siren-only runs of the same seeds (same lane-end waits, same blockers teleported), i.e. corridor congestion the alert did not cause",
+  "rule": "a flagged wait counts only if the siren-only run of the same seed does not show it",
+  "seeds_with_alert_caused_wait": {
+   "v2d100": [],
+   "v2d50": []
+  }
+ },
+ "per_run": {
+  "v2d100": {
+   "11": {
+    "state": "arrived",
+    "travel_time_s": 263.0,
+    "longest_lane_end_wait_s": 0,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "12": {
+    "state": "arrived",
+    "travel_time_s": 320.0,
+    "longest_lane_end_wait_s": 12,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "13": {
+    "state": "arrived",
+    "travel_time_s": 600.0,
+    "longest_lane_end_wait_s": 1,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "15": {
+    "state": "arrived",
+    "travel_time_s": 257.0,
+    "longest_lane_end_wait_s": 0,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "17": {
+    "state": "arrived",
+    "travel_time_s": 745.0,
+    "longest_lane_end_wait_s": 199,
+    "alerted_blockers_teleported": [
+     "cal0_160",
+     "veh469"
+    ],
+    "circular": true
+   },
+   "18": {
+    "state": "arrived",
+    "travel_time_s": 575.0,
+    "longest_lane_end_wait_s": 0,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "19": {
+    "state": "arrived",
+    "travel_time_s": 261.0,
+    "longest_lane_end_wait_s": 0,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "20": {
+    "state": "arrived",
+    "travel_time_s": 306.0,
+    "longest_lane_end_wait_s": 0,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "21": {
+    "state": "arrived",
+    "travel_time_s": 331.0,
+    "longest_lane_end_wait_s": 2,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "22": {
+    "state": "arrived",
+    "travel_time_s": 349.0,
+    "longest_lane_end_wait_s": 45,
+    "alerted_blockers_teleported": [
+     "cal300_101"
+    ],
+    "circular": true
+   }
+  },
+  "v2d50": {
+   "11": {
+    "state": "arrived",
+    "travel_time_s": 244.0,
+    "longest_lane_end_wait_s": 0,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "12": {
+    "state": "arrived",
+    "travel_time_s": 313.0,
+    "longest_lane_end_wait_s": 12,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "13": {
+    "state": "sumo_crashed",
+    "travel_time_s": null,
+    "longest_lane_end_wait_s": 0,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "15": {
+    "state": "arrived",
+    "travel_time_s": 272.0,
+    "longest_lane_end_wait_s": 0,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "17": {
+    "state": "arrived",
+    "travel_time_s": 744.0,
+    "longest_lane_end_wait_s": 199,
+    "alerted_blockers_teleported": [
+     "cal0_160",
+     "veh469"
+    ],
+    "circular": true
+   },
+   "18": {
+    "state": "arrived",
+    "travel_time_s": 573.0,
+    "longest_lane_end_wait_s": 0,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "19": {
+    "state": "arrived",
+    "travel_time_s": 245.0,
+    "longest_lane_end_wait_s": 1,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "20": {
+    "state": "arrived",
+    "travel_time_s": 345.0,
+    "longest_lane_end_wait_s": 1,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "21": {
+    "state": "arrived",
+    "travel_time_s": 296.0,
+    "longest_lane_end_wait_s": 1,
+    "alerted_blockers_teleported": [],
+    "circular": false
+   },
+   "22": {
+    "state": "arrived",
+    "travel_time_s": 348.0,
+    "longest_lane_end_wait_s": 45,
+    "alerted_blockers_teleported": [
+     "cal300_101"
+    ],
+    "circular": true
+   }
+  }
+ },
+ "chosen_distance_m": 100.0,
+ "siren_only_same_seeds": {
+  "17": {
+   "travel_time_s": 737.0,
+   "longest_lane_end_wait_s": 199,
+   "alerted_blockers_teleported": [
+    "cal0_160",
+    "veh440",
+    "veh469"
+   ],
+   "circular": true
+  },
+  "22": {
+   "travel_time_s": 630.0,
+   "longest_lane_end_wait_s": 45,
+   "alerted_blockers_teleported": [
+    "cal300_101",
+    "cal600_168",
+    "veh496"
+   ],
+   "circular": true
+  }
+ },
+ "note": "the rule is applied as fixed; siren_only_same_seeds shows whether a flagged wait also happens with no alert at all (any vehicle counted)"
+}

@@ -1,0 +1,204 @@
+{
+ "what": "Visual realism step on the simulated twin: OpenFreeMap street base map on every map page, a labelled satellite picture, roads at lane width with lane lines, more vehicle paint colours, automatic start. Driven in headless Chrome on 2026-10-05.",
+ "date_utc": "2026-10-05",
+ "label": "SIMULATED: the traffic is generated, uncalibrated demand. Nothing here is a measurement of traffic.",
+ "command": "cd frontend && npm run build; python -m uvicorn app.main:app --app-dir backend --host 127.0.0.1 --port 8011; a DevTools script opened each page, pressed the buttons named below and saved the screenshots",
+ "base_map": {
+  "provider": "OpenFreeMap, style liberty",
+  "style_url": "https://tiles.openfreemap.org/styles/liberty",
+  "building_layers_removed_in_the_browser": [
+   "building",
+   "building-3d"
+  ],
+  "credit_shown": [
+   "OpenFreeMap © OpenMapTiles Data from OpenStreetMap"
+  ],
+  "pages": {},
+  "esri_requests_on_any_page": 0
+ },
+ "satellite": {
+  "source": "Sentinel-2 cloudless 2016 by EOX, CC BY 4.0",
+  "what_it_is": "a composite of images captured during 2016 at 10 m per pixel; not one date, not live; requested up to zoom 14 and stretched beyond, not sharpened",
+  "note_on_the_map": [
+   "satellite image: composite of 2016 captures at 10 m per pixel, not live"
+  ],
+  "credit_on_the_map": "Sentinel-2 cloudless by EOX IT Services GmbH (Contains modified Copernicus Sentinel data 2016) | © OpenStreetMap contributors, Overture Maps Foundation | OpenFreeMap © OpenMapTiles Data from OpenStreetMap",
+  "note_after_switching_off": []
+ },
+ "roads": {
+  "width_rule": "sum of the section's lane widths in the SUMO network, drawn in metres for the city's latitude",
+  "lane_lines": "dashed, between lanes of the same section, from zoom 16; drawn from the lane count, not seen in any image",
+  "note_on_the_page": {
+   "los_angeles": [
+    "Roads are drawn as wide as their lanes in the SUMO network (lane count × lane width), not at a measured width. The lane count comes from an OpenStreetMap lanes tag for 968 sections and from SUMO's default for the road class for 1682; for 0 it is not recorded which."
+   ],
+   "dhaka": [
+    "Roads are drawn as wide as their lanes in the SUMO network (lane count × lane width), not at a measured width. The lane count comes from an OpenStreetMap lanes tag for 0 sections and from SUMO's default for the road class for 0; for 6527 it is not recorded which."
+   ]
+  },
+  "cities": {
+   "dhaka": {
+    "sections": 6527,
+    "lane_count_from": {
+     "OpenStreetMap": 0,
+     "default": 0,
+     "not recorded": 6527
+    },
+    "network_file": "data/cities/dhaka_r1/dhaka_r1.net.xml.gz",
+    "network_sha256": "aa9acdda7a66e21829f6f826b0fefaee5742a8f2cb8abd18aa85a7fc3b4d3743",
+    "openstreetmap_extract": null,
+    "extract_sha256": null,
+    "ways_in_extract_with_a_lanes_tag": null,
+    "sections_by_lane_width_m": {
+     "3.2": 5795,
+     "2.0": 580,
+     "1.6": 44,
+     "2.25": 12,
+     "1.25": 12,
+     "2.5": 10,
+     "1.5": 10,
+     "2.65": 10,
+     "2.29": 6,
+     "1.2": 6,
+     "3.8": 6,
+     "1.0": 6,
+     "0.9": 4,
+     "0.75": 4,
+     "3.0": 4,
+     "0.8": 4,
+     "5.0": 4,
+     "1.82": 2,
+     "1.75": 2,
+     "2.4": 2,
+     "3.5": 2,
+     "7.0": 2
+    },
+    "sections_with_two_or_more_lanes": 909
+   },
+   "los_angeles": {
+    "sections": 2650,
+    "lane_count_from": {
+     "OpenStreetMap": 968,
+     "default": 1682,
+     "not recorded": 0
+    },
+    "network_file": "data/cities/los_angeles/sumo/los_angeles.net.xml",
+    "network_sha256": "88b242474c2487a1df0a480bdcb27b96de825db5bdcd1010a202a00d4b8d2d5f",
+    "openstreetmap_extract": "data/cities/los_angeles/sumo/los_angeles.osm.xml",
+    "extract_sha256": "19ed011496e1cdd89b95249ec45e81547d96b4583636751255a24b1bc10ad218",
+    "ways_in_extract_with_a_lanes_tag": 733,
+    "sections_by_lane_width_m": {
+     "3.2": 2642,
+     "1.6": 8
+    },
+    "sections_with_two_or_more_lanes": 797
+   },
+   "sylhet": {
+    "sections": 4230,
+    "lane_count_from": {
+     "OpenStreetMap": 265,
+     "default": 3965,
+     "not recorded": 0
+    },
+    "network_file": "data/cities/sylhet/sumo/sylhet.net.xml",
+    "network_sha256": "3ee070948d4015a0e9ae89b4d3fc568b825b1c5ce265d51e8cf6ae2f75dff7ab",
+    "openstreetmap_extract": "data/cities/sylhet/sumo/sylhet.osm.xml",
+    "extract_sha256": "f5b4c8b1727a4770a56a46f37b27ed818449492bbaa2022887ff804733b01a25",
+    "ways_in_extract_with_a_lanes_tag": 42,
+    "sections_by_lane_width_m": {
+     "3.2": 4228,
+     "1.6": 2
+    },
+    "sections_with_two_or_more_lanes": 296
+   }
+  }
+ },
+ "vehicles": {
+  "legend_line": "vehicle colours are decoration and carry no data",
+  "reference_colours_per_shape": {
+   "car": 9,
+   "auto": 3,
+   "bus": 4,
+   "bike": 5
+  },
+  "added_colours_per_shape": {
+   "car": 8,
+   "auto": 0,
+   "bus": 2,
+   "bike": 3
+  },
+  "still_one_class": true
+ },
+ "autostart": {
+  "los_angeles": {
+   "start_button_pressed": false,
+   "buttons_seen_after_opening": [
+    "Pause",
+    "Stop"
+   ],
+   "first_reading": "17vehicles on the road",
+   "after_stop": {
+    "status": "stopped · simulated second 152",
+    "buttons": [
+     "Start the simulation"
+    ]
+   }
+  },
+  "dhaka": {
+   "start_button_pressed": false,
+   "buttons_seen_after_opening": [
+    "Pause",
+    "Stop"
+   ],
+   "first_reading": "1vehicles on the road",
+   "after_stop": {
+    "status": "stopped · simulated second 121",
+    "buttons": [
+     "Start the simulation"
+    ]
+   }
+  }
+ },
+ "autostart_note": "Dhaka was opened with the server's last run in the state 'stopped' and started by itself within the 4 seconds before the script's first reading. Los Angeles had already been started by an earlier page visit in the same script. Sylhet also started by itself (status 'running · simulated second 23' 25 s after opening). After Stop the page stayed stopped and offered the Start button.",
+ "legend_position": "measured on Sylhet: legend 884-946 px, map credit 970-994 px (950-994 with the satellite credit); they do not overlap",
+ "screenshots": {
+  "dhaka_1_twin_started_by_itself.png": "4e04f6c02d2a20a4a0888da940869e2dedff44825b5438cbe6b102689c1ef8e3",
+  "dhaka_2_satellite_tilted.png": "8d4551af4ff4d3220843c2b5a1ecb9a2088d73e703a144fdd03e999197563c56",
+  "dhaka_3_satellite_far_out.png": "70bdfcea80037ff3fb1893b889ffb982cf39be2a5cd177b79a42718bb5a0c1c8",
+  "dhaka_4_satellite_street_zoom_blur.png": "42a0e864dd0b0ac693ef76944cea3ff56600b844491b38bfd5756ddfedc59fbe",
+  "dhaka_5_road_widths_top_down_z18.png": "f5d7a962a7e83d6713d7b165206b2c6610e02c15f432df1cfbe101190f63a19f",
+  "dhaka_6_road_widths_tilted_z19.png": "d2c994637c37ba0627e63e210106875153d1f7ceb89a51164f31693b61682315",
+  "dhaka_7_street_level.png": "c02f4bdcbefdbfc7d34ad0151bd94022d8fa7e6e2d5b3f7e889f577109c4b9ed",
+  "dhaka_8_street_level_night.png": "05658813a58a851d6475c1fd1483d6b8e00c6fe1904eedaa5e8ccb65788a5bd7",
+  "dhaka_9_overview_night.png": "0ba418c8825b3a545b22867dc3f19ccccb7217f16f73a33e45c3dae73ccbd335",
+  "los_angeles_1_twin_started_by_itself.png": "443044115f9d2376f2636c769d2e7dcdbad614acf1b9fd3056ff526c174a610d",
+  "los_angeles_2_satellite_tilted.png": "728c8f8c76456597a9791ea1e087e560e5939c89d28b3c848959ea2aca271f97",
+  "los_angeles_3_satellite_far_out.png": "063a97faab04fba49f83e306066779f69b6e0eefc77e78e59fc379e4038df4ec",
+  "los_angeles_4_satellite_street_zoom_blur.png": "7d653520a421cda5f9b875e8a1ba8204889ab0dbbcd8984bb44f804aa1b3997b",
+  "los_angeles_5_road_widths_top_down_z18.png": "b2b733ee901a30d278f2914e0a8fc4e4d6d413e4f4352518598d0e60c3aaff51",
+  "los_angeles_6_road_widths_tilted_z19.png": "c39c9487963915b527f35396af6429fbb670a3c5e1c27680fa13d9b971f66e1b",
+  "los_angeles_7_street_level.png": "3089995a14f93f420e93990935e74c0e23831de1454e8170f6aa5d8b9fef4b7c",
+  "los_angeles_8_street_level_night.png": "74be4c2a2d1ed41e30a6699ea5661298135eff5ff8272c5835f11fb6cc3a88d4",
+  "los_angeles_9_overview_night.png": "a307d5b7a262805629af6bd9ad4a78311877cfce3ba5289c18668ef0d96e56a2",
+  "page_city.png": "2e1b28952d64fa250f1c34c7b887e0991d5fd5c3f509c31ae93c4e31e715c5ea",
+  "page_control_room_tab1.png": "ee71f61b5c0e1f4595438a1118bd667b69817d1f2591777a055a1e4f5a13ee5e",
+  "page_control_room_tab2.png": "25f8b7ed9650d464c030af36cb138075d668aaa84a2f5e85ca5eefc340feec6b",
+  "page_control_room_tab3.png": "1b40f8136f94a07f056b9123446cad52efc2171c6b2b2c66e22ef8af7d8b3c57",
+  "page_map.png": "5b406fdc57761f26af0e89fa89ce58543f71e76201c9b384f9c8f11ea0b6e0cf",
+  "page_today.png": "bfa90bd174c981910fc55398d1bd3fc2580ce64d5a5950664afa579b7fe3caee",
+  "sylhet_10_legend_above_credit.png": "5fabaf3284764e1bcc35533912b2d28d4d778320b7b3c4043a213d006be47f63"
+ },
+ "not_checked": [
+  "a real graphics card (headless Chrome drew with software rendering) and touch devices",
+  "the words 'starting the simulation' were never caught on screen by the script",
+  "a run reaching its end and starting again (written and unit-tested, not watched for 30 minutes)",
+  "the 'Stop it and start <city>' button shown when another city's simulation is running (unit-tested decision, not pressed in a browser)",
+  "the base map failing to load (falls back to a plain background in code, not exercised)",
+  "the Mapbox option",
+  "the Add-your-city card's map after a search, and every page in Bangla",
+  "the Today page has no map, so there was nothing to check there",
+  "clicking a vehicle (still never exercised in a browser)",
+  "whether a lane count tagged in OpenStreetMap is itself right; 'OpenStreetMap' means only that the way carries a lanes tag",
+  "OpenFreeMap serves whatever tile set is current; the map's content is not pinned to a date"
+ ]
+}

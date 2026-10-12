@@ -1,0 +1,41 @@
+{
+ "base": "http://127.0.0.1:8011/",
+ "when": "2026-10-11T03:42:27.943Z",
+ "checks": [
+  {
+   "name": "a simulated trip can be started",
+   "ok": true
+  },
+  {
+   "name": "the trip screen offers the phone's crash sensor (a tap, not automatic)",
+   "ok": true
+  },
+  {
+   "name": "live g is shown from the sensor",
+   "ok": true,
+   "detail": "vibration Crash sensor on: 1.00 g"
+  },
+  {
+   "name": "a 5.8 g jolt starts the countdown through the WreckWatch rule",
+   "ok": true,
+   "detail": "15 Crash-like jolt detected. Sending a TEST alert in 15 s. Test Cancel"
+  },
+  {
+   "name": "after the countdown the detection is kept on the phone, labelled TEST",
+   "ok": true,
+   "detail": "TEST: a 5.79 g jolt from this phone's sensor. Kept on the phone: nothing was sent, not even to the app's alerts."
+  },
+  {
+   "name": "nothing was posted to the alerts feed (no /api/emergency/sos/test request)",
+   "ok": true,
+   "detail": "0 request(s)"
+  },
+  {
+   "name": "no page errors",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "errors": [],
+ "posts": []
+}

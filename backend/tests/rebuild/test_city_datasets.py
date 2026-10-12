@@ -9,7 +9,7 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
-from app.data.city_datasets import REGISTRY, CityData, available, load_city  # noqa: E402
+from core.common.data.city_datasets import REGISTRY, CityData, available, load_city  # noqa: E402
 
 PRESENT = [c for c in REGISTRY if available(c)]
 
@@ -89,7 +89,7 @@ def test_simulated_city_is_labelled_and_cannot_pass_as_real():
 @pytest.mark.skipif("METR-LA" not in PRESENT, reason="METR-LA not fetched")
 def test_floors_reproduce_the_published_protocol():
     """Our historical-average floor must match DCRNN's published HA, or our evaluation differs."""
-    from app.forecasting.evaluation.benchmark_floors import floors_for_city
+    from core.ml.forecasting.evaluation.benchmark_floors import floors_for_city
     rec = floors_for_city("METR-LA", [3, 6, 12])
     ha = rec["floors"][3]["historical_average"]
     assert abs(ha["mae"] - 4.16) / 4.16 < 0.05, f"HA MAE {ha['mae']} vs published 4.16"
@@ -98,7 +98,7 @@ def test_floors_reproduce_the_published_protocol():
 
 @pytest.mark.skipif("METR-LA" not in PRESENT, reason="METR-LA not fetched")
 def test_floors_behave_like_forecasters_should():
-    from app.forecasting.evaluation.benchmark_floors import floors_for_city
+    from core.ml.forecasting.evaluation.benchmark_floors import floors_for_city
     f = floors_for_city("METR-LA", [3, 6, 12])["floors"]
     assert f[3]["persistence"]["mae"] < f[6]["persistence"]["mae"] < f[12]["persistence"]["mae"], \
         "persistence must degrade as the horizon grows"
@@ -113,6 +113,6 @@ def test_floors_behave_like_forecasters_should():
 def test_no_future_leakage_in_the_historical_average():
     """The HA table must be built from the training region only."""
     import inspect
-    from app.forecasting.evaluation import benchmark_floors as bf
+    from core.ml.forecasting.evaluation import benchmark_floors as bf
     src = inspect.getsource(bf.floors_for_city)
     assert "[:n_train]" in src, "the slot table must be accumulated over the train split only"

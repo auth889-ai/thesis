@@ -1,6 +1,6 @@
 """A city's OWN observed history as time-of-day profiles: per corridor, per 15-minute local slot, how much slower
-than free flow the corridor ran. Source: the observatory's rows with a value from our own derived speeds
-(Amazon Location); Google-derived rows are never read. Multipliers, not congestion classes: a corridor that ran at
+than free flow the corridor ran. Source: the observatory's rows observed by our own opt-in phone sensing; speeds
+derived from a route provider (Amazon Location, Google) are never read. Multipliers, not congestion classes: a corridor that ran at
 half its free-flow speed is a 2.0, and a route's travel-time distribution is its free-flow time times the worst
 touched corridor's multipliers at that slot."""
 from __future__ import annotations
@@ -24,9 +24,9 @@ def own_profiles(city_id: str, tz_offset_h: float) -> dict:
     hit = _CACHE.get(key)
     if hit and time.time() - hit[0] < TTL_S:
         return hit[1]
-    from app.data.live_providers.observatory import observatory
+    from core.common.data.live_providers.observatory import OBSERVED_PROVIDERS, observatory
     rows, nodes = observatory.series(city_id)
-    own = [r for r in rows if r.get("provider") not in (None, "google")]
+    own = [r for r in rows if r.get("provider") in OBSERVED_PROVIDERS]
     per: dict[str, dict[int, list[float]]] = defaultdict(lambda: defaultdict(list))
     ff: dict[str, float] = {}
     values = np.array([r["v"] for r in own], dtype="float64") if own else np.zeros((0, len(nodes)))

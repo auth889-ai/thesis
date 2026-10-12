@@ -1,4 +1,4 @@
-/** Shapes returned by /api/commute/plan and /api/analyze (backend/app/commute, backend/app/routing/trip_analysis). */
+/** Shapes returned by /api/commute/plan and /api/analyze (backend/app/commute, core/simulation/routing/trip_analysis). */
 export type Place = {label?: string; lat: number; lng: number};
 
 export type CommuteOption = {route: string; covered: boolean; expected_s: number; on_time_probability: number | null; worst_corridor: string | null};

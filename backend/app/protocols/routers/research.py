@@ -14,16 +14,16 @@ def research_status():
     This is the canonical project status used by SYSTEM and documentation. It never converts a
     missing/negative result into a presentational success state.
     """
-    from app.protocols.research_status import compute_research_status
+    from core.simulation.closed_loop.protocols.research_status import compute_research_status
     return compute_research_status()
 
 
 @router.get("/api/research/executions", tags=["research"])
 def scientific_executions():
-    from app.control import jobs as scientific_jobs
-    from app.control.scenario import REFERENCE, read
-    from app import evidence_paths as config
-    from app.forecasting.operations.road_forecasts import _background
+    from core.simulation.closed_loop.control import jobs as scientific_jobs
+    from core.simulation.closed_loop.control.scenario import REFERENCE, read
+    from core.common import evidence_paths as config
+    from core.ml.forecasting.operations.road_forecasts import _background
     result = {"jobs": scientific_jobs.recent(),
               "arms": list(scientific_jobs.ARMS), "reference_run": REFERENCE}
     try:
@@ -38,7 +38,7 @@ def scientific_executions():
 
 @router.post("/api/research/executions", status_code=202, tags=["research"])
 def scientific_execution_start(payload: dict):
-    from app.control import jobs as scientific_jobs
+    from core.simulation.closed_loop.control import jobs as scientific_jobs
     if set(payload) != {"observation_as_of_index"}:
         raise HTTPException(422, "Select an observation window. Seeds are internal provenance; all controllers run together.")
     try:
@@ -51,7 +51,7 @@ def scientific_execution_start(payload: dict):
 
 @router.get("/api/research/executions/{job_id}", tags=["research"])
 def scientific_execution_status(job_id: str):
-    from app.control import jobs as scientific_jobs
+    from core.simulation.closed_loop.control import jobs as scientific_jobs
     try:
         return scientific_jobs.status(job_id)
     except (ValueError, FileNotFoundError) as exc:
@@ -60,7 +60,7 @@ def scientific_execution_status(job_id: str):
 
 @router.post("/api/research/executions/{job_id}/cancel", tags=["research"])
 def scientific_execution_cancel(job_id: str):
-    from app.control import jobs as scientific_jobs
+    from core.simulation.closed_loop.control import jobs as scientific_jobs
     try:
         return scientific_jobs.cancel(job_id)
     except (ValueError, FileNotFoundError) as exc:
@@ -69,7 +69,7 @@ def scientific_execution_cancel(job_id: str):
 
 @router.post("/api/research/executions/{job_id}/controls", status_code=202, tags=["research"])
 def scientific_execution_control(job_id: str, payload: dict):
-    from app.control import jobs
+    from core.simulation.closed_loop.control import jobs
     try:
         return jobs.control(job_id, payload)
     except FileNotFoundError as exc:
@@ -82,7 +82,7 @@ def scientific_execution_control(job_id: str, payload: dict):
 
 @router.get("/api/research/executions/{job_id}/trace", tags=["research"])
 def scientific_execution_trace(job_id: str, arm: str = "predictive_v2x", vehicle: str = "", after: int = 0):
-    from app.control import jobs
+    from core.simulation.closed_loop.control import jobs
     try:
         return jobs.vehicle_trace(job_id, arm, vehicle, after)
     except (ValueError, FileNotFoundError) as exc:

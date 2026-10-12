@@ -13,16 +13,18 @@ import {Stats} from "./Stats";
 import {Ask} from "./Ask";
 import {Cards} from "./Cards";
 import {Greeting, Welcome} from "./Welcome";
+import {Home} from "./Home";
 import "@/features/assistant/assistant.css";
 
 const ACTIVE = new Set(["planning", "running", "waiting_approval", "waiting_user"]);
 
-/** TODAY: the day as one screen: numbers, timeline, risks and suggestions, active goals, updates. Everything is computed now. */
+/** TODAY: the home (the city in 3D, a trip, when to leave, alerts), then the day as one screen: numbers, timeline, risks and suggestions, active goals, updates. Everything is computed now. */
 export function TodayPage() {
   const twin = useTwin(24), goals = useGoals(), feed = useFeed();
   const active = (goals.data?.goals ?? []).filter((g) => ACTIVE.has(g.status));
   return (
     <div className="stack today">
+      <Home />
       <Welcome />
       <Ask />
       <Greeting />

@@ -19,7 +19,7 @@
     "sha": "4c3e2d373c647667c2123e1591f2d79c229dfcc6",
     "paper": "Shao et al., Exploring Progress in Multivariate Time Series Forecasting, TKDE 2024"
    },
-   "config": "",
+   "config": "baselines/D2STGNN/METR-LA.py",
    "epochs": 100,
    "epochs_completed": 100,
    "checkpoint": "checkpoints/D2STGNN/METR-LA_100_12_12/8f81695da1177d0e899c4472fd81bc3d/D2STGNN_best_val_MAE.pt",
@@ -82,6 +82,17 @@
      "rmse_diff_pct": 0.63,
      "mape_diff_pct": 2.13
     }
+   },
+   "config_used": {
+    "path": "results/forecasting/checkpoints/D2STGNN/METR-LA_100_12_12/8f81695da1177d0e899c4472fd81bc3d/METR-LA.py",
+    "sha256": "c2ff453981c1b8122d10c7d4dce5de1ce97fee30521e277bb245740298f7cf03",
+    "harness_sha256": "5fe3c3fcb550b9c5cb0f783797088ed22d61bd05b29edcc1fff5c63c0ef4f98e",
+    "changes_from_harness": [
+     "-CFG.EVAL.HORIZONS = [3, 6, 12] # Prediction horizons for evaluation. Default: []",
+     "+CFG.EVAL.HORIZONS = [1, 3, 6, 12]"
+    ],
+    "filled_utc": "2026-10-07T21:00:44.729997+00:00",
+    "how": "app.tools.fill_missing_configs: the run folder's own copy, compared with the harness file at the pinned commit"
    }
   },
   {
@@ -351,7 +362,7 @@
     "sha": "4c3e2d373c647667c2123e1591f2d79c229dfcc6",
     "paper": "Shao et al., Exploring Progress in Multivariate Time Series Forecasting, TKDE 2024"
    },
-   "config": "",
+   "config": "baselines/MegaCRN/METR-LA.py",
    "epochs": 100,
    "epochs_completed": 100,
    "checkpoint": "checkpoints/MegaCRN/METR-LA_100_12_12/eb9112707fb2037fd54fb28c357322f1/MegaCRN_best_val_MAE.pt",
@@ -414,6 +425,17 @@
      "rmse_diff_pct": 0.95,
      "mape_diff_pct": 3.29
     }
+   },
+   "config_used": {
+    "path": "results/forecasting/checkpoints/MegaCRN/METR-LA_100_12_12/eb9112707fb2037fd54fb28c357322f1/METR-LA.py",
+    "sha256": "53118dec0ce030912d4112d369aa1a6c63c6c01cf5beea7a1963b99037b34d11",
+    "harness_sha256": "c00a3232c1425076b4ba27c9f1992feae44738bf8968a321cd7504dfe8c02539",
+    "changes_from_harness": [
+     "-CFG.EVAL.HORIZONS = [3, 6, 12] # Prediction horizons for evaluation. Default: []",
+     "+CFG.EVAL.HORIZONS = [1, 3, 6, 12]"
+    ],
+    "filled_utc": "2026-10-07T21:00:44.967649+00:00",
+    "how": "app.tools.fill_missing_configs: the run folder's own copy, compared with the harness file at the pinned commit"
    }
   },
   {

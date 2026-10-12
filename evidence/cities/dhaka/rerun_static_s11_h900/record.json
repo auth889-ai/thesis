@@ -1,0 +1,59 @@
+{
+ "city_id": "dhaka",
+ "dataset": "frozen Lab 02 network dhaka_r1 + routes_repeat_1h, scale 0.584",
+ "command": "PYTHONPATH=backend python -m app.twin.runtime --arm static --seed 11 --horizon 900 --out <dir>   (DHAKAFLOW_SUMO_EXTRA unset)",
+ "what": "the same run before and after the network, routes and scale moved from literals in twin/runtime.py to config/cities/dhaka.yaml",
+ "recorded": {
+  "file": "results/routing/static_s11_h900/metrics.json",
+  "total_vehicle_hours": 218.91972222222222,
+  "arrived": 917,
+  "git": "a503947"
+ },
+ "before": {
+  "log": "before.log",
+  "metrics": "before_metrics.json",
+  "metrics_sha256": "8de003c29e0668eb48b397e6b7b200ead040621e779d691f7925b7fe8f4f01af",
+  "tripinfo_sha256": "93b03d9f407cefdf132e848af7d292d073926961053e3bfb7eacaef1d9ab4c0f",
+  "total_vehicle_hours": 218.91972222222222
+ },
+ "after": {
+  "log": "after.log",
+  "metrics": "after_metrics.json",
+  "metrics_sha256": "ff41f4e053c58a03c9c58b4ec50500dc5b77e7fa9b7355716faaea5b9ba16160",
+  "tripinfo_sha256": "848f264731be858a92cbceee84776bba830a12cd469d9549588836ca2f98e0bc",
+  "total_vehicle_hours": 218.91972222222222
+ },
+ "identical_metrics": [
+  "arrived",
+  "inserted",
+  "loaded",
+  "max_queue_veh",
+  "mean_depart_delay_s",
+  "mean_queue_veh",
+  "mean_running_veh",
+  "mean_time_loss_s",
+  "mean_travel_time_all",
+  "mean_travel_time_s",
+  "mean_waiting_s",
+  "p95_travel_time_s",
+  "queue_steps",
+  "running_at_end",
+  "teleports",
+  "total_vehicle_hours",
+  "total_waiting_s",
+  "unfinished",
+  "unfinished_at_horizon",
+  "vehicles_rerouted_at_least_once",
+  "waiting_to_insert_at_end"
+ ],
+ "differing_metrics": [],
+ "tripinfo_identical": {
+  "whole_file": false,
+  "vehicle_rows": true,
+  "note": "the files differ only in the header SUMO writes (generation time and output paths)"
+ },
+ "tripinfo_rows_sha256": {
+  "before": "f2e2299c2d7c75a52b306b56482fe6439dd8bd387d7bbd38021eccdaa1b457ae",
+  "after": "f2e2299c2d7c75a52b306b56482fe6439dd8bd387d7bbd38021eccdaa1b457ae"
+ }
+}

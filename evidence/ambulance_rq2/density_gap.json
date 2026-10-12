@@ -1,0 +1,252 @@
+{
+ "dhatrax_int": {
+  "definition": "mean tracked vehicles in the camera zone / zone length (checked: mean_active_vehicle_count / active_length_m x 1000 reproduces density_veh_per_km)",
+  "per": "road approach, all lanes",
+  "classes": "all ten tracked classes (motorcycles, rickshaws, bicycles, CNGs included); no pedestrian class",
+  "zone_length_m": 89.2,
+  "density_07_veh_km": 57.7,
+  "active_vehicles_07": 5.15,
+  "flow_07_veh_h": 1184,
+  "class_share_pct": {
+   "ambulance": 0.9,
+   "bicycle": 0.9,
+   "bus_minibus": 5.9,
+   "cng": 15.3,
+   "car_micro": 27.9,
+   "motor_cycle": 34.3,
+   "pickup_truck": 3.0,
+   "rickshaw": 10.4,
+   "special_purpose": 0.3,
+   "van": 1.0
+  },
+  "check_formula_max_abs_diff": 0.0
+ },
+ "sumo_section": {
+  "edge": "691209729#5",
+  "lanes": 3,
+  "length_m": 91.8
+ },
+ "lane_based_jam_density": {
+  "mean_space_per_vehicle_m": 6.77,
+  "jam_density_veh_km_3_lanes": 443.3,
+  "note": "the generated demand's mix (900 trips) with each type's length + minGap as SUMO uses them; side by side packing not counted"
+ },
+ "runs": [
+  {
+   "variant": "default",
+   "section_density_mean_veh_km": 4.8,
+   "section_density_peak_veh_km": 76.22,
+   "section_entered_per_hour": 260,
+   "densest_edges_peak_veh_km": [
+    {
+     "edge": "33791740#9",
+     "veh_km": 359.1
+    },
+    {
+     "edge": "33791740#7",
+     "veh_km": 358.9
+    },
+    {
+     "edge": "511980877#8",
+     "veh_km": 323.5
+    },
+    {
+     "edge": "511980877#6",
+     "veh_km": 309.4
+    },
+    {
+     "edge": "33791740#5",
+     "veh_km": 309.1
+    }
+   ],
+   "vtypes": {
+    "Ambulance": {
+     "vClass": "emergency",
+     "length_m": 6.5,
+     "minGap_m": 2.5,
+     "width_m": 2.16,
+     "minGapLat_m": 0.6
+    },
+    "Bicycle": {
+     "vClass": "bicycle",
+     "length_m": 1.6,
+     "minGap_m": 0.5,
+     "width_m": 0.65,
+     "minGapLat_m": 0.35
+    },
+    "Bus_Minibus": {
+     "vClass": "bus",
+     "length_m": 12.0,
+     "minGap_m": 2.5,
+     "width_m": 2.5,
+     "minGapLat_m": 0.6
+    },
+    "CNG": {
+     "vClass": "taxi",
+     "length_m": 5.0,
+     "minGap_m": 2.5,
+     "width_m": 1.8,
+     "minGapLat_m": 0.6
+    },
+    "Car_Micro": {
+     "vClass": "passenger",
+     "length_m": 5.0,
+     "minGap_m": 2.5,
+     "width_m": 1.8,
+     "minGapLat_m": 0.6
+    },
+    "Motor_Cycle": {
+     "vClass": "motorcycle",
+     "length_m": 2.2,
+     "minGap_m": 2.5,
+     "width_m": 0.9,
+     "minGapLat_m": 0.6
+    },
+    "Pickup_Truck": {
+     "vClass": "delivery",
+     "length_m": 6.5,
+     "minGap_m": 2.5,
+     "width_m": 2.16,
+     "minGapLat_m": 0.6
+    },
+    "Rickshaw": {
+     "vClass": "bicycle",
+     "length_m": 1.6,
+     "minGap_m": 0.5,
+     "width_m": 0.65,
+     "minGapLat_m": 0.35
+    },
+    "Special_Purpose": {
+     "vClass": "truck",
+     "length_m": 7.1,
+     "minGap_m": 2.5,
+     "width_m": 2.4,
+     "minGapLat_m": 0.6
+    },
+    "Van": {
+     "vClass": "passenger",
+     "length_m": 5.0,
+     "minGap_m": 2.5,
+     "width_m": 1.8,
+     "minGapLat_m": 0.6
+    },
+    "veh_passenger": {
+     "vClass": "passenger",
+     "length_m": 5.0,
+     "minGap_m": 2.5,
+     "width_m": 1.8,
+     "minGapLat_m": 0.6
+    }
+   }
+  },
+  {
+   "variant": "tight",
+   "section_density_mean_veh_km": 24.82,
+   "section_density_peak_veh_km": 359.32,
+   "section_entered_per_hour": 328,
+   "densest_edges_peak_veh_km": [
+    {
+     "edge": "33791740#9",
+     "veh_km": 388.2
+    },
+    {
+     "edge": "33791740#7",
+     "veh_km": 384.5
+    },
+    {
+     "edge": "511980877#8",
+     "veh_km": 338.5
+    },
+    {
+     "edge": "691209729#5",
+     "veh_km": 337.5
+    },
+    {
+     "edge": "691209729#14",
+     "veh_km": 311.2
+    }
+   ],
+   "vtypes": {
+    "Ambulance": {
+     "vClass": "emergency",
+     "length_m": 6.5,
+     "minGap_m": 2.5,
+     "width_m": 2.16,
+     "minGapLat_m": 0.6
+    },
+    "Bicycle": {
+     "vClass": "bicycle",
+     "length_m": 1.6,
+     "minGap_m": 0.5,
+     "width_m": 0.65,
+     "minGapLat_m": 0.1
+    },
+    "Bus_Minibus": {
+     "vClass": "bus",
+     "length_m": 12.0,
+     "minGap_m": 2.5,
+     "width_m": 2.5,
+     "minGapLat_m": 0.6
+    },
+    "CNG": {
+     "vClass": "taxi",
+     "length_m": 5.0,
+     "minGap_m": 1.5,
+     "width_m": 1.8,
+     "minGapLat_m": 0.2
+    },
+    "Car_Micro": {
+     "vClass": "passenger",
+     "length_m": 5.0,
+     "minGap_m": 2.5,
+     "width_m": 1.8,
+     "minGapLat_m": 0.6
+    },
+    "Motor_Cycle": {
+     "vClass": "motorcycle",
+     "length_m": 2.2,
+     "minGap_m": 1.0,
+     "width_m": 0.9,
+     "minGapLat_m": 0.1
+    },
+    "Pickup_Truck": {
+     "vClass": "delivery",
+     "length_m": 6.5,
+     "minGap_m": 2.5,
+     "width_m": 2.16,
+     "minGapLat_m": 0.6
+    },
+    "Rickshaw": {
+     "vClass": "bicycle",
+     "length_m": 1.6,
+     "minGap_m": 0.5,
+     "width_m": 0.65,
+     "minGapLat_m": 0.15
+    },
+    "Special_Purpose": {
+     "vClass": "truck",
+     "length_m": 7.1,
+     "minGap_m": 2.5,
+     "width_m": 2.4,
+     "minGapLat_m": 0.6
+    },
+    "Van": {
+     "vClass": "passenger",
+     "length_m": 5.0,
+     "minGap_m": 2.5,
+     "width_m": 1.8,
+     "minGapLat_m": 0.6
+    },
+    "veh_passenger": {
+     "vClass": "passenger",
+     "length_m": 5.0,
+     "minGap_m": 2.5,
+     "width_m": 1.8,
+     "minGapLat_m": 0.6
+    }
+   }
+  }
+ ],
+ "scale": 4.0,
+ "seed": 11
+}

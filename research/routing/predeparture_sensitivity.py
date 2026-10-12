@@ -40,11 +40,11 @@ import numpy as np
 
 REPO = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(REPO))
-import app.twin.runtime as pr                        # noqa: E402
-from app.protocols.chains import integrated_chain as ic                     # noqa: E402
-from app.protocols.chains import live_chain as lc                           # noqa: E402
-from app.routing.forecast_costs import build_table, fetch_forecast, write_weights  # noqa: E402
-from app.twin.network_file import ensure_net                       # noqa: E402
+import core.simulation.twin.runtime as pr                        # noqa: E402
+from core.simulation.closed_loop.protocols.chains import integrated_chain as ic                     # noqa: E402
+from core.simulation.closed_loop.protocols.chains import live_chain as lc                           # noqa: E402
+from core.simulation.routing.forecast_costs import build_table, fetch_forecast, write_weights  # noqa: E402
+from core.simulation.twin.network_file import ensure_net                       # noqa: E402
 
 RESULTS = REPO / "results/routing"
 OUT = RESULTS / "r1_forecast_to_action"
@@ -124,8 +124,8 @@ def run(seed: int, hops: int, a) -> dict:
                     reason = str((res.get("decision") or {}).get("reason"))
                     if "not a registered model" in reason:      # ask the registry's own gates why the graph models refuse
                         try:
-                            from app.forecasting.adapters.registry import available_for
-                            from app.routing.forecast_costs import recorded_city_data
+                            from core.ml.forecasting.adapters.registry import available_for
+                            from core.simulation.routing.forecast_costs import recorded_city_data
                             cd = recorded_city_data(a.city); cd = cd[0] if isinstance(cd, tuple) else cd
                             gates = [m for m in available_for(cd) if m["model"].split("/")[0] == model]
                             reason = "; ".join(f"{m['model']}: {', '.join(m.get('reasons') or ['refused'])}" for m in gates) or reason

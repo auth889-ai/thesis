@@ -1,1 +1,1 @@
-"""Simulated V2X transport and online state correction; not radio hardware."""
+"""The networking API (HTTP routes); the V2X model is in core/networking/v2x."""

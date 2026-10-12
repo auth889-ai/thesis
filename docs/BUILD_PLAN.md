@@ -94,7 +94,7 @@ closed loop. Do not claim collected or trained datasets that are absent.
 Consolidate credential lookup; remove the credentials-only root folder. Separate
 causal evidence processing from the V2X router. Next extract responsibilities from
 `backend/app/simulation/runtime.py` (catalog, lifecycle, stepping, serialization),
-`backend/app/control/closed_loop.py` (protocol, demand, control, reporting),
+`core/simulation/closed_loop/control/closed_loop.py` (protocol, demand, control, reporting),
 and web prediction/training adapters. Resolve callers of the removed
 `dashboard.backend` compatibility package in a dedicated migration; do not silently
 restore deleted code or skip failing tests.

@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- generated on 2026-10-13T04:07:04.720820+06:00 by Eclipse SUMO sumo 1.27.1
+<sumoConfiguration xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/sumoConfiguration.xsd">
+
+    <input>
+        <net-file value="/Users/jannatulferdouseva/thesis/data/cities/dhaka/sumo/corridor/dhaka_corridor.net.xml.gz"/>
+        <route-files value="/Users/jannatulferdouseva/thesis/data/cities/dhaka/sumo/corridor/dhaka_density.rou.xml"/>
+        <additional-files value="/Users/jannatulferdouseva/thesis/evidence/live_runs/sos_v2v/runs/nowarn_its_g5_p050_s11_dhaka/additional.xml"/>
+    </input>
+
+    <output>
+        <summary-output value="/Users/jannatulferdouseva/thesis/evidence/live_runs/sos_v2v/runs/nowarn_its_g5_p050_s11_dhaka/summary.xml"/>
+        <tripinfo-output value="/Users/jannatulferdouseva/thesis/evidence/live_runs/sos_v2v/runs/nowarn_its_g5_p050_s11_dhaka/tripinfo.xml"/>
+        <tripinfo-output.write-unfinished value="true"/>
+        <collision-output value="/Users/jannatulferdouseva/thesis/evidence/live_runs/sos_v2v/runs/nowarn_its_g5_p050_s11_dhaka/collisions.xml"/>
+        <statistic-output value="/Users/jannatulferdouseva/thesis/evidence/live_runs/sos_v2v/runs/nowarn_its_g5_p050_s11_dhaka/statistic.xml"/>
+    </output>
+
+    <time>
+        <end value="900.0"/>
+    </time>
+
+    <processing>
+        <lateral-resolution value="0.8"/>
+        <ignore-route-errors value="true"/>
+        <collision.action value="warn"/>
+        <collision.stoptime value="290"/>
+        <scale value="0.78"/>
+        <time-to-teleport value="300"/>
+    </processing>
+
+    <routing>
+        <device.rerouting.probability value="0"/>
+        <device.rerouting.adaptation-weight value="0.5"/>
+        <device.rerouting.adaptation-interval value="10"/>
+    </routing>
+
+    <report>
+        <no-warnings value="true"/>
+        <no-step-log value="true"/>
+    </report>
+
+    <traci_server>
+        <remote-port value="53566"/>
+    </traci_server>
+
+    <random_number>
+        <seed value="11"/>
+    </random_number>
+
+</sumoConfiguration>
+-->
+
+<collisions xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://sumo.dlr.de/xsd/collision_file.xsd">
+    <collision time="687.00" type="collision" lane="24448661#0_0" pos="14.85" collider="veh284" victim="cal300_174" colliderType="CNG" victimType="Motor_Cycle" colliderSpeed="12.26" victimSpeed="20.00" colliderFront="3616.75,1163.43" colliderBack="3616.53,1168.42" victimFront="3617.77,1163.00" victimBack="3617.67,1165.20"/>
+</collisions>

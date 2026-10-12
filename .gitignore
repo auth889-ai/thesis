@@ -212,3 +212,29 @@ results/**
 !results/**/network_metrics.json
 
 eva/
+
+# Published datasets fetched for recorded real data (python -m app.data.recorded.dhatrax --fetch); cited in third_party/SOURCES.md
+data/recorded/
+
+# own basemap tiles, local copies (fetched once, sha256 in evidence/tiles/TILES_BASEMAP.txt)
+data/tiles/**/*.pmtiles
+
+# Heavy per-run artefacts of the live and Veins runs (2026-10-13): kept on disk, listed in each run's SHA256SUMS, not tracked
+evidence/**/veins/results/
+evidence/**/*.sca
+evidence/**/*.vec
+evidence/**/*.vci
+evidence/**/*.old
+evidence/**/*.handshake_failed
+evidence/**/tripinfo.xml
+evidence/**/edgedata.xml
+evidence/**/summary.xml
+evidence/**/vehroutes.xml
+evidence/**/routing_round_*/alt_*
+evidence/**/routing_round_*/trips.xml
+evidence/**/routing_round_*/future_weights.xml
+evidence/**/demand_s*.rou.xml
+evidence/**/seg_s*.rou.xml
+evidence/**/trips_s*.xml
+evidence/**/*.mp4
+evidence/**/*.webm

@@ -1,0 +1,34 @@
+# Berlin, Germany (the Berlin V2X evaluation city).
+city_id: berlin
+display_name:
+  en: Berlin
+  bn: বার্লিন              # machine-written transliteration, not reviewed by a native speaker
+country: Germany
+# The Berlin V2X paper (Hernangomez et al., VTC2023-Spring, arXiv:2212.10343) and its repository README describe
+# "diverse urban environments in the city of Berlin" and give no coordinates, street names or bounds. The GPS traces
+# that would give the measured area are in the dataset on IEEE DataPort, which is not on this machine.
+# Until the box is computed from those traces, it is unknown, and the network pipeline refuses this city.
+bounding_box: null
+time_zone: Europe/Berlin  # IANA tz database
+default_languages: [de, en]
+emergency_numbers:        # shown, never dialled
+  police: "110"           # berlin.de/polizei ("Emergency: 110"), read 2026-10-04
+  # 112 for fire and ambulance: Wikipedia, "List of emergency telephone numbers", read 2026-10-04
+  fire: "112"
+  ambulance: "112"
+units:
+  speed: km/h
+  distance: km
+drive_side: right         # not measured on a network here; Germany drives on the right
+vehicle_classes: null     # no fleet mix has been sourced for this city
+plugins: []
+datasets:
+  - id: berlin_v2x
+    kind: v2x_measurements
+    source: "Berlin V2X (Hernangomez et al., VTC2023-Spring), IEEE DataPort, CC0-1.0; not downloaded yet"
+sumo:
+  prebuilt: null
+  build:
+    seed: 11
+    period_s: 2.0
+    horizon_s: 1800

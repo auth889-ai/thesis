@@ -1,0 +1,282 @@
+{
+ "simulation_run_id": "sim_veins_s201_baseline",
+ "arm": "baseline",
+ "seed": 201,
+ "profile": "veins_802.11p",
+ "penetration": 0.3,
+ "moment": "prepeak",
+ "config_hash": "ea08dddedc14",
+ "network_hash": "0d81df27ab2d",
+ "sumo": "1.21.0 --num-clients 2 (Veins order 1, this loop order 2)",
+ "fork": null,
+ "warm_up_s": 1200,
+ "design": "Santamaria, Fazio, Raimondo, Tropea, De Rango, IEEE TVT 68(5) 2019, doi:10.1109/TVT.2019.2905753 (design: RSUs + 802.11p + predictive rerouting; no code released)",
+ "information": "baseline",
+ "state": "ok",
+ "crash": null,
+ "veins_exit": 0,
+ "metrics": {
+  "arrived": 3180,
+  "unfinished_at_horizon": 3324,
+  "unfinished": 3324,
+  "total_vehicle_hours": 1055.5111111111112,
+  "mean_travel_time_all": 584.2312423124231,
+  "mean_travel_time_s": 659.2745283018868,
+  "p95_travel_time_s": 1304.0,
+  "mean_waiting_s": 123.7191823899371,
+  "total_waiting_s": 393427.0,
+  "mean_time_loss_s": 257.9394905660377,
+  "mean_depart_delay_s": 0.6841886792452829,
+  "vehicles_rerouted_at_least_once": 0,
+  "teleports": 5,
+  "loaded": 12480,
+  "inserted": 6504,
+  "running_at_end": 3324,
+  "waiting_to_insert_at_end": 13,
+  "mean_queue_veh": 437.34,
+  "max_queue_veh": 1116.0,
+  "mean_running_veh": 1816.63,
+  "queue_steps": 2110,
+  "never_inserted": 0,
+  "never_inserted_vehicle_hours": 0.0,
+  "congestion": {
+   "major_edges": 4952,
+   "teleport_reasons": {
+    "total": 5,
+    "jam": 0,
+    "yield": 1,
+    "wrongLane": 4
+   },
+   "busiest_interval_utilisation": {
+    "p50": 0.02,
+    "p90": 0.11,
+    "max": 0.767,
+    "share_ge_0.5": 0.0,
+    "share_ge_0.7": 0.0,
+    "share_ge_0.9": 0.0
+   },
+   "mean_occupancy_pct_major": 1.26,
+   "spillback_major_edges_occ_ge_80": 0,
+   "spillback_share": 0.0,
+   "max_running_vehicles": 3324,
+   "max_halting_vehicles": 1116,
+   "mean_halting_vehicles": 437.3,
+   "mean_speed_mps": 11.55,
+   "min_mean_speed_mps": 0.0,
+   "loaded_mean_speed_mps": 11.2,
+   "loaded_min_speed_mps": 8.95,
+   "loaded_mean_halting_share": 0.23,
+   "loaded_max_halting_share": 0.343,
+   "loaded_steps": 1677
+  },
+  "total_vehicle_hours_incl_never_inserted": 1055.5111,
+  "wall_s": 107.7
+ },
+ "network": {
+  "link": "Veins 5.3.1 IEEE 802.11p (packet level), 20 mW, 6 Mbit/s, no obstacle shadowing on the LA twin",
+  "uplink": {
+   "messages_tx": 0,
+   "messages_rx_at_rsus": 0,
+   "unique_to_server": 0,
+   "duplicates_two_rsus": 0,
+   "delivery_ratio_unique": null
+  },
+  "downlink": {
+   "advice_decided": 0,
+   "handed_to_rsu": 0,
+   "broadcast_by_rsus": 0,
+   "received_by_car": 0,
+   "applied": 0,
+   "inapplicable": 0,
+   "expired_no_rsu_in_reach": 0,
+   "delivery_ratio": null
+  },
+  "connected_vehicles": 1926,
+  "penetration_configured": 0.3,
+  "rsus": 20,
+  "rsu_reach_m": 600.0,
+  "reroutes_applied": 0,
+  "veins": {
+   "source": "Veins scalars (results/*.sca), its PHY/MAC",
+   "nodes": 1929,
+   "status_sent": 0,
+   "status_received_at_rsus": 0,
+   "advice_sent_by_rsus": 0,
+   "advice_received": 0,
+   "advice_applied": 0,
+   "advice_inapplicable": 0,
+   "advice_deferred_on_junction": 0,
+   "frames_lost_all_nodes": {
+    "interference_or_collision": 0,
+    "while_transmitting": 0
+   },
+   "per_rsu": [
+    {
+     "rsu": 0,
+     "node": "cluster_15027596_1719546613",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 1,
+     "node": "9276692666",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 2,
+     "node": "123455061",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 3,
+     "node": "1719559337",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 4,
+     "node": "123495471",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 5,
+     "node": "9786469530",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 6,
+     "node": "21490206",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 7,
+     "node": "20820632",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 8,
+     "node": "863795835-AddedOnRampNode",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 9,
+     "node": "15029454",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 10,
+     "node": "298583385",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 11,
+     "node": "1852134918",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 12,
+     "node": "4073554455",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 13,
+     "node": "1686584226",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 14,
+     "node": "1233732679",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 15,
+     "node": "1956040650",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 16,
+     "node": "1718378908",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 17,
+     "node": "403618471",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 18,
+     "node": "20189446",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 19,
+     "node": "1614923794",
+     "status_received": 0,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    }
+   ]
+  }
+ },
+ "rounds": [],
+ "routing_run_ids": [],
+ "reroutes_applied": 0,
+ "out_dir": "evidence/veins_forecast_routing/20261012T142239Z/s201/baseline",
+ "run_utc": "2026-10-12T14:25:28.720386+00:00"
+}

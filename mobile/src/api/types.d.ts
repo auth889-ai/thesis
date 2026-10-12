@@ -14,7 +14,7 @@ export interface paths {
         /**
          * Map Config
          * @description Which basemap the browser should use. A Mapbox public token is meant for the browser;
-         *     without one the Esri street tiles are used. Never a secret key.
+         *     without one OpenFreeMap's OpenStreetMap style is used. Never a secret key.
          */
         get: operations["map_config_api_config_map_get"];
         put?: never;

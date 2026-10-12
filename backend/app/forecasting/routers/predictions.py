@@ -1,12 +1,14 @@
 """Predictions HTTP endpoints."""
 from __future__ import annotations
 
+from core.simulation.routing.forecast_costs import NO_OBSERVED
+
 import json
 import sys
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
-from app import evidence_paths as config
-from app.data.live_providers import observatory as observatory_mod
-from app.protocols.evidence import forecast_ledger as forecast_log
+from core.common import evidence_paths as config
+from core.common.data.live_providers import observatory as observatory_mod
+from core.simulation.closed_loop.protocols.evidence import forecast_ledger as forecast_log
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -17,23 +19,15 @@ def models(city_id: str = "dhaka"):
     """Every forecasting model and whether it can honestly serve this city right now."""
     import sys
     sys.path.insert(0, str(config.REPO))
-    from app.forecasting.adapters.registry import available_for
+    from core.ml.forecasting.adapters.registry import available_for
     cd = observatory_mod.observatory.city_data(city_id)
     return {"city_id": city_id, "input": cd.describe(),
             "models": available_for(cd)}
 
 
 def _recorded_len(city_id: str) -> int:
-    """How many 5-minute bins the recorder's on-disk series holds for this city (0 if none)."""
-    if city_id != "dhaka":
-        return 0
-    import sys
-    sys.path.insert(0, str(config.REPO))
-    from app.forecasting.live import live_state
-    if not live_state.SRC.exists():
-        return 0
-    rows = live_state.load_rows(live_state.SRC)
-    return int(live_state.build(rows)[0].shape[0]) if rows else 0
+    """There is no recorded series: the only one was derived from Google Routes results and was withdrawn (2026-10-05)."""
+    return 0
 
 
 def _recorded_is_longer(city_id: str, cd) -> bool:
@@ -56,12 +50,15 @@ def city_forecast(city_id: str, horizons: str = "5,15,30,60", source: str = "aut
     """
     import sys
     sys.path.insert(0, str(config.REPO))
-    from app.forecasting.adapters.registry import forecast as run_forecast
+    from core.ml.forecasting.adapters.registry import forecast as run_forecast
     hs = [int(h) for h in horizons.split(",") if h.strip().isdigit()]
     cd = observatory_mod.observatory.city_data(city_id)
-    use_recorded = source == "recorded" or (source == "auto" and _recorded_is_longer(city_id, cd))
+    if source == "recorded":
+        return {"city_id": city_id, "available": False, "forecast": None, "decision": None, "note": NO_OBSERVED,
+                "readiness": observatory_mod.observatory.readiness(city_id)}
+    use_recorded = False
     if use_recorded:
-        from app.routing.forecast_costs import recorded_forecast
+        from core.simulation.routing.forecast_costs import recorded_forecast
         out = recorded_forecast(city_id, hs, model, "latest")
         out["source"] = "recorded"
     else:
@@ -69,6 +66,8 @@ def city_forecast(city_id: str, horizons: str = "5,15,30,60", source: str = "aut
         out["input"] = cd.describe()
         out["source"] = "observatory"
     out["readiness"] = observatory_mod.observatory.readiness(city_id)
+    if not cd.shape[0]:
+        out["note"] = NO_OBSERVED                       # nothing of this city's own to forecast from
     try:
         out["logged_rows"] = forecast_log.log(out, city_id, source=out["source"])
     except Exception as exc:                        # noqa: BLE001 - the ledger must not break a forecast
@@ -83,7 +82,7 @@ def city_forecast_scoreboard(city_id: str):
     Unlike the backtest (a replay), these were written down BEFORE their target time and cannot
     be revised. The scheduler issues one every five minutes while the server runs.
     """
-    return forecast_log.score(city_id)
+    return forecast_log.score(city_id) or {"city_id": city_id, "available": False, "note": NO_OBSERVED}
 
 
 @router.get("/api/forecast/{city_id}/accuracy", tags=["predict"])
@@ -93,12 +92,8 @@ def city_forecast_accuracy(city_id: str):
     Every model is cut at each origin bin, forecasts from that history only, and is scored on
     what the recorder later wrote. Read from the evidence file; the command regenerates it.
     """
-    f = config.REPO / "results/forecasting/live_backtest.json"
-    if city_id != "dhaka" or not f.exists():
-        return {"available": False, "city_id": city_id,
-                "missing": "results/forecasting/live_backtest.json",
-                "command": "python -m app.forecasting.live.live_backtest"}
-    return {"available": True, "result_source": "RESEARCH_BENCHMARK", **json.loads(f.read_text())}
+    # the only backtest there was ran on a recording derived from Google Routes results; it was withdrawn (2026-10-05)
+    return {"available": False, "city_id": city_id, "note": NO_OBSERVED}
 
 
 @router.get("/api/history/{city_id}", tags=["predict"])
@@ -111,14 +106,15 @@ def history(city_id: str, horizons: str = "5,15,30,60"):
     """
     import sys
     sys.path.insert(0, str(config.REPO))
-    from app.forecasting.adapters.registry import forecast as run_forecast
+    from core.ml.forecasting.adapters.registry import forecast as run_forecast
     rows, nodes = observatory_mod.observatory.series(city_id)
+    rows = [r for r in rows if r.get("provider") in observatory_mod.OBSERVED_PROVIDERS]     # observed traffic only; a provider's free-flow time is not history
     hs = [int(h) for h in horizons.split(",") if h.strip().isdigit()]
     cd = observatory_mod.observatory.city_data(city_id)
     if _recorded_is_longer(city_id, cd):
         # the recorded REAL_LIVE series on disk is the longer history: draw that day and forecast
         # from it — the same window E1 was measured on, so its accuracy can be quoted
-        from app.routing.forecast_costs import recorded_city_data
+        from core.simulation.routing.forecast_costs import recorded_city_data
         rcd, observed = recorded_city_data(city_id, "latest")
         out = run_forecast(rcd, hs)
         window = 288
@@ -153,7 +149,8 @@ def history(city_id: str, horizons: str = "5,15,30,60"):
         "forecast": out.get("forecast"),
         "decision": out.get("decision"),
         "readiness": observatory_mod.observatory.readiness(city_id),
-        "source": "observatory rolling buffer (derived speeds) + the common forecast interface",
+        "source": "this city's own opt-in phone sensing + the common forecast interface",
+        **({} if rows else {"note": NO_OBSERVED}),
     }
 
 
@@ -161,7 +158,7 @@ def history(city_id: str, horizons: str = "5,15,30,60"):
 def forecast_map_network(dataset: str, as_of: str | None = None, model: str | None = None):
     """The future state of the road network at one dataset moment: every sensor's prediction, the
     DIRECT/DERIVED edges the router prices, the unforecast backdrop, and the coverage counts."""
-    from app.forecasting.operations import road_forecasts as forecast_map
+    from core.ml.forecasting.operations import road_forecasts as forecast_map
     try:
         return forecast_map.network(dataset, as_of, model)
     except KeyError as ex:
@@ -177,7 +174,7 @@ def forecast_map_network(dataset: str, as_of: str | None = None, model: str | No
 @router.get("/api/forecast-map/{dataset}/road", tags=["predict"])
 def forecast_map_road(dataset: str, node: str, as_of: str | None = None, models: str = "GWNet,persistence"):
     """One sensor: history, each model's prediction, the measured future when inside the data."""
-    from app.forecasting.operations import road_forecasts as forecast_map
+    from core.ml.forecasting.operations import road_forecasts as forecast_map
     try:
         return forecast_map.road(dataset, node, as_of, tuple(m for m in models.split(",") if m))
     except (KeyError, ValueError) as ex:

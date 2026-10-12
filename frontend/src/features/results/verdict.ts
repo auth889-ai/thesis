@@ -1,3 +1,5 @@
+import {translate, type Translate} from "@/i18n";
+
 /** The plain-language verdict, derived from the computed gates and the stress experiment. Never typed in. */
 export type Gate = {status?: string; scope?: string; reason?: string; note?: string; detail?: string};
 export type Stats = {mean_pct?: number | null; label?: string | null; ci95?: [number | null, number | null] | null; wins?: number; losses?: number; ties?: number};
@@ -8,11 +10,12 @@ export const gateStatus = (gates: Record<string, Gate>, k: string) => gates[k]?.
 export const gateOk = (status: string) => /ESTABLISHED|PASSED|READY$/.test(status) && !/NOT_|NOT /.test(status);
 export const wl = (s?: Stats) => (s?.wins != null ? `${s.wins}/${s.losses}/${s.ties}` : "");
 
-export function verdict(gates: Record<string, Gate>, evalA: any): {kind: "yes" | "future" | "no"; text: string; strong: string} {
+export function verdict(gates: Record<string, Gate>, evalA: any, t: Translate = (k, v) => translate("en", k, v)): {kind: "yes" | "future" | "no"; text: string; strong: string} {
   const predOk = gateStatus(gates, "PREDICTIVE_TRAFFIC_BENEFIT") === "ESTABLISHED";
   const futureOk = gateStatus(gates, "FUTURE_INFORMATION_VALUE") === "ESTABLISHED";
   const gVb = arm(evalA, "predictive_v2x").vs_baseline ?? {}, oVr = arm(evalA, "oracle_v2x").vs_reactive ?? {};
-  if (predOk) return {kind: "yes", text: "Yes — routing on the AI forecast makes trips", strong: `${Math.abs(gVb.mean_pct ?? 0).toFixed(1)} % shorter than no advice.`};
-  if (futureOk) return {kind: "future", text: "Knowing the future helps — a perfect view of the next hour cuts total travel time", strong: `${Math.abs(oVr.mean_pct ?? 0).toFixed(1)} % against reactive routing. Today's AI forecast does not yet capture that gain.`};
-  return {kind: "no", text: "Not yet — in this test, no information source beat reactive routing with confidence.", strong: ""};
+  const one = (x?: number | null) => Number(Math.abs(x ?? 0).toFixed(1));
+  if (predOk) return {kind: "yes", text: t("lab.ev.verdict.yes"), strong: t("lab.ev.verdict.yesStrong", {pct: one(gVb.mean_pct)})};
+  if (futureOk) return {kind: "future", text: t("lab.ev.verdict.future"), strong: t("lab.ev.verdict.futureStrong", {pct: one(oVr.mean_pct)})};
+  return {kind: "no", text: t("lab.ev.verdict.no"), strong: ""};
 }

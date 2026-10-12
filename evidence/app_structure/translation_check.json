@@ -1,0 +1,23 @@
+{
+ "item": "Final plan item 5: translation of Home, 3D City, Emergency, Offline alerts",
+ "date": "2026-10-06",
+ "server": "uvicorn on 8012, working tree at 09:12 +06; browser language set to bn",
+ "method": "on each page the visible text of <main> was scanned for runs of Latin letters (3+), after waiting for the data",
+ "checked": {
+  "/": "no Latin text after the alerts strip stopped printing the backend's tag basis (translation_home_bn.jpg)",
+  "/3d": "only the names OpenStreetMap, Overture Maps, SUMO and the OpenStreetMap tag name 'lanes' remain; the backend stage word ('preparing') now shows on Research only; the status word is translated (\u099a\u09b2\u099b\u09c7 \u00b7 \u09b8\u09bf\u09ae\u09c1\u09b2\u09c7\u09b6\u09a8\u09c7\u09b0 66 \u09b8\u09c7\u0995\u09c7\u09a8\u09cd\u09a1)",
+  "/emergency": "no Latin text (translation_emergency_bn.jpg)",
+  "/offline": "no Latin text"
+ },
+ "stays_english_on_purpose": [
+  "source and product names (OpenStreetMap, Overture Maps, SUMO, DhaTraX, PeMS)",
+  "the tag's provenance words on hover (backend basis text, a developer's provenance)",
+  "the DhaTraX authors' own caveat, quoted"
+ ],
+ "not_checked": [
+  "Settings and Add city in Bangla",
+  "every state of the Home trip panel (no route was planned in this check)",
+  "a native speaker's review: every Bangla string is still machine-written (docs/BANGLA_REVIEW.md)"
+ ],
+ "tests": "frontend i18n, twin, today: 36 pass; tsc clean"
+}

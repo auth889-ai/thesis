@@ -7,7 +7,7 @@ How the numbers are made, and what they are NOT:
   travel time at a departure  = the route's free-flow time (real roads from Amazon Location, or the frozen OSM
                                 network as a fallback) × the travel-time multipliers the worst corridor the route
                                 runs along has shown at that time of day in THIS CITY'S OWN observed history
-                                (derived speeds sampled every 5 minutes; Google-derived rows are never read)
+                                (our own opt-in phone sensing; route-provider speeds are never read)
   on-time probability         = share of those observed multipliers whose travel time meets the deadline minus a
                                 safety buffer (an empirical probability, not a model's confidence)
   no history on the route     = no probability is shown, the response says why, and the route can be watched so
@@ -19,7 +19,7 @@ import math
 import threading
 from datetime import datetime, timedelta, timezone
 
-from app.paths import REPO
+from core.common.paths import REPO
 from app.commute import history
 
 BAND = {0: 1.08, 1: 1.33, 2: 1.75, 3: 2.50}          # the congestion multipliers the trip analysis uses for an unobserved route
@@ -42,12 +42,12 @@ def profile(corridor: str, city: str = "dhaka", tz_offset_h: float = LOCAL_UTC_O
                     "expected_level": round(history.level_of(float(sum(vals) / len(vals))), 2) if vals else None,
                     "p_slow_or_worse": round(sum(1 for v in vals if v >= 1.2) / len(vals), 3) if vals else None})
     return {"corridor": corridor, "slot_min": SLOT_MIN, "local_utc_offset_h": tz_offset_h, "slots": out,
-            "provenance": {"kind": "OWN_OBSERVED", "source": "results/live/observatory.sqlite (provider amazon_location)", "samples_total": prof["samples"],
+            "provenance": {"kind": "OWN_OBSERVED" if prof["samples"] else "NO_OBSERVED_TRAFFIC", "source": "results/live/observatory.sqlite (own phone sensing only)", "samples_total": prof["samples"],
                            "first_utc": prof["first_utc"], "last_utc": prof["last_utc"], "note": prof["rule"]}}
 
 
 def _city_id(city: str) -> str:
-    from app.routing.trip.places import city_id_for
+    from core.simulation.routing.trip.places import city_id_for
     return city_id_for(city) or "".join(ch if ch.isalnum() else "_" for ch in (city or "").lower()).strip("_")
 
 
@@ -58,9 +58,9 @@ def _slot_of(t: datetime, tz_offset_h: float = LOCAL_UTC_OFFSET_H) -> int:
 
 
 def _routes(city: str, origin: str, destination: str) -> tuple[dict, dict, list[dict], dict]:
-    from app.data import reference_corridors as rc
-    from app.routing import local_router
-    from app.routing.trip_analysis import resolve_place
+    from core.common.data import reference_corridors as rc
+    from core.simulation.routing import local_router
+    from core.simulation.routing.trip_analysis import resolve_place
     o, d = resolve_place(origin, city), resolve_place(destination, city)
     defs = [rc.describe(c) for c in rc.CORRIDORS]
     state = {}
@@ -71,8 +71,8 @@ def _routes(city: str, origin: str, destination: str) -> tuple[dict, dict, list[
             edges = []
         if edges:
             state[c["id"]] = {"edges": set(e.getID() for e in edges), "level": None}
-    from app.data.live_providers import live
-    from app.routing.trip.geometry import runs_along
+    from core.common.data.live_providers import live
+    from core.simulation.routing.trip.geometry import runs_along
     provider = live.provider()
     r = provider.routes((o["lat"], o["lng"]), (d["lat"], d["lng"])) if provider else {"routes": []}
     if r.get("routes"):
@@ -91,8 +91,8 @@ def _routes(city: str, origin: str, destination: str) -> tuple[dict, dict, list[
         raise ValueError(f"no route between {origin} and {destination}: {r.get('request_status')}")
     cid = _city_id(city)
     if cid != "dhaka":                                   # another city's corridors: the routes people asked about, matched by their ends
-        from app.data import city_corridors
-        from app.data.city_corridors import _dist as haversine_m
+        from core.common.data import city_corridors
+        from core.common.data.city_corridors import _dist as haversine_m
         for route in r["routes"]:
             touched = []
             for c in city_corridors.load(cid):
@@ -174,22 +174,21 @@ def plan(city: str, origin: str, destination: str, arrive_by: datetime, buffer_m
             best = max(runs, key=lambda w: (w["slots"], w["peak_level"]))
             window = {"from": best["from"], "to": best["to"], "peak_level": round(best["peak_level"], 2), "threshold": threshold}
             break
-    from app.data.live_providers.observatory import observatory
+    from core.common.data.live_providers.observatory import observatory
     own = observatory.own_history(cid) if cid in observatory.cities() else {"steps_own": 0}
     touched = sorted({c for r in routes for c in (r.get("corridors_touched") or [])})
     covered_any = any(x["covered"] for dpt in departures for x in dpt["options"])
     coverage = {"city_id": cid, "watched": cid in observatory.cities(), "steps_own": own.get("steps_own", 0), "corridors_touched": touched,
                 "covered": covered_any, "samples": profiles["samples"], "first_utc": profiles["first_utc"], "last_utc": profiles["last_utc"],
-                "action": None if covered_any else ("watch this route: its own history starts accumulating from the first sample" if not touched or not own.get("steps_own") else
-                                                    "this route's corridors have no readings at these times of day yet; the recorder is sampling every 5 minutes")}
+                "action": None if covered_any else "no observed traffic for this city yet: it appears once people here share their position while moving (Map → Your phone is the sensor)"}
     return {"city": city, "origin": o, "destination": d, "arrive_by_utc": arrive_by.isoformat(), "arrive_by_local": arrive_by.astimezone(tz).strftime("%H:%M"), "now_utc": now.isoformat(), "buffer_min": buffer_min, "on_time_target": target,
             "recommended": {"depart_utc": rec["depart_utc"], "depart_local": rec["depart_local"], "route": rec["best_route"], "on_time_probability": rec["on_time_probability"], "expected_s": rec["expected_s"], "leave_in_min": round((datetime.fromisoformat(rec["depart_utc"]) - now).total_seconds() / 60)},
             "routes": [{"key": r_key(r, routes), "description": r.get("description"), "distance_m": r.get("distance_m"), "static_s": r.get("static_duration_s"), "corridors": r.get("corridors_touched") or [],
                         "now": next(x for x in departures[0]["options"] if x["route"] == r_key(r, routes)), "at_departure": next(x for x in rec["options"] if x["route"] == r_key(r, routes))} for r in routes],
             "departures": departures, "day_profile": day, "congestion_window": window, "coverage": coverage,
             "provenance": {"kind": "OWN_OBSERVED" if covered_any else "ROUTING_ONLY",
-                           "traffic": (f"this city's own observed history: {profiles['samples']} corridor readings from {str(profiles['first_utc'])[:16]} to {str(profiles['last_utc'])[:16]} UTC, derived from Amazon Location routes every 5 minutes"
-                                       if covered_any else "no observed history on this route yet: times are the road network's free-flow times; no probability is shown because none can be measured yet"),
+                           "traffic": (f"this city's own observed history: {profiles['samples']} corridor readings from {str(profiles['first_utc'])[:16]} to {str(profiles['last_utc'])[:16]} UTC, from opt-in phone sensing"
+                                       if covered_any else "no observed traffic for this city yet: every time shown is a free-flow route time; no probability is shown because none can be measured yet"),
                            "routing": state.get("_routing_words", ""),
                            "probability": "share of this city's own observed travel-time multipliers at that time of day meeting the deadline minus the buffer (empirical), not a model confidence"}}
 
@@ -200,9 +199,9 @@ def r_key(route: dict, routes: list[dict]) -> str:
 
 def watch_route(city: str, origin: str, destination: str) -> dict:
     """The road a person asked about becomes an observed corridor of its city from now on, and the city is watched."""
-    from app.data import city_corridors
-    from app.data.live_providers.observatory import observatory
-    from app.routing.trip_analysis import resolve_place
+    from core.common.data import city_corridors
+    from core.common.data.live_providers.observatory import observatory
+    from core.simulation.routing.trip_analysis import resolve_place
     cid = _city_id(city)
     o, d = resolve_place(origin, city), resolve_place(destination, city)
     added = []

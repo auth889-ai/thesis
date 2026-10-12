@@ -22,6 +22,8 @@ REQUIRED_TOP_LEVEL = [
     "research",      # protocol runners, report builders, notebooks
     "tests",         # cross-cutting platform tests (domain tests live in backend/tests)
     "docs", "data", "results", "infra", "scripts", "upstream",
+    "config",        # config/cities/<city_id>.yaml: the one root config, because it is read by every domain (CLAUDE.md)
+    "evidence",      # the log and hashes behind every result shown
 ]
 
 
@@ -47,21 +49,23 @@ def test_retired_root_directories_are_not_recreated():
         assert not (REPO_ROOT / name).exists(), f"use the canonical nested location, not {name}/"
 
 
-@pytest.mark.parametrize("relative", ["backend/app/data", "backend/app/forecasting/routers", "backend/app/routing", "backend/app/twin", "backend/app/networking", "backend/app/protocols/routers", "backend/tests", "frontend/src/features", "research/reports", "research/notebooks", "results/artifacts"])
+@pytest.mark.parametrize("relative", ["core/common/data", "backend/app/forecasting/routers", "core/simulation/routing", "core/simulation/twin", "core/networking/v2x", "backend/app/protocols/routers", "backend/tests", "frontend/src/features", "research/reports", "research/notebooks", "results/artifacts"])
 def test_consolidated_directories_exist(relative):
     assert (REPO_ROOT / relative).is_dir()
 
 
 def test_configs_live_next_to_the_code_that_reads_them():
-    """No root configs/ folder: every YAML sits in the package that reads it."""
+    """No root configs/ folder: every YAML sits in the package that reads it. The one exception is config/cities/,
+    which holds one file per city and is read by every domain."""
+    assert sorted(p.name for p in (REPO_ROOT / "config").iterdir()) == ["cities"]
     assert not (REPO_ROOT / "configs").exists()
-    for rel in ("perception/configs/training_budget.yaml", "twin/configs/dhaka_r1.yaml", "forecasting/configs/benchmark.yaml"):
-        assert (REPO_ROOT / "backend/app" / rel).is_file(), rel
+    for rel in ("ml/perception/configs/training_budget.yaml", "simulation/twin/configs/dhaka_r1.yaml", "ml/forecasting/configs/benchmark.yaml"):
+        assert (REPO_ROOT / "core" / rel).is_file(), rel
 
 
 def test_single_source_tree():
-    """One library (traffictwin); no transitional copies of it remain."""
-    assert (REPO_ROOT / "backend/app/__init__.py").is_file()
+    """One research library (core/) and one web app (backend/app/); no transitional copies remain."""
+    assert (REPO_ROOT / "core/__init__.py").is_file() and (REPO_ROOT / "backend/app/__init__.py").is_file()
     assert not (REPO_ROOT / "src").exists() and not (REPO_ROOT / "packages").exists() and not (REPO_ROOT / "apps").exists()
 
 
@@ -133,7 +137,7 @@ def test_no_large_tracked_files():
                          "provenance now lives in results/forecasting/trained_results.json, which "
                          "backend/tests/rebuild/test_phase1_prediction.py validates")
 def test_model_registry_entries_validate():
-    from app.common.model_registry import load_entries
+    from core.common.model_registry import load_entries
 
     entries = load_entries()
     assert entries, "model registry has no entries"
@@ -143,7 +147,7 @@ def test_model_registry_entries_validate():
 
 def test_no_weights_paths_inside_registry_entries():
     """checkpoint_uri must be remote; the loader enforces it, this proves it stays on."""
-    from app.common.model_registry import ModelEntry, ModelStatus
+    from core.common.model_registry import ModelEntry, ModelStatus
 
     with pytest.raises(ValueError, match="never committed to git"):
         ModelEntry(key="bad", subsystem="perception", architecture="x",

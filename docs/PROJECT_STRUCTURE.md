@@ -38,5 +38,9 @@ Done (2026-09-29): steps 1–7; the web app rebuilt as React + TypeScript with o
 - no module over 400 lines (two known exceptions listed above)
 - `router.py` / `routers/*` contain no algorithms: they call the domain's service code and return schemas
 - every config lives next to the code that reads it (`<domain>/configs/`); no root `configs/`
-- cross-domain imports use explicit module names (`from app.forecasting.operations import model_registry`)
+  - one exception: `config/cities/<city_id>.yaml`, one file per city, at the root because every domain reads it
+    (CLAUDE.md, city-agnostic rule 1); loaded only through `core/common/data/city_config.py`
+- `evidence/` holds the log and hashes behind a result (`evidence/cities/<city_id>/`, `evidence/patchstg/<region>/`);
+  `third_party/SOURCES.md` lists what is reused from other repositories
+- cross-domain imports use explicit module names (`from core.ml.forecasting.operations import model_registry`)
 - the application runs with `PYTHONPATH=backend`; nothing is pip-installed from this repository

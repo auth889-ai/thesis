@@ -1,0 +1,1458 @@
+file 979462 1791809799                                          
+version 3
+run Default-0-20261012-18:56:36-50640
+attr configname Default
+attr datetime 20261012-18:56:36
+attr datetimef 20261012-185636
+attr experiment Default
+attr inifile omnetpp.ini
+attr iterationvars ""
+attr iterationvarsd ""
+attr iterationvarsf ""
+attr measurement ""
+attr network SharedSumoScenario
+attr processid 50640
+attr repetition 0
+attr replication #0
+attr resultdir results
+attr runnumber 0
+attr seedset 0
+config image-path /Users/jannatulferdouseva/.dhakaflow/upstream/veins/images
+config cmdenv-express-mode true
+config cmdenv-autoflush true
+config cmdenv-status-frequency 1s
+config **.cmdenv-log-level info
+config image-path /Users/jannatulferdouseva/.dhakaflow/upstream/veins/images
+config network SharedSumoScenario
+config debug-on-errors false
+config print-undisposed true
+config sim-time-limit 720s
+config **.scalar-recording true
+config **.vector-recording true
+config *.playgroundSizeX 4752m
+config *.playgroundSizeY 4971m
+config *.playgroundSizeZ 50m
+config *.annotations.draw true
+config *.obstacles.obstacles "xmldoc(\"../../veins_dhaka/config.xml\", \"//AnalogueModel[@type='SimpleObstacleShadowing']/obstacles\")"
+config *.manager.updateInterval 1s
+config *.manager.host "\"localhost\""
+config *.manager.port 9998
+config *.manager.connectAt 600s
+config *.manager.penetrationRate 1
+config *.manager.seed 11
+config *.manager.autoShutdown true
+config *.manager.command "\"/Users/jannatulferdouseva/.dhakaflow/venvs/sumo-veins/lib/python3.13/site-packages/sumo/bin/sumo\""
+config *.manager.configFile "\"../../veins_dhaka/dhaka.sumo.cfg\""
+config *.manager.commandLine "\"$command --remote-port $port --seed $seed --num-clients 2 --configuration-file $configFile\""
+config *.manager.order 1
+config *.manager.trafficLightModuleType "\"org.car2x.veins.nodes.TrafficLight\""
+config *.tls[*].mobility.x 0
+config *.tls[*].mobility.y 0
+config *.tls[*].mobility.z 3
+config *.tls[*].applType "\"org.car2x.veins.modules.application.traci.TraCIDemoTrafficLightApp\""
+config *.tls[*].logicType "\"org.car2x.veins.modules.world.traci.trafficLight.logics.TraCITrafficLightSimpleLogic\""
+config *.connectionManager.sendDirect true
+config *.connectionManager.maxInterfDist 2600m
+config *.connectionManager.drawMaxIntfDist false
+config *.**.nic.mac1609_4.useServiceChannel false
+config *.**.nic.mac1609_4.txPower 20mW
+config *.**.nic.mac1609_4.bitrate 6Mbps
+config *.**.nic.phy80211p.minPowerLevel -110dBm
+config *.**.nic.phy80211p.useNoiseFloor true
+config *.**.nic.phy80211p.noiseFloor -98dBm
+config *.**.nic.phy80211p.decider "xmldoc(\"../../veins_dhaka/config.xml\")"
+config *.**.nic.phy80211p.analogueModels "xmldoc(\"../../veins_dhaka/config.xml\")"
+config *.**.nic.phy80211p.usePropagationDelay true
+config *.**.nic.phy80211p.antenna "xmldoc(\"../../veins_dhaka/antenna.xml\", \"/root/Antenna[@id='monopole']\")"
+config *.node[*].nic.phy80211p.antennaOffsetY "0 m"
+config *.node[*].nic.phy80211p.antennaOffsetZ "1.895 m"
+config *.node[*].applType "\"AmbulanceAlert11p\""
+config *.node[*].appl.headerLength "80 bit"
+config *.node[*].appl.sendBeacons false
+config *.node[*].appl.dataOnSch false
+config *.node[*].appl.beaconInterval 1s
+config *.node[*].veinsmobility.x 0
+config *.node[*].veinsmobility.y 0
+config *.node[*].veinsmobility.z 0
+config *.node[*].veinsmobility.setHostSpeed false
+config *.node[*].appl.makewayDistance 100m
+config *.node[*].appl.equippedShare 1
+config *.node[*].appl.guiColours true
+
+vector 0 SharedSumoScenario.tls[0].nic.phy80211p RadioState ETV
+vector 1 SharedSumoScenario.tls[0].nic.phy80211p RadioChannel ETV
+vector 2 SharedSumoScenario.tls[1].nic.phy80211p RadioState ETV
+vector 3 SharedSumoScenario.tls[1].nic.phy80211p RadioChannel ETV
+vector 4 SharedSumoScenario.tls[2].nic.phy80211p RadioState ETV
+vector 5 SharedSumoScenario.tls[2].nic.phy80211p RadioChannel ETV
+vector 6 SharedSumoScenario.node[0].nic.phy80211p RadioState ETV
+vector 7 SharedSumoScenario.node[0].nic.phy80211p RadioChannel ETV
+vector 8 SharedSumoScenario.manager posx ETV
+vector 9 SharedSumoScenario.manager posy ETV
+vector 10 SharedSumoScenario.manager speed ETV
+vector 11 SharedSumoScenario.node[1].nic.phy80211p RadioState ETV
+vector 12 SharedSumoScenario.node[1].nic.phy80211p RadioChannel ETV
+vector 13 SharedSumoScenario.manager posx ETV
+vector 14 SharedSumoScenario.manager posy ETV
+vector 15 SharedSumoScenario.node[2].nic.phy80211p RadioState ETV
+vector 16 SharedSumoScenario.node[2].nic.phy80211p RadioChannel ETV
+vector 17 SharedSumoScenario.manager posx ETV
+vector 18 SharedSumoScenario.manager posy ETV
+vector 19 SharedSumoScenario.manager acceleration ETV
+vector 20 SharedSumoScenario.manager co2emission ETV
+vector 21 SharedSumoScenario.manager speed ETV
+vector 22 SharedSumoScenario.manager speed ETV
+vector 23 SharedSumoScenario.node[3].nic.phy80211p RadioState ETV
+vector 24 SharedSumoScenario.node[3].nic.phy80211p RadioChannel ETV
+vector 25 SharedSumoScenario.manager posx ETV
+vector 26 SharedSumoScenario.manager posy ETV
+vector 27 SharedSumoScenario.manager acceleration ETV
+vector 28 SharedSumoScenario.manager co2emission ETV
+vector 29 SharedSumoScenario.manager acceleration ETV
+vector 30 SharedSumoScenario.manager co2emission ETV
+vector 31 SharedSumoScenario.node[4].nic.phy80211p RadioState ETV
+vector 32 SharedSumoScenario.node[4].nic.phy80211p RadioChannel ETV
+vector 33 SharedSumoScenario.manager posx ETV
+vector 34 SharedSumoScenario.manager posy ETV
+vector 35 SharedSumoScenario.node[5].nic.phy80211p RadioState ETV
+vector 36 SharedSumoScenario.node[5].nic.phy80211p RadioChannel ETV
+vector 37 SharedSumoScenario.manager posx ETV
+vector 38 SharedSumoScenario.manager posy ETV
+vector 39 SharedSumoScenario.node[6].nic.phy80211p RadioState ETV
+vector 40 SharedSumoScenario.node[6].nic.phy80211p RadioChannel ETV
+vector 41 SharedSumoScenario.manager posx ETV
+vector 42 SharedSumoScenario.manager posy ETV
+vector 43 SharedSumoScenario.manager speed ETV
+vector 44 SharedSumoScenario.node[7].nic.phy80211p RadioState ETV
+vector 45 SharedSumoScenario.node[7].nic.phy80211p RadioChannel ETV
+vector 46 SharedSumoScenario.manager posx ETV
+vector 47 SharedSumoScenario.manager posy ETV
+vector 48 SharedSumoScenario.manager acceleration ETV
+vector 49 SharedSumoScenario.manager co2emission ETV
+vector 50 SharedSumoScenario.manager speed ETV
+vector 51 SharedSumoScenario.manager speed ETV
+vector 52 SharedSumoScenario.manager speed ETV
+vector 53 SharedSumoScenario.manager acceleration ETV
+vector 54 SharedSumoScenario.manager co2emission ETV
+vector 55 SharedSumoScenario.manager acceleration ETV
+vector 56 SharedSumoScenario.manager co2emission ETV
+vector 57 SharedSumoScenario.manager acceleration ETV
+vector 58 SharedSumoScenario.manager co2emission ETV
+vector 59 SharedSumoScenario.manager speed ETV
+vector 60 SharedSumoScenario.node[8].nic.phy80211p RadioState ETV
+vector 61 SharedSumoScenario.node[8].nic.phy80211p RadioChannel ETV
+vector 62 SharedSumoScenario.manager posx ETV
+vector 63 SharedSumoScenario.manager posy ETV
+vector 64 SharedSumoScenario.manager acceleration ETV
+vector 65 SharedSumoScenario.manager co2emission ETV
+vector 66 SharedSumoScenario.node[9].nic.phy80211p RadioState ETV
+vector 67 SharedSumoScenario.node[9].nic.phy80211p RadioChannel ETV
+vector 68 SharedSumoScenario.manager posx ETV
+vector 69 SharedSumoScenario.manager posy ETV
+vector 70 SharedSumoScenario.manager speed ETV
+vector 71 SharedSumoScenario.node[10].nic.phy80211p RadioState ETV
+vector 72 SharedSumoScenario.node[10].nic.phy80211p RadioChannel ETV
+vector 73 SharedSumoScenario.manager posx ETV
+vector 74 SharedSumoScenario.manager posy ETV
+vector 75 SharedSumoScenario.manager acceleration ETV
+vector 76 SharedSumoScenario.manager co2emission ETV
+vector 77 SharedSumoScenario.manager speed ETV
+vector 78 SharedSumoScenario.manager acceleration ETV
+vector 79 SharedSumoScenario.manager co2emission ETV
+vector 80 SharedSumoScenario.manager speed ETV
+vector 81 SharedSumoScenario.node[11].nic.phy80211p RadioState ETV
+vector 82 SharedSumoScenario.node[11].nic.phy80211p RadioChannel ETV
+vector 83 SharedSumoScenario.manager posx ETV
+vector 84 SharedSumoScenario.manager posy ETV
+vector 85 SharedSumoScenario.manager acceleration ETV
+vector 86 SharedSumoScenario.manager co2emission ETV
+vector 87 SharedSumoScenario.manager speed ETV
+vector 88 SharedSumoScenario.manager acceleration ETV
+vector 89 SharedSumoScenario.manager co2emission ETV
+vector 90 SharedSumoScenario.node[12].nic.phy80211p RadioState ETV
+vector 91 SharedSumoScenario.node[12].nic.phy80211p RadioChannel ETV
+vector 92 SharedSumoScenario.manager posx ETV
+vector 93 SharedSumoScenario.manager posy ETV
+vector 94 SharedSumoScenario.node[13].nic.phy80211p RadioState ETV
+vector 95 SharedSumoScenario.node[13].nic.phy80211p RadioChannel ETV
+vector 96 SharedSumoScenario.manager posx ETV
+vector 97 SharedSumoScenario.manager posy ETV
+vector 98 SharedSumoScenario.manager speed ETV
+vector 99 SharedSumoScenario.manager acceleration ETV
+vector 100 SharedSumoScenario.manager co2emission ETV
+vector 101 SharedSumoScenario.manager speed ETV
+vector 102 SharedSumoScenario.node[14].nic.phy80211p RadioState ETV
+vector 103 SharedSumoScenario.node[14].nic.phy80211p RadioChannel ETV
+vector 104 SharedSumoScenario.manager posx ETV
+vector 105 SharedSumoScenario.manager posy ETV
+vector 106 SharedSumoScenario.manager acceleration ETV
+vector 107 SharedSumoScenario.manager co2emission ETV
+vector 108 SharedSumoScenario.node[15].nic.phy80211p RadioState ETV
+vector 109 SharedSumoScenario.node[15].nic.phy80211p RadioChannel ETV
+vector 110 SharedSumoScenario.manager posx ETV
+vector 111 SharedSumoScenario.manager posy ETV
+vector 112 SharedSumoScenario.node[16].nic.phy80211p RadioState ETV
+vector 113 SharedSumoScenario.node[16].nic.phy80211p RadioChannel ETV
+vector 114 SharedSumoScenario.manager posx ETV
+vector 115 SharedSumoScenario.manager posy ETV
+vector 116 SharedSumoScenario.manager speed ETV
+vector 117 SharedSumoScenario.node[17].nic.phy80211p RadioState ETV
+vector 118 SharedSumoScenario.node[17].nic.phy80211p RadioChannel ETV
+vector 119 SharedSumoScenario.manager posx ETV
+vector 120 SharedSumoScenario.manager posy ETV
+vector 121 SharedSumoScenario.node[18].nic.phy80211p RadioState ETV
+vector 122 SharedSumoScenario.node[18].nic.phy80211p RadioChannel ETV
+vector 123 SharedSumoScenario.manager posx ETV
+vector 124 SharedSumoScenario.manager posy ETV
+vector 125 SharedSumoScenario.node[19].nic.phy80211p RadioState ETV
+vector 126 SharedSumoScenario.node[19].nic.phy80211p RadioChannel ETV
+vector 127 SharedSumoScenario.manager posx ETV
+vector 128 SharedSumoScenario.manager posy ETV
+vector 129 SharedSumoScenario.manager acceleration ETV
+vector 130 SharedSumoScenario.manager co2emission ETV
+vector 131 SharedSumoScenario.manager speed ETV
+vector 132 SharedSumoScenario.manager speed ETV
+vector 133 SharedSumoScenario.manager acceleration ETV
+vector 134 SharedSumoScenario.manager co2emission ETV
+vector 135 SharedSumoScenario.manager acceleration ETV
+vector 136 SharedSumoScenario.manager co2emission ETV
+vector 137 SharedSumoScenario.manager speed ETV
+vector 138 SharedSumoScenario.manager speed ETV
+vector 139 SharedSumoScenario.manager speed ETV
+vector 140 SharedSumoScenario.node[20].nic.phy80211p RadioState ETV
+vector 141 SharedSumoScenario.node[20].nic.phy80211p RadioChannel ETV
+vector 142 SharedSumoScenario.manager posx ETV
+vector 143 SharedSumoScenario.manager posy ETV
+vector 144 SharedSumoScenario.manager acceleration ETV
+vector 145 SharedSumoScenario.manager co2emission ETV
+vector 146 SharedSumoScenario.manager acceleration ETV
+vector 147 SharedSumoScenario.manager co2emission ETV
+vector 148 SharedSumoScenario.manager acceleration ETV
+vector 149 SharedSumoScenario.manager co2emission ETV
+vector 150 SharedSumoScenario.node[21].nic.phy80211p RadioState ETV
+vector 151 SharedSumoScenario.node[21].nic.phy80211p RadioChannel ETV
+vector 152 SharedSumoScenario.manager posx ETV
+vector 153 SharedSumoScenario.manager posy ETV
+vector 154 SharedSumoScenario.manager speed ETV
+vector 155 SharedSumoScenario.manager acceleration ETV
+vector 156 SharedSumoScenario.manager co2emission ETV
+vector 157 SharedSumoScenario.manager speed ETV
+vector 158 SharedSumoScenario.node[22].nic.phy80211p RadioState ETV
+vector 159 SharedSumoScenario.node[22].nic.phy80211p RadioChannel ETV
+vector 160 SharedSumoScenario.manager posx ETV
+vector 161 SharedSumoScenario.manager posy ETV
+vector 162 SharedSumoScenario.node[23].nic.phy80211p RadioState ETV
+vector 163 SharedSumoScenario.node[23].nic.phy80211p RadioChannel ETV
+vector 164 SharedSumoScenario.manager posx ETV
+vector 165 SharedSumoScenario.manager posy ETV
+vector 166 SharedSumoScenario.manager acceleration ETV
+vector 167 SharedSumoScenario.manager co2emission ETV
+vector 168 SharedSumoScenario.manager speed ETV
+vector 169 SharedSumoScenario.manager speed ETV
+vector 170 SharedSumoScenario.node[24].nic.phy80211p RadioState ETV
+vector 171 SharedSumoScenario.node[24].nic.phy80211p RadioChannel ETV
+vector 172 SharedSumoScenario.manager posx ETV
+vector 173 SharedSumoScenario.manager posy ETV
+vector 174 SharedSumoScenario.node[25].nic.phy80211p RadioState ETV
+vector 175 SharedSumoScenario.node[25].nic.phy80211p RadioChannel ETV
+vector 176 SharedSumoScenario.manager posx ETV
+vector 177 SharedSumoScenario.manager posy ETV
+vector 178 SharedSumoScenario.manager acceleration ETV
+vector 179 SharedSumoScenario.manager co2emission ETV
+vector 180 SharedSumoScenario.manager acceleration ETV
+vector 181 SharedSumoScenario.manager co2emission ETV
+vector 182 SharedSumoScenario.node[26].nic.phy80211p RadioState ETV
+vector 183 SharedSumoScenario.node[26].nic.phy80211p RadioChannel ETV
+vector 184 SharedSumoScenario.manager posx ETV
+vector 185 SharedSumoScenario.manager posy ETV
+vector 186 SharedSumoScenario.manager speed ETV
+vector 187 SharedSumoScenario.manager speed ETV
+vector 188 SharedSumoScenario.node[27].nic.phy80211p RadioState ETV
+vector 189 SharedSumoScenario.node[27].nic.phy80211p RadioChannel ETV
+vector 190 SharedSumoScenario.manager posx ETV
+vector 191 SharedSumoScenario.manager posy ETV
+vector 192 SharedSumoScenario.node[28].nic.phy80211p RadioState ETV
+vector 193 SharedSumoScenario.node[28].nic.phy80211p RadioChannel ETV
+vector 194 SharedSumoScenario.manager posx ETV
+vector 195 SharedSumoScenario.manager posy ETV
+vector 196 SharedSumoScenario.manager acceleration ETV
+vector 197 SharedSumoScenario.manager co2emission ETV
+vector 198 SharedSumoScenario.manager acceleration ETV
+vector 199 SharedSumoScenario.manager co2emission ETV
+vector 200 SharedSumoScenario.manager speed ETV
+vector 201 SharedSumoScenario.node[29].nic.phy80211p RadioState ETV
+vector 202 SharedSumoScenario.node[29].nic.phy80211p RadioChannel ETV
+vector 203 SharedSumoScenario.manager posx ETV
+vector 204 SharedSumoScenario.manager posy ETV
+vector 205 SharedSumoScenario.manager acceleration ETV
+vector 206 SharedSumoScenario.manager co2emission ETV
+vector 207 SharedSumoScenario.manager speed ETV
+vector 208 SharedSumoScenario.manager speed ETV
+vector 209 SharedSumoScenario.node[30].nic.phy80211p RadioState ETV
+vector 210 SharedSumoScenario.node[30].nic.phy80211p RadioChannel ETV
+vector 211 SharedSumoScenario.manager posx ETV
+vector 212 SharedSumoScenario.manager posy ETV
+vector 213 SharedSumoScenario.node[31].nic.phy80211p RadioState ETV
+vector 214 SharedSumoScenario.node[31].nic.phy80211p RadioChannel ETV
+vector 215 SharedSumoScenario.manager posx ETV
+vector 216 SharedSumoScenario.manager posy ETV
+vector 217 SharedSumoScenario.manager acceleration ETV
+vector 218 SharedSumoScenario.manager co2emission ETV
+vector 219 SharedSumoScenario.manager acceleration ETV
+vector 220 SharedSumoScenario.manager co2emission ETV
+vector 221 SharedSumoScenario.manager speed ETV
+vector 222 SharedSumoScenario.manager acceleration ETV
+vector 223 SharedSumoScenario.manager co2emission ETV
+vector 224 SharedSumoScenario.manager speed ETV
+vector 225 SharedSumoScenario.manager speed ETV
+vector 226 SharedSumoScenario.manager acceleration ETV
+vector 227 SharedSumoScenario.manager co2emission ETV
+vector 228 SharedSumoScenario.manager acceleration ETV
+vector 229 SharedSumoScenario.manager co2emission ETV
+vector 230 SharedSumoScenario.node[32].nic.phy80211p RadioState ETV
+vector 231 SharedSumoScenario.node[32].nic.phy80211p RadioChannel ETV
+vector 232 SharedSumoScenario.manager posx ETV
+vector 233 SharedSumoScenario.manager posy ETV
+vector 234 SharedSumoScenario.node[33].nic.phy80211p RadioState ETV
+vector 235 SharedSumoScenario.node[33].nic.phy80211p RadioChannel ETV
+vector 236 SharedSumoScenario.manager posx ETV
+vector 237 SharedSumoScenario.manager posy ETV
+vector 238 SharedSumoScenario.manager speed ETV
+vector 239 SharedSumoScenario.node[34].nic.phy80211p RadioState ETV
+vector 240 SharedSumoScenario.node[34].nic.phy80211p RadioChannel ETV
+vector 241 SharedSumoScenario.manager posx ETV
+vector 242 SharedSumoScenario.manager posy ETV
+vector 243 SharedSumoScenario.node[35].nic.phy80211p RadioState ETV
+vector 244 SharedSumoScenario.node[35].nic.phy80211p RadioChannel ETV
+vector 245 SharedSumoScenario.manager posx ETV
+vector 246 SharedSumoScenario.manager posy ETV
+vector 247 SharedSumoScenario.manager acceleration ETV
+vector 248 SharedSumoScenario.manager co2emission ETV
+vector 249 SharedSumoScenario.manager speed ETV
+vector 250 SharedSumoScenario.node[36].nic.phy80211p RadioState ETV
+vector 251 SharedSumoScenario.node[36].nic.phy80211p RadioChannel ETV
+vector 252 SharedSumoScenario.manager posx ETV
+vector 253 SharedSumoScenario.manager posy ETV
+vector 254 SharedSumoScenario.node[37].nic.phy80211p RadioState ETV
+vector 255 SharedSumoScenario.node[37].nic.phy80211p RadioChannel ETV
+vector 256 SharedSumoScenario.manager posx ETV
+vector 257 SharedSumoScenario.manager posy ETV
+vector 258 SharedSumoScenario.node[38].nic.phy80211p RadioState ETV
+vector 259 SharedSumoScenario.node[38].nic.phy80211p RadioChannel ETV
+vector 260 SharedSumoScenario.manager posx ETV
+vector 261 SharedSumoScenario.manager posy ETV
+vector 262 SharedSumoScenario.node[39].nic.phy80211p RadioState ETV
+vector 263 SharedSumoScenario.node[39].nic.phy80211p RadioChannel ETV
+vector 264 SharedSumoScenario.manager posx ETV
+vector 265 SharedSumoScenario.manager posy ETV
+vector 266 SharedSumoScenario.manager acceleration ETV
+vector 267 SharedSumoScenario.manager co2emission ETV
+vector 268 SharedSumoScenario.manager speed ETV
+vector 269 SharedSumoScenario.manager speed ETV
+vector 270 SharedSumoScenario.node[40].nic.phy80211p RadioState ETV
+vector 271 SharedSumoScenario.node[40].nic.phy80211p RadioChannel ETV
+vector 272 SharedSumoScenario.manager posx ETV
+vector 273 SharedSumoScenario.manager posy ETV
+vector 274 SharedSumoScenario.manager acceleration ETV
+vector 275 SharedSumoScenario.manager co2emission ETV
+vector 276 SharedSumoScenario.manager acceleration ETV
+vector 277 SharedSumoScenario.manager co2emission ETV
+vector 278 SharedSumoScenario.manager speed ETV
+vector 279 SharedSumoScenario.manager speed ETV
+vector 280 SharedSumoScenario.manager speed ETV
+vector 281 SharedSumoScenario.manager speed ETV
+vector 282 SharedSumoScenario.manager acceleration ETV
+vector 283 SharedSumoScenario.manager co2emission ETV
+vector 284 SharedSumoScenario.manager acceleration ETV
+vector 285 SharedSumoScenario.manager co2emission ETV
+vector 286 SharedSumoScenario.manager acceleration ETV
+vector 287 SharedSumoScenario.manager co2emission ETV
+vector 288 SharedSumoScenario.manager acceleration ETV
+vector 289 SharedSumoScenario.manager co2emission ETV
+vector 290 SharedSumoScenario.manager speed ETV
+vector 291 SharedSumoScenario.manager acceleration ETV
+vector 292 SharedSumoScenario.manager co2emission ETV
+vector 293 SharedSumoScenario.node[41].nic.phy80211p RadioState ETV
+vector 294 SharedSumoScenario.node[41].nic.phy80211p RadioChannel ETV
+vector 295 SharedSumoScenario.manager posx ETV
+vector 296 SharedSumoScenario.manager posy ETV
+vector 297 SharedSumoScenario.node[42].nic.phy80211p RadioState ETV
+vector 298 SharedSumoScenario.node[42].nic.phy80211p RadioChannel ETV
+vector 299 SharedSumoScenario.manager posx ETV
+vector 300 SharedSumoScenario.manager posy ETV
+vector 301 SharedSumoScenario.node[43].nic.phy80211p RadioState ETV
+vector 302 SharedSumoScenario.node[43].nic.phy80211p RadioChannel ETV
+vector 303 SharedSumoScenario.manager posx ETV
+vector 304 SharedSumoScenario.manager posy ETV
+vector 305 SharedSumoScenario.manager speed ETV
+vector 306 SharedSumoScenario.manager speed ETV
+vector 307 SharedSumoScenario.node[44].nic.phy80211p RadioState ETV
+vector 308 SharedSumoScenario.node[44].nic.phy80211p RadioChannel ETV
+vector 309 SharedSumoScenario.manager posx ETV
+vector 310 SharedSumoScenario.manager posy ETV
+vector 311 SharedSumoScenario.manager acceleration ETV
+vector 312 SharedSumoScenario.manager co2emission ETV
+vector 313 SharedSumoScenario.manager acceleration ETV
+vector 314 SharedSumoScenario.manager co2emission ETV
+vector 315 SharedSumoScenario.manager speed ETV
+vector 316 SharedSumoScenario.manager acceleration ETV
+vector 317 SharedSumoScenario.manager co2emission ETV
+vector 318 SharedSumoScenario.manager speed ETV
+vector 319 SharedSumoScenario.node[45].nic.phy80211p RadioState ETV
+vector 320 SharedSumoScenario.node[45].nic.phy80211p RadioChannel ETV
+vector 321 SharedSumoScenario.manager posx ETV
+vector 322 SharedSumoScenario.manager posy ETV
+vector 323 SharedSumoScenario.node[46].nic.phy80211p RadioState ETV
+vector 324 SharedSumoScenario.node[46].nic.phy80211p RadioChannel ETV
+vector 325 SharedSumoScenario.manager posx ETV
+vector 326 SharedSumoScenario.manager posy ETV
+vector 327 SharedSumoScenario.manager acceleration ETV
+vector 328 SharedSumoScenario.manager co2emission ETV
+vector 329 SharedSumoScenario.manager speed ETV
+vector 330 SharedSumoScenario.manager speed ETV
+vector 331 SharedSumoScenario.node[47].nic.phy80211p RadioState ETV
+vector 332 SharedSumoScenario.node[47].nic.phy80211p RadioChannel ETV
+vector 333 SharedSumoScenario.manager posx ETV
+vector 334 SharedSumoScenario.manager posy ETV
+vector 335 SharedSumoScenario.manager acceleration ETV
+vector 336 SharedSumoScenario.manager co2emission ETV
+vector 337 SharedSumoScenario.manager acceleration ETV
+vector 338 SharedSumoScenario.manager co2emission ETV
+vector 339 SharedSumoScenario.node[48].nic.phy80211p RadioState ETV
+vector 340 SharedSumoScenario.node[48].nic.phy80211p RadioChannel ETV
+vector 341 SharedSumoScenario.manager posx ETV
+vector 342 SharedSumoScenario.manager posy ETV
+vector 343 SharedSumoScenario.manager speed ETV
+vector 344 SharedSumoScenario.node[49].nic.phy80211p RadioState ETV
+vector 345 SharedSumoScenario.node[49].nic.phy80211p RadioChannel ETV
+vector 346 SharedSumoScenario.manager posx ETV
+vector 347 SharedSumoScenario.manager posy ETV
+vector 348 SharedSumoScenario.manager acceleration ETV
+vector 349 SharedSumoScenario.manager co2emission ETV
+vector 350 SharedSumoScenario.manager speed ETV
+vector 351 SharedSumoScenario.manager acceleration ETV
+vector 352 SharedSumoScenario.manager co2emission ETV
+vector 353 SharedSumoScenario.manager speed ETV
+vector 354 SharedSumoScenario.node[50].nic.phy80211p RadioState ETV
+vector 355 SharedSumoScenario.node[50].nic.phy80211p RadioChannel ETV
+vector 356 SharedSumoScenario.manager posx ETV
+vector 357 SharedSumoScenario.manager posy ETV
+vector 358 SharedSumoScenario.manager acceleration ETV
+vector 359 SharedSumoScenario.manager co2emission ETV
+vector 360 SharedSumoScenario.node[51].nic.phy80211p RadioState ETV
+vector 361 SharedSumoScenario.node[51].nic.phy80211p RadioChannel ETV
+vector 362 SharedSumoScenario.manager posx ETV
+vector 363 SharedSumoScenario.manager posy ETV
+vector 364 SharedSumoScenario.manager speed ETV
+vector 365 SharedSumoScenario.node[52].nic.phy80211p RadioState ETV
+vector 366 SharedSumoScenario.node[52].nic.phy80211p RadioChannel ETV
+vector 367 SharedSumoScenario.manager posx ETV
+vector 368 SharedSumoScenario.manager posy ETV
+vector 369 SharedSumoScenario.manager acceleration ETV
+vector 370 SharedSumoScenario.manager co2emission ETV
+vector 371 SharedSumoScenario.manager speed ETV
+vector 372 SharedSumoScenario.node[53].nic.phy80211p RadioState ETV
+vector 373 SharedSumoScenario.node[53].nic.phy80211p RadioChannel ETV
+vector 374 SharedSumoScenario.manager posx ETV
+vector 375 SharedSumoScenario.manager posy ETV
+vector 376 SharedSumoScenario.manager acceleration ETV
+vector 377 SharedSumoScenario.manager co2emission ETV
+vector 378 SharedSumoScenario.manager speed ETV
+vector 379 SharedSumoScenario.manager acceleration ETV
+vector 380 SharedSumoScenario.manager co2emission ETV
+vector 381 SharedSumoScenario.manager speed ETV
+vector 382 SharedSumoScenario.node[54].nic.phy80211p RadioState ETV
+vector 383 SharedSumoScenario.node[54].nic.phy80211p RadioChannel ETV
+vector 384 SharedSumoScenario.manager posx ETV
+vector 385 SharedSumoScenario.manager posy ETV
+vector 386 SharedSumoScenario.manager acceleration ETV
+vector 387 SharedSumoScenario.manager co2emission ETV
+vector 388 SharedSumoScenario.node[55].nic.phy80211p RadioState ETV
+vector 389 SharedSumoScenario.node[55].nic.phy80211p RadioChannel ETV
+vector 390 SharedSumoScenario.manager posx ETV
+vector 391 SharedSumoScenario.manager posy ETV
+vector 392 SharedSumoScenario.manager speed ETV
+vector 393 SharedSumoScenario.manager acceleration ETV
+vector 394 SharedSumoScenario.manager co2emission ETV
+vector 395 SharedSumoScenario.manager speed ETV
+vector 396 SharedSumoScenario.node[56].nic.phy80211p RadioState ETV
+vector 397 SharedSumoScenario.node[56].nic.phy80211p RadioChannel ETV
+vector 398 SharedSumoScenario.manager posx ETV
+vector 399 SharedSumoScenario.manager posy ETV
+vector 400 SharedSumoScenario.manager acceleration ETV
+vector 401 SharedSumoScenario.manager co2emission ETV
+vector 402 SharedSumoScenario.manager speed ETV
+vector 403 SharedSumoScenario.node[57].nic.phy80211p RadioState ETV
+vector 404 SharedSumoScenario.node[57].nic.phy80211p RadioChannel ETV
+vector 405 SharedSumoScenario.manager posx ETV
+vector 406 SharedSumoScenario.manager posy ETV
+vector 407 SharedSumoScenario.manager acceleration ETV
+vector 408 SharedSumoScenario.manager co2emission ETV
+vector 409 SharedSumoScenario.node[58].nic.phy80211p RadioState ETV
+vector 410 SharedSumoScenario.node[58].nic.phy80211p RadioChannel ETV
+vector 411 SharedSumoScenario.manager posx ETV
+vector 412 SharedSumoScenario.manager posy ETV
+vector 413 SharedSumoScenario.node[59].nic.phy80211p RadioState ETV
+vector 414 SharedSumoScenario.node[59].nic.phy80211p RadioChannel ETV
+vector 415 SharedSumoScenario.manager posx ETV
+vector 416 SharedSumoScenario.manager posy ETV
+vector 417 SharedSumoScenario.manager speed ETV
+vector 418 SharedSumoScenario.node[60].nic.phy80211p RadioState ETV
+vector 419 SharedSumoScenario.node[60].nic.phy80211p RadioChannel ETV
+vector 420 SharedSumoScenario.manager posx ETV
+vector 421 SharedSumoScenario.manager posy ETV
+vector 422 SharedSumoScenario.manager acceleration ETV
+vector 423 SharedSumoScenario.manager co2emission ETV
+vector 424 SharedSumoScenario.manager speed ETV
+vector 425 SharedSumoScenario.manager speed ETV
+vector 426 SharedSumoScenario.node[61].nic.phy80211p RadioState ETV
+vector 427 SharedSumoScenario.node[61].nic.phy80211p RadioChannel ETV
+vector 428 SharedSumoScenario.manager posx ETV
+vector 429 SharedSumoScenario.manager posy ETV
+vector 430 SharedSumoScenario.node[62].nic.phy80211p RadioState ETV
+vector 431 SharedSumoScenario.node[62].nic.phy80211p RadioChannel ETV
+vector 432 SharedSumoScenario.manager posx ETV
+vector 433 SharedSumoScenario.manager posy ETV
+vector 434 SharedSumoScenario.manager acceleration ETV
+vector 435 SharedSumoScenario.manager co2emission ETV
+vector 436 SharedSumoScenario.manager acceleration ETV
+vector 437 SharedSumoScenario.manager co2emission ETV
+vector 438 SharedSumoScenario.manager speed ETV
+vector 439 SharedSumoScenario.node[63].nic.phy80211p RadioState ETV
+vector 440 SharedSumoScenario.node[63].nic.phy80211p RadioChannel ETV
+vector 441 SharedSumoScenario.manager posx ETV
+vector 442 SharedSumoScenario.manager posy ETV
+vector 443 SharedSumoScenario.manager acceleration ETV
+vector 444 SharedSumoScenario.manager co2emission ETV
+vector 445 SharedSumoScenario.manager speed ETV
+vector 446 SharedSumoScenario.manager speed ETV
+107	28214 1326 74 4775 619 667 49 0.973 41.404262655987 508.04687971941 13029.686716759
+106	29540 1412 74 4775 619 667 49 -10 4.869077021163 28.606145509251 776.20193497923
+101	30952 1401 70 4775 618 667 50 3.3083776787323 34.668318172523 636.29948667291 13237.325336935
+97	32353 1396 66 4775 617 667 51 674.54798099081 859.86204414125 39663.580738473 31143853.269079
+96	33749 1396 66 4775 617 667 51 69.239458597549 438.82053296511 17863.706687931 6728194.5434603
+vector 447 SharedSumoScenario.manager acceleration ETV
+vector 448 SharedSumoScenario.manager co2emission ETV
+vector 449 SharedSumoScenario.manager acceleration ETV
+vector 450 SharedSumoScenario.manager co2emission ETV
+vector 451 SharedSumoScenario.manager speed ETV
+145	35411 1139 133 4977 623 668 46 -0.54249856004785 29.784521257784 356.41090149676 6134.8123586966
+144	36550 1327 133 4977 623 668 46 -4.5 2.0646956722392 -36.311395844422 269.73961195307
+137	37877 1341 89 4977 622 668 47 5.3549243859381 41.66632023036 1343.4429825616 43270.659970427
+120	39218 1371 84 4977 621 668 48 344.19747477461 1632.5433369739 51200.82443496 62214080.940949
+119	40589 1368 84 4977 621 668 48 376.77887058044 763.78545350389 27891.906362996 17002970.392246
+vector 452 SharedSumoScenario.node[64].nic.phy80211p RadioState ETV
+vector 453 SharedSumoScenario.node[64].nic.phy80211p RadioChannel ETV
+vector 454 SharedSumoScenario.manager posx ETV
+vector 455 SharedSumoScenario.manager posy ETV
+vector 456 SharedSumoScenario.node[65].nic.phy80211p RadioState ETV
+vector 457 SharedSumoScenario.node[65].nic.phy80211p RadioChannel ETV
+vector 458 SharedSumoScenario.manager posx ETV
+vector 459 SharedSumoScenario.manager posy ETV
+vector 460 SharedSumoScenario.node[66].nic.phy80211p RadioState ETV
+vector 461 SharedSumoScenario.node[66].nic.phy80211p RadioChannel ETV
+vector 462 SharedSumoScenario.manager posx ETV
+vector 463 SharedSumoScenario.manager posy ETV
+vector 464 SharedSumoScenario.manager acceleration ETV
+vector 465 SharedSumoScenario.manager co2emission ETV
+vector 466 SharedSumoScenario.node[67].nic.phy80211p RadioState ETV
+vector 467 SharedSumoScenario.node[67].nic.phy80211p RadioChannel ETV
+vector 468 SharedSumoScenario.manager posx ETV
+vector 469 SharedSumoScenario.manager posy ETV
+vector 470 SharedSumoScenario.manager speed ETV
+vector 471 SharedSumoScenario.manager speed ETV
+vector 472 SharedSumoScenario.manager speed ETV
+206	43138 1128 558 5183 631 670 40 0.973 11.154471098048 203.62118388708 1285.9679457984
+205	44266 1207 558 5183 631 670 40 -3.617913080221 1.0288804464508 20.376348540019 40.819618502942
+200	45473 1180 493 5183 630 670 41 1.7970248973555 27.775413846362 730.00713194835 15734.779333464
+185	46653 1204 429 5183 629 670 42 600.00356313232 1284.085554154 36056.718173794 32996426.33261
+184	47857 1204 429 5183 629 670 42 421.88526035885 649.79687855301 21313.57320089 11037915.030894
+vector 473 SharedSumoScenario.node[68].nic.phy80211p RadioState ETV
+vector 474 SharedSumoScenario.node[68].nic.phy80211p RadioChannel ETV
+vector 475 SharedSumoScenario.manager posx ETV
+vector 476 SharedSumoScenario.manager posy ETV
+vector 477 SharedSumoScenario.manager acceleration ETV
+vector 478 SharedSumoScenario.manager co2emission ETV
+vector 479 SharedSumoScenario.manager acceleration ETV
+vector 480 SharedSumoScenario.manager co2emission ETV
+vector 481 SharedSumoScenario.manager acceleration ETV
+vector 482 SharedSumoScenario.manager co2emission ETV
+vector 483 SharedSumoScenario.manager speed ETV
+vector 484 SharedSumoScenario.node[69].nic.phy80211p RadioState ETV
+vector 485 SharedSumoScenario.node[69].nic.phy80211p RadioChannel ETV
+vector 486 SharedSumoScenario.manager posx ETV
+vector 487 SharedSumoScenario.manager posy ETV
+vector 488 SharedSumoScenario.manager acceleration ETV
+vector 489 SharedSumoScenario.manager co2emission ETV
+vector 490 SharedSumoScenario.manager speed ETV
+vector 491 SharedSumoScenario.manager acceleration ETV
+vector 492 SharedSumoScenario.manager co2emission ETV
+vector 493 SharedSumoScenario.manager speed ETV
+vector 494 SharedSumoScenario.manager acceleration ETV
+vector 495 SharedSumoScenario.manager co2emission ETV
+vector 496 SharedSumoScenario.node[70].nic.phy80211p RadioState ETV
+vector 497 SharedSumoScenario.node[70].nic.phy80211p RadioChannel ETV
+vector 498 SharedSumoScenario.manager posx ETV
+vector 499 SharedSumoScenario.manager posy ETV
+vector 500 SharedSumoScenario.node[71].nic.phy80211p RadioState ETV
+vector 501 SharedSumoScenario.node[71].nic.phy80211p RadioChannel ETV
+vector 502 SharedSumoScenario.manager posx ETV
+vector 503 SharedSumoScenario.manager posy ETV
+vector 504 SharedSumoScenario.node[72].nic.phy80211p RadioState ETV
+vector 505 SharedSumoScenario.node[72].nic.phy80211p RadioChannel ETV
+vector 506 SharedSumoScenario.manager posx ETV
+vector 507 SharedSumoScenario.manager posy ETV
+vector 508 SharedSumoScenario.node[73].nic.phy80211p RadioState ETV
+vector 509 SharedSumoScenario.node[73].nic.phy80211p RadioChannel ETV
+vector 510 SharedSumoScenario.manager posx ETV
+vector 511 SharedSumoScenario.manager posy ETV
+380	51251 550 2990 6224 657 675 19 0.92659732452406 20.365017481839 80.617484390902 820.92242779998
+379	51801 584 2990 6224 657 675 19 -0.36489393562473 4.404687230126 8.5549807505341 36.526602307645
+378	52385 577 2839 6224 656 675 20 9.6316639619218 18.21150993136 349.02694496491 6170.97798764
+368	52962 607 2696 6224 655 675 21 2442.6891878334 2784.0754801552 54715.895265318 142803155.55308
+367	53569 605 2696 6224 655 675 21 998.83397471858 1026.4585032725 21318.563447153 21643413.326869
+vector 512 SharedSumoScenario.node[74].nic.phy80211p RadioState ETV
+vector 513 SharedSumoScenario.node[74].nic.phy80211p RadioChannel ETV
+vector 514 SharedSumoScenario.manager posx ETV
+vector 515 SharedSumoScenario.manager posy ETV
+vector 516 SharedSumoScenario.manager speed ETV
+vector 517 SharedSumoScenario.manager speed ETV
+vector 518 SharedSumoScenario.manager speed ETV
+vector 519 SharedSumoScenario.manager speed ETV
+vector 520 SharedSumoScenario.manager acceleration ETV
+vector 521 SharedSumoScenario.manager co2emission ETV
+vector 522 SharedSumoScenario.manager acceleration ETV
+vector 523 SharedSumoScenario.manager co2emission ETV
+vector 524 SharedSumoScenario.manager acceleration ETV
+vector 525 SharedSumoScenario.manager co2emission ETV
+vector 526 SharedSumoScenario.manager acceleration ETV
+vector 527 SharedSumoScenario.manager co2emission ETV
+vector 528 SharedSumoScenario.manager speed ETV
+vector 529 SharedSumoScenario.node[75].nic.phy80211p RadioState ETV
+vector 530 SharedSumoScenario.node[75].nic.phy80211p RadioChannel ETV
+vector 531 SharedSumoScenario.manager posx ETV
+vector 532 SharedSumoScenario.manager posy ETV
+vector 533 SharedSumoScenario.node[76].nic.phy80211p RadioState ETV
+vector 534 SharedSumoScenario.node[76].nic.phy80211p RadioChannel ETV
+vector 535 SharedSumoScenario.manager posx ETV
+vector 536 SharedSumoScenario.manager posy ETV
+vector 537 SharedSumoScenario.manager acceleration ETV
+vector 538 SharedSumoScenario.manager co2emission ETV
+vector 539 SharedSumoScenario.node[77].nic.phy80211p RadioState ETV
+vector 540 SharedSumoScenario.node[77].nic.phy80211p RadioChannel ETV
+vector 541 SharedSumoScenario.manager posx ETV
+vector 542 SharedSumoScenario.manager posy ETV
+vector 543 SharedSumoScenario.node[78].nic.phy80211p RadioState ETV
+vector 544 SharedSumoScenario.node[78].nic.phy80211p RadioChannel ETV
+vector 545 SharedSumoScenario.manager posx ETV
+vector 546 SharedSumoScenario.manager posy ETV
+vector 547 SharedSumoScenario.manager speed ETV
+vector 548 SharedSumoScenario.manager speed ETV
+20	56215 2009 10 7167 603 679 77 0.973 34.889038983554 422.15838172904 6155.2982882912
+19	58224 2208 10 7167 603 679 77 -9.9854036291984 4.8797010158887 4.0552944577606 538.10204226648
+10	60432 2114 6 7167 602 679 78 5.8687605362773 27.314257785833 1386.7528109221 28441.97160266
+9	62546 2068 2 7167 601 679 79 1142.2177439991 2064.0353648829 132296.0113163 230806678.55528
+8	64614 2063 2 7167 601 679 79 619.43813339415 1204.0445363589 66253.039183104 57741133.838543
+vector 549 SharedSumoScenario.manager acceleration ETV
+vector 550 SharedSumoScenario.manager co2emission ETV
+vector 551 SharedSumoScenario.manager acceleration ETV
+vector 552 SharedSumoScenario.manager co2emission ETV
+vector 553 SharedSumoScenario.manager speed ETV
+vector 554 SharedSumoScenario.manager speed ETV
+vector 555 SharedSumoScenario.node[79].nic.phy80211p RadioState ETV
+vector 556 SharedSumoScenario.node[79].nic.phy80211p RadioChannel ETV
+vector 557 SharedSumoScenario.manager posx ETV
+vector 558 SharedSumoScenario.manager posy ETV
+vector 559 SharedSumoScenario.node[80].nic.phy80211p RadioState ETV
+vector 560 SharedSumoScenario.node[80].nic.phy80211p RadioChannel ETV
+vector 561 SharedSumoScenario.manager posx ETV
+vector 562 SharedSumoScenario.manager posy ETV
+vector 563 SharedSumoScenario.manager acceleration ETV
+vector 564 SharedSumoScenario.manager co2emission ETV
+vector 565 SharedSumoScenario.manager acceleration ETV
+vector 566 SharedSumoScenario.manager co2emission ETV
+vector 567 SharedSumoScenario.manager speed ETV
+vector 568 SharedSumoScenario.manager speed ETV
+vector 569 SharedSumoScenario.manager acceleration ETV
+vector 570 SharedSumoScenario.manager co2emission ETV
+vector 571 SharedSumoScenario.manager acceleration ETV
+vector 572 SharedSumoScenario.manager co2emission ETV
+vector 573 SharedSumoScenario.node[81].nic.phy80211p RadioState ETV
+vector 574 SharedSumoScenario.node[81].nic.phy80211p RadioChannel ETV
+vector 575 SharedSumoScenario.manager posx ETV
+vector 576 SharedSumoScenario.manager posy ETV
+vector 577 SharedSumoScenario.manager speed ETV
+vector 578 SharedSumoScenario.manager acceleration ETV
+vector 579 SharedSumoScenario.manager co2emission ETV
+vector 580 SharedSumoScenario.node[82].nic.phy80211p RadioState ETV
+vector 581 SharedSumoScenario.node[82].nic.phy80211p RadioChannel ETV
+vector 582 SharedSumoScenario.manager posx ETV
+vector 583 SharedSumoScenario.manager posy ETV
+vector 584 SharedSumoScenario.node[83].nic.phy80211p RadioState ETV
+vector 585 SharedSumoScenario.node[83].nic.phy80211p RadioChannel ETV
+vector 586 SharedSumoScenario.manager posx ETV
+vector 587 SharedSumoScenario.manager posy ETV
+vector 588 SharedSumoScenario.node[84].nic.phy80211p RadioState ETV
+vector 589 SharedSumoScenario.node[84].nic.phy80211p RadioChannel ETV
+vector 590 SharedSumoScenario.manager posx ETV
+vector 591 SharedSumoScenario.manager posy ETV
+vector 592 SharedSumoScenario.node[85].nic.phy80211p RadioState ETV
+vector 593 SharedSumoScenario.node[85].nic.phy80211p RadioChannel ETV
+vector 594 SharedSumoScenario.manager posx ETV
+vector 595 SharedSumoScenario.manager posy ETV
+vector 596 SharedSumoScenario.manager speed ETV
+vector 597 SharedSumoScenario.manager speed ETV
+vector 598 SharedSumoScenario.manager speed ETV
+vector 599 SharedSumoScenario.node[86].nic.phy80211p RadioState ETV
+vector 600 SharedSumoScenario.node[86].nic.phy80211p RadioChannel ETV
+vector 601 SharedSumoScenario.manager posx ETV
+vector 602 SharedSumoScenario.manager posy ETV
+vector 603 SharedSumoScenario.manager acceleration ETV
+vector 604 SharedSumoScenario.manager co2emission ETV
+vector 605 SharedSumoScenario.manager acceleration ETV
+vector 606 SharedSumoScenario.manager co2emission ETV
+vector 607 SharedSumoScenario.manager acceleration ETV
+vector 608 SharedSumoScenario.manager co2emission ETV
+vector 609 SharedSumoScenario.manager speed ETV
+vector 610 SharedSumoScenario.node[87].nic.phy80211p RadioState ETV
+vector 611 SharedSumoScenario.node[87].nic.phy80211p RadioChannel ETV
+vector 612 SharedSumoScenario.manager posx ETV
+vector 613 SharedSumoScenario.manager posy ETV
+vector 614 SharedSumoScenario.node[88].nic.phy80211p RadioState ETV
+vector 615 SharedSumoScenario.node[88].nic.phy80211p RadioChannel ETV
+vector 616 SharedSumoScenario.manager posx ETV
+vector 617 SharedSumoScenario.manager posy ETV
+vector 618 SharedSumoScenario.manager acceleration ETV
+vector 619 SharedSumoScenario.manager co2emission ETV
+vector 620 SharedSumoScenario.manager speed ETV
+vector 621 SharedSumoScenario.node[89].nic.phy80211p RadioState ETV
+vector 622 SharedSumoScenario.node[89].nic.phy80211p RadioChannel ETV
+vector 623 SharedSumoScenario.manager posx ETV
+vector 624 SharedSumoScenario.manager posy ETV
+vector 625 SharedSumoScenario.manager acceleration ETV
+vector 626 SharedSumoScenario.manager co2emission ETV
+vector 627 SharedSumoScenario.manager speed ETV
+vector 628 SharedSumoScenario.manager speed ETV
+vector 629 SharedSumoScenario.manager acceleration ETV
+vector 630 SharedSumoScenario.manager co2emission ETV
+vector 631 SharedSumoScenario.manager acceleration ETV
+vector 632 SharedSumoScenario.manager co2emission ETV
+vector 633 SharedSumoScenario.manager speed ETV
+vector 634 SharedSumoScenario.manager acceleration ETV
+vector 635 SharedSumoScenario.manager co2emission ETV
+vector 636 SharedSumoScenario.node[90].nic.phy80211p RadioState ETV
+vector 637 SharedSumoScenario.node[90].nic.phy80211p RadioChannel ETV
+vector 638 SharedSumoScenario.manager posx ETV
+vector 639 SharedSumoScenario.manager posy ETV
+vector 640 SharedSumoScenario.node[91].nic.phy80211p RadioState ETV
+vector 641 SharedSumoScenario.node[91].nic.phy80211p RadioChannel ETV
+vector 642 SharedSumoScenario.manager posx ETV
+vector 643 SharedSumoScenario.manager posy ETV
+vector 644 SharedSumoScenario.node[92].nic.phy80211p RadioState ETV
+vector 645 SharedSumoScenario.node[92].nic.phy80211p RadioChannel ETV
+vector 646 SharedSumoScenario.manager posx ETV
+vector 647 SharedSumoScenario.manager posy ETV
+vector 648 SharedSumoScenario.manager speed ETV
+vector 649 SharedSumoScenario.node[93].nic.phy80211p RadioState ETV
+vector 650 SharedSumoScenario.node[93].nic.phy80211p RadioChannel ETV
+vector 651 SharedSumoScenario.manager posx ETV
+vector 652 SharedSumoScenario.manager posy ETV
+vector 653 SharedSumoScenario.manager acceleration ETV
+vector 654 SharedSumoScenario.manager co2emission ETV
+vector 655 SharedSumoScenario.manager speed ETV
+vector 656 SharedSumoScenario.manager speed ETV
+vector 657 SharedSumoScenario.node[94].nic.phy80211p RadioState ETV
+vector 658 SharedSumoScenario.node[94].nic.phy80211p RadioChannel ETV
+vector 659 SharedSumoScenario.manager posx ETV
+vector 660 SharedSumoScenario.manager posy ETV
+vector 661 SharedSumoScenario.manager acceleration ETV
+vector 662 SharedSumoScenario.manager co2emission ETV
+vector 663 SharedSumoScenario.manager acceleration ETV
+vector 664 SharedSumoScenario.manager co2emission ETV
+vector 665 SharedSumoScenario.manager speed ETV
+vector 666 SharedSumoScenario.node[95].nic.phy80211p RadioState ETV
+vector 667 SharedSumoScenario.node[95].nic.phy80211p RadioChannel ETV
+vector 668 SharedSumoScenario.manager posx ETV
+vector 669 SharedSumoScenario.manager posy ETV
+vector 670 SharedSumoScenario.node[96].nic.phy80211p RadioState ETV
+vector 671 SharedSumoScenario.node[96].nic.phy80211p RadioChannel ETV
+vector 672 SharedSumoScenario.manager posx ETV
+vector 673 SharedSumoScenario.manager posy ETV
+vector 674 SharedSumoScenario.manager acceleration ETV
+vector 675 SharedSumoScenario.manager co2emission ETV
+vector 676 SharedSumoScenario.manager speed ETV
+vector 677 SharedSumoScenario.node[97].nic.phy80211p RadioState ETV
+vector 678 SharedSumoScenario.node[97].nic.phy80211p RadioChannel ETV
+vector 679 SharedSumoScenario.manager posx ETV
+vector 680 SharedSumoScenario.manager posy ETV
+vector 681 SharedSumoScenario.manager acceleration ETV
+vector 682 SharedSumoScenario.manager co2emission ETV
+vector 683 SharedSumoScenario.manager speed ETV
+vector 684 SharedSumoScenario.manager speed ETV
+vector 685 SharedSumoScenario.node[98].nic.phy80211p RadioState ETV
+vector 686 SharedSumoScenario.node[98].nic.phy80211p RadioChannel ETV
+vector 687 SharedSumoScenario.manager posx ETV
+vector 688 SharedSumoScenario.manager posy ETV
+vector 689 SharedSumoScenario.manager acceleration ETV
+vector 690 SharedSumoScenario.manager co2emission ETV
+vector 691 SharedSumoScenario.manager acceleration ETV
+vector 692 SharedSumoScenario.manager co2emission ETV
+vector 693 SharedSumoScenario.manager speed ETV
+359	74723 1398 2452 14108 653 702 50 0.973 41.638253473701 594.40696677106 13154.513298773
+358	76121 1508 2452 14108 653 702 50 -10 4.9419249015162 23.298582050757 663.94057630807
+353	77629 1487 2326 14108 652 702 51 8.1634685383961 32.376493087095 1361.3740867361 39481.006301218
+347	79116 1516 2202 14108 651 702 52 675.70306538195 1600.9462876171 52243.297865096 58149721.80701
+346	80632 1518 2202 14108 651 702 52 46.537329984559 726.14636007381 24415.127585135 13393137.076692
+vector 694 SharedSumoScenario.node[99].nic.phy80211p RadioState ETV
+vector 695 SharedSumoScenario.node[99].nic.phy80211p RadioChannel ETV
+vector 696 SharedSumoScenario.manager posx ETV
+vector 697 SharedSumoScenario.manager posy ETV
+vector 698 SharedSumoScenario.node[100].nic.phy80211p RadioState ETV
+vector 699 SharedSumoScenario.node[100].nic.phy80211p RadioChannel ETV
+vector 700 SharedSumoScenario.manager posx ETV
+vector 701 SharedSumoScenario.manager posy ETV
+vector 702 SharedSumoScenario.manager acceleration ETV
+vector 703 SharedSumoScenario.manager co2emission ETV
+vector 704 SharedSumoScenario.manager speed ETV
+vector 705 SharedSumoScenario.manager acceleration ETV
+vector 706 SharedSumoScenario.manager co2emission ETV
+vector 707 SharedSumoScenario.manager speed ETV
+vector 708 SharedSumoScenario.manager speed ETV
+vector 709 SharedSumoScenario.node[101].nic.phy80211p RadioState ETV
+vector 710 SharedSumoScenario.node[101].nic.phy80211p RadioChannel ETV
+vector 711 SharedSumoScenario.manager posx ETV
+vector 712 SharedSumoScenario.manager posy ETV
+vector 713 SharedSumoScenario.node[102].nic.phy80211p RadioState ETV
+vector 714 SharedSumoScenario.node[102].nic.phy80211p RadioChannel ETV
+vector 715 SharedSumoScenario.manager posx ETV
+vector 716 SharedSumoScenario.manager posy ETV
+vector 717 SharedSumoScenario.manager acceleration ETV
+vector 718 SharedSumoScenario.manager co2emission ETV
+vector 719 SharedSumoScenario.manager acceleration ETV
+vector 720 SharedSumoScenario.manager co2emission ETV
+vector 721 SharedSumoScenario.manager speed ETV
+vector 722 SharedSumoScenario.manager speed ETV
+vector 723 SharedSumoScenario.node[103].nic.phy80211p RadioState ETV
+vector 724 SharedSumoScenario.node[103].nic.phy80211p RadioChannel ETV
+vector 725 SharedSumoScenario.manager posx ETV
+vector 726 SharedSumoScenario.manager posy ETV
+vector 727 SharedSumoScenario.manager acceleration ETV
+vector 728 SharedSumoScenario.manager co2emission ETV
+vector 729 SharedSumoScenario.manager acceleration ETV
+vector 730 SharedSumoScenario.manager co2emission ETV
+vector 731 SharedSumoScenario.manager speed ETV
+vector 732 SharedSumoScenario.node[104].nic.phy80211p RadioState ETV
+vector 733 SharedSumoScenario.node[104].nic.phy80211p RadioChannel ETV
+vector 734 SharedSumoScenario.manager posx ETV
+vector 735 SharedSumoScenario.manager posy ETV
+vector 736 SharedSumoScenario.manager acceleration ETV
+vector 737 SharedSumoScenario.manager co2emission ETV
+vector 738 SharedSumoScenario.node[105].nic.phy80211p RadioState ETV
+vector 739 SharedSumoScenario.node[105].nic.phy80211p RadioChannel ETV
+vector 740 SharedSumoScenario.manager posx ETV
+vector 741 SharedSumoScenario.manager posy ETV
+vector 742 SharedSumoScenario.manager speed ETV
+vector 743 SharedSumoScenario.node[106].nic.phy80211p RadioState ETV
+vector 744 SharedSumoScenario.node[106].nic.phy80211p RadioChannel ETV
+vector 745 SharedSumoScenario.manager posx ETV
+vector 746 SharedSumoScenario.manager posy ETV
+vector 747 SharedSumoScenario.manager acceleration ETV
+vector 748 SharedSumoScenario.manager co2emission ETV
+vector 749 SharedSumoScenario.manager speed ETV
+vector 750 SharedSumoScenario.manager acceleration ETV
+vector 751 SharedSumoScenario.manager co2emission ETV
+vector 752 SharedSumoScenario.manager speed ETV
+vector 753 SharedSumoScenario.node[107].nic.phy80211p RadioState ETV
+vector 754 SharedSumoScenario.node[107].nic.phy80211p RadioChannel ETV
+vector 755 SharedSumoScenario.manager posx ETV
+vector 756 SharedSumoScenario.manager posy ETV
+vector 757 SharedSumoScenario.manager acceleration ETV
+vector 758 SharedSumoScenario.manager co2emission ETV
+vector 759 SharedSumoScenario.manager speed ETV
+vector 760 SharedSumoScenario.node[108].nic.phy80211p RadioState ETV
+vector 761 SharedSumoScenario.node[108].nic.phy80211p RadioChannel ETV
+vector 762 SharedSumoScenario.manager posx ETV
+vector 763 SharedSumoScenario.manager posy ETV
+vector 764 SharedSumoScenario.manager acceleration ETV
+vector 765 SharedSumoScenario.manager co2emission ETV
+vector 766 SharedSumoScenario.node[109].nic.phy80211p RadioState ETV
+vector 767 SharedSumoScenario.node[109].nic.phy80211p RadioChannel ETV
+vector 768 SharedSumoScenario.manager posx ETV
+vector 769 SharedSumoScenario.manager posy ETV
+vector 770 SharedSumoScenario.manager speed ETV
+vector 771 SharedSumoScenario.node[110].nic.phy80211p RadioState ETV
+vector 772 SharedSumoScenario.node[110].nic.phy80211p RadioChannel ETV
+vector 773 SharedSumoScenario.manager posx ETV
+vector 774 SharedSumoScenario.manager posy ETV
+vector 775 SharedSumoScenario.manager acceleration ETV
+vector 776 SharedSumoScenario.manager co2emission ETV
+vector 777 SharedSumoScenario.manager speed ETV
+vector 778 SharedSumoScenario.node[111].nic.phy80211p RadioState ETV
+vector 779 SharedSumoScenario.node[111].nic.phy80211p RadioChannel ETV
+vector 780 SharedSumoScenario.manager posx ETV
+vector 781 SharedSumoScenario.manager posy ETV
+vector 782 SharedSumoScenario.node[112].nic.phy80211p RadioState ETV
+vector 783 SharedSumoScenario.node[112].nic.phy80211p RadioChannel ETV
+vector 784 SharedSumoScenario.manager posx ETV
+vector 785 SharedSumoScenario.manager posy ETV
+vector 786 SharedSumoScenario.manager acceleration ETV
+vector 787 SharedSumoScenario.manager co2emission ETV
+vector 788 SharedSumoScenario.manager speed ETV
+vector 789 SharedSumoScenario.node[113].nic.phy80211p RadioState ETV
+vector 790 SharedSumoScenario.node[113].nic.phy80211p RadioChannel ETV
+vector 791 SharedSumoScenario.manager posx ETV
+vector 792 SharedSumoScenario.manager posy ETV
+vector 793 SharedSumoScenario.manager acceleration ETV
+vector 794 SharedSumoScenario.manager co2emission ETV
+vector 795 SharedSumoScenario.manager speed ETV
+vector 796 SharedSumoScenario.manager speed ETV
+vector 797 SharedSumoScenario.node[114].nic.phy80211p RadioState ETV
+vector 798 SharedSumoScenario.node[114].nic.phy80211p RadioChannel ETV
+vector 799 SharedSumoScenario.manager posx ETV
+vector 800 SharedSumoScenario.manager posy ETV
+vector 801 SharedSumoScenario.manager acceleration ETV
+vector 802 SharedSumoScenario.manager co2emission ETV
+vector 803 SharedSumoScenario.manager acceleration ETV
+vector 804 SharedSumoScenario.manager co2emission ETV
+vector 805 SharedSumoScenario.manager speed ETV
+13	88404 3267 10 21386 603 720 118 906.30250919632 1039.4576850194 114453.44262994 111162526.39247
+14	91671 3268 10 21386 603 720 118 2604.7130936923 4091.3540186465 384969.88185438 1292229469.9274
+17	94939 3260 10 21386 603 720 118 477.57106252052 896.7692277856 82264.661778959 59088557.303946
+18	98199 3257 10 21386 603 720 118 1576.4885732898 2083.6818311839 219108.05564805 409594528.04967
+21	101456 2946 14 21386 604 720 117 0 27.253561375429 1775.947520429 38526.803104357
+22	104402 3210 14 21386 604 720 117 0 27.371590313343 1378.2609344914 19146.201689718
+25	107612 3214 18 21386 605 720 116 412.69893752037 884.70470538608 79388.789047984 57947814.498695
+26	110826 3218 18 21386 605 720 116 607.61617315107 2060.0356235384 165306.09788163 269652252.40354
+27	114044 3045 18 21386 605 720 116 -10 5.1141675926512 -9.9048923980199 1232.4153194273
+28	117089 2796 18 21386 605 720 116 0.973 33.134339263451 706.42243525956 12190.253796896
+29	119885 3399 18 21386 605 720 116 -9.9899355615434 5.2845623879288 21.919436869139 555.4114071312
+30	123284 3046 18 21386 605 720 116 0.973 32.411293586464 450.04635139901 5099.7000833
+33	126330 3194 22 21386 606 720 115 685.91359697234 1014.7041842204 98661.703125908 86286576.256303
+34	129524 3148 22 21386 606 720 115 1339.0154647254 2559.42156765 222494.04641403 454715840.89062
+37	132672 3191 22 21386 606 720 115 886.86343400047 1403.3958929257 113906.44097175 115171096.24799
+38	135863 3194 22 21386 606 720 115 2120.8976916521 3167.9369873845 284651.29792724 719856905.42794
+41	139057 3195 22 21386 606 720 115 906.23957852236 1004.2578902699 111551.5501589 108339291.99331
+42	142252 3190 22 21386 606 720 115 2604.9836491848 3854.4910305333 350106.85018273 1089287865.2413
+43	145442 2801 22 21386 606 720 115 0 29.166742481688 1755.9626867851 41926.344108143
+46	148243 3166 26 21386 607 720 114 905.2648741781 1003.0804858431 109896.18779194 106087735.86354
+47	151409 3158 26 21386 607 720 114 2608.355652009 4383.4217684636 363017.47022022 1195988821.5932
+48	154567 2772 26 21386 607 720 114 -4.5 2.1996556211938 -3.9688103431286 422.72139085589
+49	157339 2705 26 21386 607 720 114 0.973 18.853109045785 563.24017859523 5111.5963157098
+50	160044 2935 26 21386 607 720 114 0 25.031558001924 1404.6083732145 23453.974047677
+51	162979 2581 26 21386 607 720 114 0 28.497020719845 1347.7202883556 27261.306410411
+52	165560 2640 26 21386 607 720 114 0 29.269972503665 1267.8481876123 25085.803207474
+53	168200 3056 30 21386 608 720 113 -4.4979256035223 2.0968170109554 -3.3556056122351 322.94258364711
+54	171256 2769 30 21386 608 720 113 0.34864204798889 15.318609726228 386.21886753314 2458.5711212863
+55	174025 2696 30 21386 608 720 113 -9.8149473020364 4.7951327616814 -6.9585251223925 392.24569193834
+56	176721 2670 30 21386 608 720 113 0.973 31.47336542638 358.45671760304 3850.8377440147
+57	179391 2701 30 21386 608 720 113 -4.5 2.1899966624519 -2.3621258618765 348.72368928472
+58	182092 2587 30 21386 608 720 113 0.973 16.949377977779 443.84290306302 3794.0446678432
+59	184679 2847 30 21386 608 720 113 0 30.843975817163 1792.4962103827 46181.57966492
+62	187526 3118 34 21386 609 720 112 719.61340416721 1199.6056848367 100298.38187565 91168318.232312
+63	190644 3069 34 21386 609 720 112 1578.2998149676 2075.0282182588 220102.68501965 435261361.20626
+64	193713 2967 34 21386 609 720 112 -9.9115974700823 4.8583394865738 -6.879336724245 798.47968880783
+65	196680 2728 34 21386 609 720 112 0.973 36.502485785816 630.75630226365 10456.678358401
+68	199408 3089 38 21386 610 720 111 756.03105932116 1003.3031848669 106697.13667766 102991845.65204
+69	202497 3093 38 21386 610 720 111 2605.1883003852 3535.8952831653 325743.85234331 971091645.25232
+70	205590 2515 38 21386 610 720 111 0 15.492708501055 865.51123819387 11471.620511115
+73	208105 3056 42 21386 611 720 110 935.9934714819 1192.1260328642 111340.35334889 113159837.3679
+74	211161 3061 42 21386 611 720 110 2611.4890863445 3807.4697316208 347824.1489549 1121792517.3432
+75	214222 2599 42 21386 611 720 110 -4.5 2.2068438949599 -0.15425018173102 131.19174919995
+76	216821 2565 42 21386 611 720 110 0.973 8.5015683829169 227.43423421453 802.49985960858
+77	219386 2423 42 21386 611 720 110 0 28.059603970636 1124.6605121892 22444.591205759
+78	221809 2532 46 21386 612 720 109 -9.7816848835784 4.9450073715532 -6.7689698349599 332.00651693554
+79	224341 2487 46 21386 612 720 109 0.973 28.055134444491 344.6984845631 4012.3621261316
+80	226828 2909 46 21386 612 720 109 0 26.271882988921 1316.1204616641 23607.451901887
+83	229737 2998 50 21386 613 720 108 413.0730639488 580.90593663617 53278.046380948 26551967.765732
+84	232735 3014 50 21386 613 720 108 607.32765142668 1148.0775256538 110956.25896461 117575184.72846
+85	235749 3050 50 21386 613 720 108 -9.6976966918159 4.5524187619798 -6.5680839080577 363.63791158635
+86	238799 2754 50 21386 613 720 108 0.973 29.06176650131 359.73654592974 3710.9061139222
+87	241553 2922 54 21386 614 720 107 0 26.004812970201 945.43985278007 18532.931477573
+88	244475 3127 58 21386 615 720 106 -5.5839991148576 4.5826555530075 23.214093611516 284.30124447267
+89	247602 2857 58 21386 615 720 106 0.973 31.105900578448 376.22787177296 4804.210665847
+92	250459 2937 62 21386 616 720 105 935.95353215065 1001.2877484547 103205.77959133 101493477.04679
+93	253396 2938 62 21386 616 720 105 2605.4735036787 3586.0910224929 303947.25114242 893195404.43926
+98	256334 2259 66 21386 617 720 104 0 29.828786654888 1024.0231887613 21526.776796805
+99	258593 2282 70 21386 618 720 103 -4.5 2.2869786102325 -3.5418662622967 241.31392254923
+100	260875 2418 70 21386 618 720 103 0.973 17.754964029444 341.54690353668 2701.3127615872
+104	263293 2954 74 21386 619 720 102 906.21590573277 1033.5731205288 97471.48943219 93251271.546083
+105	266247 2948 74 21386 619 720 102 2868.7575263958 4077.9248771326 366832.76061105 1334059607.0538
+110	269195 2918 78 21386 620 720 101 884.23230771284 1001.3022016488 93708.756035472 87175754.61019
+111	272113 2935 78 21386 620 720 101 2121.2701833742 2861.7179720858 234908.19495191 552565042.36241
+114	275048 2923 78 21386 620 720 101 916.56821739151 1337.037812122 103559.2579467 107936393.01789
+115	277971 2926 78 21386 620 720 101 3700.714920563 4368.2712755756 401279.58498002 1597703191.1944
+116	280897 2930 78 21386 620 720 101 1.8066012177378 27.763310099344 1320.8115516826 21358.640830889
+123	283827 2900 84 21386 621 720 100 914.10359867137 1384.8085103802 101793.32274204 105519402.68592
+124	286727 2901 84 21386 621 720 100 3687.3907820933 4137.6738313297 392366.16326592 1541105146.6246
+127	289628 2888 84 21386 621 720 100 684.11824097883 1010.8706333013 82606.607663554 69837685.338749
+128	292516 2883 84 21386 621 720 100 2064.3045885212 2560.1219515804 230526.60791796 534728545.43149
+129	295399 2909 84 21386 621 720 100 -4 1.0193697346793 12.14171870346 254.64682598284
+130	298308 2715 84 21386 621 720 100 0.973 10.603661888012 406.87705464726 2196.4728957653
+131	301023 2277 84 21386 621 720 100 0 14.403906311 754.34823259977 10630.29812727
+132	303300 2915 84 21386 621 720 100 0.0055683028427543 27.239926108427 826.84768530276 10689.784914666
+133	306215 2372 89 21386 622 720 99 -8.6698980588422 4.846792113944 -6.6570796130319 138.65618352177
+134	308587 2407 89 21386 622 720 99 0.973 15.242992271554 176.11249977433 627.90852266752
+135	310994 2992 89 21386 622 720 99 -4.5 2.1017790917447 3.1633328081264 199.1698185007
+136	313986 2606 89 21386 622 720 99 0.973 16.71953900005 302.53890870375 2315.5866438309
+138	316592 2896 89 21386 622 720 99 0.00042491555459379 25.964089901067 786.94804034949 9817.8441781722
+139	319488 2709 89 21386 622 720 99 0 21.62857320582 1274.0699180329 21641.04189947
+142	322197 2851 133 21386 623 720 98 912.43936966649 1103.0485479839 95326.761619239 93071258.863817
+143	325048 2853 133 21386 623 720 98 3678.3936834651 4087.1326474066 382505.23709776 1494199143.9501
+146	327901 3016 133 21386 623 720 98 -4.4386193339567 2.152188730631 2.774051825423 136.98881211957
+147	330917 2633 133 21386 623 720 98 0.973 15.394432102265 263.6335767949 1842.228561675
+148	333550 2769 133 21386 623 720 98 -4.5 2.1238545169071 -2.3030215212884 346.09329845598
+149	336319 2575 133 21386 623 720 98 0.973 13.302509227355 363.50669326657 2249.464401766
+152	338894 2819 177 21386 624 720 97 938.06031226348 1296.5880256984 105747.62337676 116557111.86519
+153	341713 2818 177 21386 624 720 97 2112.3315340033 2576.3725686579 230846.92498494 551158812.58745
+154	344531 2699 177 21386 624 720 97 0 5.912031210976 483.16602601096 2762.8661680945
+155	347230 2895 223 21386 625 720 96 -2.9814889186924 0.98089726424776 4.0323163542712 23.38954258892
+156	350125 2684 223 21386 625 720 96 0.973 2.7238684665203 138.5037934649 208.83878396127
+157	352809 2768 223 21386 625 720 96 4.8370180594603 21.84940493981 1204.0833474151 17013.187674702
+160	355577 2764 274 21386 626 720 95 889.33345842067 1473.0817815822 101099.19845296 110060176.12767
+161	358341 2766 274 21386 626 720 95 2142.2903706359 2695.6773093922 234170.56447079 579852768.34159
+164	361107 2764 274 21386 626 720 95 937.85324247653 1295.6501353148 103686.38835722 114415244.63086
+165	363871 2768 274 21386 626 720 95 2109.8570916197 2574.2275586471 225918.76309069 538990806.23814
+166	366639 2913 274 21386 626 720 95 -8.4075085712672 4.6356171171879 3.9201580685659 519.29556712516
+167	369552 2618 274 21386 626 720 95 0.973 24.470205006326 367.2414714588 3540.4567037099
+168	372170 2691 325 21386 627 720 94 0 26.297404455619 988.349762437 16980.966391196
+169	374861 2728 325 21386 627 720 94 5.1817162960894 21.734509454171 1206.1727955239 17210.686494097
+172	377589 2712 374 21386 628 720 93 442.82236086426 887.10099551338 65433.90450214 48463349.155522
+173	380301 2709 374 21386 628 720 93 628.33432953966 2059.1457941339 135744.31471701 222844444.59182
+176	383010 2706 374 21386 628 720 93 918.97294456726 1442.3378769779 101651.78025157 114716273.65776
+177	385716 2710 374 21386 628 720 93 3714.0488400404 4138.6501212161 367238.45531596 1451628589.7008
+178	388426 2765 374 21386 628 720 93 -9.9112782487357 4.8985645099928 -5.3082424003788 388.45268459763
+179	391191 2422 374 21386 628 720 93 0.973 31.688587379925 344.30667152087 3994.5132924961
+180	393613 2851 374 21386 628 720 93 -5.5593782314027 4.6691862465581 10.104785911559 380.78693380158
+181	396464 2434 374 21386 628 720 93 0.973 24.147121267429 368.41479385662 4094.2241707966
+186	398898 2430 429 21386 629 720 92 0 31.36066946699 1515.5928348312 37614.489167839
+187	401328 2686 429 21386 629 720 92 0.45781489549396 27.158613350945 929.07896642833 13741.554885279
+190	404014 2658 493 21386 630 720 91 890.86041062418 1203.7513193273 88534.207583147 86793618.247044
+191	406672 2658 493 21386 630 720 91 2119.6673466412 2967.2035747493 226244.50611379 572676430.86929
+194	409330 2656 493 21386 630 720 91 765.67809530895 980.9480638689 79099.421065464 68983304.053183
+195	411986 2651 493 21386 630 720 91 1481.3283126026 2051.9205029742 154866.06413103 268026755.13863
+196	414637 2426 493 21386 630 720 91 -4.5 2.1710591315269 -3.4841863937146 374.92699130713
+197	417063 2287 493 21386 630 720 91 0.973 20.672551204593 512.51689480342 5361.0178912192
+198	419350 2767 493 21386 630 720 91 -4.4856864215601 2.2461395518738 3.1878881668555 245.85243688783
+199	422117 2465 493 21386 630 720 91 0.973 16.670015860445 340.34536021676 2965.7118486875
+203	424582 2628 558 21386 631 720 90 906.23213172679 1005.3666846736 86835.016070089 83885068.183067
+204	427210 2623 558 21386 631 720 90 2607.9073132177 4019.2800450417 282590.71916809 907427573.45603
+207	429833 2272 558 21386 631 720 90 0 23.732927342719 1048.5685363371 18318.528668936
+208	432105 2606 558 21386 631 720 90 0 31.43979787147 937.46428171345 15501.53784676
+211	434711 2593 629 21386 632 720 89 957.79244206023 1319.251642108 100049.97006905 113733239.50704
+212	437304 2599 629 21386 632 720 89 2187.3469408296 2574.8496847428 213332.76977803 512541086.19573
+215	439903 2596 629 21386 632 720 89 765.20124608518 890.85475531307 76634.625456819 66131895.431837
+216	442499 2562 629 21386 632 720 89 1587.1037541481 2058.2659078666 168378.61010714 322077568.40344
+217	445061 2320 629 21386 632 720 89 -4.5 2.323187716268 -3.8538009473223 203.17291125001
+218	447381 2247 629 21386 632 720 89 0.973 15.989621115705 273.81020646944 1719.6279072832
+219	449628 2645 629 21386 632 720 89 -4.5 2.44726331376 -3.3039382417859 405.92586372261
+220	452273 2270 629 21386 632 720 89 0.973 19.870622828546 390.52052615004 3535.2226753655
+221	454543 2559 629 21386 632 720 89 0 28.152343927439 1428.5705423482 32398.696714364
+222	457102 2635 698 21386 633 720 88 -10 4.8868210420478 -8.5027245916562 758.81677641193
+223	459737 2363 698 21386 633 720 88 0.973 32.864371256651 513.34735793015 8035.8135374284
+224	462100 2453 698 21386 633 720 88 0 25.688901746719 1219.6184962783 21828.538158845
+225	464553 1944 698 21386 633 720 88 0 25.703601893891 628.84063103764 11418.744866211
+226	466497 2539 767 21386 634 720 87 -10 4.9615681325784 -9.0949100133261 720.37355787923
+227	469036 2146 767 21386 634 720 87 0.973 30.605279283787 436.32367739152 6601.3025256746
+228	471182 1942 767 21386 634 720 87 -4.5 2.1307506239461 -3.7873820048303 235.5676110942
+229	473124 1977 767 21386 634 720 87 0.973 15.796221139341 260.29247161596 1865.1919696047
+232	475101 2507 834 21386 635 720 86 624.35034529473 982.58414634036 75499.971296903 67280055.137276
+233	477608 2519 834 21386 635 720 86 2952.9355774797 4081.5581629637 315581.00250076 1169413118.1662
+236	480127 2489 895 21386 636 720 85 565.55812891387 889.67549340814 68524.661532566 56211635.872909
+237	482616 2485 895 21386 636 720 85 1036.9663697342 2052.4861665479 151333.22894467 279233656.67588
+238	485101 2487 895 21386 636 720 85 2.2482463459667 31.162277652826 1482.239967275 31146.982528491
+241	487588 2457 963 21386 637 720 84 892.65643523477 1251.959984061 84835.88232541 86445241.298604
+242	490045 2456 963 21386 637 720 84 2127.1091804292 2575.0794342673 204277.50387068 499155769.31324
+245	492501 2460 963 21386 637 720 84 412.66719239493 580.88787267178 42760.336265735 21974955.658811
+246	494961 2463 963 21386 637 720 84 606.14549377149 1148.4954012529 81289.259657994 81945515.225689
+247	497424 2456 963 21386 637 720 84 -4.5 2.3401098471589 5.7561422985495 460.17938683926
+248	499880 2203 963 21386 637 720 84 0.973 20.534957350958 554.52040783902 6196.0917167163
+249	502083 2109 963 21386 637 720 84 0 29.604870514397 1066.041639945 27922.906659559
+252	504192 2429 1034 21386 638 720 83 570.85021261643 1004.4888600885 73493.449476373 66492430.626987
+253	506621 2429 1034 21386 638 720 83 2614.7611343617 3535.7336854862 264194.81558904 850556370.70737
+256	509050 2426 1034 21386 638 720 83 920.715331086 1391.0865793543 86574.767799093 92087328.482468
+257	511476 2429 1034 21386 638 720 83 3726.0753907381 4428.471475193 331671.79194339 1328616900.077
+260	513905 2434 1034 21386 638 720 83 936.76260446535 1204.5451918793 85036.380106599 87838374.548548
+261	516339 2426 1034 21386 638 720 83 2947.7562774049 3821.8109837479 290738.17858525 1023661280.8762
+264	518765 2424 1034 21386 638 720 83 672.99654727726 979.23645847833 73659.826739842 66016481.592495
+265	521189 2426 1034 21386 638 720 83 2969.4436401836 4083.1354483052 305692.69160432 1136738832.4993
+266	523615 2177 1034 21386 638 720 83 -9.7865259151106 4.913694459619 -8.6724112964262 511.83031909232
+267	525792 2042 1034 21386 638 720 83 0.973 34.642254541545 416.23387128241 6953.7444812962
+268	527834 2150 1034 21386 638 720 83 0 24.594562552056 714.13781861389 10779.045064246
+269	529984 2415 1034 21386 638 720 83 2.6682852852619 27.955950979592 952.74883361329 19618.850192523
+272	532399 2397 1105 21386 639 720 82 906.13280310965 1001.2602687897 78404.487590467 75045867.471274
+273	534796 2401 1105 21386 639 720 82 2613.0069348357 3890.916659991 264812.76026914 870073379.90993
+274	537197 2174 1105 21386 639 720 82 -4.5 2.2962710380391 -3.5918885417858 210.05662261817
+275	539371 2055 1105 21386 639 720 82 0.973 14.780483280314 238.1570160702 1508.3175584937
+276	541426 2519 1105 21386 639 720 82 -3.8615112452769 4.889354238566 22.748129606346 224.84205651138
+277	543945 2293 1105 21386 639 720 82 0.973 32.239124369297 355.6846756761 4597.6359867344
+278	546238 2403 1105 21386 639 720 82 0.016492403850882 29.864007462452 1302.0731584804 25861.898521131
+279	548641 2361 1105 21386 639 720 82 0 25.808233846045 880.17932588218 15439.212439747
+280	551002 2401 1105 21386 639 720 82 1.3188271959095 25.736282907146 997.79585394328 15321.544885737
+281	553403 2390 1105 21386 639 720 82 3.6765690825114 28.866390592956 1461.1484089065 30389.942775683
+282	555793 2506 1180 21386 640 720 81 -5.9288819282508 5.0050004849676 -9.1451898567786 285.02668305207
+283	558299 2231 1180 21386 640 720 81 0.973 34.54694662851 338.98141473527 4590.0941177834
+284	560530 2458 1180 21386 640 720 81 -9.8785974677788 4.6187686612364 -1.7362717479634 459.66473418546
+285	562988 2176 1180 21386 640 720 81 0.973 28.462343538352 327.56354068651 4094.5084468991
+286	565164 2458 1180 21386 640 720 81 -4 1.0956820871867 6.023368363683 120.64796253432
+287	567622 2253 1180 21386 640 720 81 0.973 9.8298336076807 254.31802679007 1199.6296454183
+288	569875 2433 1180 21386 640 720 81 -10 4.9419554534135 3.7557278874076 593.01025813577
+289	572308 2058 1180 21386 640 720 81 0.973 25.972895796226 542.76358043208 7299.9256684809
+290	574366 2365 1180 21386 640 720 81 0.021558459449485 29.577387970297 1293.7457984679 26322.064153194
+291	576731 2360 1255 21386 641 720 80 -4.5 2.2603194736503 -3.7764271986798 373.90067789744
+292	579091 2117 1255 21386 641 720 80 0.973 18.620184711604 434.79913145783 4199.3808437647
+295	581208 2285 1410 21386 643 720 78 694.97318290902 1209.5304028552 67836.115383235 61194069.618866
+296	583493 2282 1410 21386 643 720 78 1989.8304480083 2412.7672011352 165074.35577188 350259050.08921
+299	585775 2272 1410 21386 643 720 78 958.09482357162 1318.9517740896 82329.788496044 87720227.828985
+300	588047 2287 1410 21386 643 720 78 2187.4292027601 2559.0022507581 188529.60593353 457372566.14179
+303	590334 2260 1493 21386 644 720 77 888.34013242628 1004.3912714499 73175.528759861 69715384.019495
+304	592594 2255 1493 21386 644 720 77 2136.3660392429 2925.7374957734 189298.53522072 471720919.03742
+305	594849 2172 1493 21386 644 720 77 0 14.291517051198 873.5204885502 11548.608972167
+306	597021 1818 1493 21386 644 720 77 0 25.105810482055 653.09200807226 11179.545566208
+309	598839 2212 1583 21386 645 720 76 894.21741036024 1296.3638806807 78822.161152648 82940075.691022
+310	601051 2211 1583 21386 645 720 76 2133.4522654323 2574.2388491718 184652.69478482 450541924.80081
+311	603262 2268 1583 21386 645 720 76 -4.5 2.2387434149791 10.520892619339 147.86788900542
+312	605530 2104 1583 21386 645 720 76 0.973 8.920380011857 211.36003836279 877.05215908162
+313	607634 1852 1583 21386 645 720 76 -4.5 2.0591636345419 -2.3385475798723 195.86916551792
+314	609486 1815 1583 21386 645 720 76 0.973 14.68820609238 228.09663129875 1534.3450244164
+315	611301 2164 1583 21386 645 720 76 0 16.20324 817.31578715842 12439.864149435
+316	613465 2288 1675 21386 646 720 75 -3.3795956223447 2.133564496492 -3.4144086408246 61.316682155508
+317	615753 2043 1675 21386 646 720 75 0.973 9.5384507636136 167.32052731004 572.60124818635
+318	617796 2216 1675 21386 646 720 75 0.003897193761334 24.556084845103 779.56920477959 11582.467739938
+321	620012 2170 1773 21386 647 720 74 495.78108480721 985.96871454299 55833.292257442 43657212.668815
+322	622182 2169 1773 21386 647 720 74 1878.0712757579 2386.5219595594 151776.55381622 312829170.69399
+325	624351 2170 1773 21386 647 720 74 977.04759412402 1296.9013473345 78575.283519615 84160197.258722
+326	626521 2171 1773 21386 647 720 74 2489.0791222535 3037.3446466321 201704.66331587 552198112.73509
+327	628692 2262 1773 21386 647 720 74 -3.7438398313924 1.973384804253 -2.3089858527977 177.23045399798
+328	630954 1949 1773 21386 647 720 74 0.973 14.931969392223 244.58934607362 1517.4005335604
+329	632903 2145 1875 21386 648 720 73 2.6646386375924 16.102580493444 892.90068821427 11639.22332464
+330	635048 1902 1875 21386 648 720 73 0 26.941111628219 779.25520584461 12658.97370574
+333	636950 2112 1977 21386 649 720 72 380.5121499969 764.85557857773 44791.478357386 28982029.312641
+334	639062 2113 1977 21386 649 720 72 508.62116341107 1654.1350818448 90570.910234893 123295737.82093
+335	641175 2234 1977 21386 649 720 72 -4.4629257462238 2.236546167417 13.417584632575 106.58411267092
+336	643409 2044 1977 21386 649 720 72 0.973 8.7632726426319 208.38256849617 865.93318316294
+337	645453 1968 1977 21386 649 720 72 -10 5.1848421128705 5.090737709144 594.02770344286
+338	647421 1864 1977 21386 649 720 72 0.973 32.218163104819 302.6928624835 3826.3004040649
+341	649285 2087 2088 21386 650 720 71 886.78280693027 1001.2195742823 66398.578305419 62254731.675361
+342	651372 2087 2088 21386 650 720 71 2131.9172043922 2918.7645902969 168816.35689762 406614048.0476
+343	653459 2080 2088 21386 650 720 71 1.4739495123051 26.478964152965 1395.6980389724 32190.044970721
+348	655539 2159 2202 21386 651 720 70 -5.019650197291 2.2039035158325 22.110473703371 183.05601782293
+349	657698 1984 2202 21386 651 720 70 0.973 15.729626951137 362.44593699097 2611.3423351456
+350	659682 1889 2202 21386 651 720 70 0 19.876929084885 801.14789345745 15259.904929042
+351	661571 1976 2326 21386 652 720 69 -5.0883240264077 4.8624521685066 -7.7438871838784 129.75716535265
+352	663547 1818 2326 21386 652 720 69 0.973 22.140131359175 182.77810399025 1274.5601102162
+356	665365 1999 2452 21386 653 720 68 925.82537876854 1442.2845243211 79150.202218758 94737195.603507
+357	667364 1992 2452 21386 653 720 68 3760.0685326827 4137.62852 272174.46008443 1090368442.1004
+362	669356 1966 2571 21386 654 720 67 921.93908307987 1132.8329396573 65809.529603165 64987251.225695
+363	671322 1966 2571 21386 654 720 67 3735.3255769866 4122.1600086447 262666.70444462 1030603112.584
+364	673288 1964 2571 21386 654 720 67 5.1996454126278 22.871964699785 967.59467986542 16602.829293286
+369	675252 2023 2696 21386 655 720 66 -8.649084299918 4.969775437424 0.77393192855484 640.53602872609
+370	677275 1745 2696 21386 655 720 66 0.973 28.16405143667 406.13191723524 6340.0811996762
+371	679020 1942 2696 21386 655 720 66 0.90289102881719 29.894377935862 592.56197881964 8764.4808696498
+374	680962 1912 2839 21386 656 720 65 938.19484489346 1285.2021206502 70105.408397121 76403130.069072
+375	682874 1908 2839 21386 656 720 65 2113.5104910313 2492.687498009 150698.80092774 350210643.82193
+376	684782 1996 2839 21386 656 720 65 -9.900315883819 5.3362661537714 -2.7442492433118 523.0036794752
+377	686778 1752 2839 21386 656 720 65 0.973 43.160281727935 316.1650970193 6635.8605252069
+381	688530 1877 2990 21386 657 720 64 3.9125901141155 23.939884203077 817.13719601595 11804.630118489
+384	690407 1850 3145 21386 658 720 63 870.67114916798 953.46855640527 58298.432629172 53969815.861731
+385	692257 1852 3145 21386 658 720 63 3086.0567947388 4081.4810723484 231172.85948559 853958847.84986
+386	694109 1833 3145 21386 658 720 63 -4.5 2.2145948153106 5.9517569176697 323.80381599134
+387	695942 1681 3145 21386 658 720 63 0.973 14.0314680291 308.65895805975 2420.0868601417
+390	697623 1824 3310 21386 659 720 62 953.09305746233 1031.6626847832 61125.588943608 60310666.719378
+391	699447 1819 3310 21386 659 720 62 2585.1682399337 3403.7330345615 186169.44906075 562751979.39032
+392	701266 1818 3310 21386 659 720 62 3.3251828938239 26.256665449669 1064.5178272093 22191.662102619
+393	703084 1849 3478 21386 660 720 61 -4.5 2.1190731915319 22.89160237038 185.78319828051
+394	704933 1662 3478 21386 660 720 61 0.973 15.97977874215 342.28718746556 2985.4346827121
+395	706595 1794 3478 21386 660 720 61 4.7987980774278 19.290459116948 830.28637861188 11954.568517559
+398	708389 1762 3649 21386 661 720 60 618.83273639792 803.32275465038 44369.736581903 32989333.975013
+399	710151 1768 3649 21386 661 720 60 1060.6206387767 1231.7689781692 66970.923503931 74890310.476006
+400	711919 1878 3649 21386 661 720 60 -4.5 2.0736493177083 7.9471159289476 86.00120819969
+401	713797 1737 3649 21386 661 720 60 0.973 11.365256566137 180.01770293953 847.56663574881
+402	715534 1726 3830 21386 662 720 59 2.6273558738006 14.06542864214 313.77537150188 2591.635921443
+405	717260 1702 4012 21386 663 720 58 965.69718169009 1305.6717453956 67675.161112053 79817806.009753
+406	718962 1709 4012 21386 663 720 58 2339.8325699663 2575.6513398679 143218.32540751 353991032.28239
+407	720671 1816 4012 21386 663 720 58 -3.7635086809543 2.1706267263507 11.332444403205 80.938991462925
+408	722487 1669 4012 21386 663 720 58 0.973 8.7655013218696 133.80720155663 567.50968772022
+411	724156 1680 4197 21386 664 720 57 793.50103813974 891.15287236913 49456.507322223 42964129.872209
+412	725836 1680 4197 21386 664 720 57 2125.9934923469 2203.1416981753 122473.54779365 263197496.90497
+415	727516 1679 4197 21386 664 720 57 998.06890798128 1294.5700402017 64864.716309507 74385081.492878
+416	729195 1680 4197 21386 664 720 57 2369.9932287947 2554.7622045029 141282.19933757 350402824.53064
+417	730875 1667 4197 21386 664 720 57 3.3326763645893 26.625149019408 758.93416229423 11534.726264554
+420	732542 1650 4386 21386 665 720 56 765.78553897866 887.88165371215 47641.732594465 40631932.426715
+421	734192 1652 4386 21386 665 720 56 1599.7506667891 2047.9849650961 104643.26331084 197482945.05164
+422	735844 1659 4386 21386 665 720 56 -4.5 2.2740832036594 12.944432488128 276.53745639348
+423	737503 1518 4386 21386 665 720 56 0.973 16.049508857252 293.64724136945 2462.5608836207
+424	739021 1440 4386 21386 665 720 56 0 14.327073343827 238.92838250057 2487.0946008676
+425	740461 1615 4386 21386 665 720 56 0 23.015860062238 666.18364982268 9166.7066735302
+428	742076 1622 4575 21386 666 720 55 939.77456745525 1296.8495490078 61487.724564212 69706026.559798
+429	743698 1621 4575 21386 666 720 55 2232.4934552732 2529.1809346277 131796.64718695 316194710.7711
+432	745319 1623 4575 21386 666 720 55 766.18622015097 881.77208256266 45916.19440868 38401709.158695
+433	746942 1620 4575 21386 666 720 55 1453.0048908221 2033.0409653016 91701.28096483 154354002.67143
+434	748562 1452 4575 21386 666 720 55 -4.4610874377396 2.147254056714 -3.3937729333089 121.61893576158
+435	750014 1323 4575 21386 666 720 55 0.973 8.6849452616172 120.97563291399 527.04817052424
+436	751337 1636 4575 21386 666 720 55 -4.5 2.1246741997031 -2.875812273209 242.6222465
+437	752973 1462 4575 21386 666 720 55 0.973 14.001652907142 223.49880048396 1576.7754177078
+438	754435 1544 4575 21386 666 720 55 0 29.41639869553 547.28091480787 10814.236327261
+441	755979 1584 4775 21386 667 720 54 456.98187130052 691.35425303494 29665.144374374 16537348.024561
+442	757563 1593 4775 21386 667 720 54 537.74105600695 1168.7507892925 39184.870164184 30319264.993381
+443	759156 1550 4775 21386 667 720 54 -4.4375804554977 2.2617772881338 -3.9591649551745 179.21583121877
+444	760706 1356 4775 21386 667 720 54 0.973 17.487597064367 227.50420247303 2180.9868878259
+445	762062 1587 4775 21386 667 720 54 0.92281300592692 21.227450507864 646.99232205792 9078.5506710858
+446	763649 1579 4775 21386 667 720 54 0 27.224952875257 696.86342682253 12054.720359465
+447	765228 1502 4977 21386 668 720 53 -4.5 2.2489205147978 -1.8632279046241 250.9026163903
+448	766730 1412 4977 21386 668 720 53 0.973 13.273460077197 228.0773187856 1611.9225120932
+449	768142 1608 4977 21386 668 720 53 -4.4917744463832 2.1796280583713 4.8031357998875 255.70810858239
+450	769750 1401 4977 21386 668 720 53 0.973 17.752512722453 257.7415625535 2184.831761717
+451	771151 1557 4977 21386 668 720 53 4.0563963131663 27.03107523052 826.13968752835 15782.214825667
+454	772708 1534 5178 21386 669 720 52 989.23420683194 1336.0714839728 60060.047760615 69949686.14781
+455	774242 1532 5178 21386 669 720 52 3555.3378160133 3952.4273047616 194771.82331496 730303325.1301
+458	775774 1535 5178 21386 669 720 52 297.41561811663 402.9713065439 18394.395948379 6562757.0593344
+459	777309 1536 5178 21386 669 720 52 1140.6823074739 1175.8787058397 60279.976365828 69884136.960453
+462	778845 1524 5178 21386 669 720 52 765.5 1013.2574979863 48910.756128806 46322992.544335
+463	780369 1520 5178 21386 669 720 52 1640.4 2552.3895342842 117667.77163993 270793954.68288
+464	781889 1593 5178 21386 669 720 52 -4.4807868058827 2.3405880222027 22.949132407547 143.248552083
+465	783482 1470 5178 21386 669 720 52 0.973 17.219122212176 262.6079244043 2064.4520822987
+468	784952 1508 5183 21386 670 720 51 641.32494021042 896.21331276989 38893.542700537 29865662.650443
+469	786460 1501 5183 21386 670 720 51 2596.9636504365 2896.3146451997 141939.89237028 395679326.30304
+470	787961 1540 5183 21386 670 720 51 3.8780738987896e-06 39.263129708974 932.71458234825 25548.311396114
+471	789501 1508 5183 21386 670 720 51 2.6495071101302 10.884362593725 531.66143477202 5656.4486497466
+472	791009 1502 5183 21386 670 720 51 2.2892232943909 2.4067173276786 119.92336993303 282.05445324105
+475	792511 1476 5394 21386 671 720 50 935.30198045971 1159.5272631464 50579.26890489 51438396.335991
+476	793987 1475 5394 21386 671 720 50 3073.5612356451 3769.1605261235 176195.22544805 622717464.75492
+477	795462 1564 5394 21386 671 720 50 -4.0042306988883 2.0406638544518 -29.79758165244 158.28715858428
+478	797026 1281 5394 21386 671 720 50 0.004235761004598 27.905148643428 245.41222271194 4001.3892046307
+479	798307 1590 5394 21386 671 720 50 -0.089056561288889 2.1656829332048 8.2202599815242 16.81053158885
+480	799897 1478 5394 21386 671 720 50 1.515233493276 6.3166665458408 102.03756703848 260.91659880128
+481	801375 1615 5394 21386 671 720 50 -0.11219643079785 0.074066803439943 -0.049537041473559 0.086922301819728
+482	802990 1461 5394 21386 671 720 50 0.973 1.2700765636567 61.024531442798 74.568382886335
+483	804451 1479 5394 21386 671 720 50 1.8791785886334 13.883423177479 534.71867544709 6293.5352004973
+486	805930 1450 5604 21386 672 720 49 571.66825077538 946.65967233844 39222.002925245 32262564.304984
+487	807380 1445 5604 21386 672 720 49 3214.0193140735 3535.9603087556 169657.20807411 587677872.56783
+488	808825 1529 5604 21386 672 720 49 -3.6255150736263 0.97139839062932 11.974876395752 36.527731505814
+489	810354 1408 5604 21386 672 720 49 0.973 4.8460676273049 128.52308045399 393.7113498205
+490	811762 1442 5604 21386 672 720 49 8.7628130667173 28.32424008548 809.67384279827 16252.541291723
+491	813204 1502 5813 21386 673 720 48 -2.1409139332827 4.8071842353791 18.988580124581 74.263615290632
+492	814706 1391 5813 21386 673 720 48 0.973 33.428119420167 225.86588252407 2992.0806074925
+493	816097 1413 5813 21386 673 720 48 2.4190799357202 30.936507500967 713.48324214814 12922.965382371
+494	817510 1472 6016 21386 674 720 47 -1.5825026785798 2.1368906631973 28.448659356857 59.431340006172
+495	818982 1368 6016 21386 674 720 47 0.973 19.319606629278 236.73311460981 2347.2614019618
+498	820350 1361 6224 21386 675 720 46 571.89153192733 946.56870463196 35337.591771925 27825681.692924
+499	821711 1362 6224 21386 675 720 46 3463.5937166547 3535.8628917542 160691.51905746 561368514.79935
+502	823073 1359 6224 21386 675 720 46 939.24453159742 1159.8140180599 46613.538882843 47386373.606165
+503	824432 1360 6224 21386 675 720 46 2202.8638054982 2553.3977558377 107614.89154553 252604192.94666
+506	825792 1358 6224 21386 675 720 46 422.00266842843 555.83150357924 21532.817207622 10126644.937276
+507	827150 1356 6224 21386 675 720 46 375.6391801701 1007.3507226411 28434.604810136 18956091.048002
+510	828506 1362 6224 21386 675 720 46 1024.2505824372 1192.4243315208 51177.661666038 57059829.778817
+511	829868 1361 6224 21386 675 720 46 3613.5894232634 3807.8138427391 170907.16412173 635147675.31182
+514	831229 1331 6449 21386 676 720 45 1077.5905308269 1192.2343696277 52287.874961388 60777024.141285
+515	832560 1334 6449 21386 676 720 45 2097.1321063978 2253.6411765306 97512.687606655 211422997.16497
+516	833894 1332 6449 21386 676 720 45 3.1673728942538 16.370562850086 438.73533079329 4426.4339270212
+517	835226 1333 6449 21386 676 720 45 0.017845739464034 17.196507617776 563.73873973916 8435.9223177839
+518	836559 1333 6449 21386 676 720 45 2.5787408601653 28.058323986981 721.16455666486 14182.581156094
+519	837892 1335 6449 21386 676 720 45 1.8969608685948 6.0489254172653 259.08571621758 1524.6030428078
+520	839227 1391 6683 21386 677 720 44 -1.2531799909426 2.1993543417961 13.203189955832 28.56823457701
+521	840618 1293 6683 21386 677 720 44 0.973 10.982128852615 110.56088613915 468.48147865998
+522	841911 1377 6683 21386 677 720 44 -5.9149893646562 4.5569726377493 -8.6259809910323 164.32308291663
+523	843288 1211 6683 21386 677 720 44 0.973 17.598853741034 136.06122475207 1046.3740787867
+524	844499 1366 6683 21386 677 720 44 -3.7780647457399 2.1747494089091 25.391981651775 94.778941108264
+525	845865 1270 6683 21386 677 720 44 0.973 16.48460509993 233.01721876568 1999.9688594152
+526	847135 1416 6683 21386 677 720 44 -0.041570727881044 0.97973687862978 4.1488156210657 3.5024133579454
+527	848551 1300 6683 21386 677 720 44 1.3595879871436 2.6686283241119 66.476144718444 103.57875838028
+528	849851 1293 6683 21386 677 720 44 2.2825472722605 19.043551327949 250.88113461147 2003.023969633
+531	851144 1276 6920 21386 678 720 43 842.37638606894 1078.197758653 40009.393761831 37499902.624454
+532	852420 1271 6920 21386 678 720 43 1845.5239109097 2052.5200410844 82442.581472722 158267104.71805
+535	853691 1275 6920 21386 678 720 43 751.31011837365 891.38159154096 36946.532456588 31845879.084154
+536	854966 1278 6920 21386 678 720 43 2120.3659838385 2225.5800720535 92489.470450093 198997365.14064
+537	856244 1356 6920 21386 678 720 43 -0.50108167673263 2.0849897593469 16.761004055688 33.874298006906
+538	857600 1267 6920 21386 678 720 43 0.973 11.806486223354 109.25618785216 599.12014232417
+541	858867 1243 7167 21386 679 720 42 1035.2311718256 1397.7070599019 52938.625742447 67300538.175265
+542	860110 1246 7167 21386 679 720 42 4012.0951306811 4431.1056463927 179538.32802491 768246733.65736
+545	861356 1245 7167 21386 679 720 42 686.25771405494 789.59958514779 31109.38689922 23084207.35101
+546	862601 1244 7167 21386 679 720 42 1341.576127421 1651.8540212441 61697.532148642 91146509.88256
+547	863845 1248 7167 21386 679 720 42 0.3242571549751 20.975937409202 442.35428274252 5790.1029576823
+548	865093 999 7167 21386 679 720 42 0 13.990937789401 190.0636204783 2004.3268419293
+549	866092 1244 7425 21386 680 720 41 -4.4979318881384 2.3538681922969 -3.4265349842644 208.61468913891
+550	867336 1047 7425 21386 680 720 41 0.973 12.61309357679 183.04051773839 1434.0117935335
+551	868383 1001 7425 21386 680 720 41 -4.389088458251 2.1647406337876 -2.1759419864165 73.091504371041
+552	869384 967 7425 21386 680 720 41 0.973 8.6154342381418 78.674740309266 291.90938939573
+553	870351 1209 7425 21386 680 720 41 3.9983337860519 27.673630552389 637.31928701844 12316.18297532
+554	871560 1193 7425 21386 680 720 41 0 22.197061812613 452.2274541503 6366.0880607627
+557	872753 1188 7689 21386 681 720 40 913.93507022543 967.07684835911 37566.145877474 35286030.044868
+558	873941 1185 7689 21386 681 720 40 3008.3887284393 3604.8206777711 136308.63303057 465978672.32728
+561	875126 1185 7689 21386 681 720 40 986.26567812573 1402.97106967 45064.091462999 51760385.282716
+562	876311 1180 7689 21386 681 720 40 2650.7060994335 3167.068924978 116782.28243167 341739078.83374
+563	877491 1158 7689 21386 681 720 40 -4.5 2.1121491286298 23.529043288211 217.79019957245
+564	878649 1108 7689 21386 681 720 40 0.973 17.747550700224 296.0168428275 3234.7715312749
+565	879757 1190 7689 21386 681 720 40 -4.5 2.1951476918354 11.276632683554 201.44260865454
+566	880947 1079 7689 21386 681 720 40 0.973 13.005299676743 185.13907656575 1347.2117462353
+567	882026 1147 7958 21386 682 720 39 3.9742068937474 27.142894070955 655.6928310719 13871.30536815
+568	883173 1153 7958 21386 682 720 39 8.6062927232187 28.7431834917 805.47093101096 18239.068932393
+569	884326 1169 8229 21386 683 720 38 -3.5180819257684 2.1033976730797 14.846554607573 98.519877148006
+570	885495 1062 8229 21386 683 720 38 0.71472510520045 17.208176503057 202.0158258454 1724.0083411872
+571	886557 1186 8229 21386 683 720 38 -9.9913139410317 4.912666856451 8.4738118430621 246.94914241735
+572	887743 1101 8229 21386 683 720 38 0.973 32.026725298332 243.49282008451 3710.4660996466
+575	888844 1101 8500 21386 684 720 37 942.95335288834 992.08823810102 35563.362904573 34194506.606105
+576	889945 1097 8500 21386 684 720 37 2835.5879772733 3512.0255102112 117793.8327652 376966674.17297
+577	891042 1071 8776 21386 685 720 36 3.7130951726378 29.409743531775 687.26202858211 15424.597133659
+578	892113 1052 9053 21386 686 720 35 -4.5 2.2815422370098 13.92864575603 158.66057253247
+579	893165 985 9053 21386 686 720 35 0.973 17.529196720646 238.37942246638 2391.206726504
+582	894150 1010 9328 21386 687 720 34 989.34118141754 1406.3556106913 39295.849285717 46323317.626001
+583	895160 1013 9328 21386 687 720 34 2753.175371619 3166.7103981172 100698.41036089 298673786.59804
+586	896173 1012 9328 21386 687 720 34 684.82339866502 936.98801436751 27931.15742042 23209688.532383
+587	897185 1012 9328 21386 687 720 34 2064.5050766393 2245.1306144492 71658.432770325 151119721.32553
+590	898197 1014 9328 21386 687 720 34 412.97642577573 507.09587268143 15314.30919248 6920811.4602459
+591	899211 1016 9328 21386 687 720 34 608.38261840656 881.55821308381 24496.353494135 17875837.14987
+594	900227 984 9618 21386 688 720 33 942.86431667324 985.95609835082 31560.914755859 30191483.686829
+595	901211 984 9618 21386 688 720 33 2924.3292110345 3512.9005757726 106898.01832225 347730805.39892
+596	902195 983 9618 21386 688 720 33 6.5420336734207 29.214201429233 700.40690916413 16590.641185965
+597	903178 986 9618 21386 688 720 33 2.4754588734301 15.291853554058 388.7317582434 4981.5193704846
+598	904164 978 9618 21386 688 720 33 4.1631024723077 25.709953243954 523.6961882905 10046.303959815
+601	905142 956 9911 21386 689 720 32 989.37400817321 1020.2069897934 32169.087221805 32342181.438196
+602	906098 955 9911 21386 689 720 32 2594.1861751333 2925.8089790045 89146.04419782 248741248.81631
+603	907053 1002 9911 21386 689 720 32 -9.9682728764135 4.5633286227006 10.770553677051 277.94369102627
+604	908055 922 9911 21386 689 720 32 0.973 32.54292133706 240.08281751683 3825.0136680597
+605	908977 1003 9911 21386 689 720 32 -4.3662848991068 2.1082598779979 12.801753800161 50.145561287263
+606	909980 924 9911 21386 689 720 32 0.973 8.7764710768788 101.75496368226 464.51905249267
+607	910904 961 9911 21386 689 720 32 -4.5 2.1699766561738 21.497919765109 154.02612995014
+608	911865 907 9911 21386 689 720 32 0.973 15.686815402977 225.2137553623 2249.167483722
+609	912772 957 9911 21386 689 720 32 2.2420848001221 29.725032141478 598.30433555555 13726.27398292
+612	913729 927 10215 21386 690 720 31 923.38392269165 940.73405564212 28764.694713768 26690982.686561
+613	914656 926 10215 21386 690 720 31 3748.139442234 3909.8457276833 118891.40707036 456053755.76626
+616	915582 923 10215 21386 690 720 31 749.95319482149 891.85239990488 26605.632875904 22902713.889892
+617	916505 929 10215 21386 690 720 31 2124.0506589467 2226.4179425989 66877.729809626 144312557.65343
+618	917434 926 10215 21386 690 720 31 -4.5 2.18289677141 10.90016159704 145.8534756888
+619	918360 858 10215 21386 690 720 31 0.973 18.470215094764 210.61360649379 2249.2126422654
+620	919218 925 10215 21386 690 720 31 4.0919748438428 15.289277248682 409.80376976914 5825.7818342817
+623	920143 896 10523 21386 691 720 30 623.78536451164 824.09531353032 22361.909661245 16826103.0627
+624	921039 899 10523 21386 691 720 30 1029.7412072111 1187.1167287111 33793.12989333 38141024.207316
+625	921938 953 10523 21386 691 720 30 -6.7453692778296 4.6495776463742 9.3814571114337 146.40657791966
+626	922891 868 10523 21386 691 720 30 0.973 17.362487255005 118.34892977456 1072.0410539674
+627	923759 896 10523 21386 691 720 30 3.0624239669899 5.9790563838088 171.297386232 986.41337090349
+628	924655 915 10523 21386 691 720 30 0.00081506698457891 14.670900210487 186.00199541748 2264.1021352082
+629	925570 931 10835 21386 692 720 29 -0.17394003885378 1.8612225675141 2.8275457090354 4.0755129196057
+630	926501 857 10835 21386 692 720 29 0.973 3.5670675901794 44.17992792316 72.838741609701
+631	927358 917 10835 21386 692 720 29 -5.8699453132081 4.8394316204616 -7.4926830949262 116.00830411027
+632	928275 739 10835 21386 692 720 29 0.973 15.656547840015 69.949028039372 487.21794859258
+633	929014 857 10835 21386 692 720 29 0 14.653484523327 288.13437538158 3363.9509179552
+634	929871 846 11149 21386 693 720 28 -4.4732167792805 2.3350930805528 -3.9333354487928 168.16502816282
+635	930717 738 11149 21386 693 720 28 0.973 8.9262745477264 114.53051899141 704.31244471932
+638	931455 749 12098 21386 696 720 25 923.05797214212 1148.0643239319 26124.467589426 27416229.02292
+639	932204 748 12098 21386 696 720 25 1843.0499680918 1898.9262713064 46491.866495898 86469413.981405
+642	932952 719 12417 21386 697 720 24 475.91808719151 566.23031089148 12296.242151163 6318419.3990874
+643	933671 719 12417 21386 697 720 24 1722.2378999139 1782.2480849753 42213.870599673 74260060.791625
+646	934390 717 12417 21386 697 720 24 1438.5812181296 1575.331485923 36126.680444387 54422610.280191
+647	935107 718 12417 21386 697 720 24 4065.6676383951 4082.0185766763 97670.293325635 397479015.05016
+648	935825 717 12417 21386 697 720 24 2.2486945210277 19.033121592006 262.73321373476 3213.4004773326
+651	936542 689 12740 21386 698 720 23 402.26653550193 431.68988640609 9461.4509951903 3894043.2338697
+652	937231 687 12740 21386 698 720 23 1103.3542001034 1137.6205261896 25908.369705183 29187507.898922
+653	937918 694 12740 21386 698 720 23 -3.9091181899776 2.2978710045642 16.784427070978 78.661217010837
+654	938612 658 12740 21386 698 720 23 0.973 13.20539763113 111.79444547419 791.47412044585
+655	939270 689 12740 21386 698 720 23 2.6098060441138 7.4738553753099 124.74149221181 689.72771480721
+656	939959 688 12740 21386 698 720 23 6.096846541082 6.1544444444444 140.99629220116 864.35265382834
+659	940647 659 13075 21386 699 720 22 937.99303080375 1046.5089911401 21543.407764992 21126291.036904
+660	941306 660 13075 21386 699 720 22 2204.2046484051 2339.6347517078 49264.464150238 110354505.74331
+661	941966 704 13075 21386 699 720 22 -0.10543060587253 1.9614693061262 4.8640493311961 8.3675260433173
+662	942670 655 13075 21386 699 720 22 1.2495890403363 5.0421018135511 37.585937304369 80.945747143242
+663	943325 716 13075 21386 699 720 22 -0.050284432587214 0.042557331863791 -0.028139679506421 0.013532639801839
+664	944041 656 13075 21386 699 720 22 1.3514844078579 1.4912990698726 31.353819655993 44.715234191449
+665	944697 656 13075 21386 699 720 22 2.556355649056 2.678417682706 57.690534841325 151.31833698223
+668	945353 629 13412 21386 700 720 21 919.98319952823 927.85121676151 19396.812979654 17916227.578982
+669	945982 628 13412 21386 700 720 21 3777.8257844384 4220.1099489152 84187.926660281 337971416.91721
+672	946610 629 13412 21386 700 720 21 643.30806077052 745.15373108664 14369.887503536 9857430.091909
+673	947239 628 13412 21386 700 720 21 1258.5498857618 1567.906715132 28993.167968054 40246639.750381
+674	947867 685 13412 21386 700 720 21 -0.088665420969483 0.099354883937631 0.019534103681799 0.051961882970704
+675	948552 628 13412 21386 700 720 21 1.1807265008673 1.3050422481392 26.018488858857 32.258869873556
+676	949180 623 13412 21386 700 720 21 3.4052579021057 17.194370428908 240.7401974136 3115.5337381343
+679	949803 599 13751 21386 701 720 20 695.97256644886 863.49153450259 15748.597429725 12477877.76212
+680	950402 600 13751 21386 701 720 20 2063.0868558247 2082.6663400396 41475.529359924 86011666.600228
+681	951002 614 13751 21386 701 720 20 -4.4871536875917 2.1675214432226 13.74251694304 63.854709467267
+682	951616 559 13751 21386 701 720 20 0.973 9.2637405621082 93.431044360009 599.6188848952
+683	952175 596 13751 21386 701 720 20 7.600511119992 27.211835570427 446.96005716378 10829.250801224
+684	952771 597 13751 21386 701 720 20 2.5937634965771 22.328723451163 333.26127098352 6409.4153870002
+687	953368 569 14108 21386 702 720 19 1131.0337491877 1384.9783017476 24367.853432062 31396624.375732
+688	953937 570 14108 21386 702 720 19 4079.5813995385 4138.7075544612 77981.156628451 320063879.98478
+689	954507 589 14108 21386 702 720 19 -4.6299921064917 4.6860569297802 3.360825832423 152.13718008251
+690	955096 527 14108 21386 702 720 19 0.973 33.149751831043 153.4696592156 2788.4531013582
+691	955623 590 14108 21386 702 720 19 -4.4323878964611 2.1184410375194 14.733449094778 58.926778145415
+692	956213 549 14108 21386 702 720 19 0.973 13.785175644272 109.29414257764 896.24230249063
+693	956762 527 14108 21386 702 720 19 0 13.860694401697 170.3668712542 2058.4901682242
+696	957289 540 14477 21386 703 720 18 1203.8742784062 1472.9290016969 24231.57056209 32758981.517361
+697	957829 539 14477 21386 703 720 18 2516.4682075652 2695.6043319055 46788.817277767 121710450.64907
+700	958368 540 14477 21386 703 720 18 931.82874124734 1018.8338560593 17659.92623094 17343942.393423
+701	958908 538 14477 21386 703 720 18 1904.0014998781 2048.9156128522 35528.314838996 70166779.548677
+702	959446 519 14477 21386 703 720 18 -4.5 2.11292745288 -4.117195465597 71.124043354027
+703	959965 474 14477 21386 703 720 18 0.973 8.1846983772769 51.837783260966 244.63218666602
+704	960439 538 14477 21386 703 720 18 2.6236982875886 25.740658494733 273.99646233958 4978.6182533655
+705	960977 505 14850 21386 704 720 17 -4.5 2.1691485434514 13.275445935819 80.956561778887
+706	961482 479 14850 21386 704 720 17 0.973 15.243379390622 119.76789137613 1260.4985406918
+707	961961 508 14850 21386 704 720 17 6.1879907076481 32.442054524417 348.31660995485 8174.2922061433
+708	962469 508 14850 21386 704 720 17 3.896183830523 12.391373663306 174.34811887321 1942.0082065607
+711	962977 477 15211 21386 705 720 16 294.26928656629 331.96010980333 5009.7168586595 1570727.9089325
+712	963454 478 15211 21386 705 720 16 1139.6225503128 1152.3176904139 18335.482075498 21012112.734166
+715	963932 478 15211 21386 705 720 16 1182.623619443 1271.4768592278 19529.274485364 23850770.30932
+716	964410 476 15211 21386 705 720 16 3779.0998859006 3880.1242021354 61151.198545665 233734798.92136
+717	964886 487 15211 21386 705 720 16 -9.9434642312506 4.9222050755751 18.321839705968 322.92247799516
+718	965373 439 15211 21386 705 720 16 0.973 35.202779969706 247.60795263543 6334.6591784471
+719	965812 505 15211 21386 705 720 16 -4.4060678797611 2.138584339763 0.11882769592347 47.831013592528
+720	966317 448 15211 21386 705 720 16 0.973 6.8558508330983 44.890701107813 181.51234088828
+721	966765 449 15589 21386 706 720 15 2.5909181612701 2.7168941251873 39.978192369909 106.57185426074
+722	967214 448 15589 21386 706 720 15 2.4161248760266 10.932314693845 139.06240731164 1398.9078585624
+725	967662 419 15981 21386 707 720 14 1400.7726939417 1618.8708332331 21239.18734986 32305148.928251
+726	968081 420 15981 21386 707 720 14 4436.6701353007 4515.1681938751 62780.511910188 281538160.95855
+727	968501 457 15981 21386 707 720 14 -0.071518187779079 0.083800894974688 0.028827018744899 0.031169268544314
+728	968958 420 15981 21386 707 720 14 1.1919358253929 1.2948148097865 17.387686396991 21.608851759198
+729	969378 441 15981 21386 707 720 14 -0.11111182934605 2.1119880423904 8.4467322784378 14.613794657222
+730	969819 419 15981 21386 707 720 14 1.4593027048428 5.799509347443 38.752246477704 136.5545924061
+731	970238 389 16371 21386 708 720 13 5.6348088349356 26.821698282511 239.85974336487 5072.941483219
+734	970627 360 16762 21386 709 720 12 817.11210830469 856.14657059528 10089.4156051 8485013.2645644
+735	970987 359 16762 21386 709 720 12 1456.8598005752 1574.2460899714 18325.962526588 28004936.129256
+736	971346 353 16762 21386 709 720 12 -10 4.8639143000124 13.035273463023 286.21144037584
+737	971699 339 16762 21386 709 720 12 0.973 29.323305575612 162.24845987722 3387.2021836843
+740	972038 327 17163 21386 710 720 11 1215.77393482 1318.8090327524 14097.647194759 18080000.144137
+741	972365 327 17163 21386 710 720 11 2187.4683605803 2215.717583517 24174.387218135 53128295.207411
+742	972692 330 17163 21386 710 720 11 3.8767509470776 15.559225185375 129.74694786615 1722.5042747411
+745	973022 298 17569 21386 711 720 10 760.09236297118 792.55715049614 7729.671990668 5975897.8980849
+746	973320 300 17569 21386 711 720 10 1643.9561273069 1733.7002977646 16776.006998114 28152084.072251
+747	973620 310 17569 21386 711 720 10 -0.07488377110999 2.0250099855079 11.607772954617 22.776646025724
+748	973930 297 17569 21386 711 720 10 1.9204847666452 9.5965049302825 49.238859026514 316.27725281826
+749	974227 300 17569 21386 711 720 10 2.8529718741689 20.609456787345 115.56010384959 1660.0647300672
+750	974527 269 17984 21386 712 720 9 1.7716148161329 2.124387767266 17.756484913176 35.150557104363
+751	974796 270 17984 21386 712 720 9 3.3680582059669 13.048945022192 72.335523360099 671.24653961512
+752	975066 269 17984 21386 712 720 9 3.8349199583799 19.332160926484 103.51427084195 1419.7383531815
+755	975335 240 18399 21386 713 720 8 773.76557288831 777.00372830218 6203.8802051002 4811025.7669468
+756	975575 240 18399 21386 713 720 8 2102.6766001403 2119.8656055703 16885.906279694 35641998.438442
+757	975815 240 18399 21386 713 720 8 1.7786205634242 2.1188326215069 15.497240968104 30.095338167958
+758	976055 239 18399 21386 713 720 8 3.8033687936532 11.951299968849 62.569888161475 544.05189608811
+759	976294 210 18825 21386 714 720 7 1.8693955448929 2.7467064931528 18.213795091201 48.019656910206
+762	976504 179 19244 21386 715 720 6 789.78665822576 795.26174770039 4759.0568737983 3774793.1868802
+763	976683 180 19244 21386 715 720 6 2220.0607217792 2245.6225886991 13415.312506153 29995598.560143
+764	976863 193 19244 21386 715 720 6 -0.016531481291167 0.83110040367093 0.87731094825991 0.69437705675867
+765	977056 180 19244 21386 715 720 6 1.2320089532735 1.7829875889998 8.0313274210623 10.988906211568
+768	977236 150 19664 21386 716 720 5 1015.7800235113 1016.6329521826 5082.0314211695 5165409.1883444
+769	977386 148 19664 21386 716 720 5 2548.7517715659 2551.4629411062 12752.737812265 32526469.40089
+770	977534 148 19664 21386 716 720 5 2.276128519373 8.1200475230669 29.071980951052 194.01203952877
+773	977682 118 20093 21386 717 720 4 642.18284331426 673.42492597156 2631.2290719836 1731383.8044638
+774	977800 119 20093 21386 717 720 4 2879.067346986 2884.5789139644 11527.294909395 33219648.856409
+775	977919 120 20093 21386 717 720 4 -0.1292657504603 2.076773613223 5.7146532532336 11.4436868531
+776	978039 120 20093 21386 717 720 4 1.2936727952223 5.0500200847022 14.309219386442 59.355244685293
+777	978159 123 20093 21386 717 720 4 0.070900749712534 1.362795574595 2.1818609416356 2.2028137901051
+780	978282 90 20520 21386 718 720 3 953.28892452445 966.71121492578 2878.7837213143 2762556.3035363
+781	978372 90 20520 21386 718 720 3 3913.3004520943 3926.3460477254 11757.345470327 46078478.938363
+784	978462 90 20520 21386 718 720 3 1523.1189318469 1529.2189201144 4579.3699077908 6990228.6857172
+785	978552 89 20520 21386 718 720 3 1283.549340507 1287.6459856893 3857.1781524005 4959282.92327
+786	978641 96 20520 21386 718 720 3 -0.81450082615025 -0.12896911917074 -1.2918948248825 0.80144452619655
+787	978737 60 20520 21386 718 720 3 0.973 0.973 2.919 2.840187
+788	978797 90 20520 21386 718 720 3 10.511960663663 10.561020428599 31.63266131859 333.54331596999
+791	978887 60 20950 21386 719 720 2 1202.0438154277 1206.6811614714 2408.7249768991 2900988.7596579
+792	978947 60 20950 21386 719 720 2 2966.5949101013 2968.2479596772 5934.8428697785 17611181.310767
+793	979007 65 20950 21386 719 720 2 -0.049059764936102 0.001340202270077 -0.047719562666025 0.0024086566777103
+794	979072 60 20950 21386 719 720 2 1.6001157987793 1.7316901106718 3.3318059094512 5.5591212089019
+795	979132 59 20950 21386 719 720 2 9.230249306159 13.675679460536 22.905928766695 272.22171096117
+796	979191 60 20950 21386 719 720 2 3.6188075257335 5.5155620053001 9.1343695310337 43.517192142616
+799	979251 30 21386 21386 720 720 1 865.93618011972 865.93618011972 865.93618011972 749845.46804033
+800	979281 30 21386 21386 720 720 1 1602.4689924752 1602.4689924752 1602.4689924752 2567906.8718446
+801	979311 30 21386 21386 720 720 1 4.4454301543767 4.4454301543767 4.4454301543767 19.761849257441
+802	979341 30 21386 21386 720 720 1 16.657411643252 16.657411643252 16.657411643252 277.46936265275
+803	979371 30 21386 21386 720 720 1 1.8967544795666 1.8967544795666 1.8967544795666 3.5976775557559
+804	979401 30 21386 21386 720 720 1 3.9128328117894 3.9128328117894 3.9128328117894 15.310260613016
+805	979431 30 21386 21386 720 720 1 6.9385254670696 6.9385254670696 6.9385254670696 48.143135657174
+

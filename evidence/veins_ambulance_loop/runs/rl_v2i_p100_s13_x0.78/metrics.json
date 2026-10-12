@@ -1,0 +1,186 @@
+{
+ "city_id": "dhaka",
+ "demand_id": "dhaka_density",
+ "arm": "rl_v2i",
+ "signals": "sumo-rl Q-learning (frozen)",
+ "signals_controlled": [
+  "6904866115",
+  "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+  "cluster_10139575501_2446124135_2446124154_3501293480"
+ ],
+ "v2i": true,
+ "link": "Veins 5.3.1 IEEE 802.11p (packet level: PHY/MAC, building shadowing, interference), 20 mW, 6 Mbit/s",
+ "technology": "802.11p_veins",
+ "equipped_share": 1.0,
+ "seed": 13,
+ "scale": 0.78,
+ "design": "Su et al., EMVLight, AAAI 2022, arXiv:2109.05429 (design idea only: primary = the junction being entered, secondary = the next one)",
+ "sumo": "1.21.0 --num-clients 2 (Veins order 1, this loop order 2)",
+ "rsus": [
+  {
+   "tls": "6904866115",
+   "sumo_xy": [
+    3041.77,
+    4741.03
+   ],
+   "veins_xy": [
+    338.13,
+    54.79
+   ]
+  },
+  {
+   "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+   "sumo_xy": [
+    3601.17,
+    2718.78
+   ],
+   "veins_xy": [
+    897.53,
+    2077.04
+   ]
+  },
+  {
+   "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+   "sumo_xy": [
+    3711.53,
+    2216.35
+   ],
+   "veins_xy": [
+    1007.89,
+    2579.47
+   ]
+  }
+ ],
+ "horizon_s": 3600,
+ "wall_s": 270.3,
+ "run_utc": "2026-10-12T14:27:34.637503+00:00",
+ "veins_exit": 0,
+ "makeway": {
+  "version": 2,
+  "distance_m": 100,
+  "keep_strategic": true
+ },
+ "state": "arrived",
+ "departed_s": 901.0,
+ "arrived_s": 1106.0,
+ "messages": {
+  "sent": 205,
+  "delivered": 5745,
+  "lost": 0,
+  "out_of_range": 351
+ },
+ "vehicles_alerted": 0,
+ "junctions_preempted": [
+  "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+  "cluster_10139575501_2446124135_2446124154_3501293480"
+ ],
+ "messages_per_junction": {
+  "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+   "sent": 205,
+   "delivered": 27,
+   "lost": 0,
+   "out_of_range": 178,
+   "preempted": true
+  },
+  "cluster_10139575501_2446124135_2446124154_3501293480": {
+   "sent": 205,
+   "delivered": 32,
+   "lost": 0,
+   "out_of_range": 173,
+   "preempted": true
+  }
+ },
+ "preemption_events": [
+  {
+   "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+   "what": "informed",
+   "t": 960.0
+  },
+  {
+   "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+   "what": "takeover",
+   "t": 960.0
+  },
+  {
+   "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+   "what": "informed",
+   "t": 965.0
+  },
+  {
+   "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+   "what": "takeover",
+   "t": 965.0
+  },
+  {
+   "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+   "what": "released",
+   "t": 967.0
+  },
+  {
+   "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+   "what": "released",
+   "t": 988.0
+  }
+ ],
+ "veins": {
+  "source": "Veins scalars (results/*.sca), its PHY/MAC",
+  "nodes": 3739,
+  "denm_sent": 205,
+  "car_receptions": 5681,
+  "cars_made_way": 42,
+  "rsu_receptions": 64,
+  "per_rsu": {
+   "6904866115": {
+    "rsu": 0,
+    "sent": 205,
+    "received": 5,
+    "lost_interference_or_collision": 0,
+    "lost_while_transmitting": 0,
+    "not_received_below_sensitivity": 200,
+    "flags_written": 10
+   },
+   "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+    "rsu": 1,
+    "sent": 205,
+    "received": 27,
+    "lost_interference_or_collision": 0,
+    "lost_while_transmitting": 0,
+    "not_received_below_sensitivity": 178,
+    "flags_written": 54
+   },
+   "cluster_10139575501_2446124135_2446124154_3501293480": {
+    "rsu": 2,
+    "sent": 205,
+    "received": 32,
+    "lost_interference_or_collision": 0,
+    "lost_while_transmitting": 0,
+    "not_received_below_sensitivity": 173,
+    "flags_written": 64
+   }
+  },
+  "beacons_generated": 0,
+  "beacons_received": 0,
+  "frames_lost_all_nodes": {
+   "interference_or_collision": 0,
+   "while_transmitting": 0
+  },
+  "ambulance_time_in_veins_s": 205.0,
+  "ambulance_modules": 1
+ },
+ "ambulance": {
+  "arrived": true,
+  "travel_time_s": 205.0,
+  "time_loss_s": 63.12,
+  "waiting_s": 1.0,
+  "depart_s": 900.0
+ },
+ "others": {
+  "vehicles": 3253,
+  "arrived": 1594,
+  "unfinished_at_horizon": 1659,
+  "total_vehicle_hours": 829.679,
+  "mean_time_loss_s": 457.29,
+  "mean_waiting_s": 335.37
+ },
+ "teleports": 510
+}

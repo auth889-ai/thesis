@@ -1,0 +1,107 @@
+{
+ "base": "https://43-205-213-250.sslip.io/",
+ "when": "2026-10-11T14:33:31.837Z",
+ "checks": [
+  {
+   "name": "seed from the clock is shown",
+   "ok": true,
+   "detail": "Seed 1791729214 (from the clock at start)"
+  },
+  {
+   "name": "the twin runs after its warm-up",
+   "ok": true
+  },
+  {
+   "name": "labelled SIMULATION",
+   "ok": true,
+   "detail": "SIMULATION"
+  },
+  {
+   "name": "the info line states the difference from the thesis runs (no bluelight device)",
+   "ok": true,
+   "detail": "Traffic: Generated traffic fitted to DhaTraX's recorded counts at two sections, 07:00-08:00 (RQ2b corridor), repeated hour after hour. Base scale 0.78. Unlike the thesis runs, the ambulance here drives without SUMO's bluelight device (it made SUMO crash on this network): it gets green signals through preemption and cars make way by rule v2, but it does not run red lights by itself."
+  },
+  {
+   "name": "one twin per visitor (a second start returns the same twin)",
+   "ok": true,
+   "detail": "twin-8ec4d9cf9a"
+  },
+  {
+   "name": "a click places a crash (the nearest car stops and blocks its lane)",
+   "ok": true,
+   "detail": "minute 31: Crash on স্যার সৈয়দ সড়ক: its lane is blocked."
+  },
+  {
+   "name": "a click starts an ambulance",
+   "ok": true,
+   "detail": "minute 31: Ambulance started: 3.9 km, alerts over its_g5."
+  },
+  {
+   "name": "the alert spreads: messages sent and delivered, cars alerted",
+   "ok": true,
+   "detail": "sent 2, delivered 2, alerted 2"
+  },
+  {
+   "name": "the demand slider changes the running simulation",
+   "ok": true,
+   "detail": "minute 31: Traffic demand ×1.5."
+  },
+  {
+   "name": "the three forecasters are scored live",
+   "ok": true
+  },
+  {
+   "name": "the page keeps up with the server (within 60 simulated seconds)",
+   "ok": true,
+   "detail": "page Running · simulated 38:45, server 2334 s"
+  },
+  {
+   "name": "phone: its own twin runs, no sideways scroll",
+   "ok": true,
+   "detail": "running true, no sideways scroll true"
+  },
+  {
+   "name": "Stop ends the twin",
+   "ok": true
+  },
+  {
+   "name": "no page errors",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "errors": [],
+ "twin": {
+  "id": "twin-8ec4d9cf9a",
+  "seed": 1791729214,
+  "roads": 170
+ },
+ "counts_after_ambulance": "Ambulancedriving · ITS-G5 (802.11p)Messages sent 2, delivered 2Cars alerted 2 (making way now 1)Signals green for it now: 0Ambulance time so far: 11 sCrashes: 1 · vehicles on the map: 772",
+ "forecast_table": "\tERROR, LAST 10 MINUTES (KM/H)\tERROR SINCE THE START (KM/H)\nOnline (River, learning)\t15.247\t15.247\nChronos-Bolt (zero-shot)\t12.912\t12.912\nNo change\t15.247\t15.247",
+ "events": [
+  "minute 31: Traffic demand ×1.5.",
+  "minute 31: Ambulance started: 3.9 km, alerts over its_g5.",
+  "minute 31: Crash on স্যার সৈয়দ সড়ক: its lane is blocked.",
+  "minute 30: No car within 100 m of that point on this road; click where cars are.",
+  "minute 29: No car within 100 m of that point on this road; click where cars are.",
+  "minute 29: No car within 100 m of that point on this road; click where cars are.",
+  "minute 28: No car within 100 m of that point on this road; click where cars are.",
+  "minute 28: No car within 100 m of that point on this road; click where cars are.",
+  "minute 27: No car within 100 m of that point on this road; click where cars are.",
+  "minute 26: No car within 100 m of that point on this road; click where cars are.",
+  "minute 26: No car within 100 m of that point on this road; click where cars are.",
+  "minute 25: No car within 100 m of that point on this road; click where cars are.",
+  "minute 25: No car within 100 m of that point on this road; click where cars are.",
+  "minute 24: No car within 100 m of that point on this road; click where cars are.",
+  "minute 23: No car within 100 m of that point on this road; click where cars are.",
+  "minute 23: No car within 100 m of that point on this road; click where cars are.",
+  "minute 22: No car within 100 m of that point on this road; click where cars are.",
+  "minute 22: No car within 100 m of that point on this road; click where cars are.",
+  "minute 21: No car within 100 m of that point on this road; click where cars are.",
+  "minute 20: No car within 100 m of that point on this road; click where cars are."
+ ],
+ "status": "Running · simulated 38:45",
+ "server_t": 2334,
+ "page_t": "Running · simulated 38:45",
+ "message": null
+}

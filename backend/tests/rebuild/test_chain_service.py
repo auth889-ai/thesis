@@ -15,8 +15,8 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
-from app.routing import forecast_costs as fc            # noqa: E402
-from app.protocols.chains import integrated_chain as ic             # noqa: E402
+from core.simulation.routing import forecast_costs as fc            # noqa: E402
+from core.simulation.closed_loop.protocols.chains import integrated_chain as ic             # noqa: E402
 
 VALS = np.array([[0.0, 1.0], [np.nan, 2.0], [3.0, np.nan], [1.0, 1.0]])
 MASK = ~np.isnan(VALS)
@@ -152,7 +152,7 @@ def test_every_forecast_kind_is_explained():
 
 
 def test_ablation_pairs_the_prediction_arm_with_its_own_seed():
-    from app.protocols.chains import forecast_quality_ablation as ab
+    from core.simulation.closed_loop.protocols.chains import forecast_quality_ablation as ab
     rec = {"seeds": [1, 2],
            "runs": [{"arm": "baseline", "seed": 1, "metrics": {"total_vehicle_hours": 100.0}},
                     {"arm": "prediction_aware", "seed": 1, "metrics": {"total_vehicle_hours": 90.0}},
@@ -164,7 +164,7 @@ def test_ablation_pairs_the_prediction_arm_with_its_own_seed():
 
 
 def test_route_sensitivity_counts_vehicles_routed_differently(tmp_path, monkeypatch):
-    from app.protocols.chains import forecast_quality_ablation as ab
+    from core.simulation.closed_loop.protocols.chains import forecast_quality_ablation as ab
     monkeypatch.setattr(ic, "RUNS", tmp_path)
     def write(rid, routes):
         d = tmp_path / rid / "prediction_aware_s1"
@@ -181,7 +181,7 @@ def test_route_sensitivity_counts_vehicles_routed_differently(tmp_path, monkeypa
 # ------------------------------------------------------------------ the live backtest
 
 def test_backtest_scores_every_model_on_identical_pairs_and_persistence_has_zero_skill():
-    from app.forecasting.live import live_backtest as bt
+    from core.ml.forecasting.live import live_backtest as bt
     rng = np.random.default_rng(0)
     T, N = 60, 3
     vals = np.clip(np.rint(rng.uniform(0, 3, (T, N))), 0, 3).astype(float)
@@ -202,7 +202,7 @@ def test_backtest_scores_every_model_on_identical_pairs_and_persistence_has_zero
 
 def test_forecast_ledger_logs_then_grades_only_reached_targets(tmp_path, monkeypatch):
     import sys
-    from app.protocols.evidence import forecast_ledger as fl
+    from core.simulation.closed_loop.protocols.evidence import forecast_ledger as fl
     monkeypatch.setattr(fl, "DB", tmp_path / "ledger.sqlite")
     # three corridors, a forecast issued at bin 2 for +15 min (= bin 5) and +60 min (= bin 14)
     bins = np.arange(10) * 300.0 + 1_700_000_000

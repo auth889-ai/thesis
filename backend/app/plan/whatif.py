@@ -22,7 +22,7 @@ def evaluate(city: str | None, origin: str, destination: str, arrive_by: datetim
     from app.commute import service
     from app.plan import outcomes
     from app.transit import service as transit
-    from app.routing.trip.places import resolve_place
+    from core.simulation.routing.trip.places import resolve_place
     LOCAL = profile.tz_for(user_id); city = city or profile.city_for(user_id)
     p = service.plan(city, origin, destination, arrive_by, step_min=5, now=min(datetime.now(timezone.utc), depart_at - timedelta(minutes=1)), tz=LOCAL, target=profile.target_for(user_id))
     factor = outcomes.calibration(user_id)["factor"]

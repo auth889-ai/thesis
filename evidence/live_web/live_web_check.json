@@ -1,0 +1,59 @@
+{
+ "base": "http://127.0.0.1:8011/",
+ "rows": [
+  {
+   "run": "v2x",
+   "size": "1440x900",
+   "seconds": 102,
+   "ok": true,
+   "check": "REPRODUCED",
+   "result": "Ambulance: 292 s without the alert, 284 s with the alert and green signals (2.7 % sooner). Alerts sent 190, delivered 101; cars alerted 30; signals turned green 2. REPRODUCED How we know \u2192",
+   "error": ""
+  },
+  {
+   "run": "mesh",
+   "size": "1440x900",
+   "seconds": 42,
+   "ok": true,
+   "check": "REPRODUCED seed by seed",
+   "result": "Delivered 2.9 % of alerts within 5 minutes; delay 78 s; 0.03 copies per alert. REPRODUCED seed by seed How we know \u2192",
+   "error": ""
+  },
+  {
+   "run": "mesh:range=30",
+   "size": "1440x900",
+   "seconds": 42,
+   "ok": true,
+   "check": "new: the thesis ran 17 phones at 10 m",
+   "result": "Delivered 4.5 % of alerts within 5 minutes; delay 70 s; 0.07 copies per alert. new: the thesis ran 17 phones at 10 m How we know \u2192",
+   "error": ""
+  },
+  {
+   "run": "sos",
+   "size": "1440x900",
+   "seconds": 85,
+   "ok": true,
+   "check": "REPRODUCED (the SOS rule on the thesis traces); car-to-car numbers are new: no thesis number",
+   "result": "Cars warned 269, rerouted 1; delivery in radio range 0.909. Of 51 cars heading for the crash, 35 arrived within 5 minutes with the warning, 35 without. REPRODUCED (the SOS rule on the thesis traces); car-to-car numbers are new: no thesis number How we know \u2192",
+   "error": ""
+  },
+  {
+   "run": "signals",
+   "size": "1440x900",
+   "seconds": 119,
+   "ok": true,
+   "check": "REPRODUCED",
+   "result": "Ambulance 292 s with fixed-time, 188 s with Q-learning signals; queue 4 against 0; all vehicles 532.33 against 793.946 hours. REPRODUCED How we know \u2192",
+   "error": ""
+  },
+  {
+   "run": "v2x:seed=12",
+   "size": "390x844",
+   "seconds": 130,
+   "ok": true,
+   "check": "REPRODUCED",
+   "result": "Ambulance: 343 s without the alert, 294 s with the alert and green signals (14.3 % sooner). Alerts sent 344, delivered 170; cars alerted 43; signals turned green 2. REPRODUCED How we know \u2192",
+   "error": ""
+  }
+ ]
+}

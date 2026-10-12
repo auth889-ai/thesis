@@ -8,11 +8,11 @@ from __future__ import annotations
 
 import pytest
 
-from app.common.city import DHAKA_R1, CityProfile, TrafficSide, get_city
-from app.twin.sumo_runner import (CounterfactualComparison,
+from core.common.city import DHAKA_R1, CityProfile, TrafficSide, get_city
+from core.simulation.twin.sumo_runner import (CounterfactualComparison,
                                                 DemandCompletion, write_route_file)
-from app.common.types import TrafficMetrics
-from app.routing.graph_router import (EdgeInfo, NetworkGraph, RouteDistribution,
+from core.common.types import TrafficMetrics
+from core.simulation.routing.graph_router import (EdgeInfo, NetworkGraph, RouteDistribution,
                                             RouteUnreachable, candidate_distributions,
                                             diverse_alternatives, _edge_overlap)
 

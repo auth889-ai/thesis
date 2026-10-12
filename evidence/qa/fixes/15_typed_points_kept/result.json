@@ -1,0 +1,46 @@
+{
+ "fix": "15_typed_points_kept",
+ "ranks": "owner item",
+ "change": "Home clears a trip only on a switch from one city to another, never when the city list first arrives (useCityChange)",
+ "regression_test": "frontend/src/features/today/useCityChange.test.ts; new QA check F14 (a place sent to Home survives the city loading)",
+ "before_pass": "0/4",
+ "after_pass": "6/6",
+ "after_runs": [
+  {
+   "run": "F14-desktop-dhaka-1",
+   "ok": true,
+   "ms": 13751,
+   "reason": null
+  },
+  {
+   "run": "F14-desktop-dhaka-2",
+   "ok": true,
+   "ms": 13912,
+   "reason": null
+  },
+  {
+   "run": "F14-desktop-dhaka-3",
+   "ok": true,
+   "ms": 13933,
+   "reason": null
+  },
+  {
+   "run": "F14-phone-dhaka-1",
+   "ok": true,
+   "ms": 14442,
+   "reason": null
+  },
+  {
+   "run": "F14-phone-dhaka-2",
+   "ok": true,
+   "ms": 13579,
+   "reason": null
+  },
+  {
+   "run": "F14-phone-dhaka-3",
+   "ok": true,
+   "ms": 13764,
+   "reason": null
+  }
+ ]
+}

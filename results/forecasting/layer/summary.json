@@ -1,0 +1,49 @@
+{
+ "label": "RECORDED (replayed) + FORECAST",
+ "city_id": "los_angeles",
+ "dataset": "METR-LA (DCRNN release, Li et al., ICLR 2018), 207 loop detectors",
+ "units": "mph",
+ "replay": {
+  "first": "2012-06-04 12:40:00",
+  "last": "2012-06-27 22:55:00",
+  "steps": 6748,
+  "split": "test (last 20 %), never used in training"
+ },
+ "model": {
+  "name": "D2STGNN",
+  "paper": "D2STGNN (Shao et al., VLDB 2022)",
+  "harness": "BasicTS (Apache-2.0), checkpoint D2STGNN_best_val_MAE.pt",
+  "rq1_check": {
+   "windows": 120,
+   "max_abs_diff_mph": 0.0
+  }
+ },
+ "horizons_min": [
+  15,
+  30,
+  60
+ ],
+ "card": {
+  "15": {
+   "mae": 2.5648,
+   "no_change_mae": 3.5056,
+   "skill": 0.2684,
+   "n_observed": 1225800
+  },
+  "30": {
+   "mae": 2.9135,
+   "no_change_mae": 4.2121,
+   "skill": 0.3083,
+   "n_observed": 1226400
+  },
+  "60": {
+   "mae": 3.3548,
+   "no_change_mae": 5.3835,
+   "skill": 0.3768,
+   "n_observed": 1227192
+  }
+ },
+ "metric": "masked MAE (outages excluded), RQ1's protocol_b.scoring",
+ "built_utc": "2026-10-09T18:51:01+00:00",
+ "wall_s": 166.2
+}

@@ -1,0 +1,24 @@
+{
+ "item": "Final plan item 2: offline mesh wired into the app",
+ "date": "2026-10-06",
+ "server": "uvicorn on 8012 with the working tree at 07:12 +06",
+ "checked": [
+  "GET /api/alerts/feed?city_id=dhaka carries one mesh item stamped SIMULATED; kinds: mesh built",
+  "/offline on Dhaka, English: the feed line, the scope line, the delivery-ratio figure (mean bar, min\u2013max band), the table equal to research/mesh_pons/RESULTS.md, the reading rules, the evidence details toggle (offline_page_top.jpg, offline_page_table.jpg)",
+  "GET /api/mesh/results/berlin: available false, 'no data for this city'",
+  "python -m app.mesh.results --city dhaka reproduces RESULTS.md's rows exactly",
+  "backend/tests/mesh (5), city/test_city_home, test_structure_migration, emergency: 45 pass 1 skip; frontend emergency and i18n tests 7 pass; tsc clean; 04_report.py rerun changed one sentence only (diff checked)"
+ ],
+ "not_checked": [
+  "the page in Bangla",
+  "Lab \u2192 Evidence in the browser (same MeshTable component without the figure)",
+  "the evidence details expanded",
+  "/offline on a city without data in the browser (API only)",
+  "the whole backend suite"
+ ],
+ "files": [
+  "results.json",
+  "offline_page_top.jpg",
+  "offline_page_table.jpg"
+ ]
+}

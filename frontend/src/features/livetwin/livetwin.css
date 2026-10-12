@@ -1,0 +1,15 @@
+.live-twin .lt-head { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin: 8px 0; }
+.live-twin .pill.sim { background: #fff1e6; color: #b2490e; font-weight: 600; }
+.live-twin .lt-grid { display: grid; grid-template-columns: 3fr 1fr; gap: 16px; }
+.live-twin .lt-mapview { height: 70vh; min-height: 420px; }
+.live-twin .lt-side fieldset { border: 1px solid var(--line, #ddd); border-radius: 8px; padding: 8px 12px; margin: 0 0 12px; display: grid; gap: 8px; }
+.live-twin .lt-side select, .live-twin .lt-side input[type="range"] { width: 100%; }
+.live-twin .lt-radio { display: flex; gap: 8px; align-items: flex-start; }
+.live-twin .lt-radio input { margin-top: 4px; }
+.live-twin .lt-counts ul { margin: 4px 0; padding-left: 18px; }
+.live-twin .lt-forecast, .live-twin .lt-events { margin-top: 16px; }
+.live-twin .lt-events li.warn { color: #b3261e; }
+@media (max-width: 900px) {
+  .live-twin .lt-grid { grid-template-columns: 1fr; }
+  .live-twin .lt-mapview { height: 60vh; min-height: 320px; }
+}

@@ -10,8 +10,8 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
-from app.twin import runtime as pr  # noqa: E402
-from app.protocols.chains import incident_scenario as inc  # noqa: E402
+from core.simulation.twin import runtime as pr  # noqa: E402
+from core.simulation.closed_loop.protocols.chains import incident_scenario as inc  # noqa: E402
 
 SMOKE_EDGEDATA = REPO / "results/routing/static_s11_h900/edgedata.xml"
 PY = sys.executable
@@ -56,7 +56,7 @@ def test_load_weights_and_forecast_to_weights_sources(tmp_path):
     assert intervals[0][0] == 0.0 and intervals[0][1] == 300.0
     for src in ("oracle", "persistence"):
         out = tmp_path / f"{src}.xml"
-        r = subprocess.run([PY, "-m", "app.routing.forecast_to_weights", "--source", src, "--edgedata", str(SMOKE_EDGEDATA),
+        r = subprocess.run([PY, "-m", "core.simulation.routing.forecast_to_weights", "--source", src, "--edgedata", str(SMOKE_EDGEDATA),
                             "--out", str(out)], capture_output=True, text=True)
         assert r.returncode == 0, r.stderr[-800:]
         got = pr.load_weights(out)
@@ -79,7 +79,7 @@ def test_incident_helpers():
 @needs_nlp_model
 def test_event_feed_maps_karwan_bazar_to_r1_edges(tmp_path):
     out = tmp_path / "ev.jsonl"
-    r = subprocess.run([PY, "-m", "app.nlp.event_feed", "--text", "Heavy jam at Karwan Bazar after a bus breakdown", "--out", str(out)],
+    r = subprocess.run([PY, "-m", "core.ml.nlp.event_feed", "--text", "Heavy jam at Karwan Bazar after a bus breakdown", "--out", str(out)],
                        capture_output=True, text=True)
     assert r.returncode == 0, r.stderr[-800:]
     ev = [json.loads(l) for l in out.read_text().splitlines() if l.strip()]
@@ -88,7 +88,7 @@ def test_event_feed_maps_karwan_bazar_to_r1_edges(tmp_path):
 
 
 def test_gazetteer_all_inside_or_labelled():
-    g = json.loads((REPO / "backend/app/nlp/gazetteer.json").read_text())
+    g = json.loads((REPO / "core/ml/nlp/gazetteer.json").read_text())
     places = g if isinstance(g, list) else g.get("places", list(g.values()))
     assert len(places) >= 25
     for p in places:
@@ -106,7 +106,7 @@ def test_build_results_marks_missing(tmp_path, monkeypatch):
 def test_static_and_predictive_smoke(tmp_path):
     for arm, extra in (("static", []), ("predictive", ["--weights", str(SMOKE_EDGEDATA), "--compliance", "0.3"])):
         out = tmp_path / arm
-        r = subprocess.run([PY, "-m", "app.twin.runtime", "--arm", arm, "--seed", "11", "--horizon", "300", "--out", str(out)] + extra,
+        r = subprocess.run([PY, "-m", "core.simulation.twin.runtime", "--arm", arm, "--seed", "11", "--horizon", "300", "--out", str(out)] + extra,
                            capture_output=True, text=True)
         assert r.returncode == 0, r.stderr[-800:]
         m = json.loads((out / "metrics.json").read_text())["metrics"]

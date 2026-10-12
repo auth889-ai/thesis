@@ -7,7 +7,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, HTTPException
 
-from app import evidence_paths as config
+from core.common import evidence_paths as config
 
 router = APIRouter()
 SRC = config.REPO / "docs/references.json"

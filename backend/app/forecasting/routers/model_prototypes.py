@@ -5,7 +5,7 @@ import json
 import sys
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from pathlib import Path
-from app import evidence_paths as config
+from core.common import evidence_paths as config
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -21,7 +21,7 @@ def opencity_status(city_id: str):
     """
     import sys
     sys.path.insert(0, str(config.REPO))
-    from app.forecasting.opencity import opencity_city_eval as oce
+    from core.ml.forecasting.opencity import opencity_city_eval as oce
     return oce.readiness(city_id)
 
 
@@ -31,7 +31,7 @@ def _opencity_predict(args: list[str]) -> dict:
     import sys as _sys
     import tempfile
     out = Path(tempfile.mkdtemp(prefix="opencity_")) / "prediction.json"
-    cmd = [_sys.executable, "-m", "app.forecasting.opencity.opencity_predict", *args,
+    cmd = [_sys.executable, "-m", "core.ml.forecasting.opencity.opencity_predict", *args,
            "--out", str(out)]
     proc = subprocess.run(cmd, capture_output=True, text=True, timeout=900, cwd=config.REPO)
     if proc.returncode != 0 or not out.exists():

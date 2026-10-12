@@ -10,7 +10,7 @@ export class ErrorBoundary extends Component<{children: ReactNode}, {error: Erro
       <div className="card" role="alert">
         <h3>This page hit a problem</h3>
         <p className="muted">{this.state.error.message}</p>
-        <div className="row"><button className="btn primary" onClick={() => this.setState({error: null})}>Try again</button><a className="btn ghost" href="/today">Back to Today</a></div>
+        <div className="row"><button className="btn primary" onClick={() => this.setState({error: null})}>Try again</button><a className="btn ghost" href="/">Back to Today</a></div>
       </div>
     );
   }

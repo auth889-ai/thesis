@@ -5,7 +5,9 @@ from __future__ import annotations
 import math
 from datetime import datetime, timedelta, timezone
 
-from app.transit import osm, schedule
+from core.common.data import osm
+
+from app.transit import schedule
 
 WALK_MPS = 1.34                 # average adult walking speed (Bohannon 1997)
 WALK_DETOUR = 1.3               # street distance over straight-line distance, typical urban grid

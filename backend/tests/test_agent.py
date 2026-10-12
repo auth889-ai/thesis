@@ -2,12 +2,20 @@
 deterministically. Tools are real (the task store and the commute planner run for real)."""
 from __future__ import annotations
 
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
+
 import pytest
 
 from app.agent import audit, orchestrator, store, tools
 from app.agent.llm import Scripted, Turn
 from app.agent.models import Decision, Goal, GoalStatus, RiskClass, ToolCall
 from app.agent import permissions
+
+
+def tomorrow(hhmm: str) -> str:
+    """A Dhaka local time tomorrow, so the planner's "arrive_by must be in the future" always holds (a fixed date went stale on 2026-10-01)."""
+    return (datetime.now(ZoneInfo("Asia/Dhaka")) + timedelta(days=1)).strftime(f"%Y-%m-%dT{hhmm}")
 
 
 @pytest.fixture(autouse=True)
@@ -17,7 +25,7 @@ def isolated_store(tmp_path, monkeypatch):
 
 
 def test_read_tools_run_without_asking_and_everything_is_audited():
-    llm = Scripted([Turn(text="I will plan the commute.", tool_calls=[{"name": "mobility__plan_commute", "input": {"origin": "Farmgate", "destination": "Shahbagh", "arrive_by": "2026-10-01T09:00"}, "id": "c1"}]),
+    llm = Scripted([Turn(text="I will plan the commute.", tool_calls=[{"name": "mobility__plan_commute", "input": {"origin": "Farmgate", "destination": "Shahbagh", "arrive_by": tomorrow("09:00")}, "id": "c1"}]),
                     Turn(text="Leave at the recommended time; the traffic profile is recorded, not live.")])
     g = orchestrator.run(Goal(user_id="u1", text="Be at Shahbagh by 09:00 tomorrow from Farmgate"), llm)
     assert g.status == GoalStatus.DONE and g.steps[0].call.decision == Decision.ALLOW
@@ -48,7 +56,7 @@ def test_declined_approval_is_logged_and_the_action_never_runs():
 
 def test_the_model_must_ask_instead_of_guessing_and_the_answer_resumes_the_goal():
     llm = Scripted([Turn(text="I need the arrival time.", tool_calls=[{"name": "user__ask", "input": {"question": "By what time must you arrive?"}, "id": "q1"}]),
-                    Turn(text="Planning.", tool_calls=[{"name": "mobility__plan_commute", "input": {"origin": "Farmgate", "destination": "Shahbagh", "arrive_by": "2026-10-01T09:30"}, "id": "c4"}]),
+                    Turn(text="Planning.", tool_calls=[{"name": "mobility__plan_commute", "input": {"origin": "Farmgate", "destination": "Shahbagh", "arrive_by": tomorrow("09:30")}, "id": "c4"}]),
                     Turn(text="Planned.")])
     g = orchestrator.run(Goal(user_id="u4", text="Plan my commute Farmgate to Shahbagh"), llm)
     assert g.status == GoalStatus.WAITING_USER and g.steps[0].question

@@ -1,0 +1,104 @@
+{
+ "args": {
+  "minutes": 10,
+  "delay": 40.0,
+  "seed": 202,
+  "profile": "ideal",
+  "no_gui": true,
+  "out": "evidence/live_runs/gui_routing/teach_b"
+ },
+ "profile_params": null,
+ "duration_s": 1800,
+ "counters": {
+  "uplink_tx": 40938,
+  "uplink_delivered": 40938,
+  "uplink_lost": 0,
+  "downlink_tx": 62,
+  "downlink_delivered": 62,
+  "downlink_lost": 0,
+  "reroutes_applied": 30,
+  "rounds": 2,
+  "polygons": 0
+ },
+ "loop": {
+  "uplink_tx": 40938,
+  "uplink_delivered": 40938,
+  "downlink_tx": 62,
+  "downlink_delivered": 62,
+  "reroutes_applied": 30
+ },
+ "same": true,
+ "rounds": [
+  {
+   "round": 0,
+   "sim_time_s": 1500,
+   "as_of_index": 28712,
+   "forecast_mae_mph_15min": 3.0150748829782743,
+   "decisions": {
+    "NO_ALTERNATIVE": 301,
+    "DEFERRED_BUDGET": 91,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 186,
+    "REROUTE": 65
+   },
+   "grouped": {
+    "REROUTE": 65,
+    "KEEP": 277,
+    "NO_ALTERNATIVE": 301,
+    "REJECTED_CAPACITY": 0
+   },
+   "slow_edges": 88,
+   "counters": {
+    "uplink_tx": 18959,
+    "uplink_delivered": 18959,
+    "uplink_lost": 0,
+    "downlink_tx": 0,
+    "downlink_delivered": 0,
+    "downlink_lost": 0,
+    "reroutes_applied": 0,
+    "rounds": 1,
+    "polygons": 0
+   }
+  },
+  {
+   "round": 1,
+   "sim_time_s": 1800,
+   "as_of_index": 28713,
+   "forecast_mae_mph_15min": 3.2104024421877977,
+   "decisions": {
+    "NO_ALTERNATIVE": 362,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 255,
+    "DEFERRED_BUDGET": 68,
+    "REROUTE": 77
+   },
+   "grouped": {
+    "REROUTE": 77,
+    "KEEP": 323,
+    "NO_ALTERNATIVE": 362,
+    "REJECTED_CAPACITY": 0
+   },
+   "slow_edges": 90,
+   "counters": {
+    "uplink_tx": 40938,
+    "uplink_delivered": 40938,
+    "uplink_lost": 0,
+    "downlink_tx": 60,
+    "downlink_delivered": 60,
+    "downlink_lost": 0,
+    "reroutes_applied": 28,
+    "rounds": 2,
+    "polygons": 0
+   }
+  }
+ ],
+ "lines": [
+  "t=1500s round 0: uplink 18959 delivered / 0 lost | forecast MAE@15min 3.02 mph vs METR-LA | REROUTE 65 KEEP 277 NO_ALTERNATIVE 301 REJECTED_CAPACITY 0 | downlink 0 delivered / 0 lost | reroutes applied 0 | edges below 50 % of limit 88",
+  "t=1800s round 1: uplink 40938 delivered / 0 lost | forecast MAE@15min 3.21 mph vs METR-LA | REROUTE 77 KEEP 323 NO_ALTERNATIVE 362 REJECTED_CAPACITY 0 | downlink 60 delivered / 0 lost | reroutes applied 28 | edges below 50 % of limit 90"
+ ],
+ "metrics": {
+  "total_vehicle_hours_incl_never_inserted": 672.1644,
+  "arrived": 1423,
+  "teleports": 2
+ },
+ "run_dir": "evidence/live_runs/gui_routing/teach_b/s202",
+ "wall_s": 47
+}

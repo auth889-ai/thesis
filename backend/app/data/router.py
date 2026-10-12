@@ -1,10 +1,10 @@
 """Cities HTTP endpoints."""
 from __future__ import annotations
 
-from app.data.live_providers import observatory as observatory_mod
-from app.data.live_providers import live
-from app.routing import trip_analysis as analyze
-from app.data import city_corridors
+from core.common.data.live_providers import observatory as observatory_mod
+from core.common.data.live_providers import live
+from core.simulation.routing import trip_analysis as analyze
+from core.common.data import city_corridors
 from app.dependencies import _city_bits
 from fastapi import APIRouter
 
@@ -115,7 +115,7 @@ def city_observe(city_id: str, payload: dict | None = None):
 @router.get("/api/city/{city_id}/map", tags=["city"])
 def city_map(city_id: str):
     """The commuter's city map: every observed corridor with its state now and the forecast level at +15/+30/+60, computed fresh."""
-    from app.data import city_map as cm
+    from core.common.data import city_map as cm
     return cm.build(analyze.city_id_for(city_id) or city_id)
 
 
@@ -126,3 +126,34 @@ def city_observe_status(city_id: str):
     return {"city_id": city_id, "corridors": city_corridors.load(city_id) if city_id != "dhaka" else None,
             "watched": city_id in observatory_mod.observatory.cities(), "readiness": r,
             "live": (live.provider().corridors_for(city_id) if live.provider() else None) if city_corridors.load(city_id) or city_id == "dhaka" else None}
+
+
+@router.get("/api/cities/search", tags=["city"])
+def cities_search(q: str):
+    """Places with this name in Overture Maps' divisions theme, most populous first, each with a proposed small area.
+    The first search for a name can take about a minute; the answer is cached."""
+    from core.common.data import city_search
+    try:
+        return city_search.search(q)
+    except Exception as exc:                        # noqa: BLE001 - the page says, in plain words, that the search could not be made
+        return {"query": q, "candidates": [], "error": "search_failed", "detail": f"{type(exc).__name__}: {str(exc)[:200]}"}   # detail: for the log and Research, never shown on the page
+
+
+@router.post("/api/cities", tags=["city"])
+def cities_add(payload: dict):
+    """Add a city: body {"candidate": <one search result>, "box": [south, west, north, east] or null}. Writes its config
+    and starts the build; returns a job to poll, or the city at once when it is already built."""
+    from core.common.data import city_builds
+    try:
+        return city_builds.start(payload.get("candidate") or {}, payload.get("box"))
+    except city_builds.Refused as exc:
+        return {"status": "refused", "reason": str(exc)}
+    except KeyError as exc:
+        return {"status": "refused", "reason": f"the candidate is missing {exc}; send one result of /api/cities/search unchanged"}
+
+
+@router.get("/api/cities/jobs/{job}", tags=["city"])
+def cities_job(job: str):
+    from core.common.data import city_builds
+    return city_builds.status(job) or {"job": job, "status": "unknown"}
+

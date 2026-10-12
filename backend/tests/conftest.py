@@ -23,7 +23,7 @@ def app():
 @pytest.fixture
 def client(app, tmp_path, monkeypatch):
     from fastapi.testclient import TestClient
-    from app.protocols.evidence import forecast_ledger as forecast_log
+    from core.simulation.closed_loop.protocols.evidence import forecast_ledger as forecast_log
     monkeypatch.setattr(forecast_log, "DB", tmp_path / "ledger.sqlite")
     with TestClient(app) as c:
         yield c

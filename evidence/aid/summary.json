@@ -1,0 +1,469 @@
+{
+ "what": "AID evaluation (step J): held-out seeds and unseen station pairs; the model and California #7 offline, then the model live in the loop",
+ "label": "SIMULATION",
+ "seeds": [
+  11,
+  12,
+  13,
+  14,
+  15
+ ],
+ "test_pairs": [
+  1,
+  3,
+  5,
+  7,
+  9
+ ],
+ "train_pairs": [
+  0,
+  2,
+  4,
+  6,
+  8
+ ],
+ "incidents_per_seed": 4,
+ "horizon_s": 3600,
+ "test_csv": "data/aid/test.csv",
+ "test_csv_sha256": "8e45ba770473786b68608760be5d126aa30cc24c1fda180551c4324187338dfd",
+ "model_sha256": "3b8ea5d1768a127764f78a20b5d8bf2f68b7dd80707f6142bdca1806cf9f7d2e",
+ "model_threshold": 0.9,
+ "cal7_thresholds": {
+  "t1": 12,
+  "t2": 0.2,
+  "t3": 0.3
+ },
+ "summary": {
+  "model": {
+   "detection_rate": 0.0,
+   "time_to_detect_s_mean": null,
+   "false_alarms_per_pair_hour": 0.24,
+   "threshold": 0.9
+  },
+  "model_at_0.5": {
+   "detection_rate": 0.2,
+   "time_to_detect_s_mean": 98.0,
+   "false_alarms_per_pair_hour": 3.672,
+   "threshold": 0.5
+  },
+  "cal7": {
+   "detection_rate": 0.0,
+   "time_to_detect_s_mean": null,
+   "false_alarms_per_pair_hour": 0.264
+  },
+  "closed_loop": {
+   "trip_time_without_s": 1012.84,
+   "trip_time_with_s": 1017.05,
+   "paired_diff_s": 4.21,
+   "sd_over_seeds": 9.41,
+   "seeds_better_with_loop": 0,
+   "detections_mean": 0.2,
+   "warned_mean": 17.0,
+   "rerouted_mean": 0.6
+  }
+ },
+ "per_seed": [
+  {
+   "seed": 11,
+   "model": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 0,
+    "false_alarms_per_pair_hour": null
+   },
+   "model_at_0.5": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 32,
+    "false_alarms_per_pair_hour": 3.84
+   },
+   "cal7": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 1,
+    "false_alarms_per_pair_hour": 0.12
+   },
+   "trip_time_without_loop_s": 857.15,
+   "trip_time_with_loop_s": 857.15,
+   "still_driving_without": 1422,
+   "still_driving_with": 1422,
+   "loop_counts": {
+    "detections": 0,
+    "warned": 0,
+    "rerouted": 0,
+    "messages_sent": 0,
+    "messages_delivered": 0
+   },
+   "incidents": [
+    {
+     "id": 0,
+     "start_s": 1155,
+     "duration_s": 249,
+     "pair": 1,
+     "actual_start_s": 1155.0,
+     "vehicle": "cal900_216",
+     "done": true,
+     "actual_end_s": 1404.0
+    },
+    {
+     "id": 1,
+     "start_s": 1556,
+     "duration_s": 213,
+     "pair": 1,
+     "actual_start_s": 1557.0,
+     "vehicle": "cal1200_240",
+     "done": true,
+     "actual_end_s": 1770.0
+    },
+    {
+     "id": 2,
+     "start_s": 2219,
+     "duration_s": 264,
+     "pair": 5,
+     "actual_start_s": 2219.0,
+     "vehicle": "cal1800_137",
+     "done": true,
+     "actual_end_s": 2483.0
+    },
+    {
+     "id": 3,
+     "start_s": 2809,
+     "duration_s": 299,
+     "pair": 7,
+     "actual_start_s": 2809.0,
+     "vehicle": "cal2700_92",
+     "done": true,
+     "actual_end_s": 3108.0
+    }
+   ]
+  },
+  {
+   "seed": 12,
+   "model": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 0,
+    "false_alarms_per_pair_hour": null
+   },
+   "model_at_0.5": {
+    "incidents": 4,
+    "detected": 2,
+    "detection_rate": 0.5,
+    "time_to_detect_s_mean": 59.5,
+    "false_alarms": 26,
+    "false_alarms_per_pair_hour": 3.12
+   },
+   "cal7": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 2,
+    "false_alarms_per_pair_hour": 0.24
+   },
+   "trip_time_without_loop_s": 1024.69,
+   "trip_time_with_loop_s": 1024.69,
+   "still_driving_without": 1744,
+   "still_driving_with": 1744,
+   "loop_counts": {
+    "detections": 0,
+    "warned": 0,
+    "rerouted": 0,
+    "messages_sent": 0,
+    "messages_delivered": 0
+   },
+   "incidents": [
+    {
+     "id": 0,
+     "start_s": 1072,
+     "duration_s": 248,
+     "pair": 7,
+     "actual_start_s": 1072.0,
+     "vehicle": "cal600_287",
+     "done": true,
+     "actual_end_s": 1320.0
+    },
+    {
+     "id": 1,
+     "start_s": 1709,
+     "duration_s": 224,
+     "pair": 7,
+     "actual_start_s": 1709.0,
+     "vehicle": "cal1200_252",
+     "done": true,
+     "actual_end_s": 1933.0
+    },
+    {
+     "id": 2,
+     "start_s": 2333,
+     "duration_s": 193,
+     "pair": 3,
+     "actual_start_s": 2342.0,
+     "vehicle": "cal2100_87",
+     "done": true,
+     "actual_end_s": 2535.0
+    },
+    {
+     "id": 3,
+     "start_s": 2847,
+     "duration_s": 194,
+     "pair": 7,
+     "actual_start_s": 2847.0,
+     "vehicle": "cal2100_142",
+     "done": true,
+     "actual_end_s": 3041.0
+    }
+   ]
+  },
+  {
+   "seed": 13,
+   "model": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 2,
+    "false_alarms_per_pair_hour": 0.24
+   },
+   "model_at_0.5": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 40,
+    "false_alarms_per_pair_hour": 4.8
+   },
+   "cal7": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 3,
+    "false_alarms_per_pair_hour": 0.36
+   },
+   "trip_time_without_loop_s": 1239.33,
+   "trip_time_with_loop_s": 1260.37,
+   "still_driving_without": 1967,
+   "still_driving_with": 2071,
+   "loop_counts": {
+    "detections": 1,
+    "warned": 85,
+    "rerouted": 3,
+    "messages_sent": 787,
+    "messages_delivered": 85
+   },
+   "incidents": [
+    {
+     "id": 0,
+     "start_s": 1255,
+     "duration_s": 274,
+     "pair": 9,
+     "actual_start_s": 1255.0,
+     "vehicle": "cal1200_50",
+     "done": true,
+     "actual_end_s": 1529.0
+    },
+    {
+     "id": 1,
+     "start_s": 1796,
+     "duration_s": 222,
+     "pair": 1,
+     "actual_start_s": 1796.0,
+     "vehicle": "cal1500_299",
+     "done": true,
+     "actual_end_s": 2018.0
+    },
+    {
+     "id": 2,
+     "start_s": 2277,
+     "duration_s": 215,
+     "pair": 3,
+     "actual_start_s": 2277.0,
+     "vehicle": "cal1800_150",
+     "done": true,
+     "actual_end_s": 2492.0
+    },
+    {
+     "id": 3,
+     "start_s": 2896,
+     "duration_s": 263,
+     "pair": 5,
+     "actual_start_s": 2896.0,
+     "vehicle": "cal1200_240",
+     "done": true,
+     "actual_end_s": 3159.0
+    }
+   ]
+  },
+  {
+   "seed": 14,
+   "model": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 0,
+    "false_alarms_per_pair_hour": null
+   },
+   "model_at_0.5": {
+    "incidents": 4,
+    "detected": 2,
+    "detection_rate": 0.5,
+    "time_to_detect_s_mean": 136.5,
+    "false_alarms": 29,
+    "false_alarms_per_pair_hour": 3.48
+   },
+   "cal7": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 3,
+    "false_alarms_per_pair_hour": 0.36
+   },
+   "trip_time_without_loop_s": 1076.49,
+   "trip_time_with_loop_s": 1076.49,
+   "still_driving_without": 1612,
+   "still_driving_with": 1612,
+   "loop_counts": {
+    "detections": 0,
+    "warned": 0,
+    "rerouted": 0,
+    "messages_sent": 0,
+    "messages_delivered": 0
+   },
+   "incidents": [
+    {
+     "id": 0,
+     "start_s": 1261,
+     "duration_s": 221,
+     "pair": 7,
+     "actual_start_s": 1261.0,
+     "vehicle": "cal900_250",
+     "done": true,
+     "actual_end_s": 1482.0
+    },
+    {
+     "id": 1,
+     "start_s": 1848,
+     "duration_s": 241,
+     "pair": 9,
+     "actual_start_s": 1883.0,
+     "vehicle": "cal1200_224",
+     "done": true,
+     "actual_end_s": 2124.0
+    },
+    {
+     "id": 2,
+     "start_s": 2336,
+     "duration_s": 275,
+     "pair": 5,
+     "actual_start_s": 2336.0,
+     "vehicle": "cal1500_2",
+     "done": true,
+     "actual_end_s": 2611.0
+    },
+    {
+     "id": 3,
+     "start_s": 2754,
+     "duration_s": 274,
+     "pair": 3,
+     "actual_start_s": 2754.0,
+     "vehicle": "veh1368",
+     "done": true,
+     "actual_end_s": 3028.0
+    }
+   ]
+  },
+  {
+   "seed": 15,
+   "model": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 0,
+    "false_alarms_per_pair_hour": null
+   },
+   "model_at_0.5": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 26,
+    "false_alarms_per_pair_hour": 3.12
+   },
+   "cal7": {
+    "incidents": 4,
+    "detected": 0,
+    "detection_rate": 0.0,
+    "time_to_detect_s_mean": null,
+    "false_alarms": 2,
+    "false_alarms_per_pair_hour": 0.24
+   },
+   "trip_time_without_loop_s": 866.56,
+   "trip_time_with_loop_s": 866.56,
+   "still_driving_without": 1633,
+   "still_driving_with": 1633,
+   "loop_counts": {
+    "detections": 0,
+    "warned": 0,
+    "rerouted": 0,
+    "messages_sent": 0,
+    "messages_delivered": 0
+   },
+   "incidents": [
+    {
+     "id": 0,
+     "start_s": 1197,
+     "duration_s": 265,
+     "pair": 3,
+     "actual_start_s": 1197.0,
+     "vehicle": "veh573",
+     "done": true,
+     "actual_end_s": 1462.0
+    },
+    {
+     "id": 1,
+     "start_s": 1843,
+     "duration_s": 214,
+     "pair": 3,
+     "actual_start_s": 1843.0,
+     "vehicle": "cal900_216",
+     "done": true,
+     "actual_end_s": 2057.0
+    },
+    {
+     "id": 2,
+     "start_s": 2273,
+     "duration_s": 202,
+     "pair": 1,
+     "actual_start_s": 2273.0,
+     "vehicle": "cal1800_148",
+     "done": true,
+     "actual_end_s": 2475.0
+    },
+    {
+     "id": 3,
+     "start_s": 2722,
+     "duration_s": 180,
+     "pair": 7,
+     "actual_start_s": 2722.0,
+     "vehicle": "cal1800_120",
+     "done": true,
+     "actual_end_s": 2902.0
+    }
+   ]
+  }
+ ],
+ "caveat": "one corridor, generated demand fitted to two counted sections; incidents are a stopped vehicle, 3-5 min; 5 seeds",
+ "when": "2026-10-11T03:30:36+00:00"
+}

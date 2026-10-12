@@ -1,0 +1,105 @@
+# Dhaka, Bangladesh. Every value names where it comes from; a value nobody has sourced is null.
+city_id: dhaka
+display_name:
+  en: Dhaka
+  bn: ঢাকা
+country: Bangladesh
+bounding_box:            # the simulated corridor: Farmgate – Karwan Bazar – Bangla Motor – Shahbagh (region R1)
+  south: 23.723
+  west: 90.372
+  north: 23.762
+  east: 90.408
+  source: "Lab 02 region R1 (git 9a2f4fbe^:paper_labs/02_dhaka_osm/configs/full.yaml); the box the frozen network was cut from"
+time_zone: Asia/Dhaka     # IANA tz database
+default_languages: [bn, en]
+emergency_numbers:       # shown, never dialled
+  # 999 reaches police, fire and ambulance: The Daily Star, "Emergency? Dial 999"
+  # (thedailystar.net/city/emergency-dial-999-1504249), read 2026-10-04
+  police: "999"
+  fire: "999"
+  ambulance: "999"
+units:
+  speed: km/h
+  distance: km
+drive_side: left          # measured on the network: 98.9 % of 5250 opposite-carriageway pairs (core/simulation/twin/configs/dhaka_r1.yaml)
+vehicle_classes: [car, motorcycle, bus, truck, rickshaw, cng_autorickshaw, microbus]   # the older frozen twin's names (the counted mix is `vehicle_mix` below); core/simulation/twin/configs/dhaka_r1.yaml; their parameters there are marked ASSUMED
+plugins: [rickshaw_cng_modes]   # optional city-specific features; Eid travel and monsoon waterlogging are not built, so they are not listed
+datasets:
+  - id: dhaka
+    kind: observed_corridors
+    source: "the app's own observatory: twelve reference corridors sampled through Amazon Location (core/common/data/reference_corridors.py)"
+sumo:
+  prebuilt:               # the frozen Lab 02 network and its demand file; never rebuilt
+    network_id: dhaka_r1
+    network: data/cities/dhaka_r1/dhaka_r1.net.xml.gz
+    network_sha256: 06194df039740fa2ceb0bcb2c438444efd755f26e0f863327f0e1d6524775dcb    # uncompressed; data/cities/dhaka_r1/MANIFEST.json
+    routes: results/artifacts/gates/routes_repeat_1h.rou.xml.gz
+    routes_sha256: e42e8450863cf92cd056b45f206f6bf1df7179b42bb00c720cf273cac414985e     # computed 2026-10-05; no earlier record of this hash exists
+    # SYNTHETIC WHAT-IF, UNCALIBRATED. 0.584 was fitted on 2026-08-26 to congestion ratios derived from Google Routes
+    # durations (results/artifacts/twin_calibration_A.json); Google's terms do not allow that use, so the calibration
+    # is withdrawn. The value is kept unchanged only so earlier runs stay reproducible; it is not evidence about Dhaka.
+    # A recalibration from our own field collection is planned (docs/proposals.md).
+    demand_scale: 0.584
+  build:                  # generated demand on the frozen network, for all new work: uncalibrated, never a measurement
+    seed: 11
+    period_s: 2.0         # the same randomTrips settings as every other city (one departure every 2 s)
+    horizon_s: 1800
+vehicle_mix:               # replaces "one class"; python -m core.common.data.recorded.dhatrax --mix prints these numbers
+  source: "DhaTraX v1.0, Traffic_Analysis/vehicle_class_composition_by_site.csv, the three sites pooled (69,083 crossings)"
+  citation: 'Roy, Arnob. "DhaTraX" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.'
+  counted: "vehicles crossing one approach at each of three fixed cameras in Dhaka on 6, 19 and 20 April 2026, about 06:00 to 19:00, classified by the DhaTraX authors' detection model; a model's output at three places, not a census of the city"
+  simulated_as: "each class is drawn at its share and driven as the nearest SUMO vehicle class with SUMO's own default parameters for that class; SUMO has no CNG auto-rickshaw or cycle-rickshaw class, and no Dhaka-specific size, speed or lane behaviour is modelled"
+  classes:
+    - {name: Car_Micro, share_pct: 33.15, sumo_class: passenger}
+    - {name: Motor_Cycle, share_pct: 29.88, sumo_class: motorcycle}
+    - {name: CNG, share_pct: 22.46, sumo_class: taxi}
+    - {name: Rickshaw, share_pct: 4.39, sumo_class: bicycle}
+    - {name: Bus_Minibus, share_pct: 4.06, sumo_class: bus}
+    - {name: Pickup_Truck, share_pct: 3.58, sumo_class: delivery}
+    - {name: Van, share_pct: 0.90, sumo_class: passenger}
+    - {name: Ambulance, share_pct: 0.79, sumo_class: emergency}
+    - {name: Special_Purpose, share_pct: 0.48, sumo_class: truck}
+    - {name: Bicycle, share_pct: 0.31, sumo_class: bicycle}
+calibration:               # python -m core.simulation.twin.calibration --city dhaka; the match is in evidence/cities/dhaka/calibration.json
+  dataset: dhatrax         # counts at its two located sites only: two road sections, one direction each, on two different days
+  window_start: "07:00"    # the first clock hour in which every 5-minute interval is complete at both sites
+  duration_s: 3600
+  interval_s: 300
+  seed: 11
+  pool_period_s: 0.25
+  pool_fringe_factor: "5"     # randomTrips' value in the city pipeline; "max" (edge-to-edge routes only) matched worse (evidence/cities/dhaka/calibration_attempts.json)
+emergency:                 # the ambulance trip of the alert experiments (backend/app/emergency); simulated, never a real call
+  origin: {lat: 23.759797, lon: 90.389667, source: "the northern end, inside the box, of the avenue the DhaTraX INT site measures (Airport Road, OpenStreetMap way 13848342); chosen by us so the trip runs through the counted section"}
+  destination: {lat: 23.7261809, lon: 90.3976451, source: "Dhaka Medical College Hospital, OpenStreetMap way 1049690948 (Nominatim lookup, 2026-10-06)"}
+live:
+  real_sources:
+    - kind: recorded          # past measurements from a published dataset; shown with their date, never as the present
+      status: active
+      dataset: dhatrax        # read by core/common/data/recorded/dhatrax.py; fetch with: python -m core.common.data.recorded.dhatrax --fetch
+      note: "DhaTraX: 5-minute speeds from fixed cameras at two located sites in this box (BM on 20 Apr 2026, INT on 19 Apr 2026); a third site (BS) has no stated place and is not used"
+      stations: "the GPS calibration points in DhaTraX's Homography.zip"
+      citation: 'Roy, Arnob. "DhaTraX" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.'
+      licence: CC BY 4.0
+    - kind: field_counts      # the owner's own roadside counts and video; none collected yet
+      status: pending
+      note: "field counts by the project: none collected yet"
+      stations: null
+routing:                   # whole-city routes on our own Valhalla server (MIT), built from the Geofabrik extract below (ODbL);
+                           # added 2026-10-06, third_party/SOURCES.md "Whole-city routing". The server address is the environment variable, never written here
+  engine: valhalla
+  url_env: TRAFFICTWIN_VALHALLA_URL_DHAKA
+  travelmux_url_env: TRAFFICTWIN_TRAVELMUX_URL_DHAKA   # the map app's directions: Headway's travelmux (Apache-2.0) in front of the Valhalla above
+  extract: asia/bangladesh
+  extract_date: "2026-10-04"
+  credit: "© OpenStreetMap contributors (ODbL) · routed by Valhalla (MIT)"
+forecast_layer:            # the map's forecast layer: each DhaTraX site at this hour on its one recorded day; model card from RQ1
+  kind: recorded_day
+  dataset: DhaTraX
+  summary: results/forecasting/rq1/summary.json
+live_twin:                 # the live twin (core/simulation/live_twin): RQ2b's corridor and demand, detectors on the main roads
+  net: data/cities/dhaka/sumo/corridor/dhaka_corridor.net.xml.gz
+  routes: data/cities/dhaka/sumo/corridor/dhaka_density.rou.xml
+  demand_label: "Generated traffic fitted to DhaTraX's recorded counts at two sections, 07:00-08:00 (RQ2b corridor), repeated hour after hour"
+  detector_road_types: [trunk, primary, secondary]
+  detector_min_edge_m: 50
+  demand_scale: 0.78       # RQ2b's "Dhaka density" level: chosen_scale in evidence/ambulance_rq2/dhaka_density/match.json

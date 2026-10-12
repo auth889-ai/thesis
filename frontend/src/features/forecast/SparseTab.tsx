@@ -11,7 +11,7 @@ export function SparseTab() {
   const q = useQuery({queryKey: ["imputation"], queryFn: () => api.imputation() as Promise<Run>, retry: false});
   if (q.isLoading) return <p className="muted">Loading the imputation run…</p>;
   const r = q.data;
-  if (!r) return <p className="muted">No imputation run yet: <code>USE_TF=0 python -m app.forecasting.evaluation.imputation</code>.</p>;
+  if (!r) return <p className="muted">No imputation run yet: <code>USE_TF=0 python -m core.ml.forecasting.evaluation.imputation</code>.</p>;
   const rows = Object.entries(r.results).sort((a, b) => a[1].mae - b[1].mae);
   return (
     <div className="stack">

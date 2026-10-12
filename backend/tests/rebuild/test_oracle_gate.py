@@ -7,7 +7,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
 
-from app.protocols import oracle_gate as og  # noqa: E402
+from core.simulation.closed_loop.protocols import oracle_gate as og  # noqa: E402
 
 
 def _runs(vals: dict[str, list[float]]):
@@ -44,8 +44,8 @@ def test_concentration_uses_the_last_driven_route(tmp_path):
 
 @pytest.mark.skipif(not (REPO / "data/cities/dhaka_r1/dhaka_r1.net.xml.gz").exists(), reason="Dhaka net not built here")
 def test_oracle_table_aggregates_only_the_window_weighted_by_presence(tmp_path):
-    from app.routing import edge_costs as ec
-    from app.twin import runtime as pr
+    from core.simulation.routing import edge_costs as ec
+    from core.simulation.twin import runtime as pr
     import sumolib
     net = sumolib.net.readNet(str(pr.DEFAULT_NET))
     e = next(x for x in net.getEdges() if x.allows("passenger")); eid = e.getID(); free = e.getLength() / e.getSpeed()

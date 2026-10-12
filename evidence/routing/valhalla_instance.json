@@ -1,0 +1,43 @@
+{
+ "launches": [
+  {
+   "instance_id": "i-0e8476dac1d2fa7c1",
+   "public_ip": "43.205.213.250",
+   "type": "t3.xlarge",
+   "max_hours": 48,
+   "region": "ap-south-1",
+   "image": "ghcr.io/valhalla/valhalla-scripted:3.9.0",
+   "extracts": "dhaka=asia/bangladesh los_angeles=north-america/us/california/socal",
+   "from_s3": false,
+   "bucket": "dhakaflow-routing-915644996102",
+   "launched_utc": "2026-10-06T12:26:55.663548+00:00",
+   "spot": false
+  }
+ ],
+ "prices_read_utc": "2026-10-06T12:24:47.524949+00:00",
+ "prices": {
+  "source": "aws pricing get-products (us-east-1 endpoint), regionCode ap-south-1",
+  "ec2_t3_xlarge_on_demand_linux_usd_per_hour": 0.1792,
+  "ebs_gp3_usd_per_gb_month": 0.0912,
+  "s3_standard_first_50tb_usd_per_gb_month": 0.025,
+  "estimate": {
+   "hours": 48,
+   "instance_usd": 8.6,
+   "disk_60gb_usd": 0.36,
+   "total_48h_usd": 8.96,
+   "tiles_gb_about": 2,
+   "s3_usd_per_month": 0.05
+  },
+  "approved_range_usd": [
+   8,
+   12
+  ]
+ },
+ "build": {
+  "ready_utc": "2026-10-06T12:44:46Z",
+  "minutes_from_launch_about": 30,
+  "tiles_in_s3_gb": 1.39,
+  "s3_usd_per_month_at_0.025": 0.035,
+  "note": "the first S3 copy in user-data failed (aws s3 cp has no --tagging); copied and tagged by hand through SSM at 13:0x UTC, script fixed for the next launch; server files in server_files.txt, listing in s3_tiles.txt, live routes in live_routes.json"
+ }
+}

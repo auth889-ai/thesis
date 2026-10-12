@@ -1,0 +1,77 @@
+{
+ "stamp": "20261012T221340Z",
+ "seed": 7220,
+ "compare": "evidence/veins_forecast_routing/20261012T142239Z",
+ "checks": [
+  {
+   "name": "1a real dataset on disk",
+   "pass": true,
+   "detail": "data/forecasting/cities/metr_la.npz: 35.6 MB, modified 2026-09-02; dataset hash 857a98d0ec47b353"
+  },
+  {
+   "name": "1b same real dataset as the saved run",
+   "pass": true,
+   "detail": "857a98d0ec47b353 == 857a98d0ec47b353"
+  },
+  {
+   "name": "1c trained checkpoint on disk, same as the saved run",
+   "pass": true,
+   "detail": "GraphWaveNet_best_val_MAE.pt sha256 548e399bd53c\u2026 (3.7 MB)"
+  },
+  {
+   "name": "1d same OpenStreetMap network",
+   "pass": true,
+   "detail": "la_c4_central_wide.net.xml hash 0d81df27ab2d; 83 detectors mapped onto it"
+  },
+  {
+   "name": "2a one forecast per round, each with its own hash",
+   "pass": true,
+   "detail": "2 rounds, forecast hashes ['e7762fc9', '8bfb9a3f'], input windows ['84243565', 'ee6ece56']"
+  },
+  {
+   "name": "2b the real moment advances one 5-min bin per round",
+   "pass": true,
+   "detail": "as_of [28136, 28137]"
+  },
+  {
+   "name": "2c inference took time (computed, not looked up)",
+   "pass": true,
+   "detail": "[0.037, 0.041] s"
+  },
+  {
+   "name": "3a a different seed than the saved run",
+   "pass": true,
+   "detail": "7220 vs 201"
+  },
+  {
+   "name": "3b a different demand draw",
+   "pass": true,
+   "detail": "e0ca5f1f6d01 vs 50efca1c9ed7 (12480 vehicles)"
+  },
+  {
+   "name": "3c a different real moment of the detector history",
+   "pass": true,
+   "detail": "as_of 28136 vs 28424"
+  },
+  {
+   "name": "3d different forecasts and decisions",
+   "pass": true,
+   "detail": "round 0 decisions {'KEEP_CURRENT_BELOW_THRESHOLD': 269, 'NO_ALTERNATIVE': 352, 'REROUTE': 22} vs {'NO_ALTERNATIVE': 318, 'KEEP_CURRENT_BELOW_THRESHOLD': 253, 'REROUTE': 61}"
+  },
+  {
+   "name": "4a status frames: loop counters = Veins's scalar file",
+   "pass": true,
+   "detail": "sent 75086, decoded by RSUs 45440, distinct to the server 19692 (evidence/live_runs/prove_forecast_routing/20261012T221340Z/s7220/predictive_corrected_v2x/veins/results/Default-#0.sca)"
+  },
+  {
+   "name": "4b advice frames: broadcast / received / applied = Veins's scalar file",
+   "pass": true,
+   "detail": "decided 53, handed 4, broadcast 4, received 0, applied 0"
+  },
+  {
+   "name": "4c applied = the cars' own reports in the reroute log",
+   "pass": true,
+   "detail": "0 APPLIED lines in evidence/live_runs/prove_forecast_routing/20261012T221340Z/s7220/predictive_corrected_v2x/reroute_log.jsonl"
+  }
+ ]
+}

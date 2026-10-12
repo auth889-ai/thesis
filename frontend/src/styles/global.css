@@ -4,9 +4,9 @@
   --page: #5a3328; --page-2: #7a4a3c; --sheet: #f4eee7; --surface: rgba(255, 252, 248, .86); --surface-solid: #fffcf8; --surface-2: #f1e7dd; --line: #e0cfc2;
   --rose: #e9c7bc; --rose-2: #dfb5a9; --ink: #4a2620; --ink-muted: #7d5a4e; --accent: #4a2620; --accent-ink: #fff6ef; --caramel: #d0884f;
   --good: #4f7a3a; --warn: #b5731f; --bad: #a83a2f; --info: #5b6f8a; --violet: #7b2d3b;
-  --radius: 22px; --radius-sm: 12px; --gap: 16px; --pad: 20px; --content: 1400px;
-  --font: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
-  --display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --radius: 22px; --radius-sm: 12px; --gap: 16px; --pad: 20px; --content: 1840px;
+  --font: Inter, "Noto Sans Bengali", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --display: "Fraunces", "Noto Sans Bengali", "Iowan Old Style", Georgia, serif;
   --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   --shadow: 0 1px 2px rgba(74, 38, 32, .06), 0 18px 40px -24px rgba(74, 38, 32, .35);
   --glass: blur(14px) saturate(1.1);
@@ -64,6 +64,10 @@ select:focus, input:focus, textarea:focus { outline: 2px solid color-mix(in srgb
   .shell { padding: 10px; } .sheet { border-radius: 18px; } .topbar { padding: 12px 14px; gap: 10px; } .topbar nav { gap: 12px; } .topbar nav a { font-size: 13px; }
   .hero { grid-template-columns: 1fr; } .hero-copy { padding: 26px 20px; } .page { padding: 14px; }
 }
+@media (max-width: 600px) {     /* phone: no frame around the page, and a map inside a card runs edge to edge (layout QA, 2026-10-10) */
+  .shell { padding: 0; } .sheet { border-radius: 0; } .page { padding: 10px; }
+  .card .maplibregl-map { margin-left: calc(-1 * var(--pad)); margin-right: calc(-1 * var(--pad)); width: calc(100% + 2 * var(--pad)) !important; border-radius: 0; }
+}
 
 /* ---- lab shell */
 .lab .sheet { background: var(--surface-2); }
@@ -109,7 +113,7 @@ select:focus, input:focus, textarea:focus { outline: 2px solid color-mix(in srgb
 .card-head p { margin: 2px 0 0; font-size: 12.5px; }
 .grid { display: grid; gap: var(--gap); }
 .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); } .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.grid.wide { grid-template-columns: minmax(0, 2fr) minmax(300px, 1fr); align-items: start; }
+.grid.wide { grid-template-columns: minmax(0, 3fr) minmax(280px, 1fr); align-items: start; }   /* the map gets three parts at desktop widths (layout QA, 2026-10-10) */
 @media (max-width: 1000px) { .grid.two, .grid.three, .grid.wide { grid-template-columns: 1fr; } }
 .row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
 .muted { color: var(--ink-muted); } .small { font-size: 12px; } .mono { font-family: var(--mono); font-size: 12px; }
@@ -162,6 +166,21 @@ details.why { margin-top: 10px; }
 .map { position: relative; height: 420px; border-radius: var(--radius-sm); overflow: hidden; background: var(--surface-2); }
 .map.tall { height: 560px; }
 .legend { position: absolute; left: 10px; bottom: 10px; z-index: 2; display: flex; flex-wrap: wrap; gap: 6px 12px; padding: 8px 12px; border-radius: 12px; background: color-mix(in srgb, var(--surface-solid) 92%, transparent); border: 1px solid var(--line); font-size: 11.5px; }
+.story { position: fixed; right: 22px; bottom: 22px; z-index: 50; width: min(380px, calc(100vw - 32px)); padding: 16px 18px; border-radius: 16px; background: var(--surface-solid); border: 1px solid var(--line); box-shadow: 0 14px 40px rgba(0,0,0,.25); }
+.story-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; margin-bottom: 4px; }
+.story h3 { margin: 4px 0 6px; font-family: var(--display); font-size: 20px; }
+.story p { margin: 0 0 12px; font-size: 14.5px; line-height: 1.45; }
+.story-target { outline: 3px solid var(--caramel); outline-offset: 6px; border-radius: 12px; transition: outline-color .3s; }
+.story-start { white-space: nowrap; }
+.plain-result { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; font-size: 16px; line-height: 1.45; margin: 4px 0 12px; }
+.plain-sentence { flex: 1 1 100%; }
+.plain-how { font-size: 13px; font-weight: 600; color: var(--ink); }
+.map-note { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); z-index: 2; padding: 6px 12px; border-radius: 999px; background: color-mix(in srgb, var(--surface-solid) 92%, transparent); border: 1px solid var(--line); font-size: 12px; white-space: nowrap; pointer-events: none; }
+.search { position: relative; flex: 1 1 180px; max-width: 360px; }
+.search input { width: 100%; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface-solid); color: var(--ink); font: 13.5px var(--font); }
+.search-rows { position: absolute; top: calc(100% + 6px); left: 0; right: 0; z-index: 20; margin: 0; padding: 6px; list-style: none; border-radius: 12px; border: 1px solid var(--line); background: var(--surface-solid); box-shadow: 0 10px 30px rgba(0,0,0,.18); max-height: 320px; overflow: auto; }
+.search-rows li { padding: 7px 10px; border-radius: 8px; cursor: pointer; font-size: 13.5px; }
+.search-rows li.on, .search-rows li:hover { background: color-mix(in srgb, var(--caramel) 18%, transparent); }
 .legend i { display: inline-block; width: 14px; height: 4px; border-radius: 2px; margin-right: 6px; vertical-align: middle; }
 .legend i.dashed { background: repeating-linear-gradient(90deg, currentColor 0 4px, transparent 4px 7px); }
 .pin { width: 26px; height: 26px; border-radius: 50%; color: #fff; font-weight: 800; font-size: 12px; display: grid; place-items: center; border: 2px solid #fff; box-shadow: 0 2px 6px rgba(0,0,0,.35); }
@@ -207,3 +226,35 @@ ul.kv li:last-child { border-bottom: 0; }
 @media (max-width: 1100px) { .grid.plan3, .grid.three.cards3 { grid-template-columns: 1fr; } .hero.band { grid-template-columns: 1fr; } }
 .stats.three .stat-v { font-size: 20px; } .stats.three .stat { padding: 10px 12px; }
 .compact-map .maplibregl-map, .compact-map .mapbox, .compact-map .map { height: 260px !important; min-height: 260px !important; }
+
+/* City and language switchers in the top bar. Bangla has no capitals and joins its letters, so tracking and upper-casing are switched off for it. */
+.switchers { display: flex; gap: 8px; margin-left: 18px; }
+.switchers select { min-height: 34px; padding: 5px 10px; font-size: 13px; }
+:lang(bn) .toptabs a, :lang(bn) .topbar nav a, :lang(bn) .eyebrow { letter-spacing: 0; text-transform: none; }
+@media (max-width: 700px) { .switchers { margin-left: 0; } }
+
+/* "More" (owner, 2026-10-08): every page other than the focused Home, the search and the Tour. */
+.more { position: relative; }
+.more-panel { position: absolute; right: 0; top: calc(100% + 6px); z-index: 50; min-width: 280px; max-width: min(92vw, 380px); background: var(--paper, #fff);
+  border: 1px solid var(--line, #ddd); border-radius: 14px; padding: 12px; box-shadow: 0 10px 30px rgba(0,0,0,.15); display: flex; flex-direction: column; gap: 10px; }
+.more-panel nav { display: flex; flex-direction: column; gap: 2px; }
+.more-panel nav a { padding: 8px 10px; border-radius: 8px; text-decoration: none; color: inherit; }
+.more-panel nav a.on, .more-panel nav a:hover { background: var(--soft, #f3ece6); }
+.more-panel .search, .more-panel .search input { width: 100%; }
+.side-more summary { cursor: pointer; padding: 8px 12px; font-weight: 600; }
+
+/* Design pass 2026-10-09 (map app as Home): one navigation row. The brand leads back to the map; the top bar's duplicate "Home" goes,
+   and on phones the side block keeps only the brand (its Home and More repeated the top bar's). The page hero is short on phones so
+   the page's own content is on the first screen. */
+.topbar .toptabs { display: none; }
+@media (max-width: 900px) {
+  .sidenav nav, .sidenav .side-more { display: none; }
+  .sidenav { padding: 10px 14px; }
+}
+@media (max-width: 700px) {
+  .hero.band { margin: 6px 10px 0; }
+  .hero.band .hero-copy { padding: 18px 18px 16px; gap: 8px; }
+  .hero h1 { font-size: 28px; }
+  .hero-quote { font-size: 14px; padding: 10px 12px; }
+  .hero-photo { display: none; }
+}

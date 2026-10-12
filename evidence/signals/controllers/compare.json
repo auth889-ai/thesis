@@ -1,0 +1,562 @@
+{
+ "what": "Signal controllers compared on the Dhaka corridor: fixed time, Q-learning, Max-Pressure, Max-Pressure + EV priority; same seeds and traffic level; computed now",
+ "label": "SIMULATION",
+ "level": "dhaka",
+ "demand": "dhaka_density",
+ "scale": 0.78,
+ "seeds": [
+  11,
+  12,
+  13,
+  14,
+  15
+ ],
+ "summary": {
+  "fixed": {
+   "name": "fixed time",
+   "runs": 5,
+   "arrived": 5,
+   "travel_time_s": {
+    "mean": 411.6,
+    "median": 299.0,
+    "min": 226.0,
+    "max": 898.0,
+    "n": 5
+   },
+   "mean_time_loss_s": {
+    "mean": 483.13,
+    "median": 378.62,
+    "min": 354.08,
+    "max": 722.81,
+    "n": 5
+   },
+   "total_vehicle_hours": {
+    "mean": 791.97,
+    "median": 800.89,
+    "min": 532.33,
+    "max": 1069.531,
+    "n": 5
+   },
+   "queue_at_signals": {
+    "mean": 7.4,
+    "median": 5.5,
+    "min": 4.0,
+    "max": 12.5,
+    "n": 5
+   },
+   "blocked_s": {
+    "mean": 164.2,
+    "median": 49,
+    "min": 12,
+    "max": 649,
+    "n": 5
+   }
+  },
+  "rl": {
+   "name": "Q-learning (sumo-rl)",
+   "runs": 5,
+   "arrived": 3,
+   "travel_time_s": {
+    "mean": 380.33,
+    "median": 195.0,
+    "min": 188.0,
+    "max": 758.0,
+    "n": 3
+   },
+   "mean_time_loss_s": {
+    "mean": 417.41,
+    "median": 431.12,
+    "min": 320.4,
+    "max": 500.71,
+    "n": 3
+   },
+   "total_vehicle_hours": {
+    "mean": 933.84,
+    "median": 866.63,
+    "min": 793.946,
+    "max": 1140.955,
+    "n": 3
+   },
+   "queue_at_signals": {
+    "mean": 0.4,
+    "median": 0.0,
+    "min": 0.0,
+    "max": 1.5,
+    "n": 5
+   },
+   "blocked_s": {
+    "mean": 205.2,
+    "median": 17,
+    "min": 1,
+    "max": 568,
+    "n": 5
+   }
+  },
+  "maxpressure": {
+   "name": "Max-Pressure",
+   "runs": 5,
+   "arrived": 5,
+   "travel_time_s": {
+    "mean": 493.6,
+    "median": 336.0,
+    "min": 187.0,
+    "max": 1342.0,
+    "n": 5
+   },
+   "mean_time_loss_s": {
+    "mean": 490.8,
+    "median": 432.69,
+    "min": 285.62,
+    "max": 711.92,
+    "n": 5
+   },
+   "total_vehicle_hours": {
+    "mean": 764.35,
+    "median": 757.45,
+    "min": 480.768,
+    "max": 968.184,
+    "n": 5
+   },
+   "queue_at_signals": {
+    "mean": 3.7,
+    "median": 4.5,
+    "min": 0.0,
+    "max": 8.5,
+    "n": 5
+   },
+   "blocked_s": {
+    "mean": 267.8,
+    "median": 87,
+    "min": 0,
+    "max": 1089,
+    "n": 5
+   }
+  },
+  "maxpressure_ev": {
+   "name": "Max-Pressure + EV priority",
+   "runs": 5,
+   "arrived": 5,
+   "travel_time_s": {
+    "mean": 475.0,
+    "median": 434.0,
+    "min": 190.0,
+    "max": 849.0,
+    "n": 5
+   },
+   "mean_time_loss_s": {
+    "mean": 493.03,
+    "median": 584.09,
+    "min": 273.62,
+    "max": 660.99,
+    "n": 5
+   },
+   "total_vehicle_hours": {
+    "mean": 800.04,
+    "median": 885.07,
+    "min": 483.287,
+    "max": 990.719,
+    "n": 5
+   },
+   "queue_at_signals": {
+    "mean": 1.8,
+    "median": 2.0,
+    "min": 0.0,
+    "max": 3.5,
+    "n": 5
+   },
+   "blocked_s": {
+    "mean": 250.8,
+    "median": 171,
+    "min": 0,
+    "max": 627,
+    "n": 5
+   }
+  }
+ },
+ "paired_vs_fixed": {
+  "rl": {
+   "ambulance_vs_fixed_s": {
+    "mean": 108.0,
+    "sd": 306.2,
+    "better": 2,
+    "n": 3
+   },
+   "others_time_loss_vs_fixed_s": {
+    "mean": 55.1,
+    "sd": 80.1,
+    "better": 1,
+    "n": 3
+   }
+  },
+  "maxpressure": {
+   "ambulance_vs_fixed_s": {
+    "mean": 82.0,
+    "sd": 629.2,
+    "better": 2,
+    "n": 5
+   },
+   "others_time_loss_vs_fixed_s": {
+    "mean": 7.7,
+    "sd": 279.7,
+    "better": 3,
+    "n": 5
+   }
+  },
+  "maxpressure_ev": {
+   "ambulance_vs_fixed_s": {
+    "mean": 63.4,
+    "sd": 495.0,
+    "better": 2,
+    "n": 5
+   },
+   "others_time_loss_vs_fixed_s": {
+    "mean": 9.9,
+    "sd": 290.0,
+    "better": 2,
+    "n": 5
+   }
+  }
+ },
+ "rows": [
+  {
+   "arm": "fixed",
+   "seed": 11,
+   "travel_time_s": 292.0,
+   "queue_at_signals": 4.0,
+   "blocked_s": 49,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 8,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0
+   },
+   "total_vehicle_hours": 532.33,
+   "mean_time_loss_s": 354.08,
+   "ev_priority_requests": null,
+   "state": "arrived",
+   "real_s": 27.3,
+   "check": "REPRODUCED exactly"
+  },
+  {
+   "arm": "maxpressure",
+   "seed": 11,
+   "travel_time_s": 187.0,
+   "queue_at_signals": 0.5,
+   "blocked_s": 0,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 1,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0
+   },
+   "total_vehicle_hours": 480.768,
+   "mean_time_loss_s": 285.62,
+   "ev_priority_requests": 0,
+   "state": "arrived",
+   "real_s": 32.7,
+   "check": "new (Max-Pressure, step S)"
+  },
+  {
+   "arm": "maxpressure_ev",
+   "seed": 11,
+   "travel_time_s": 245.0,
+   "queue_at_signals": 0.5,
+   "blocked_s": 38,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 0,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 1
+   },
+   "total_vehicle_hours": 652.04,
+   "mean_time_loss_s": 273.62,
+   "ev_priority_requests": 2,
+   "state": "arrived",
+   "real_s": 42.8,
+   "check": "new (Max-Pressure, step S)"
+  },
+  {
+   "arm": "fixed",
+   "seed": 12,
+   "travel_time_s": 343.0,
+   "queue_at_signals": 12.5,
+   "blocked_s": 70,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 14,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 11
+   },
+   "total_vehicle_hours": 886.66,
+   "mean_time_loss_s": 605.97,
+   "ev_priority_requests": null,
+   "state": "arrived",
+   "real_s": 42.7,
+   "check": "REPRODUCED exactly"
+  },
+  {
+   "arm": "maxpressure",
+   "seed": 12,
+   "travel_time_s": 413.0,
+   "queue_at_signals": 5.0,
+   "blocked_s": 163,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 9,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 1
+   },
+   "total_vehicle_hours": 757.45,
+   "mean_time_loss_s": 402.03,
+   "ev_priority_requests": 0,
+   "state": "arrived",
+   "real_s": 46.9,
+   "check": "new (Max-Pressure, step S)"
+  },
+  {
+   "arm": "maxpressure_ev",
+   "seed": 12,
+   "travel_time_s": 434.0,
+   "queue_at_signals": 3.5,
+   "blocked_s": 171,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 2,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 5
+   },
+   "total_vehicle_hours": 885.065,
+   "mean_time_loss_s": 660.65,
+   "ev_priority_requests": 2,
+   "state": "arrived",
+   "real_s": 54.4,
+   "check": "new (Max-Pressure, step S)"
+  },
+  {
+   "arm": "fixed",
+   "seed": 13,
+   "travel_time_s": 898.0,
+   "queue_at_signals": 11.0,
+   "blocked_s": 649,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 15,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 7
+   },
+   "total_vehicle_hours": 1069.531,
+   "mean_time_loss_s": 722.81,
+   "ev_priority_requests": null,
+   "state": "arrived",
+   "real_s": 54.3,
+   "check": "REPRODUCED exactly"
+  },
+  {
+   "arm": "maxpressure",
+   "seed": 13,
+   "travel_time_s": 190.0,
+   "queue_at_signals": 0.0,
+   "blocked_s": 0,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 0,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0
+   },
+   "total_vehicle_hours": 687.821,
+   "mean_time_loss_s": 432.69,
+   "ev_priority_requests": 0,
+   "state": "arrived",
+   "real_s": 45.2,
+   "check": "new (Max-Pressure, step S)"
+  },
+  {
+   "arm": "maxpressure_ev",
+   "seed": 13,
+   "travel_time_s": 190.0,
+   "queue_at_signals": 0.0,
+   "blocked_s": 0,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 0,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0
+   },
+   "total_vehicle_hours": 483.287,
+   "mean_time_loss_s": 285.79,
+   "ev_priority_requests": 2,
+   "state": "arrived",
+   "real_s": 33.7,
+   "check": "new (Max-Pressure, step S)"
+  },
+  {
+   "arm": "fixed",
+   "seed": 14,
+   "travel_time_s": 299.0,
+   "queue_at_signals": 4.0,
+   "blocked_s": 41,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 8,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0
+   },
+   "total_vehicle_hours": 800.891,
+   "mean_time_loss_s": 354.19,
+   "ev_priority_requests": null,
+   "state": "arrived",
+   "real_s": 40.6,
+   "check": "REPRODUCED exactly"
+  },
+  {
+   "arm": "maxpressure",
+   "seed": 14,
+   "travel_time_s": 1342.0,
+   "queue_at_signals": 8.5,
+   "blocked_s": 1089,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 16,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 1
+   },
+   "total_vehicle_hours": 927.51,
+   "mean_time_loss_s": 621.76,
+   "ev_priority_requests": 0,
+   "state": "arrived",
+   "real_s": 65.0,
+   "check": "new (Max-Pressure, step S)"
+  },
+  {
+   "arm": "maxpressure_ev",
+   "seed": 14,
+   "travel_time_s": 849.0,
+   "queue_at_signals": 2.0,
+   "blocked_s": 627,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 3,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 1
+   },
+   "total_vehicle_hours": 989.073,
+   "mean_time_loss_s": 660.99,
+   "ev_priority_requests": 2,
+   "state": "arrived",
+   "real_s": 67.9,
+   "check": "new (Max-Pressure, step S)"
+  },
+  {
+   "arm": "fixed",
+   "seed": 15,
+   "travel_time_s": 226.0,
+   "queue_at_signals": 5.5,
+   "blocked_s": 12,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 2,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 9
+   },
+   "total_vehicle_hours": 670.424,
+   "mean_time_loss_s": 378.62,
+   "ev_priority_requests": null,
+   "state": "arrived",
+   "real_s": 42.6,
+   "check": "REPRODUCED exactly"
+  },
+  {
+   "arm": "maxpressure",
+   "seed": 15,
+   "travel_time_s": 336.0,
+   "queue_at_signals": 4.5,
+   "blocked_s": 87,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 9,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0
+   },
+   "total_vehicle_hours": 968.184,
+   "mean_time_loss_s": 711.92,
+   "ev_priority_requests": 0,
+   "state": "arrived",
+   "real_s": 62.0,
+   "check": "new (Max-Pressure, step S)"
+  },
+  {
+   "arm": "maxpressure_ev",
+   "seed": 15,
+   "travel_time_s": 657.0,
+   "queue_at_signals": 3.0,
+   "blocked_s": 418,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 6,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0
+   },
+   "total_vehicle_hours": 990.719,
+   "mean_time_loss_s": 584.09,
+   "ev_priority_requests": 2,
+   "state": "arrived",
+   "real_s": 61.2,
+   "check": "new (Max-Pressure, step S)"
+  },
+  {
+   "arm": "rl",
+   "seed": 11,
+   "travel_time_s": 188.0,
+   "queue_at_signals": 0.0,
+   "blocked_s": 2,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 0,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0
+   },
+   "total_vehicle_hours": 793.946,
+   "mean_time_loss_s": 320.4,
+   "ev_priority_requests": null,
+   "state": "arrived",
+   "real_s": 45.9,
+   "check": "REPRODUCED exactly"
+  },
+  {
+   "arm": "rl",
+   "seed": 12,
+   "travel_time_s": null,
+   "queue_at_signals": 0.0,
+   "blocked_s": 438,
+   "queue_peaks": {},
+   "total_vehicle_hours": null,
+   "mean_time_loss_s": null,
+   "ev_priority_requests": null,
+   "state": "sumo_crashed",
+   "real_s": 16.1,
+   "check": "REPRODUCED exactly"
+  },
+  {
+   "arm": "rl",
+   "seed": 13,
+   "travel_time_s": null,
+   "queue_at_signals": 0.0,
+   "blocked_s": 17,
+   "queue_peaks": {},
+   "total_vehicle_hours": null,
+   "mean_time_loss_s": null,
+   "ev_priority_requests": null,
+   "state": "sumo_crashed",
+   "real_s": 8.0,
+   "check": "REPRODUCED exactly"
+  },
+  {
+   "arm": "rl",
+   "seed": 14,
+   "travel_time_s": 758.0,
+   "queue_at_signals": 1.5,
+   "blocked_s": 568,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 3,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0
+   },
+   "total_vehicle_hours": 1140.955,
+   "mean_time_loss_s": 431.12,
+   "ev_priority_requests": null,
+   "state": "arrived",
+   "real_s": 71.1,
+   "check": "REPRODUCED exactly"
+  },
+  {
+   "arm": "rl",
+   "seed": 15,
+   "travel_time_s": 195.0,
+   "queue_at_signals": 0.5,
+   "blocked_s": 1,
+   "queue_peaks": {
+    "cluster_10139575489_10139575490_1720308864_225181943_#4more": 1,
+    "cluster_10139575501_2446124135_2446124154_3501293480": 0
+   },
+   "total_vehicle_hours": 866.634,
+   "mean_time_loss_s": 500.71,
+   "ev_priority_requests": null,
+   "state": "arrived",
+   "real_s": 60.7,
+   "check": "REPRODUCED exactly"
+  }
+ ],
+ "reproduced": 10,
+ "checked": 10,
+ "real_s": 260,
+ "when": "2026-10-11T07:05:42+00:00",
+ "csv": "evidence/signals/controllers/compare.csv",
+ "png": "evidence/signals/controllers/compare.png"
+}

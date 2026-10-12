@@ -138,7 +138,7 @@ def introduction(full):
         "## Review Scope And Limits", "",
         "GWNet improves traffic versus reactive control on Scenario A, but learned forecasting advantage over persistence is NOT ESTABLISHED. The current coverage intervention indicates a coverage constraint, not a reason to add another model. A negative or inconclusive result is retained.", "",
         "The root README.md, EVALUATION_README.md and older canonical summaries contain earlier phase claims and can be stale. They are preserved verbatim for audit, not silently rewritten. This entry point and the dated diagnostic evidence identify the current scope.", "",
-        "Read source: backend/app/forecasting.py; backend/app/research_status.py; src/pipeline/v2x/closed_loop.py; src/pipeline/routing/route_optimizer.py; research/routing/coverage_*.py.", "",
+        "Read source: core/ml/forecasting.py; backend/app/research_status.py; src/pipeline/v2x/closed_loop.py; src/pipeline/routing/route_optimizer.py; research/routing/coverage_*.py.", "",
         "## Portability Warning", "",
         "This is an evaluation snapshot, not a verified one-click installer for another computer. Historical evidence contains absolute checkpoint paths. The forecasting harness expects BasicTS under ~/.dhakaflow/upstream/BasicTS_legacy. SUMO and Python dependencies must be installed separately. Do not rewrite frozen provenance merely to make a new machine pass its checks.",
         "The full evidence archive includes the verified checkpoint, scenario network, and a separate BasicTS source/prepared METR-LA snapshot under bundled_runtime/. The compact archive does not. Additional legacy datasets, unrelated checkpoints and historical raw runs are excluded.", "",

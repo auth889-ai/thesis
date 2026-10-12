@@ -1,0 +1,40 @@
+{
+ "what": "the simulated 3D twin opened in a browser for two cities on 2026-10-05; each screenshot is of a running SUMO simulation with generated, uncalibrated demand",
+ "label": "SIMULATED: roads and building outlines are OpenStreetMap geometry; the traffic is generated (SYNTHETIC_WHAT_IF) and is not a measurement",
+ "command": "PYTHONPATH=backend python -m app.twin.city_pipeline --city <id>; DHAKAFLOW_NO_OBSERVATORY=1 PYTHONPATH=backend python -m uvicorn app.main:app --app-dir backend --port 8000; open /lab/control-room",
+ "cities": {
+  "dhaka": {
+   "screenshot": "dhaka_simulated_twin_3d.jpg",
+   "screenshot_sha256": "00f7731095499554e30de0d1c23010d0cc0e9e3d58742431815785b5b70ae758",
+   "build_evidence": "evidence/cities/dhaka/build.json",
+   "edges": 6527,
+   "traffic_lights": 17,
+   "generated_vehicles": 900,
+   "demand_sha256": "7a80f7d740cbe048b50c4645f1f48110f11ccbaa84cc53b9c23fe8217fdc81c0",
+   "building_outlines": 20290,
+   "buildings_sha256": "590a6cfa7aa19ff17322d9e6de07bc07ac015a9308e82a096952a15691649413",
+   "osm_buildings_date": "2026-10-05T10:19:45Z"
+  },
+  "los_angeles": {
+   "screenshot": "los_angeles_simulated_twin_3d.jpg",
+   "screenshot_sha256": "5607302431b93183890b29d4115b8a0de2eec10e95b0b9a065c11df696f3b9c8",
+   "build_evidence": "evidence/cities/los_angeles/build.json",
+   "edges": 2650,
+   "traffic_lights": 437,
+   "generated_vehicles": 900,
+   "demand_sha256": "f1139c6c32fe576966cf46d81f7f77bb7d1abe107ea2a4b5eb713b27e4cc9aff",
+   "building_outlines": 11120,
+   "buildings_sha256": "f584c3e68ad55386b9fded5a1637937aabcbbc7337bcb96f44c567ede2fbfeb6",
+   "osm_buildings_date": "2026-10-05T10:19:45Z"
+  }
+ },
+ "seen_in_the_browser": [
+  "buildings extruded, roads, signal heads coloured from the phase state, vehicles moving (Dhaka 36-40 on the road at second 72-79; Los Angeles 27-28 at about second 45)",
+  "Berlin: 'No data for this city'",
+  "the panel in Bangla"
+ ],
+ "not_checked": [
+  "clicking a vehicle on the map (the handler exists; no click was made)",
+  "how the view performs with the 2,000-vehicle cap reached"
+ ]
+}

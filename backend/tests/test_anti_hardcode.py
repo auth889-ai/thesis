@@ -42,9 +42,9 @@ COORDS = "road,lat,lon\n" + "\n".join(f"R{i},{23.70 + i * 0.004},{90.40 + i * 0.
 def city(tmp_path, monkeypatch):
     """An uploaded 5-road city with coordinates, prepared through the pinned harness, routed by a stub
     whose geometry depends on the origin/destination (so the network 'permits' a change)."""
-    from app.data import uploads as user_datasets, forecast_inputs as dataset_ops
-    from app.data import provenance
-    from app.forecasting.training import basicts_train as bt
+    from core.common.data import uploads as user_datasets, forecast_inputs as dataset_ops
+    from core.common.data import provenance
+    from core.ml.forecasting.training import basicts_train as bt
     if not bt.BTS.exists():
         pytest.skip("pinned BasicTS-legacy checkout missing")
     # Run the unmodified preparation script in an isolated workspace. A prior test's
@@ -57,7 +57,7 @@ def city(tmp_path, monkeypatch):
     monkeypatch.setattr(user_datasets, "ROOT", tmp_path / "ud")
     monkeypatch.setattr(provenance, "DIR", tmp_path / "prov")
     monkeypatch.setattr(bt, "CARDS", tmp_path / "cards")
-    from app.data.live_providers import google_routes as live
+    from core.common.data.live_providers import google_routes as live
     def routes(o, d):
         (olat, olng), (dlat, dlng) = o, d
         mid = ((olat + dlat) / 2 + 0.001, (olng + dlng) / 2)
@@ -68,8 +68,8 @@ def city(tmp_path, monkeypatch):
                            {"duration_s": 700 + abs(dlat - olat) * 1e5, "static_duration_s": 550, "distance_m": 4500, "category": "NORMAL",
                             "segments": seg([[olat, olng], list(mid), [dlat, dlng]])}]}
     monkeypatch.setattr(live.service, "routes", routes)
-    from app.routing import trip_analysis as analyze
-    from app.routing.trip import places
+    from core.simulation.routing import trip_analysis as analyze
+    from core.simulation.routing.trip import places
     monkeypatch.setattr(places, "resolve_place", lambda text, city="": {"lat": float(text.split(",")[0]), "lng": float(text.split(",")[1]), "label": text, "source": "coordinates"})
     return user_datasets, dataset_ops, provenance
 
@@ -95,7 +95,7 @@ def test_gate3B_modified_csv_changes_raw_forecast(city):
     user_datasets.save("Gate City", _wide(), coords_bytes=COORDS.encode())
     r1, _ = _analyze(dataset_ops, "user:gate_city", "23.700, 90.400", "23.716, 90.416", run_id="b1")
     user_datasets.save("Gate City", _wide(bump=12.0), coords_bytes=COORDS.encode())
-    from app.forecasting.training import basicts_train as bt
+    from core.ml.forecasting.training import basicts_train as bt
     bt.prepare("user:gate_city")                                # the new upload replaces the prepared data
     r2, _ = _analyze(dataset_ops, "user:gate_city", "23.700, 90.400", "23.716, 90.416", run_id="b2")
     assert r1["provenance"]["dataset_hash"] != r2["provenance"]["dataset_hash"]
@@ -105,8 +105,8 @@ def test_gate3B_modified_csv_changes_raw_forecast(city):
 
 
 def test_gate3C_stid_vs_gwnet_resolve_to_different_checkpoints(monkeypatch):
-    from app.forecasting.operations import model_registry as mr
-    from app.forecasting.training import basicts_train as bt
+    from core.ml.forecasting.operations import model_registry as mr
+    from core.ml.forecasting.training import basicts_train as bt
     def card(arch):
         return {"dataset": "user:x", "bts_name": "DF_x", "arch": arch, "checkpoint": f"/ck/{arch}_best_val_MAE.pt", "trained_utc": "2026-09-05T00:00:00+00:00",
                 "quality": {"passed": True}, "verification": {"passed": True},
@@ -129,7 +129,7 @@ def test_gate3D_horizon_changes_requested_slice(city):
 
 def test_gate3E_missing_checkpoint_is_unavailable_not_a_number(city, monkeypatch):
     user_datasets, dataset_ops, _ = city
-    from app.forecasting.operations import model_registry as mr
+    from core.ml.forecasting.operations import model_registry as mr
     user_datasets.save("Gate City", _wide(), coords_bytes=COORDS.encode())
     monkeypatch.setattr(mr, "resolve", lambda scope, m: {"model": "STID", "label": "STID", "eligible": False, "trained": False, "reason": "checkpoint file missing"})
     with pytest.raises(RuntimeError, match="UNAVAILABLE"):

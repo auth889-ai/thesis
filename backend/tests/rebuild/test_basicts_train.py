@@ -10,7 +10,7 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
-from app.forecasting.training import basicts_train as bt  # noqa: E402
+from core.ml.forecasting.training import basicts_train as bt  # noqa: E402
 
 needs_bts = pytest.mark.skipif(not bt.BTS.exists(), reason="pinned BasicTS-legacy checkout missing")
 
@@ -42,7 +42,7 @@ def test_upstream_tracked_files_untouched():
 @needs_bts
 def test_end_to_end_on_an_upload(tmp_path, monkeypatch):
     """Their prep script -> their trainer -> their test metrics -> a checkpoint our page can run."""
-    from app.data import uploads as user_datasets
+    from core.common.data import uploads as user_datasets
     monkeypatch.setattr(user_datasets, "ROOT", tmp_path / "ud")
     monkeypatch.setattr(bt, "CARDS", tmp_path / "cards")
     t = pd.date_range("2026-08-01", periods=320, freq="5min", tz="UTC")
@@ -59,7 +59,7 @@ def test_end_to_end_on_an_upload(tmp_path, monkeypatch):
 
 # ------------------------------------------------------------------ the GPU path, without touching AWS
 def test_city_job_script_has_no_unsubstituted_placeholders():
-    from app.forecasting.training import aws_train as at
+    from core.ml.forecasting.training import aws_train as at
     assert at.city_job_name("user:Los Angeles two weeks") == "city-user-los-angeles-two-weeks"
     script = at.CITY_SCRIPT
     for k, v in (("@NAME@", "city-x"), ("@BUCKET@", "b"), ("@SHA@", "abc"), ("@MODELS@", "STID GWNet"), ("@DSNAME@", "DF_x"), ("@MAXH@", "1")):
@@ -105,7 +105,7 @@ def test_make_card_reads_their_metrics_file(tmp_path, monkeypatch):
 
 def test_cloud_status_never_exposes_a_key(monkeypatch):
     import sys as _s
-    from app.forecasting.operations import prediction_jobs as predict_lab
+    from core.ml.forecasting.operations import prediction_jobs as predict_lab
     monkeypatch.setattr(predict_lab, "_aws_env", lambda: {"AWS_ACCESS_KEY_ID": "AKIAXXXX", "AWS_SECRET_ACCESS_KEY": "s3cr3t"})
     c = predict_lab.cloud()
     assert c["available"] in (True, False) and "s3cr3t" not in json.dumps(c) and "AKIA" not in json.dumps(c)
@@ -115,7 +115,7 @@ def test_cloud_status_never_exposes_a_key(monkeypatch):
 
 # ------------------------------------------------------------------ evaluation rules and the trust gate
 def test_splits_are_chronological_and_windows_stay_inside():
-    from app.forecasting.training import train_eval as te
+    from core.ml.forecasting.training import train_eval as te
     sp = te.splits(1000)
     assert sp == {"train": (0, 700), "val": (700, 800), "test": (800, 1000)}
     w = te.windows(*sp["test"])
@@ -123,7 +123,7 @@ def test_splits_are_chronological_and_windows_stay_inside():
 
 
 def test_trust_gate_labels():
-    from app.forecasting.training import train_eval as te
+    from core.ml.forecasting.training import train_eval as te
     q = {"passed": True}; ver = {"passed": True}
     good = {"overall": {"MAE": 5.0, "skill_vs_persistence": 0.25}}
     bad = {"overall": {"MAE": 8.0, "skill_vs_persistence": -0.4}}
@@ -135,7 +135,7 @@ def test_trust_gate_labels():
 
 
 def test_metrics_mask_zeros_and_f1_uses_freeflow():
-    from app.forecasting.training import train_eval as te
+    from core.ml.forecasting.training import train_eval as te
     y = np.array([[60.0, 0.0, 20.0], [50.0, 40.0, 10.0]]); p = np.array([[58.0, 5.0, 25.0], [52.0, 41.0, 30.0]])
     m = te.metrics_at(p, y, freeflow=np.array([60.0, 60.0, 60.0]))
     assert m["n"] == 5 and abs(m["MAE"] - (2 + 5 + 2 + 1 + 20) / 5) < 1e-9
@@ -145,7 +145,7 @@ def test_metrics_mask_zeros_and_f1_uses_freeflow():
 
 
 def test_cache_key_changes_with_every_ingredient():
-    from app.forecasting.training import train_eval as te
+    from core.ml.forecasting.training import train_eval as te
     base = te.cache_key("d", "g", "STID", "c", "4c3e2d373c")
     assert base == "d-g-STID-c-4c3e2d3"
     assert len({base, te.cache_key("d2", "g", "STID", "c", "4c3e2d373c"), te.cache_key("d", "g", "GWNet", "c", "4c3e2d373c"),
@@ -159,8 +159,8 @@ def test_live_google_history_is_refused_for_training():
 
 def test_dispatcher_policy_and_stages(monkeypatch, tmp_path):
     import sys as _s
-    from app.forecasting.operations import training_jobs as train_jobs
-    from app.forecasting.operations import prediction_jobs as predict_lab
+    from core.ml.forecasting.operations import training_jobs as train_jobs
+    from core.ml.forecasting.operations import prediction_jobs as predict_lab
     monkeypatch.setattr(train_jobs, "JOBS_DIR", tmp_path / "jobs")
     monkeypatch.setattr(predict_lab, "datasets", lambda: [{"id": "user:x", "steps": 4032, "nodes": 20}, {"id": "live:dhaka", "steps": 500, "nodes": 6}])
     monkeypatch.setattr(predict_lab, "cloud", lambda: {"available": True})

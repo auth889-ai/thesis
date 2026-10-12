@@ -3,7 +3,7 @@ import inspect
 
 import pytest
 
-from app.forecasting.training import patchstg_official as po
+from core.ml.forecasting.training import patchstg_official as po
 
 
 def test_config_translation_matches_the_authors_argparse(tmp_path):

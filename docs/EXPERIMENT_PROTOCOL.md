@@ -11,6 +11,24 @@ The research questions are frozen; a new repository never adds one.
 | RQ5 | How robust are routing/control decisions under V2X latency, loss and penetration? | 15 | outcome vs impairment sweeps |
 | RQ6 | Does forecast-aware closed-loop routing/control outperform reactive/static baselines in the digital twin? | 12, 13, 14 | oracle-first protocol: baseline · reactive · oracle · learned · shuffled control |
 
+<!-- numbering:start -->
+
+**Numbering used from 2026-10-09** (the questions above keep their frozen wording; this table says where each one now lives):
+
+| New | Question | Status | Earlier number in `docs/EXPERIMENT_PROTOCOL.md` | Earlier number in code, result folders and the app |
+|---|---|---|---|---|
+| RQ1 | Forecasting transfer to Dhaka | done | RQ4 | RQ1 |
+| RQ2 | Forecast-aware closed-loop routing against reactive routing | Los Angeles only; not run in Dhaka | RQ1 and RQ6 | — |
+| RQ3 | V2X ambulance alert and signal control, corrected make-way rule | done | RQ5 (part) | RQ2 |
+| RQ4 | Offline phone-to-phone mesh: Epidemic, Spray and Wait, PRoPHET | done (sparse setting) | — | — |
+| RQ5 | Weak-signal prefetch: time to a usable route and radio energy | done | — | — |
+| RQ6 | Crash detection on the phone, WreckWatch rule | done (synthetic traces) | — | — |
+| Supporting | Ambulance reach from hospitals (isochrones) | done | — | — |
+| Planned | Uncertainty and on-time arrival | not run | RQ2 | — |
+| Planned | Sensor coverage needed before forecasts help | not run | RQ3 | — |
+
+<!-- numbering:end -->
+
 ## Rules
 
 1. Chronological splits; the test days are never seen in training or model selection.
@@ -50,7 +68,7 @@ drift over time · the decision rule derived from it
 
 - Closed loop: `make canonical` → `research/closed_loop/canonical.py --execute --stage oracle` (see `EXPERIMENTS.md`).
 - Forecasting: `experiments/train.py` through the BasicTS harness (path fixed; never renamed) and
-  `backend/app/forecasting/evaluation/evaluate_models.py`.
+  `core/ml/forecasting/evaluation/evaluate_models.py`.
 - Every phase adds its command here when it produces a result.
 
 ## Where evidence lives

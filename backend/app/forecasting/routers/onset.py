@@ -7,7 +7,7 @@ import json
 
 from fastapi import APIRouter, HTTPException
 
-from app.paths import REPO
+from core.common.paths import REPO
 
 router = APIRouter()
 FILE = REPO / "results/forecasting/model_comparison.json"
@@ -19,8 +19,8 @@ def onset(dataset: str | None = None):
     congested-regime error at 15 min, F1 of the congestion class, MAE at 60 min, onset detection rate and
     mean lead in minutes; the protocol block states the windows, context, threshold and seed."""
     if not FILE.exists():
-        raise HTTPException(503, "no Protocol B run yet: python -m app.forecasting.evaluation.evaluate_models --all")
-    from app.forecasting.evaluation.evaluate_models import summary
+        raise HTTPException(503, "no Protocol B run yet: python -m core.ml.forecasting.evaluation.evaluate_models --all")
+    from core.ml.forecasting.evaluation.evaluate_models import summary
     runs = json.loads(FILE.read_text())
     names = sorted({r["dataset"] for r in runs})
     if dataset:
@@ -45,7 +45,7 @@ def onset(dataset: str | None = None):
         out.append({"dataset": name, "generated_utc": latest["generated_utc"], "nodes": s["nodes"], "seeds": s["seeds"],
                     "protocol": {**s["protocol"], "seeds": s["seeds"]}, "rows": rows,
                     "source": "results/forecasting/model_comparison.json",
-                    "regenerate": "python -m app.forecasting.evaluation.evaluate_models --dataset <name> --windows 120 --seed <s> --max-nodes 0"})
+                    "regenerate": "python -m core.ml.forecasting.evaluation.evaluate_models --dataset <name> --windows 120 --seed <s> --max-nodes 0"})
     return {"datasets": out}
 
 
@@ -58,8 +58,8 @@ def conformal(dataset: str | None = None):
     regime-aware, predicted-regime), on all test windows, in free flow, in congestion and at the
     transition. Read from the committed run file."""
     if not CONFORMAL.exists():
-        raise HTTPException(503, "no conformal run yet: python -m app.forecasting.evaluation.conformal --dataset <name>")
-    from app.forecasting.evaluation.conformal import summary
+        raise HTTPException(503, "no conformal run yet: python -m core.ml.forecasting.evaluation.conformal --dataset <name>")
+    from core.ml.forecasting.evaluation.conformal import summary
     runs = json.loads(CONFORMAL.read_text())
     names = sorted({r["dataset"] for r in runs})
     if dataset:
@@ -68,14 +68,14 @@ def conformal(dataset: str | None = None):
         if not names:
             raise HTTPException(404, f"no conformal run for {dataset}")
     return {"datasets": [{**summary(n), "source": "results/forecasting/conformal.json",
-                          "regenerate": "python -m app.forecasting.evaluation.conformal --dataset <name> --nodes 207 --seed <s>"} for n in names]}
+                          "regenerate": "python -m core.ml.forecasting.evaluation.conformal --dataset <name> --nodes 207 --seed <s>"} for n in names]}
 
 
 @router.get("/api/protocol-b/departure", tags=["predict"])
 def departure(src: str, dst: str, as_of: int = 20000, model: str | None = None, deadline_min: int | None = None):
     """Leave when? Shortest sensor corridor from `src` to `dst`, the served model's forecast per leg at the horizon the
     traveller reaches it, the 90 % worst case from the calibrated half-widths, and the latest departure for a deadline."""
-    from app.forecasting.operations import departure as dep
+    from core.ml.forecasting.operations import departure as dep
     try:
         return dep.advise(src, dst, as_of, model, deadline_min)
     except (ValueError, KeyError) as ex:
@@ -89,7 +89,7 @@ def departure(src: str, dst: str, as_of: int = 20000, model: str | None = None, 
 @router.get("/api/protocol-b/sensors", tags=["predict"])
 def sensors():
     """The METR-LA sensors with their release coordinates, for picking a corridor."""
-    from app.forecasting.operations import departure as dep
+    from core.ml.forecasting.operations import departure as dep
     _, _, locs = dep.sensor_graph()
     return {"dataset": "METR-LA", "sensors": locs}
 
@@ -101,6 +101,6 @@ IMPUTATION = REPO / "results/forecasting/imputation.json"
 def imputation():
     """Sparse sensing: the imputation run (25 % point missing, scored on hidden points) with its published counterparts."""
     if not IMPUTATION.exists():
-        raise HTTPException(503, "no imputation run yet: USE_TF=0 python -m app.forecasting.evaluation.imputation")
+        raise HTTPException(503, "no imputation run yet: USE_TF=0 python -m core.ml.forecasting.evaluation.imputation")
     return {**json.loads(IMPUTATION.read_text()), "source": "results/forecasting/imputation.json",
-            "regenerate": "USE_TF=0 python -m app.forecasting.evaluation.imputation --epochs <n>"}
+            "regenerate": "USE_TF=0 python -m core.ml.forecasting.evaluation.imputation --epochs <n>"}

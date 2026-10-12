@@ -1,0 +1,12 @@
+# Two small datasets from chronos-forecasting's own scripts/evaluation/configs/zero-shot.yaml (entries copied verbatim),
+# to reproduce its published results/chronos-bolt-small-zero-shot.csv before Chronos-Bolt is used in RQ1.
+- name: exchange_rate
+  hf_repo: autogluon/chronos_datasets
+  offset: -30
+  prediction_length: 30
+  num_rolls: 1
+- name: monash_hospital
+  hf_repo: autogluon/chronos_datasets
+  offset: -12
+  prediction_length: 12
+  num_rolls: 1

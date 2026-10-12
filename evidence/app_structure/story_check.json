@@ -1,0 +1,22 @@
+{
+ "item": "Final plan item 7: story mode (the tour) for the defense",
+ "date": "2026-10-06",
+ "server": "uvicorn on 8012, working tree at 09:32 +06; browser in Bangla",
+ "checked": [
+  "/?tour=1 opens the tour at step 1 on Home (story_step1_bn.jpg)",
+  "Arrow keys move the steps; steps 2\u20133 outline the trip bar and the recorded-day checkbox on Home; steps 4\u20135 open 3D City and outline the twin map, then the ambulance panel (story_step5_bn.jpg); steps 6\u20137 open Emergency and Offline alerts with their sentence cards outlined; step 8 opens Add city with the card outlined; step 9 opens Research (/lab/evidence) with the panel and Back / Finish / End tour",
+  "the place is kept in sessionStorage ('tt.story'); a reload during the tour keeps it",
+  "Escape ends the tour; Finish on the last step ends it and clears the stored place",
+  "tests: src/app (story order, routes, both languages, no result numbers in the text, storage) and i18n pass; tsc clean"
+ ],
+ "not_checked": [
+  "the tour in English",
+  "the Tour button in the top bar (the tour was started by the address and by keys)",
+  "a step pressed before its page finished loading more than once",
+  "narrow screens"
+ ],
+ "files": [
+  "story_step1_bn.jpg",
+  "story_step5_bn.jpg"
+ ]
+}

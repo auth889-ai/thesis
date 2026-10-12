@@ -10,7 +10,7 @@ from zoneinfo import ZoneInfo
 
 from app.lifeos.compiler import rules
 from app.lifeos.entities import Place
-from app.paths import REPO
+from core.common.paths import REPO
 
 DATA = REPO / "data/lifeos/commitments.jsonl"; OUT = REPO / "results/lifeos/compiler.json"
 NOW = datetime(2026, 9, 30, 9, 0, tzinfo=ZoneInfo("Asia/Dhaka")); TZ = "Asia/Dhaka"

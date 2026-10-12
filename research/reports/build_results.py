@@ -14,9 +14,7 @@ from pathlib import Path
 REPO = Path(__file__).resolve().parents[2]
 SECTIONS = [  # (title, markdown produced by the pipeline, command that produces it)
     ("Evidence audit — reality labels and missing work", "results/evidence_audit.md", "python research/reports/evidence_audit.py"),
-    ("Real route advisor — live Dhaka advisory without fixed seeds", "live/results/route_advice.md", "python live/route_advisor.py --live --yes --corridor farmgate_to_shahbagh"),
     ("Real user pilot — 3-user trip timestamp evidence", "live/results/pilot_metrics.md", "python live/user_trip_logger.py start ... && python live/user_trip_logger.py complete ..."),
-    ("Prediction — LIVE Dhaka congestion floors (real Google-derived stream)", "results/forecasting/live_floors.md", "python src/pipeline/forecasting/record_live.py --live --yes  (recorder) && python src/pipeline/forecasting/live_state.py --report"),
     ("Prediction — twin floors (persistence / historical average)", "results/forecasting/twin_floors.md", "make data && python src/pipeline/forecasting/baselines_twin.py"),
     ("Prediction — BasicTS benchmark (METR-LA / PEMS-BAY / PEMS08)", "results/forecasting/benchmark.md", "research/notebooks/Predict_BasicTS_Colab.ipynb (Colab Pro) -> results/forecasting/benchmark.csv"),
     ("Prediction — PHASE 1 verdict: floors vs trained vs published, with gate", "results/forecasting/phase1_comparison.md", "python src/pipeline/forecasting/comparison_table.py"),
@@ -25,7 +23,6 @@ SECTIONS = [  # (title, markdown produced by the pipeline, command that produces
     ("Prediction × Networking — federated forecasting under a SIMULATED V2X link", "results/forecasting/federated.md", "research/notebooks/Federated_V2X_Colab.ipynb (Colab GPU) -> rclone copy gdrive2tb:dhakaflow/predict/results results/forecasting --include federated*"),
     ("Routing — arms × paired seeds on Dhaka R1", "results/routing/stats.md", "make route"),
     ("Routing — network-wide decision guard", "results/routing/decision_guard.md", "python src/pipeline/routing/decision_guard.py --horizon 7200 --reference reactive"),
-    ("Live reference — Google Routes derived congestion states", "results/artifacts/p_live/live_reference_summary.md", "python src/pipeline/forecasting/run_live_capture.py && python src/pipeline/forecasting/summarize_live_reference.py"),
     ("Routing — demand-scale sensitivity / gridlock check (why scale 0.25 is primary)", "results/routing/gridlock_check.md", "see file"),
     ("Routing — arms × 10 paired seeds at scale 0.20 (sensitivity appendix)", "results/routing/scale0.2/stats.md", "python src/pipeline/routing/run_arms.py --scale 0.2 --seeds 11,…,20 --results results/routing/scale0.2 && python src/pipeline/routing/stats.py --results results/routing/scale0.2"),
     ("Routing — NLP incident scenario at scale 0.20 incl. pre-departure arms", "results/routing/scale0.2/incident.md", "python src/pipeline/routing/incident_scenario.py --scale 0.2 --results results/routing/scale0.2"),

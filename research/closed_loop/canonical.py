@@ -121,7 +121,7 @@ def materialize(run_name: str, output: Path) -> Path:
     (target / "summary.md").write_text("\n".join(lines))
     provenance = {"source_run": str(source.relative_to(REPO)), "report": {"path": str(report_file.relative_to(REPO)), "sha256": digest(report_file)},
                   "protocol": {"path": str(protocol_file.relative_to(REPO)), "sha256": digest(protocol_file)},
-                  "forecast_contract": protocol.get("forecast_contract") or __import__("app.forecasting", fromlist=["ModelRegistry"]).ModelRegistry.metr_la_gwnet().public(),
+                  "forecast_contract": protocol.get("forecast_contract") or __import__("core.ml.forecasting", fromlist=["ModelRegistry"]).ModelRegistry.metr_la_gwnet().public(),
                   "generated_files": ["report.json", "summary.md", "vehicle_trace.json", "plots/paired_vehicle_hours.png" if figure else "plots/ (matplotlib unavailable)"],
                   "reality": {"observations": protocol.get("observations"), "demand": protocol.get("demand"), "communication": protocol.get("communication")}}
     (target / "provenance.json").write_text(json.dumps(provenance, indent=1, default=str))
@@ -137,7 +137,7 @@ def main() -> int:
     a = p.parse_args()
     run_name = a.source_run
     if a.execute:
-        cmd = [sys.executable, "-m", "app.protocols.stress_experiment", "--scenario", "A", "--stage", a.stage,
+        cmd = [sys.executable, "-m", "core.simulation.closed_loop.protocols.stress_experiment", "--scenario", "A", "--stage", a.stage,
                "--city", "la_c4_central_wide", "--od-rule", "arterial", "--seeds", "201,202,203,204,205"]
         subprocess.run(cmd, cwd=REPO, check=True)
         pointer = read(REPO / "results/v2x/stress/la_c4_central_wide" / f"scenarioA_{a.stage}_eval_report_pointer.json")

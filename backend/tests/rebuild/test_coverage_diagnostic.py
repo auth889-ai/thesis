@@ -4,7 +4,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "src"))
-from app.routing.coverage_report import intervene
+from core.simulation.routing.coverage_report import intervene
 from research.routing.coverage_analysis import primary_cause, priced_stats, path_key
 
 

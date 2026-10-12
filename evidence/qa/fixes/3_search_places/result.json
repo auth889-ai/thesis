@@ -1,0 +1,58 @@
+{
+ "fix": "3_search_places",
+ "ranks": "3",
+ "change": "searchRows offers places anywhere in a city with a whole-city routing server; 'add this city' is held back while a place lookup is due or the city list is still loading (attempt 1: places filtered to the built box only, 0/8; attempt 2: race with the instant add row, 4/8; attempt 3 here)",
+ "regression_test": "frontend/src/app/search.test.ts (2 new), frontend/src/app/Search.test.tsx (2)",
+ "before_pass": "0/8",
+ "after_pass": "8/8",
+ "after_runs": [
+  {
+   "run": "F1-desktop-dhaka-1",
+   "ok": true,
+   "ms": 7752,
+   "reason": null
+  },
+  {
+   "run": "F1-desktop-dhaka-2",
+   "ok": true,
+   "ms": 7766,
+   "reason": null
+  },
+  {
+   "run": "F1-desktop-dhaka-3",
+   "ok": true,
+   "ms": 7748,
+   "reason": null
+  },
+  {
+   "run": "F1-desktop-los_angeles-1",
+   "ok": true,
+   "ms": 10270,
+   "reason": null
+  },
+  {
+   "run": "F1-phone-dhaka-1",
+   "ok": true,
+   "ms": 11337,
+   "reason": null
+  },
+  {
+   "run": "F1-phone-dhaka-2",
+   "ok": true,
+   "ms": 7724,
+   "reason": null
+  },
+  {
+   "run": "F1-phone-dhaka-3",
+   "ok": true,
+   "ms": 7747,
+   "reason": null
+  },
+  {
+   "run": "F1-phone-los_angeles-1",
+   "ok": true,
+   "ms": 14266,
+   "reason": null
+  }
+ ]
+}

@@ -1,0 +1,46 @@
+{
+ "fix": "12_bangla_numbers",
+ "ranks": "12",
+ "change": "numbers in messages are written in the language's own digits; units translated (কিমি, মাইল); Bangla clock times on a 24-hour clock; 'গাড়ি নিয়ে' instead of 'গাড়ি-এ'. Checked in the final matrix: the Bangla route, progress, hospital and Leave when sentences hold no Latin digits, km, min or AM/PM",
+ "regression_test": "frontend/src/i18n/banglaNumbers.test.ts (2)",
+ "before_pass": "6/6",
+ "after_pass": "6/6",
+ "after_runs": [
+  {
+   "run": "F3-desktop-dhaka-1",
+   "ok": true,
+   "ms": 12757,
+   "reason": null
+  },
+  {
+   "run": "F3-desktop-dhaka-2",
+   "ok": true,
+   "ms": 12974,
+   "reason": null
+  },
+  {
+   "run": "F3-desktop-dhaka-3",
+   "ok": true,
+   "ms": 13932,
+   "reason": null
+  },
+  {
+   "run": "F3-phone-dhaka-1",
+   "ok": true,
+   "ms": 13121,
+   "reason": null
+  },
+  {
+   "run": "F3-phone-dhaka-2",
+   "ok": true,
+   "ms": 13014,
+   "reason": null
+  },
+  {
+   "run": "F3-phone-dhaka-3",
+   "ok": true,
+   "ms": 12649,
+   "reason": null
+  }
+ ]
+}

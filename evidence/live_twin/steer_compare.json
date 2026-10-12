@@ -1,0 +1,577 @@
+{
+ "what": "live twin steered by a forecast (SUMO device.rerouting style): mean travel time of trips departing after the warm-up",
+ "label": "SIMULATION",
+ "city": "dhaka",
+ "demand": "RQ2b corridor demand at scale 0.78, generated traffic",
+ "seeds": [
+  11,
+  12,
+  13,
+  14,
+  15
+ ],
+ "minutes": 60,
+ "warmup_min": 15,
+ "informed_share": 0.3,
+ "summary": [
+  {
+   "arm": "off",
+   "seeds": 5,
+   "cohort_mean_s": 963.7,
+   "sd_over_seeds": 199.78,
+   "paired_diff_vs_off_s": 0.0,
+   "seeds_better_than_off": 0,
+   "finished_mean_s": 768.51,
+   "finished_trips_mean": 872.6,
+   "still_driving_mean": 1571.8
+  },
+  {
+   "arm": "current",
+   "seeds": 5,
+   "cohort_mean_s": 1046.83,
+   "sd_over_seeds": 171.23,
+   "paired_diff_vs_off_s": 83.13,
+   "seeds_better_than_off": 1,
+   "finished_mean_s": 724.79,
+   "finished_trips_mean": 653.8,
+   "still_driving_mean": 1753.6
+  },
+  {
+   "arm": "no_change",
+   "seeds": 5,
+   "cohort_mean_s": 932.59,
+   "sd_over_seeds": 262.69,
+   "paired_diff_vs_off_s": -31.11,
+   "seeds_better_than_off": 4,
+   "finished_mean_s": 719.27,
+   "finished_trips_mean": 856.6,
+   "still_driving_mean": 1590.4
+  },
+  {
+   "arm": "online",
+   "seeds": 5,
+   "cohort_mean_s": 951.93,
+   "sd_over_seeds": 248.85,
+   "paired_diff_vs_off_s": -11.77,
+   "seeds_better_than_off": 2,
+   "finished_mean_s": 723.37,
+   "finished_trips_mean": 847.2,
+   "still_driving_mean": 1596.4
+  },
+  {
+   "arm": "chronos",
+   "seeds": 5,
+   "cohort_mean_s": 927.47,
+   "sd_over_seeds": 209.91,
+   "paired_diff_vs_off_s": -36.24,
+   "seeds_better_than_off": 3,
+   "finished_mean_s": 746.97,
+   "finished_trips_mean": 886.2,
+   "still_driving_mean": 1559.8
+  }
+ ],
+ "rows": [
+  {
+   "arm": "off",
+   "seed": 11,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3617.0,
+   "real_s": 68.4,
+   "cohort_trips": 2490,
+   "cohort_mean_s": 795.0,
+   "trips_done": 1098,
+   "mean_travel_s": 689.95,
+   "median_travel_s": 481.5,
+   "still_driving": 1392,
+   "steer_stats": {
+    "minutes": 0,
+    "edges_set": 0,
+    "reroutes": 0,
+    "route_changed": 0
+   }
+  },
+  {
+   "arm": "current",
+   "seed": 11,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3600.0,
+   "real_s": 74.4,
+   "cohort_trips": 2477,
+   "cohort_mean_s": 793.69,
+   "trips_done": 1082,
+   "mean_travel_s": 645.1,
+   "median_travel_s": 590.5,
+   "still_driving": 1395,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 0,
+    "reroutes": 10961,
+    "route_changed": 10
+   }
+  },
+  {
+   "arm": "no_change",
+   "seed": 11,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3600.0,
+   "real_s": 72.3,
+   "cohort_trips": 2507,
+   "cohort_mean_s": 765.62,
+   "trips_done": 1280,
+   "mean_travel_s": 718.01,
+   "median_travel_s": 612.5,
+   "still_driving": 1227,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 167,
+    "reroutes": 10446,
+    "route_changed": 1610
+   }
+  },
+  {
+   "arm": "online",
+   "seed": 11,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3601.0,
+   "real_s": 76.4,
+   "cohort_trips": 2505,
+   "cohort_mean_s": 831.3,
+   "trips_done": 1200,
+   "mean_travel_s": 847.65,
+   "median_travel_s": 713.5,
+   "still_driving": 1305,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 167,
+    "reroutes": 11237,
+    "route_changed": 2617
+   }
+  },
+  {
+   "arm": "chronos",
+   "seed": 11,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3600.0,
+   "real_s": 77.4,
+   "cohort_trips": 2499,
+   "cohort_mean_s": 782.82,
+   "trips_done": 1262,
+   "mean_travel_s": 763.03,
+   "median_travel_s": 701.0,
+   "still_driving": 1237,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 163,
+    "reroutes": 10732,
+    "route_changed": 879
+   }
+  },
+  {
+   "arm": "off",
+   "seed": 12,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3611.0,
+   "real_s": 98.4,
+   "cohort_trips": 2442,
+   "cohort_mean_s": 967.67,
+   "trips_done": 943,
+   "mean_travel_s": 888.2,
+   "median_travel_s": 719.0,
+   "still_driving": 1499,
+   "steer_stats": {
+    "minutes": 0,
+    "edges_set": 0,
+    "reroutes": 0,
+    "route_changed": 0
+   }
+  },
+  {
+   "arm": "current",
+   "seed": 12,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3600.0,
+   "real_s": 120.6,
+   "cohort_trips": 2384,
+   "cohort_mean_s": 1121.08,
+   "trips_done": 541,
+   "mean_travel_s": 735.04,
+   "median_travel_s": 456.0,
+   "still_driving": 1843,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 0,
+    "reroutes": 16523,
+    "route_changed": 12
+   }
+  },
+  {
+   "arm": "no_change",
+   "seed": 12,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3609.0,
+   "real_s": 112.6,
+   "cohort_trips": 2439,
+   "cohort_mean_s": 1045.01,
+   "trips_done": 733,
+   "mean_travel_s": 938.07,
+   "median_travel_s": 732.0,
+   "still_driving": 1706,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 166,
+    "reroutes": 15869,
+    "route_changed": 3402
+   }
+  },
+  {
+   "arm": "online",
+   "seed": 12,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3615.0,
+   "real_s": 117.7,
+   "cohort_trips": 2395,
+   "cohort_mean_s": 1120.56,
+   "trips_done": 489,
+   "mean_travel_s": 767.9,
+   "median_travel_s": 581.0,
+   "still_driving": 1906,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 166,
+    "reroutes": 16549,
+    "route_changed": 3070
+   }
+  },
+  {
+   "arm": "chronos",
+   "seed": 12,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3600.0,
+   "real_s": 110.6,
+   "cohort_trips": 2426,
+   "cohort_mean_s": 1040.06,
+   "trips_done": 744,
+   "mean_travel_s": 964.42,
+   "median_travel_s": 802.0,
+   "still_driving": 1682,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 160,
+    "reroutes": 15677,
+    "route_changed": 1628
+   }
+  },
+  {
+   "arm": "off",
+   "seed": 13,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3610.0,
+   "real_s": 118.6,
+   "cohort_trips": 2363,
+   "cohort_mean_s": 1191.61,
+   "trips_done": 363,
+   "mean_travel_s": 656.24,
+   "median_travel_s": 550.0,
+   "still_driving": 2000,
+   "steer_stats": {
+    "minutes": 0,
+    "edges_set": 0,
+    "reroutes": 0,
+    "route_changed": 0
+   }
+  },
+  {
+   "arm": "current",
+   "seed": 13,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3608.0,
+   "real_s": 128.6,
+   "cohort_trips": 2333,
+   "cohort_mean_s": 1221.18,
+   "trips_done": 286,
+   "mean_travel_s": 599.4,
+   "median_travel_s": 376.0,
+   "still_driving": 2047,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 0,
+    "reroutes": 18840,
+    "route_changed": 11
+   }
+  },
+  {
+   "arm": "no_change",
+   "seed": 13,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3600.0,
+   "real_s": 123.7,
+   "cohort_trips": 2367,
+   "cohort_mean_s": 1190.33,
+   "trips_done": 377,
+   "mean_travel_s": 808.24,
+   "median_travel_s": 601.0,
+   "still_driving": 1990,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 166,
+    "reroutes": 18472,
+    "route_changed": 3206
+   }
+  },
+  {
+   "arm": "online",
+   "seed": 13,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3608.0,
+   "real_s": 126.5,
+   "cohort_trips": 2349,
+   "cohort_mean_s": 1214.31,
+   "trips_done": 284,
+   "mean_travel_s": 594.01,
+   "median_travel_s": 393.0,
+   "still_driving": 2065,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 166,
+    "reroutes": 18764,
+    "route_changed": 4080
+   }
+  },
+  {
+   "arm": "chronos",
+   "seed": 13,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3602.0,
+   "real_s": 136.6,
+   "cohort_trips": 2353,
+   "cohort_mean_s": 1221.35,
+   "trips_done": 345,
+   "mean_travel_s": 835.5,
+   "median_travel_s": 657.0,
+   "still_driving": 2008,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 152,
+    "reroutes": 19315,
+    "route_changed": 1797
+   }
+  },
+  {
+   "arm": "off",
+   "seed": 14,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3603.0,
+   "real_s": 114.5,
+   "cohort_trips": 2417,
+   "cohort_mean_s": 1128.62,
+   "trips_done": 530,
+   "mean_travel_s": 872.18,
+   "median_travel_s": 559.0,
+   "still_driving": 1887,
+   "steer_stats": {
+    "minutes": 0,
+    "edges_set": 0,
+    "reroutes": 0,
+    "route_changed": 0
+   }
+  },
+  {
+   "arm": "current",
+   "seed": 14,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3600.0,
+   "real_s": 136.8,
+   "cohort_trips": 2386,
+   "cohort_mean_s": 1142.04,
+   "trips_done": 515,
+   "mean_travel_s": 850.59,
+   "median_travel_s": 531.0,
+   "still_driving": 1871,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 0,
+    "reroutes": 16518,
+    "route_changed": 8
+   }
+  },
+  {
+   "arm": "no_change",
+   "seed": 14,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3600.0,
+   "real_s": 132.7,
+   "cohort_trips": 2401,
+   "cohort_mean_s": 1103.42,
+   "trips_done": 513,
+   "mean_travel_s": 698.57,
+   "median_travel_s": 540.0,
+   "still_driving": 1888,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 167,
+    "reroutes": 15321,
+    "route_changed": 1836
+   }
+  },
+  {
+   "arm": "online",
+   "seed": 14,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3611.0,
+   "real_s": 127.6,
+   "cohort_trips": 2450,
+   "cohort_mean_s": 1006.18,
+   "trips_done": 865,
+   "mean_travel_s": 929.24,
+   "median_travel_s": 854.0,
+   "still_driving": 1585,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 167,
+    "reroutes": 14422,
+    "route_changed": 2328
+   }
+  },
+  {
+   "arm": "chronos",
+   "seed": 14,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3606.0,
+   "real_s": 115.7,
+   "cohort_trips": 2447,
+   "cohort_mean_s": 901.45,
+   "trips_done": 841,
+   "mean_travel_s": 608.3,
+   "median_travel_s": 560.0,
+   "still_driving": 1606,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 160,
+    "reroutes": 12625,
+    "route_changed": 1174
+   }
+  },
+  {
+   "arm": "off",
+   "seed": 15,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3627.0,
+   "real_s": 82.3,
+   "cohort_trips": 2510,
+   "cohort_mean_s": 735.61,
+   "trips_done": 1429,
+   "mean_travel_s": 735.98,
+   "median_travel_s": 746.0,
+   "still_driving": 1081,
+   "steer_stats": {
+    "minutes": 0,
+    "edges_set": 0,
+    "reroutes": 0,
+    "route_changed": 0
+   }
+  },
+  {
+   "arm": "current",
+   "seed": 15,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3600.0,
+   "real_s": 78.4,
+   "cohort_trips": 2457,
+   "cohort_mean_s": 956.16,
+   "trips_done": 845,
+   "mean_travel_s": 793.84,
+   "median_travel_s": 572.0,
+   "still_driving": 1612,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 0,
+    "reroutes": 12262,
+    "route_changed": 7
+   }
+  },
+  {
+   "arm": "no_change",
+   "seed": 15,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3601.0,
+   "real_s": 57.4,
+   "cohort_trips": 2521,
+   "cohort_mean_s": 558.57,
+   "trips_done": 1380,
+   "mean_travel_s": 433.46,
+   "median_travel_s": 331.0,
+   "still_driving": 1141,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 167,
+    "reroutes": 7377,
+    "route_changed": 454
+   }
+  },
+  {
+   "arm": "online",
+   "seed": 15,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3626.0,
+   "real_s": 60.3,
+   "cohort_trips": 2519,
+   "cohort_mean_s": 587.32,
+   "trips_done": 1398,
+   "mean_travel_s": 478.03,
+   "median_travel_s": 332.0,
+   "still_driving": 1121,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 167,
+    "reroutes": 7818,
+    "route_changed": 667
+   }
+  },
+  {
+   "arm": "chronos",
+   "seed": 15,
+   "status": "stopped",
+   "message": "",
+   "end_s": 3625.0,
+   "real_s": 65.3,
+   "cohort_trips": 2505,
+   "cohort_mean_s": 691.65,
+   "trips_done": 1239,
+   "mean_travel_s": 563.62,
+   "median_travel_s": 474.0,
+   "still_driving": 1266,
+   "steer_stats": {
+    "minutes": 46,
+    "edges_set": 162,
+    "reroutes": 8730,
+    "route_changed": 503
+   }
+  }
+ ],
+ "caveat": "primary: cohort_mean_s (all trips that departed in the window; unfinished counted to the cut-off). finished_mean_s alone is biased toward short trips",
+ "when": "2026-10-10T16:10:35+00:00"
+}

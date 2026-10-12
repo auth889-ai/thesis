@@ -1,0 +1,160 @@
+// TrafficTwin addition: the map app in our look (the palette and type of our React pages, frontend/src/styles/global.css), laid over
+// Headway's own styles without changing its markup. Light, and dark when the device asks for it (Quasar's body--dark).
+:root {
+  --tt-ink: #4a2620;
+  --tt-ink-muted: #7d5a4e;
+  --tt-cream: #fffcf8;
+  --tt-cream-2: #f4eee7;
+  --tt-line: #e6d6ca;
+  --tt-rose: #e9c7bc;
+  --tt-caramel: #d0884f;
+  --tt-shadow: 0 1px 2px rgba(74, 38, 32, 0.08), 0 12px 32px -12px rgba(74, 38, 32, 0.35);
+  --tt-font: Inter, 'Noto Sans Bengali', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --tt-display: Fraunces, 'Noto Sans Bengali', Georgia, serif;
+}
+body.body--dark {
+  --tt-ink: #f4e9dd;
+  --tt-ink-muted: #c9ae9c;
+  --tt-cream: #2a1c17;
+  --tt-cream-2: #3a2821;
+  --tt-line: #5a433a;
+  --tt-rose: #5c3d37;
+  --tt-shadow: 0 12px 32px -12px rgba(0, 0, 0, 0.7);
+}
+
+body {
+  font-family: var(--tt-font);
+  color: var(--tt-ink);
+  -webkit-font-smoothing: antialiased;
+}
+.text-h6,
+.text-subtitle1.title-bar {
+  font-family: var(--tt-display);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+// ---------------------------------------------------------------- the search pill and the cards
+.top-card,
+.bottom-card {
+  background: var(--tt-cream);
+  color: var(--tt-ink);
+}
+.top-card {
+  border-bottom: none !important;
+}
+.top-card .q-field--outlined .q-field__control {
+  border-radius: 28px;
+  background: var(--tt-cream);
+  box-shadow: var(--tt-shadow);
+  padding-left: 6px;
+}
+.top-card .q-field--outlined .q-field__control:before {
+  border-color: var(--tt-line);
+}
+.tt-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 10px;
+  background: var(--tt-rose);
+  color: var(--tt-ink);
+  font-family: var(--tt-display);
+  font-weight: 700;
+  font-size: 13px;
+  margin-right: 4px;
+}
+@media screen and (max-width: 799px) {
+  .bottom-card {
+    border-radius: 20px 20px 0 0;
+    margin-top: -16px;
+    position: relative;
+    z-index: 1;
+    box-shadow: 0 -8px 24px -12px rgba(74, 38, 32, 0.35);
+    animation: tt-sheet-in 0.25s ease-out;
+  }
+  .bottom-card::before {
+    content: '';
+    display: block;
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--tt-line);
+    margin: 8px auto 4px;
+  }
+}
+@media screen and (min-width: 800px) {
+  .top-card,
+  .bottom-card {
+    box-shadow: var(--tt-shadow);
+  }
+  .bottom-card {
+    border-radius: 0 0 16px 16px;
+  }
+}
+@keyframes tt-sheet-in {
+  from {
+    transform: translateY(24px);
+    opacity: 0.6;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+
+// ---------------------------------------------------------------- lists, chips, buttons
+.q-list .q-item {
+  border-radius: 12px;
+}
+.list-item--selected {
+  border-left-color: var(--tt-caramel) !important;
+}
+.q-chip {
+  font-weight: 500;
+  box-shadow: 0 1px 2px rgba(74, 38, 32, 0.12);
+}
+.q-btn {
+  font-weight: 600;
+  letter-spacing: 0;
+}
+.q-btn.tt-primary {
+  border-radius: 24px;
+  padding: 6px 18px;
+  text-transform: none;
+}
+.q-btn.tt-secondary {
+  border-radius: 24px;
+  padding: 6px 16px;
+  text-transform: none;
+  background: var(--tt-cream-2);
+  color: var(--tt-ink);
+}
+.tt-edit .q-btn {
+  font-size: 12px;
+  font-weight: 500;
+  text-transform: none;
+  color: var(--tt-ink-muted);
+}
+
+// ---------------------------------------------------------------- during a trip: one clean screen
+body.tt-trip .top-card,
+body.tt-trip .bottom-card {
+  display: none !important;
+}
+body.tt-trip #map {
+  height: 100% !important;
+  flex: 1;
+}
+
+// ---------------------------------------------------------------- dark mode: the map stays light (our provider has no dark style)
+body.body--dark {
+  .q-field__native,
+  .q-field__input {
+    color: var(--tt-ink);
+  }
+  .q-item__label--caption {
+    color: var(--tt-ink-muted);
+  }
+}

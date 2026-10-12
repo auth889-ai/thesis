@@ -1,0 +1,155 @@
+{
+ "city_id": "dhaka",
+ "display_name": "Dhaka",
+ "config": "config/cities/dhaka.yaml",
+ "generated_utc": "2026-10-05T16:23:13.881552+00:00",
+ "sumo": "Eclipse SUMO sumo 1.27.1",
+ "mode": "prebuilt network, generated demand",
+ "prebuilt": {
+  "mode": "prebuilt",
+  "network_id": "dhaka_r1",
+  "network": "data/cities/dhaka_r1/dhaka_r1.net.xml.gz",
+  "routes": "results/artifacts/gates/routes_repeat_1h.rou.xml.gz",
+  "network_sha256": "06194df039740fa2ceb0bcb2c438444efd755f26e0f863327f0e1d6524775dcb",
+  "routes_sha256": "e42e8450863cf92cd056b45f206f6bf1df7179b42bb00c720cf273cac414985e",
+  "demand_scale": 0.584,
+  "verified": "both hashes equal the config's"
+ },
+ "network": {
+  "file": "data/cities/dhaka_r1/dhaka_r1.net.xml.gz",
+  "edges": 6527,
+  "junctions": 2956,
+  "traffic_lights": 17
+ },
+ "demand": {
+  "file": "data/cities/dhaka/sumo/dhaka.rou.xml",
+  "sha256": "ccf4d6aa9dc15a2b9a17e00921dcb2ee0f401152b3af964c896e4ae0a5217783",
+  "label": "SYNTHETIC_WHAT_IF",
+  "calibration": "none",
+  "seed": 11,
+  "period_s": 2.0,
+  "horizon_s": 1800,
+  "randomtrips_options": [
+   "-n",
+   "-o",
+   "-r",
+   "-b",
+   "0",
+   "-e",
+   "1800",
+   "-p",
+   "2.0",
+   "--seed",
+   "11",
+   "--fringe-factor",
+   "5",
+   "--fringe-start-attributes",
+   "departSpeed=\"max\"",
+   "--vehicle-class",
+   "passenger",
+   "--vclass",
+   "passenger",
+   "--prefix",
+   "veh",
+   "--min-distance",
+   "300",
+   "--min-distance.fringe",
+   "10",
+   "--allow-fringe.min-length",
+   "1000",
+   "--lanes",
+   "--trip-attributes",
+   "departLane=\"best\"",
+   "--validate"
+  ],
+  "vehicles": 900,
+  "vehicle_mix": {
+   "source": "DhaTraX v1.0, Traffic_Analysis/vehicle_class_composition_by_site.csv, the three sites pooled (69,083 crossings)",
+   "citation": "Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+   "simulated_as": "each class is drawn at its share and driven as the nearest SUMO vehicle class with SUMO's own default parameters for that class; SUMO has no CNG auto-rickshaw or cycle-rickshaw class, and no Dhaka-specific size, speed or lane behaviour is modelled",
+   "seed": 11,
+   "vehicles": 900,
+   "classes": [
+    {
+     "name": "Car_Micro",
+     "sumo_class": "passenger",
+     "asked_pct": 33.15,
+     "vehicles": 298,
+     "achieved_pct": 33.11
+    },
+    {
+     "name": "Motor_Cycle",
+     "sumo_class": "motorcycle",
+     "asked_pct": 29.88,
+     "vehicles": 269,
+     "achieved_pct": 29.89
+    },
+    {
+     "name": "CNG",
+     "sumo_class": "taxi",
+     "asked_pct": 22.46,
+     "vehicles": 202,
+     "achieved_pct": 22.44
+    },
+    {
+     "name": "Rickshaw",
+     "sumo_class": "bicycle",
+     "asked_pct": 4.39,
+     "vehicles": 40,
+     "achieved_pct": 4.44
+    },
+    {
+     "name": "Bus_Minibus",
+     "sumo_class": "bus",
+     "asked_pct": 4.06,
+     "vehicles": 37,
+     "achieved_pct": 4.11
+    },
+    {
+     "name": "Pickup_Truck",
+     "sumo_class": "delivery",
+     "asked_pct": 3.58,
+     "vehicles": 32,
+     "achieved_pct": 3.56
+    },
+    {
+     "name": "Van",
+     "sumo_class": "passenger",
+     "asked_pct": 0.9,
+     "vehicles": 8,
+     "achieved_pct": 0.89
+    },
+    {
+     "name": "Ambulance",
+     "sumo_class": "emergency",
+     "asked_pct": 0.79,
+     "vehicles": 7,
+     "achieved_pct": 0.78
+    },
+    {
+     "name": "Special_Purpose",
+     "sumo_class": "truck",
+     "asked_pct": 0.48,
+     "vehicles": 4,
+     "achieved_pct": 0.44
+    },
+    {
+     "name": "Bicycle",
+     "sumo_class": "bicycle",
+     "asked_pct": 0.31,
+     "vehicles": 3,
+     "achieved_pct": 0.33
+    }
+   ]
+  }
+ },
+ "buildings": {
+  "source": "Overture Maps buildings theme (ODbL), drawn directly by the map",
+  "release": "2026-09-23.1",
+  "url": "https://overturemaps-extras-us-west-2.s3.us-west-2.amazonaws.com/tiles/2026-09-23.1/buildings.pmtiles",
+  "found": "the latest release in Overture's catalogue",
+  "file": null,
+  "count": null
+ },
+ "manifest": "data/cities/dhaka/sumo/MANIFEST.json"
+}

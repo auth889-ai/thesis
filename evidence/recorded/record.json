@@ -1,0 +1,305 @@
+{
+ "what": "Real data without a crowd, first five steps (2026-10-05): DhaTraX recorded speeds on the Dhaka home under 'Recorded day', Dhaka's vehicle mix from DhaTraX in the twin, the researcher's-own-trips source, and the WorldTrace coverage notebook (not yet run).",
+ "date_utc": "2026-10-05",
+ "dhatrax": {
+  "citation": "Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+  "licence": "CC BY 4.0 (Zenodo record metadata, read 2026-10-05)",
+  "fetched": {
+   "dataset": "DhaTraX",
+   "version": "1.0",
+   "doi": "10.5281/zenodo.22157752",
+   "licence": "CC BY 4.0",
+   "citation": "Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+   "record": "https://zenodo.org/api/records/22157752",
+   "fetched_utc": "2026-10-05T16:14:51.708468+00:00",
+   "files": {
+    "Traffic_Analysis.zip": {
+     "bytes": 6765847,
+     "md5": "md5:f4615022d818376794545cfde571fbb3",
+     "sha256": "0440ebd9a9ae6ef9a97b027cd88c59c9043933f5bd9f66b00377b176c845d0c4"
+    },
+    "Homography.zip": {
+     "bytes": 4976332,
+     "md5": "md5:f0a69474cd5a3eddd258dfa00d2f8cac",
+     "sha256": "d254fda447aa8487b3813d17175df40c84ab88de3e389fcaafe31374cd242ed3"
+    },
+    "world_transform_summary.csv": {
+     "bytes": 26399,
+     "md5": "md5:9cae9ad2eef86f76c0a1db8f993b1274",
+     "sha256": "8f33e1a3974c186f875c57d4eee12895bc962d5b3c41fb7663d28a3ddc4c6601"
+    }
+   }
+  },
+  "used": [
+   "Traffic_Analysis/combined_traffic_5min.csv (complete intervals with a median speed)",
+   "Traffic_Analysis/vehicle_class_composition_by_site.csv",
+   "Traffic_Analysis/trajectory_direction_summary.csv",
+   "Homography/*.json (GPS calibration points)",
+   "world_transform_summary.csv (site of each video)"
+  ],
+  "not_downloaded": "the raw and ground-plane trajectories (2.5 GB)",
+  "sites": [
+   {
+    "site": "BM",
+    "day": "2026-04-20",
+    "located": true,
+    "lat": 23.74553,
+    "lon": 90.394724,
+    "bearing_deg": 343.2,
+    "complete_5_minute_readings": 121
+   },
+   {
+    "site": "BS",
+    "day": "2026-04-06",
+    "located": false,
+    "lat": null,
+    "lon": null,
+    "bearing_deg": null,
+    "complete_5_minute_readings": 156
+   },
+   {
+    "site": "INT",
+    "day": "2026-04-19",
+    "located": true,
+    "lat": 23.741883,
+    "lon": 90.396008,
+    "bearing_deg": 179.0,
+    "complete_5_minute_readings": 144
+   }
+  ],
+  "authors_caveats": [
+   "the published tables carry calibration_validated = False",
+   "each camera is calibrated with four points, which fit exactly and give no error estimate",
+   "speeds and classes are a detection and tracking model's output",
+   "one approach, one direction, one day per site",
+   "the deposit states no time zone; times are the camera's clock"
+  ],
+  "site_BS": "its calibration holds no GPS point, so its place is not known from the dataset and it is not shown on any road; its class counts are in the pooled mix"
+ },
+ "home_recorded_day": {
+  "route": [
+   "23.7440, 90.3951",
+   "23.7480, 90.3938"
+  ],
+  "switch_offered_in_dhaka": [
+   "Simulated view",
+   "Recorded day"
+  ],
+  "switch_offered_in_los_angeles": [
+   "Simulated view"
+  ],
+  "at_08_32": {
+   "side": "Recorded data, not now. The colours show what a published dataset measured on its own recording day at this clock time. It is not used for travel times or for “Leave when?”.\nRecorded, DhaTraX, 2026-04-20\n\n8.3 km/h\nRECORDED\nrecorded by: DhaTraX fixed camera, site BM: the authors' detection and tracking pipeline on fixed-camera video; four-point calibration, not validated by the authors; refers to 2026-04-20 08:30:00 (camera clock)\n\nmedian of 265 vehicles over a 62.5 m stretch of this road section\n\nDhaTraX sites in this city: BM (2026-04-20), INT (2026-04-19). Not used, because the dataset does not say where it is: BS.\n\nSource: Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+   "slider_disabled": true,
+   "site_markers": [
+    "DhaTraX BM, 2026-04-20",
+    "DhaTraX INT, 2026-04-19"
+   ],
+   "api": {
+    "recorded": [
+     [
+      "235293033#10",
+      8.3,
+      "2026-04-20 08:30:00 (camera clock)",
+      "Recorded, DhaTraX, 2026-04-20"
+     ]
+    ],
+    "now": 0,
+    "travel": {
+     "0": null,
+     "15": null,
+     "30": null,
+     "60": null
+    },
+    "traffic": "none"
+   }
+  },
+  "at_17_40": "Recorded data, not now. The colours show what a published dataset measured on its own recording day at this clock time. It is not used for travel times or for “Leave when?”.\nNo recorded reading on this route at 17:40. A reading exists only where a recorded site stands on the route, in its direction, and for a complete 5-minute interval.\n\nDhaTraX sites in this city: BM (2026-04-20), INT (2026-04-19). Not used, because the dataset does not say where it is: BS.\n\nSource: Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+  "at_03_00": "Recorded data, not now. The colours show what a published dataset measured on its own recording day at this clock time. It is not used for travel times or for “Leave when?”.\nNo recorded reading on this route at 03:00. A reading exists only where a recorded site stands on the route, in its direction, and for a complete 5-minute interval.\n\nDhaTraX sites in this city: BM (2026-04-20), INT (2026-04-19). Not used, because the dataset does not say where it is: BS.\n\nSource: Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+  "after_switching_off": "Route: 0.6 km over 3 road sections. REAL — OpenStreetMap geometry converted by SUMO netconvert\n\nNo traffic data for Dhaka yet. The route is drawn as a grey dashed line and no travel time in traffic is given.\nDrive time at the map's speed limits (not traffic)\n\n0.6 min\nSIMULATED\nuncalibrated; every section driven at its map speed limit; no traffic, signals or queues\nARRIVE BY\nPhones that opted in: no readings stored · \n0 cells\nREAL\nmeasured by: this app's own store of opt-in phone cells, inside this city's built area; refers to Oct 5, 2026, 10:27 PM\nhome.source.recorded: in use\nField counts: not available yet",
+  "console_errors": [],
+  "kept_apart": "with the recorded reading present, sections with a speed 'now' = 0, every travel time = none, traffic = 'none' (see at_08_32.api)"
+ },
+ "vehicle_mix": {
+  "pooled": {
+   "crossings": 69083,
+   "sites": 3,
+   "classes": {
+    "Car_Micro": {
+     "count": 22902,
+     "share_pct": 33.15
+    },
+    "Motor_Cycle": {
+     "count": 20643,
+     "share_pct": 29.88
+    },
+    "CNG": {
+     "count": 15513,
+     "share_pct": 22.46
+    },
+    "Rickshaw": {
+     "count": 3033,
+     "share_pct": 4.39
+    },
+    "Bus_Minibus": {
+     "count": 2807,
+     "share_pct": 4.06
+    },
+    "Pickup_Truck": {
+     "count": 2475,
+     "share_pct": 3.58
+    },
+    "Van": {
+     "count": 623,
+     "share_pct": 0.9
+    },
+    "Ambulance": {
+     "count": 545,
+     "share_pct": 0.79
+    },
+    "Special_Purpose": {
+     "count": 330,
+     "share_pct": 0.48
+    },
+    "Bicycle": {
+     "count": 212,
+     "share_pct": 0.31
+    }
+   }
+  },
+  "in_config": "config/cities/dhaka.yaml, vehicle_mix",
+  "applied_to_demand": {
+   "source": "DhaTraX v1.0, Traffic_Analysis/vehicle_class_composition_by_site.csv, the three sites pooled (69,083 crossings)",
+   "citation": "Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+   "simulated_as": "each class is drawn at its share and driven as the nearest SUMO vehicle class with SUMO's own default parameters for that class; SUMO has no CNG auto-rickshaw or cycle-rickshaw class, and no Dhaka-specific size, speed or lane behaviour is modelled",
+   "seed": 11,
+   "vehicles": 900,
+   "classes": [
+    {
+     "name": "Car_Micro",
+     "sumo_class": "passenger",
+     "asked_pct": 33.15,
+     "vehicles": 298,
+     "achieved_pct": 33.11
+    },
+    {
+     "name": "Motor_Cycle",
+     "sumo_class": "motorcycle",
+     "asked_pct": 29.88,
+     "vehicles": 269,
+     "achieved_pct": 29.89
+    },
+    {
+     "name": "CNG",
+     "sumo_class": "taxi",
+     "asked_pct": 22.46,
+     "vehicles": 202,
+     "achieved_pct": 22.44
+    },
+    {
+     "name": "Rickshaw",
+     "sumo_class": "bicycle",
+     "asked_pct": 4.39,
+     "vehicles": 40,
+     "achieved_pct": 4.44
+    },
+    {
+     "name": "Bus_Minibus",
+     "sumo_class": "bus",
+     "asked_pct": 4.06,
+     "vehicles": 37,
+     "achieved_pct": 4.11
+    },
+    {
+     "name": "Pickup_Truck",
+     "sumo_class": "delivery",
+     "asked_pct": 3.58,
+     "vehicles": 32,
+     "achieved_pct": 3.56
+    },
+    {
+     "name": "Van",
+     "sumo_class": "passenger",
+     "asked_pct": 0.9,
+     "vehicles": 8,
+     "achieved_pct": 0.89
+    },
+    {
+     "name": "Ambulance",
+     "sumo_class": "emergency",
+     "asked_pct": 0.79,
+     "vehicles": 7,
+     "achieved_pct": 0.78
+    },
+    {
+     "name": "Special_Purpose",
+     "sumo_class": "truck",
+     "asked_pct": 0.48,
+     "vehicles": 4,
+     "achieved_pct": 0.44
+    },
+    {
+     "name": "Bicycle",
+     "sumo_class": "bicycle",
+     "asked_pct": 0.31,
+     "vehicles": 3,
+     "achieved_pct": 0.33
+    }
+   ]
+  },
+  "demand_file_sha256": "ccf4d6aa9dc15a2b9a17e00921dcb2ee0f401152b3af964c896e4ae0a5217783",
+  "sumo_check": "sumo ran the 900 vehicles for 1800 simulated seconds on the frozen network: 900 inserted, no route error (first attempt failed on a turn closed to a class; the assignment now checks turns as well as roads)",
+  "twin_in_browser": {
+   "classes_on_the_road": {
+    "status": "running",
+    "city": "dhaka",
+    "vehicles": 36,
+    "classes": {
+     "Car_Micro": 15,
+     "Rickshaw": 1,
+     "Motor_Cycle": 9,
+     "CNG": 6,
+     "Pickup_Truck": 2,
+     "Bus_Minibus": 3
+    }
+   },
+   "page_says": "Vehicle classes are drawn at counted shares (Car_Micro 33.15 %, Motor_Cycle 29.88 %, CNG 22.46 %, Rickshaw 4.39 %, and others). Counted: vehicles crossing one approach at each of three fixed cameras in Dhaka on 6, 19 and 20 April 2026, about 06:00 to 19:00, classified by the DhaTraX authors' detection model; a model's output at three places, not a census of the city. In the simulation: each class is drawn at its share and driven as the nearest SUMO vehicle class with SUMO's own default parameters for that class; SUMO has no CNG auto-rickshaw or cycle-rickshaw class, and no Dhaka-specific size, speed or lane behaviour is modelled. Source: Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+   "errors": []
+  },
+  "limits": [
+   "the classes are SUMO's nearest classes with SUMO's default parameters; CNG is driven as a SUMO taxi and a cycle rickshaw as a SUMO bicycle",
+   "only four drawing shapes exist",
+   "Los Angeles, Sylhet and generated cities still have one class"
+  ]
+ },
+ "researcher_trips": {
+  "state": "built and unit-tested; no device is listed on this machine, so nothing is exempt and nothing is shown",
+  "how": "python -m app.probes.researcher --device-id <id>",
+  "file": "results/live/researcher_devices.txt (untracked; absent)"
+ },
+ "worldtrace": {
+  "state": "NOT RUN. The coverage notebook is written (research/notebooks/WorldTrace_coverage_colab.ipynb) and must be run on Colab; which cities WorldTrace covers is still unknown.",
+  "known_from_the_archives": {
+   "traces": 2451299,
+   "metadata_archive_bytes": 7800430228,
+   "trajectory_archive_bytes": 27166178373,
+   "layout": "one numbered file per trace in a single folder; no index by place"
+  },
+  "licence": "ODbL 1.0 (dataset card, read 2026-10-05)",
+  "note": "the card's field list says 'Start coordinate' is (longitude, latitude) but the sample record holds latitude first; the notebook follows the sample"
+ },
+ "screenshots": {
+  "dhaka_1_route_through_bangla_motor_no_live_data.png": "7a9a18bda3045b9536fd875ae375e63a633f2ece888d6a763e364c3b2d59f632",
+  "dhaka_2_recorded_day_0832.png": "0c375c2910c2ac25fd118983cf7d74c1cb311b36d7b9d9a350f5dbcd971b7054",
+  "dhaka_3_recorded_day_1740.png": "0f3badfca32dd3d9b713bed4656adfc0af90822fddeb68e1f937988b9af690a0",
+  "dhaka_4_twin_with_vehicle_mix.png": "1af8f65ca47c202e9f5b4cdd3a01a9b3945ac584e4776f48fab40c62c6897a8b"
+ },
+ "not_checked": [
+  "the INT site in the browser (only the BM route was driven)",
+  "the Recorded day view in Bangla",
+  "a researcher device actually sending positions from a phone",
+  "the WorldTrace scan",
+  "whether the BM section and direction chosen by the matcher is the carriageway the camera looks at: it is the nearest section within 30 m running within 45 degrees of the direction of travel computed from the calibration's GPS points (4.6 m away, heading 346 degrees against 343)",
+  "DhaTraX's own accuracy: nothing here validates its speeds or classes"
+ ]
+}

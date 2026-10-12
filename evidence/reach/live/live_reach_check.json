@@ -1,0 +1,76 @@
+{
+ "base": "http://127.0.0.1:8011/",
+ "when": "2026-10-11T02:59:56.081Z",
+ "checks": [
+  {
+   "name": "1440x900: live reach is off by default (no live card before the toggle)",
+   "ok": true
+  },
+  {
+   "name": "1440x900: a tap draws live reach, timed",
+   "ok": true,
+   "detail": "server 12.9 s, page 13424 ms"
+  },
+  {
+   "name": "1440x900: the thesis number is shown unchanged",
+   "ok": true
+  },
+  {
+   "name": "1440x900: each nearest hospital has 10/20/30-minute polygons",
+   "ok": true,
+   "detail": "[3,3,3]"
+  },
+  {
+   "name": "1440x900: toggling off removes the live card",
+   "ok": true
+  },
+  {
+   "name": "390x844: live reach is off by default (no live card before the toggle)",
+   "ok": true
+  },
+  {
+   "name": "390x844: a tap draws live reach, timed",
+   "ok": true,
+   "detail": "server 10 s, page 10318 ms"
+  },
+  {
+   "name": "390x844: the thesis number is shown unchanged",
+   "ok": true
+  },
+  {
+   "name": "390x844: each nearest hospital has 10/20/30-minute polygons",
+   "ok": true,
+   "detail": "[3,3,3]"
+  },
+  {
+   "name": "390x844: toggling off removes the live card",
+   "ok": true
+  },
+  {
+   "name": "no page errors",
+   "ok": true,
+   "detail": ""
+  }
+ ],
+ "errors": [],
+ "1440x900": {
+  "card": "Computed live by Valhalla in 12.9 s LIVE\nNearest hospital, Ashiyan Medical College Hospital: an ambulance reaches this point in about 6 min.\nDark blue 10 min, blue 20 min, light blue 30 min from each hospital · map speeds, not live traffic\nThesis (saved build): 9.7 % / 27.7 % / 45.9 % of the city's grid is within 10 / 20 / 30 min of the nearest hospital.",
+  "page_ms": 13424,
+  "polygons": [
+   3,
+   3,
+   3
+  ],
+  "layers": null
+ },
+ "390x844": {
+  "card": "Computed live by Valhalla in 10 s LIVE\nNearest hospital, Combined Military Hospital (CMH): an ambulance reaches this point in about 11 min.\nDark blue 10 min, blue 20 min, light blue 30 min from each hospital · map speeds, not live traffic\nThesis (saved build): 9.7 % / 27.7 % / 45.9 % of the city's grid is within 10 / 20 / 30 min of the nearest hospital.",
+  "page_ms": 10318,
+  "polygons": [
+   3,
+   3,
+   3
+  ],
+  "layers": null
+ }
+}

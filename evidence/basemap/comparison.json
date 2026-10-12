@@ -1,0 +1,62 @@
+{
+ "measured_utc": "2026-10-05",
+ "method": "one tile at zoom 14 over the centre of each city box, fetched once from each source and decoded; times are single requests from this laptop and include, for Overture, the directory lookups",
+ "tiles": {
+  "dhaka": "14/12305/7079 (centre 90.39 E, 23.7425 N)",
+  "los_angeles": "14/2805/6537 (centre -118.357 E, 34.138 N)"
+ },
+ "openfreemap": {
+  "example": "https://maplibre.org/maplibre-gl-js/docs/examples/display-buildings-in-3d/",
+  "tilejson": "https://tiles.openfreemap.org/planet",
+  "build": "20260927_080001_pt",
+  "dhaka": {
+   "bytes": 393846,
+   "ms": 180,
+   "features": 65,
+   "note": "buildings merged by height; every feature has render_height"
+  },
+  "los_angeles": {
+   "bytes": 207727,
+   "ms": 89,
+   "features": 34
+  },
+  "licence": "project MIT; data OpenStreetMap ODbL, OpenMapTiles schema",
+  "attribution": "OpenFreeMap \u00a9 OpenMapTiles Data from OpenStreetMap"
+ },
+ "overture": {
+  "file": "https://overturemaps-extras-us-west-2.s3.us-west-2.amazonaws.com/tiles/2026-09-23.1/buildings.pmtiles",
+  "release": "2026-09-23.1",
+  "dhaka": {
+   "bytes_uncompressed": 2103555,
+   "ms": 3160,
+   "requests": 3,
+   "buildings": 6853,
+   "with_height": 18,
+   "floors_only": 645,
+   "neither": 6190
+  },
+  "los_angeles": {
+   "bytes_uncompressed": 820845,
+   "ms": 1505,
+   "requests": 3,
+   "buildings": 2517,
+   "with_height": 2400,
+   "floors_only": 0,
+   "neither": 117
+  },
+  "licence": "ODbL",
+  "attribution": "\u00a9 OpenStreetMap contributors, Overture Maps Foundation (and the sources at https://docs.overturemaps.org/attribution/)"
+ },
+ "chosen": "overture",
+ "why": "its tiles leave an unknown height empty, so 'estimated height' can be labelled per building; OpenFreeMap fills a default into the tile",
+ "not_measured": [
+  "behaviour on a slow connection",
+  "share of machine-detected outlines in Dhaka"
+ ],
+ "screenshots": {
+  "dhaka_built_city.png": "fde35006a365215cd045b5ee7d9088cd6eab8e780cedcb8e88a04ab9ac47ad8d",
+  "chattogram_never_built.png": "9ddb659cf99060ae59f26fb7ef729c5386ba694d4baf45f8fc58a0b6e96afcdc",
+  "manhattan_never_built_recorded_heights.png": "5014c14e8a1b485e4b75050339581fc3ecbeb1818a460410c455f6f7f9a78270"
+ },
+ "screenshots_note": "rendered in a separate headless Chrome (software rendering) against the local app; the Chattogram and Manhattan views are places no city was ever built for, opened through the view kept in the page address. No simulation was running in them; vehicles on top of the new layer were not re-checked after the switch."
+}

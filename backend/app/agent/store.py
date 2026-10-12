@@ -11,7 +11,7 @@ from dataclasses import asdict
 from datetime import datetime, timezone
 
 from app.agent.models import Decision, Goal, GoalStatus, RiskClass, Step, ToolCall, now_iso, new_id
-from app.paths import REPO
+from core.common.paths import REPO
 
 DB = REPO / "results/live/agent/agent.sqlite"
 _LOCK = threading.Lock()

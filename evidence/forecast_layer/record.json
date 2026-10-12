@@ -1,0 +1,18 @@
+{
+ "item": "4 · forecast layer on the main map (owner queue of 2026-10-09)",
+ "date": "2026-10-10",
+ "los_angeles": {
+  "kind": "replay of recorded METR-LA speeds at the same weekday and 5-minute time of day (latest such moment of the test split, 2012-06-04 to 06-27), with D2STGNN's forecast made at that moment",
+  "build": "PYTHONPATH=.:backend python -m core.ml.forecasting.layer.build_la (build.log, SHA256SUMS here)",
+  "rq1_check": "the same code on RQ1's 120 seed-11 windows reproduces the saved RQ1 D2STGNN predictions exactly (largest difference 0.00 mph)",
+  "card": "results/forecasting/layer/summary.json: masked MAE over 6748 moments, D2STGNN 2.5648 / 2.9135 / 3.3548 mph vs no change 3.5056 / 4.2121 / 5.3835 at 15 / 30 / 60 min; skill > 0 at every horizon, so best time to leave is shown",
+  "best_time_rule": "of now, +15, +30, +60: highest median forecast speed over the sensors in view; named only if at least 1.0 (city units) above leaving now, else 'now'"
+ },
+ "dhaka": {
+  "kind": "each located DhaTraX site (BM, INT; BS has no stated place) at this hour on its one recorded day",
+  "card": "RQ1 per-site MAE (best of Chronos-Bolt-small, Chronos-2, TimesFM 2.5 against no change), results/forecasting/rq1/summary.json",
+  "best_time": "not shown: the card has no skill at 60 min (and BM is worse than no change already at 15 min: 1.84 vs 1.79 km/h)"
+ },
+ "browser_check": "browser_check.json, check_los_angeles_now.png, check_los_angeles_plus30.png, check_dhaka_now.png (local server, phone 390x844, LA in English, Dhaka in Bangla, 0 page errors)",
+ "not_checked": ["the hosted site (needs the final deploy)", "Dhaka during 06:00-18:00 Dhaka time in a browser (checked after 18:00: 'not recorded at this hour'; the API at 09:00 is covered by a test)", "a real phone"]
+}

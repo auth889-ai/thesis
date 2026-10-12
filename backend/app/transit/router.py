@@ -6,7 +6,9 @@ from datetime import datetime
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, Field
 
-from app.transit import osm, service
+from core.common.data import osm
+
+from app.transit import service
 
 router = APIRouter()
 
@@ -21,7 +23,7 @@ class TransitPlanRequest(BaseModel):
 @router.post("/api/transit/plan", tags=["transit"])
 def transit_plan(req: TransitPlanRequest):
     """Walk, wait, ride, walk on every rail line within walking reach of both ends, from OpenStreetMap read now."""
-    from app.routing.trip.places import resolve_place
+    from core.simulation.routing.trip.places import resolve_place
     from app.commute.service import LOCAL_UTC_OFFSET_H
     try:
         o, d = resolve_place(req.origin, req.city), resolve_place(req.destination, req.city)

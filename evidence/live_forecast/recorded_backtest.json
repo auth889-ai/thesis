@@ -1,0 +1,284 @@
+{
+ "what": "Chronos-2 zero-shot against recorded real readings, with persistence on the same pairs. Each block is one city on one dataset; results are not pooled and a block says nothing about another city.",
+ "run_utc": "2026-10-05T20:12:33.901299+00:00",
+ "command": "PYTHONPATH=backend python -m app.forecasting.evaluation.recorded_backtest",
+ "model": {
+  "name": "Chronos-2",
+  "weights": "amazon/chronos-2",
+  "revision": [
+   "29ec3766d36d6f73f0696f85560a422f50e8498c"
+  ],
+  "used": "as released, nothing trained, one series at a time through app/forecasting/adapters/chronos_adapter.py",
+  "deterministic": "quantile output, no sampling; there is no seed to vary",
+  "pretraining_exposure": "UNVERIFIED: whether METR-LA was in the pre-training corpus has not been checked"
+ },
+ "packages": {
+  "chronos-forecasting": "2.3.1",
+  "torch": "2.13.0",
+  "transformers": "4.57.6",
+  "numpy": "2.5.2"
+ },
+ "method": {
+  "context": "the unbroken run of 5-minute readings ending at the origin, at least 8, at most 288",
+  "persistence": "the reading at the origin, held",
+  "metric": "mean absolute error in the dataset's own unit; skill = 1 - MAE/MAE of persistence",
+  "forecast_value": "the model's median (0.5 quantile)"
+ },
+ "results": [
+  {
+   "city_id": "los_angeles",
+   "dataset": "METR-LA (Li et al., DCRNN, ICLR 2018)",
+   "unit": "mph",
+   "series": "the 24 stations inside the city's box",
+   "stations": [
+    "769402",
+    "769403",
+    "769405",
+    "760987",
+    "769418",
+    "768066",
+    "764949",
+    "773939",
+    "773880",
+    "764766",
+    "717490",
+    "717491",
+    "765176",
+    "717486",
+    "717489",
+    "717488",
+    "717571",
+    "717570",
+    "764760",
+    "718496",
+    "768469",
+    "764858",
+    "774204",
+    "718141"
+   ],
+   "origins_from": "2012-06-21 00:00:00",
+   "origins_to": "2012-06-27 23:45:00",
+   "origin_every_min": 15,
+   "missing": "a 0.0 in METR-LA means no reading; such a time is never a context reading nor a scored target",
+   "inputs": {
+    "data/forecasting/cities/metr_la.npz": "a38235b82c1b04584bdeabaf15b29d9aa834026df9da8226b2ae58f550bc234e",
+    "data/forecasting/cities/METR-LA/METR-LA.h5": "64784b76d6fb8ec9bff4b6decafb354da2bb37840468fdccee5044e511277c05"
+   },
+   "horizons_min": {
+    "15": {
+     "pairs": 15462,
+     "mae_model": 2.805,
+     "mae_persistence": 3.085,
+     "skill_vs_persistence": 0.091,
+     "per_day": {
+      "2012-06-21": {
+       "pairs": 2176,
+       "mae_model": 3.403,
+       "mae_persistence": 3.613
+      },
+      "2012-06-22": {
+       "pairs": 2273,
+       "mae_model": 3.339,
+       "mae_persistence": 3.628
+      },
+      "2012-06-23": {
+       "pairs": 2193,
+       "mae_model": 2.178,
+       "mae_persistence": 2.438
+      },
+      "2012-06-24": {
+       "pairs": 2208,
+       "mae_model": 1.495,
+       "mae_persistence": 1.902
+      },
+      "2012-06-25": {
+       "pairs": 2132,
+       "mae_model": 2.725,
+       "mae_persistence": 2.971
+      },
+      "2012-06-26": {
+       "pairs": 2295,
+       "mae_model": 3.136,
+       "mae_persistence": 3.51
+      },
+      "2012-06-27": {
+       "pairs": 2185,
+       "mae_model": 3.34,
+       "mae_persistence": 3.507
+      }
+     },
+     "mae_model_sd_over_days": 0.725,
+     "mae_persistence_sd_over_days": 0.679,
+     "days_model_beats_persistence": 7
+    },
+    "30": {
+     "pairs": 15432,
+     "mae_model": 3.444,
+     "mae_persistence": 3.733,
+     "skill_vs_persistence": 0.077,
+     "per_day": {
+      "2012-06-21": {
+       "pairs": 2200,
+       "mae_model": 4.187,
+       "mae_persistence": 4.303
+      },
+      "2012-06-22": {
+       "pairs": 2249,
+       "mae_model": 4.384,
+       "mae_persistence": 4.733
+      },
+      "2012-06-23": {
+       "pairs": 2194,
+       "mae_model": 2.408,
+       "mae_persistence": 2.753
+      },
+      "2012-06-24": {
+       "pairs": 2205,
+       "mae_model": 1.652,
+       "mae_persistence": 2.073
+      },
+      "2012-06-25": {
+       "pairs": 2132,
+       "mae_model": 3.356,
+       "mae_persistence": 3.509
+      },
+      "2012-06-26": {
+       "pairs": 2294,
+       "mae_model": 3.851,
+       "mae_persistence": 4.312
+      },
+      "2012-06-27": {
+       "pairs": 2158,
+       "mae_model": 4.247,
+       "mae_persistence": 4.407
+      }
+     },
+     "mae_model_sd_over_days": 1.044,
+     "mae_persistence_sd_over_days": 0.99,
+     "days_model_beats_persistence": 7
+    },
+    "60": {
+     "pairs": 15346,
+     "mae_model": 4.489,
+     "mae_persistence": 4.758,
+     "skill_vs_persistence": 0.057,
+     "per_day": {
+      "2012-06-21": {
+       "pairs": 2198,
+       "mae_model": 5.625,
+       "mae_persistence": 5.613
+      },
+      "2012-06-22": {
+       "pairs": 2245,
+       "mae_model": 5.721,
+       "mae_persistence": 6.08
+      },
+      "2012-06-23": {
+       "pairs": 2190,
+       "mae_model": 3.022,
+       "mae_persistence": 3.313
+      },
+      "2012-06-24": {
+       "pairs": 2157,
+       "mae_model": 1.817,
+       "mae_persistence": 2.185
+      },
+      "2012-06-25": {
+       "pairs": 2156,
+       "mae_model": 4.304,
+       "mae_persistence": 4.47
+      },
+      "2012-06-26": {
+       "pairs": 2294,
+       "mae_model": 5.11,
+       "mae_persistence": 5.642
+      },
+      "2012-06-27": {
+       "pairs": 2106,
+       "mae_model": 5.769,
+       "mae_persistence": 5.93
+      }
+     },
+     "mae_model_sd_over_days": 1.536,
+     "mae_persistence_sd_over_days": 1.496,
+     "days_model_beats_persistence": 6
+    }
+   },
+   "seconds": 71.2
+  },
+  {
+   "city_id": "dhaka",
+   "dataset": "Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+   "unit": "km/h",
+   "series": "site BM, 5-minute median speed",
+   "day": "2026-04-20",
+   "readings": 121,
+   "bins": 155,
+   "origin_every_min": 5,
+   "limits": "one day at one site, so no spread over days exists; the authors' detection and tracking pipeline on fixed-camera video; four-point calibration, not validated by the authors",
+   "inputs": {
+    "Traffic_Analysis.zip": "0440ebd9a9ae6ef9a97b027cd88c59c9043933f5bd9f66b00377b176c845d0c4",
+    "Homography.zip": "d254fda447aa8487b3813d17175df40c84ab88de3e389fcaafe31374cd242ed3",
+    "world_transform_summary.csv": "8f33e1a3974c186f875c57d4eee12895bc962d5b3c41fb7663d28a3ddc4c6601"
+   },
+   "horizons_min": {
+    "15": {
+     "pairs": 68,
+     "mae_model": 1.921,
+     "mae_persistence": 1.834,
+     "skill_vs_persistence": -0.048
+    },
+    "30": {
+     "pairs": 63,
+     "mae_model": 2.878,
+     "mae_persistence": 2.713,
+     "skill_vs_persistence": -0.061
+    },
+    "60": {
+     "pairs": 53,
+     "mae_model": 3.333,
+     "mae_persistence": 2.842,
+     "skill_vs_persistence": -0.173
+    }
+   },
+   "seconds": 3.0
+  },
+  {
+   "city_id": "dhaka",
+   "dataset": "Roy, Arnob. \"DhaTraX\" (version 1.0). Zenodo, 2026. https://doi.org/10.5281/zenodo.22157752. CC BY 4.0.",
+   "unit": "km/h",
+   "series": "site INT, 5-minute median speed",
+   "day": "2026-04-19",
+   "readings": 144,
+   "bins": 144,
+   "origin_every_min": 5,
+   "limits": "one day at one site, so no spread over days exists; the authors' detection and tracking pipeline on fixed-camera video; four-point calibration, not validated by the authors",
+   "inputs": {
+    "Traffic_Analysis.zip": "0440ebd9a9ae6ef9a97b027cd88c59c9043933f5bd9f66b00377b176c845d0c4",
+    "Homography.zip": "d254fda447aa8487b3813d17175df40c84ab88de3e389fcaafe31374cd242ed3",
+    "world_transform_summary.csv": "8f33e1a3974c186f875c57d4eee12895bc962d5b3c41fb7663d28a3ddc4c6601"
+   },
+   "horizons_min": {
+    "15": {
+     "pairs": 134,
+     "mae_model": 2.517,
+     "mae_persistence": 2.381,
+     "skill_vs_persistence": -0.057
+    },
+    "30": {
+     "pairs": 131,
+     "mae_model": 2.847,
+     "mae_persistence": 2.891,
+     "skill_vs_persistence": 0.015
+    },
+    "60": {
+     "pairs": 125,
+     "mae_model": 4.777,
+     "mae_persistence": 3.698,
+     "skill_vs_persistence": -0.292
+    }
+   },
+   "seconds": 5.9
+  }
+ ]
+}

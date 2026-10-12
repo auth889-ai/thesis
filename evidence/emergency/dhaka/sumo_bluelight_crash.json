@@ -1,0 +1,19 @@
+{
+ "what": "SUMO 1.27.1 exits with a segmentation fault (exit code 245, EXC_BAD_ACCESS at address 0x70) when a vehicle with the bluelight device drives the ambulance route on the Dhaka network. Reproduced in plain SUMO, with no TraCI and no code of this project, on 2026-10-06.",
+ "command": "sumo --net-file data/cities/dhaka_r1/dhaka_r1.net.xml.gz --route-files data/cities/dhaka/sumo/dhaka.rou.xml,evidence/emergency/dhaka/crash_reproducer_ambulance.rou.xml --seed <seed> --end 1300 --no-step-log --no-warnings --ignore-route-errors --time-to-teleport 300 [options]",
+ "demand": "the uncalibrated generated demand (900 vehicles in 1,800 s), the ambulance departing at 900 s",
+ "seeds": [11, 12, 13, 14, 15, 16, 17, 18, 19, 20],
+ "crashed_seeds_of_10": {
+  "bluelight device, --lateral-resolution 0.8": 2,
+  "bluelight device, no sublane model": 1,
+  "bluelight device, --lateral-resolution 0.64": 1,
+  "bluelight device, --lateral-resolution 1.6": 4,
+  "bluelight device, --lateral-resolution 0.8, --device.bluelight.reactiondist 0": 1,
+  "same vehicle WITHOUT the bluelight device, --lateral-resolution 0.8": 0,
+  "same vehicle WITHOUT the bluelight device, no sublane model": 0
+ },
+ "with_this_projects_alert_code": "10 of 21 runs crashed in a first check over seeds 11 to 13 (arms no_alert, alert, alert_preemption), the no-alert baseline of seed 12 among them",
+ "suspected_cause_not_verified": "MSDevice_Bluelight.cpp (v1_27_1), line 152: `upcomingLinks.push_back(l->getIncomingLanes()[0].viaLink)` for an internal lane reached from another internal lane; the two crashes that were traced happened on consecutive internal lanes of one junction. No debug build was used, so this is a reading of the source, not a diagnosis.",
+ "source_of_figures": "the session's terminal output of the commands above; rerun them to check",
+ "newer_release": "none: 1.27.1 is the newest eclipse-sumo on PyPI on 2026-10-06"
+}

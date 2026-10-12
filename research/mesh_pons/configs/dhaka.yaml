@@ -1,0 +1,16 @@
+# Mesh prototype experiment. City values (network, demand seed/period/horizon) are read from
+# config/cities/<city_id>.yaml at run time; nothing about the city is repeated here.
+city_id: dhaka
+window:                    # seconds of the SUMO run handed to PONS; fixed before any result was seen
+  begin_s: 900
+  end_s: 1200
+radio:
+  name: BT_10m
+  range_m: 10
+  source: 'The ONE simulator, default_settings.txt, lines 19-23: "# \"Bluetooth\" interface for all nodes ... btInterface.transmitRange = 10" (range in meters). https://github.com/akeranen/the-one/blob/43eaab1e0592af2526d124ee9ba9590eeadcd49a/default_settings.txt ; simulator described in Keranen, Ott, Karkkainen, "The ONE Simulator for DTN Protocol Evaluation", SIMUTools 2009.'
+messages:                  # PONS's own generator (pons.message_event_generator)
+  interval_s: 1
+  size_bytes: 100
+  ttl_s: 300               # = window length
+seeds: [1, 2, 3, 4, 5]
+routers: [epidemic, spray_and_wait, prophet]   # PONS defaults: SprayAndWaitRouter(copies=7, binary=False), PRoPHETConfig()

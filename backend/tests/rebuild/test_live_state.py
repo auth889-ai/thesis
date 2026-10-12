@@ -10,7 +10,7 @@ import pytest
 
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
-from app.forecasting.live.live_state import BIN_S, LEVELS, build, features, floors, load_rows  # noqa: E402
+from core.ml.forecasting.live.live_state import BIN_S, LEVELS, build, features, floors, load_rows  # noqa: E402
 
 
 def row(cid, t, state):

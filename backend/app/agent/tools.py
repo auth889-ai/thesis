@@ -53,7 +53,7 @@ def plan_commute(user_id, a, goal_id):
 
 def analyze_trip(user_id, a, goal_id):
     import time
-    from app.routing import trip_analysis
+    from core.simulation.routing import trip_analysis
     from app.profile import service as profile
     job = trip_analysis.start({"city": a.get("city") or profile.city_for(user_id), "origin": a["origin"], "destination": a["destination"], "model": a.get("model", "auto"), "horizon_min": int(a.get("horizon_min", 30))})
     for _ in range(90):
@@ -69,7 +69,7 @@ def analyze_trip(user_id, a, goal_id):
 
 
 def forecast_network(user_id, a, goal_id):
-    from app.forecasting.operations import road_forecasts
+    from core.ml.forecasting.operations import road_forecasts
     n = road_forecasts.network(a.get("dataset", "METR_LA"), "latest")
     sensors = n.get("sensors", []); h = str(a.get("horizon_min", 30))
     rows = [{"node": s["node"], "now_kmh": s.get("now_kmh"), "predicted_kmh": (s.get("predicted") or {}).get(h)} for s in sensors if s.get("now_kmh") is not None and (s.get("predicted") or {}).get(h) is not None]

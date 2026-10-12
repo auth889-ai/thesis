@@ -1,0 +1,25 @@
+# The ambulance alert experiments (core/simulation/ambulance/service.py). These are EXPERIMENT SETTINGS: choices of ours
+# that define the runs, listed with every result. Channel parameters are not here; they are in
+# core/networking/v2x/configs/network_model.yaml, each with its source. The trip itself is in the city's config.
+sumo:
+  lateral_resolution: 0.8      # the sublane model, needed for the rescue lane; EVERY arm runs with it, the baseline included.
+                               # SUMO docs, Simulation/SublaneModel: "It is recommended to set the lateral resolution to a value that
+                               # divides the lane width evenly"; SUMO's default lane width is 3.2 m, so 0.8 m gives four stripes
+  time_to_teleport_s: 300      # as in the routing harness
+ambulance:
+  vtype: {vClass: emergency, speedFactor: 1.5, bluelight: true}   # SUMO docs, Simulation/Emergency, the documented example type
+  depart_s: 900                # after 15 minutes of traffic have loaded
+horizon_s: 3600                # every arm runs the same hour, so the cost to other traffic is counted over the same time
+alert:
+  ahead_m: 1000                # how far ahead along its route the ambulance addresses vehicles and junctions; the technology's range then decides delivery
+  makeway:                     # how an alerted vehicle moves aside (makeway.py). Version 1 (RQ2, RQ2b) held SUMO's bluelight settings, incl. lcStrategic -1,
+                               # on every alerted vehicle up to ahead_m until the ambulance passed: a circular-wait artefact (evidence/ambulance_rq2/inspect/dhaka/SLOWDOWN.md).
+    version: 2
+    keep_strategic: true       # alerted vehicles keep their own route lane changes
+    distance_m: 100            # only vehicles within 100 m ahead move aside; no published value for an electronic alert was found, so 50 and 100 m were
+                               # piloted and chosen by a rule fixed beforehand (amended once, by the owner): evidence/ambulance_rq2/makeway_v2/choice.json
+arms: [no_alert, alert, alert_preemption]
+technologies: [its_g5, c_v2x, cellular_4g]
+equipped_shares: [0.0, 0.25, 0.5, 1.0]
+seeds: [11, 12, 13, 14, 15]
+safety_profile: LAB01_VALIDATED_REFERENCE_PROFILE   # minimum and maximum green for preemption; a synthetic junction's values, no Dhaka regulation

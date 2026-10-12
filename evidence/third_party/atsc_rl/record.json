@@ -1,0 +1,41 @@
+{
+ "what": "adaptive-traffic-signal-rl reproduced unchanged before two of its files were reused (fidelity rule 3). Its own benchmark was rerun from its shipped checkpoint on its own built-in simulator and compared with the tables it ships.",
+ "repo": "https://github.com/Adityakumar1805/adaptive-traffic-signal-rl",
+ "commit": "b62436b5d5fb1e5d07008d6f486f1a06a09ff64a",
+ "licence": "MIT, Copyright (c) 2026 Aditya Kumar",
+ "date_utc": "2026-10-06",
+ "environment": "Python 3.11.14 venv outside the repository with the project's requirements.txt (numpy 1.26.4, torch 2.2.2)",
+ "commands": [
+  "python run.py doctor",
+  "python -m pytest tests/test_phases_safety.py -q",
+  "python run.py eval"
+ ],
+ "own_safety_tests": "tests/test_phases_safety.py: 5 tests, all passed (the log shows five dots and no failure)",
+ "result": "36 runs (3 controllers x 4 demand levels x 3 seeds). Every output table is byte-identical to the shipped one.",
+ "files": {
+  "benchmark_summary.md": {
+   "shipped_sha256": "e55202cfdc7e1230c061ca52d58dc66a94d20f501810d140a195fe7febde84c0",
+   "ours_sha256": "e55202cfdc7e1230c061ca52d58dc66a94d20f501810d140a195fe7febde84c0",
+   "identical": true
+  },
+  "benchmark_summary.csv": {
+   "shipped_sha256": "cb9fbbc1f743d905c9461e1f53975a9f47e5a9abc4010f494bf0e69434119a85",
+   "ours_sha256": "cb9fbbc1f743d905c9461e1f53975a9f47e5a9abc4010f494bf0e69434119a85",
+   "identical": true
+  },
+  "benchmark_results.csv": {
+   "shipped_sha256": "b47c7059c9c88698c2ec4444a2f37f9f3c670918fefd9a9c4d178e9030bd96ce",
+   "ours_sha256": "b47c7059c9c88698c2ec4444a2f37f9f3c670918fefd9a9c4d178e9030bd96ce",
+   "identical": true
+  }
+ },
+ "published_headline": "RL reduces average waiting time by 37.9 % against fixed-time (mean across scenarios), on the project's point-queue simulator",
+ "our_headline": "37.9 %, the same",
+ "limits": "This reproduces the project's own simulator result. It says nothing about SUMO or Dhaka. Of this project we reuse only src/atsc/control/emergency.py and src/atsc/envs/phases.py.",
+ "reused_files_sha256_as_published": {
+  "src/atsc/control/emergency.py": "a68447ba654fac05ff753c09aa61589d5d564ecb0f7c85ac810f08cc321d8754",
+  "src/atsc/envs/phases.py": "501c38419b351dfbbc154daee2d6505a7ea81adb37b2434f86a071df103387d6"
+ },
+ "log": "reproduction.log",
+ "log_sha256": "cbcd396504d99bdc83ec379650ac85ad9dc0f44ae59d2779f0b8c5ef4cb72922"
+}

@@ -1,0 +1,158 @@
+{
+ "region": "GLA",
+ "job": "patchstg-gla",
+ "weights": "trained here with the authors' recipe",
+ "upstream": "LMissher/PatchSTG (MIT), Solver through patchstg_official, 4 loader workers, one epoch per train() call",
+ "epochs": "authors' config",
+ "best_epoch": 46,
+ "instances": 3,
+ "resumes": 1,
+ "average": {
+  "mae": 18.8954,
+  "rmse": 32.3152,
+  "mape_pct": 11.26
+ },
+ "published": {
+  "mae": 18.96,
+  "rmse": 32.33,
+  "mape_pct": 11.44
+ },
+ "mae_gap_pct": -0.34,
+ "generated_utc": "2026-10-05T09:37:03Z",
+ "log": "train.log.gz",
+ "log_sha256": "ef7b20f6adc7e8c802b9575016fd12207ada8498171dc86a6da149e6103a4370",
+ "checkpoint": "results/forecasting/checkpoints/PatchSTG/GLA/gla_model",
+ "checkpoint_sha256": "dfc79fa770091bfe244d4ca8c999408155d93edd67a490e910b8806d8731ccc6",
+ "ledger": [
+  {
+   "job": "patchstg-gla",
+   "instance": "i-0c73a9140f97d1e7e",
+   "type": "g5.xlarge",
+   "region": "us-east-1",
+   "ami": "ami-001972c501ec6b965",
+   "models": "PatchSTG",
+   "datasets": "LargeST-GLA",
+   "epochs": "authors' config",
+   "launched_utc": "2026-10-04T14:26:06Z",
+   "s3": "s3://dhakaflow-train-915644996102/jobs/patchstg-gla/"
+  },
+  {
+   "job": "patchstg-gla",
+   "instance": "i-0d6bb86e5f76f93f0",
+   "type": "g5.xlarge",
+   "region": "us-east-1",
+   "ami": "ami-001972c501ec6b965",
+   "models": "PatchSTG",
+   "datasets": "LargeST-GLA",
+   "epochs": "authors' config",
+   "launched_utc": "2026-10-04T14:37:08Z",
+   "s3": "s3://dhakaflow-train-915644996102/jobs/patchstg-gla/"
+  },
+  {
+   "job": "patchstg-gla",
+   "instance": "i-0ad70a67d092b2fde",
+   "type": "g5.xlarge",
+   "region": "us-east-1",
+   "ami": "ami-001972c501ec6b965",
+   "models": "PatchSTG",
+   "datasets": "LargeST-GLA",
+   "epochs": "authors' config",
+   "launched_utc": "2026-10-04T14:58:51Z",
+   "s3": "s3://dhakaflow-train-915644996102/jobs/patchstg-gla/"
+  },
+  {
+   "job": "patchstg-gla",
+   "instance": "i-0ad70a67d092b2fde",
+   "event": "FAILED",
+   "reason": "HANG: no output after 'epoch 1' (t=586 s, first validation) for about 6.7 hours on g5.xlarge on-demand; most likely host memory exhaustion (inferred, no kernel OOM message); terminated by the user",
+   "utc": "2026-10-04T21:45:00Z",
+   "recorded": "by hand on 2026-10-04; this instance predates the watchdog"
+  },
+  {
+   "job": "patchstg-gla",
+   "instance": "i-0122677860e32cbca",
+   "type": "g4dn.2xlarge",
+   "region": "us-east-1",
+   "ami": "ami-001972c501ec6b965",
+   "models": "PatchSTG",
+   "datasets": "LargeST-GLA",
+   "epochs": "authors' config",
+   "launched_utc": "2026-10-04T22:42:54Z",
+   "s3": "s3://dhakaflow-train-915644996102/jobs/patchstg-gla/",
+   "market": "spot",
+   "phase": "patchstg",
+   "resumed_from_state": false
+  },
+  {
+   "job": "patchstg-gla",
+   "instance": "i-00f55bb157876c187",
+   "type": "g5.2xlarge",
+   "region": "us-east-1",
+   "ami": "ami-001972c501ec6b965",
+   "models": "PatchSTG",
+   "datasets": "LargeST-GLA",
+   "epochs": "authors' config",
+   "launched_utc": "2026-10-04T23:49:03Z",
+   "s3": "s3://dhakaflow-train-915644996102/jobs/patchstg-gla/",
+   "market": "on-demand",
+   "phase": "patchstg",
+   "resumed_from_state": true
+  },
+  {
+   "job": "patchstg-gla",
+   "instance": "i-00f55bb157876c187",
+   "event": "FAILED",
+   "reason": "EXIT: training ended with code 1 (124 = the time cap)",
+   "utc": "2026-10-04T23:53:48Z"
+  },
+  {
+   "job": "patchstg-gla",
+   "instance": "i-0ccbbe0a7ec96ec0b",
+   "type": "g5.2xlarge",
+   "region": "us-east-1",
+   "ami": "ami-001972c501ec6b965",
+   "models": "PatchSTG",
+   "datasets": "LargeST-GLA",
+   "epochs": "authors' config",
+   "launched_utc": "2026-10-05T00:03:36Z",
+   "s3": "s3://dhakaflow-train-915644996102/jobs/patchstg-gla/",
+   "market": "on-demand",
+   "phase": "patchstg",
+   "resumed_from_state": true
+  }
+ ],
+ "epochs_by_instance": [
+  {
+   "instance": "i-0122677860e32cbca",
+   "epochs_completed": [
+    1,
+    2
+   ],
+   "ended": "reclaimed by AWS (spot)",
+   "type": "g4dn.2xlarge",
+   "market": "spot",
+   "gpu": "Tesla T4",
+   "source": "the state file it saved (epoch 2, best validation MAE 21.2541) and the next machine's '[resume] continuing after epoch 2'; its own uploaded log stops at epoch 1 because output through the pipe was buffered when it was reclaimed"
+  },
+  {
+   "instance": "i-00f55bb157876c187",
+   "epochs_completed": [],
+   "ended": "failed on resume before any epoch (generator-state bug, fixed)",
+   "type": "g5.2xlarge",
+   "market": "on-demand",
+   "gpu": "NVIDIA A10G"
+  },
+  {
+   "instance": "i-0ccbbe0a7ec96ec0b",
+   "epochs_completed": [
+    3,
+    50
+   ],
+   "ended": "finished and tested",
+   "type": "g5.2xlarge",
+   "market": "on-demand",
+   "gpu": "NVIDIA A10G"
+  }
+ ],
+ "note": "Epochs 1-2 ran on a Tesla T4 (spot, reclaimed by AWS); epochs 3-50 and the test ran on an NVIDIA A10G (on-demand) after one resume from the saved epoch-2 state. A resumed GPU run follows the same recipe but is not guaranteed bit-identical to an uninterrupted one."
+}

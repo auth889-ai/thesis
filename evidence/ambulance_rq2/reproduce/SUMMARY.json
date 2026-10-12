@@ -1,0 +1,48 @@
+{
+ "ql": [
+  {
+   "file": "ql_1.csv",
+   "steps": 20000,
+   "first_10pct": 78.9,
+   "last_20pct": 28.9
+  },
+  {
+   "file": "ql_2.csv",
+   "steps": 20000,
+   "first_10pct": 73.3,
+   "last_20pct": 31.0
+  },
+  {
+   "file": "ql_3.csv",
+   "steps": 20000,
+   "first_10pct": 86.8,
+   "last_20pct": 33.6
+  }
+ ],
+ "fixed": [
+  {
+   "file": "fixed_1.csv",
+   "steps": 20000,
+   "first_10pct": 188608.0,
+   "last_20pct": 3418605.0
+  },
+  {
+   "file": "fixed_2.csv",
+   "steps": 20000,
+   "first_10pct": 188358.2,
+   "last_20pct": 3418354.0
+  },
+  {
+   "file": "fixed_3.csv",
+   "steps": 20000,
+   "first_10pct": 188143.3,
+   "last_20pct": 3418138.0
+  }
+ ],
+ "verdict": {
+  "ql_last20_mean": 31.2,
+  "fixed_last20_mean": 3418365.7,
+  "pass": true,
+  "rule": "Q-learning's mean total waiting time over the last 20 % of steps is below fixed timing's (the direction of the README figure); no number is published to match"
+ }
+}

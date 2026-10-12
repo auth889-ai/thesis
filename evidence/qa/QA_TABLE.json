@@ -1,0 +1,162 @@
+{
+ "target": "https://43-205-213-250.sslip.io",
+ "date": "2026-10-07",
+ "runs": 104,
+ "script": "frontend/tests/qa/reality.cjs",
+ "failures": [
+  {
+   "rank": 1,
+   "feature": "F9",
+   "name": "Crash SOS",
+   "severity": "S1",
+   "what_a_person_sees": "Replay does nothing: no countdown, no alert path",
+   "cause": "404: research/sos/traces not in hosted package",
+   "cause_status": "confirmed",
+   "runs_failed": "3/3,3/3,1/1,1/1",
+   "screenshot": "runs/F9-phone-dhaka-1.png"
+  },
+  {
+   "rank": 2,
+   "feature": "F11",
+   "name": "Voice",
+   "severity": "S1",
+   "what_a_person_sees": "No alert spoken (depends on SOS replay)",
+   "cause": "same 404 as rank 1",
+   "cause_status": "confirmed",
+   "runs_failed": "3/3,3/3,1/1,1/1",
+   "screenshot": "runs/F11-phone-dhaka-1.png"
+  },
+  {
+   "rank": 3,
+   "feature": "F1",
+   "name": "Go-anywhere search",
+   "severity": "S1",
+   "what_a_person_sees": "Only 'Add as a city'; no place can be picked as destination",
+   "cause": "places filtered to the built simulation box in searchRows.ts",
+   "cause_status": "likely",
+   "runs_failed": "3/3,3/3,1/1,1/1",
+   "screenshot": "runs/F1-phone-dhaka-1.png"
+  },
+  {
+   "rank": 4,
+   "feature": "F3/F4/F5/F10 LA",
+   "name": "City switch to Los Angeles",
+   "severity": "S1",
+   "what_a_person_sees": "Home error: Cannot read properties of undefined (reading 'getSource')",
+   "cause": "removed map used by pending style poll/effect",
+   "cause_status": "likely",
+   "runs_failed": "LA 2/2 each",
+   "screenshot": "runs/F3-desktop-los_angeles-1.png"
+  },
+  {
+   "rank": 5,
+   "feature": "F2",
+   "name": "Add your city",
+   "severity": "S1",
+   "what_a_person_sees": "ModuleNotFoundError: No module named 'duckdb' shown raw",
+   "cause": "duckdb missing from infra/app/requirements.txt",
+   "cause_status": "confirmed",
+   "runs_failed": "3/3,3/3,1/1,1/1",
+   "screenshot": "runs/F2-phone-dhaka-1.png"
+  },
+  {
+   "rank": 6,
+   "feature": "F10",
+   "name": "Trip pack and offline",
+   "severity": "S1",
+   "what_a_person_sees": "Offline: 'Could not load the list of cities'; saved trip unusable",
+   "cause": "/api/operate/cities and /api/profile not kept offline",
+   "cause_status": "confirmed",
+   "runs_failed": "3/3,3/3 (LA blocked by rank 4)",
+   "screenshot": "runs/F10-phone-dhaka-1.png"
+  },
+  {
+   "rank": 7,
+   "feature": "F6",
+   "name": "Recorded traffic",
+   "severity": "S1",
+   "what_a_person_sees": "'No recorded vehicles for Dhaka are ready on this computer'",
+   "cause": "DhaTraX trajectories not in hosted package",
+   "cause_status": "likely",
+   "runs_failed": "3/3,3/3 (script passed; reviewed as fail)",
+   "screenshot": "runs/F6-phone-dhaka-1.png"
+  },
+  {
+   "rank": 8,
+   "feature": "F7",
+   "name": "Nearest hospitals",
+   "severity": "S2",
+   "what_a_person_sees": "'Vet-RX' (veterinary) listed as 3rd nearest hospital",
+   "cause": "hospitals.json includes animal hospitals",
+   "cause_status": "confirmed",
+   "runs_failed": "3/3,3/3",
+   "screenshot": "runs/F7-phone-dhaka-1.png"
+  },
+  {
+   "rank": 9,
+   "feature": "F4",
+   "name": "Turn-by-turn Bangla",
+   "severity": "S2",
+   "what_a_person_sees": "'হালকা বাঁয়ে হালকা বাঁয়ে যান-এ যান' shown and spoken",
+   "cause": "maneuver text used as road name when unnamed",
+   "cause_status": "likely",
+   "runs_failed": "3/3,3/3",
+   "screenshot": "runs/F4-phone-dhaka-1.png"
+  },
+  {
+   "rank": 10,
+   "feature": "F5",
+   "name": "Leave when",
+   "severity": "S3",
+   "what_a_person_sees": "Developer English on everyday panel",
+   "cause": "plain-language rule",
+   "cause_status": "confirmed",
+   "runs_failed": "3/3,3/3",
+   "screenshot": "runs/F5-phone-dhaka-1.png"
+  },
+  {
+   "rank": 11,
+   "feature": "F13",
+   "name": "3D City in LA",
+   "severity": "S3",
+   "what_a_person_sees": "Dhaka sim running; LA numbers '—' until 'Stop it and start Los Angeles'",
+   "cause": "one-sim-per-site rule; message small",
+   "cause_status": "confirmed",
+   "runs_failed": "LA 2/2 (script passed)",
+   "screenshot": "runs/F13-desktop-los_angeles-1.png"
+  },
+  {
+   "rank": 12,
+   "feature": "text",
+   "name": "Bangla units and digits",
+   "severity": "S4",
+   "what_a_person_sees": "'১২.১ km … 54 মিনিট', '২.৯ min', '০৮:৩৬ PM', 'গাড়ি-এ'",
+   "cause": "numbers/units not all localised",
+   "cause_status": "confirmed",
+   "runs_failed": "all Dhaka F3/F4/F5",
+   "screenshot": "runs/F3-phone-dhaka-1.png"
+  },
+  {
+   "rank": 13,
+   "feature": "F1",
+   "name": "Search row icon",
+   "severity": "S4",
+   "what_a_person_sees": "'add Add \"Hollywood\" as a city'",
+   "cause": "icon ligature read as text",
+   "cause_status": "confirmed",
+   "runs_failed": "8/8",
+   "screenshot": "runs/F1-desktop-los_angeles-1.png"
+  },
+  {
+   "rank": 14,
+   "feature": "F12",
+   "name": "Research page in Bangla",
+   "severity": "S4",
+   "what_a_person_sees": "Research cards stay English",
+   "cause": "Research strings not in i18n",
+   "cause_status": "confirmed",
+   "runs_failed": "all Bangla Tour runs",
+   "screenshot": "runs/F12-phone-dhaka-1.png"
+  }
+ ]
+}

@@ -1,0 +1,18 @@
+{
+ "step": "Bug: a fresh visitor saw 'loading\u2026' and an empty city list (test user rating 0)",
+ "date": "2026-10-06",
+ "cause": "GET /api/operate/cities loads every config/cities/*.yaml through a strict schema inside one request; the copy of the server on port 8011 (started 2026-10-05 22:27 with older code) refuses today's config files and answers 500, and the page kept 'loading\u2026' with no city because the frontend showed nothing on a failed list",
+ "fix": [
+  "backend/app/routing/router.py: each config is loaded on its own; a refused file is reported under `problems` and skipped, the default city is always one of the served cities, and the registry/observatory part cannot take the list down either",
+  "frontend/src/lib/city.tsx exposes `error`, `loading`, `reload`; app/AppShell.tsx shows 'The city list could not be loaded (\u2026) Try again' instead of the page",
+  "tests: backend/tests/city/test_city_list.py (a broken file beside dhaka.yaml \u2192 200, dhaka served, broken reported, one default; the checked-in configs \u2192 no problems, one default with a centre); frontend/src/lib/city.test.tsx (fresh browser, nothing stored \u2192 the default city; a 500 \u2192 the reason shown; an empty list \u2192 the problems shown)"
+ ],
+ "checked": [
+  "fresh visitor (localStorage and sessionStorage cleared) on the current server: /emergency shows Dhaka selected, Bangla, numbers and the ambulance sentence (fresh_visitor_emergency.jpg)",
+  "the old server on 8011 with the new build: the page now says 'The city list could not be loaded (Internal Server Error)\u2026' with Try again, instead of 'loading\u2026'"
+ ],
+ "not_checked": [
+  "a truly separate Chrome profile (the extension works in the owner's profile; storage was cleared instead)",
+  "the old server itself is not changed: restart it to serve the current code"
+ ]
+}

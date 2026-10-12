@@ -6,26 +6,53 @@ import json
 from datetime import datetime, timezone
 from fastapi import FastAPI, File, Form, HTTPException, Request, UploadFile
 from fastapi.responses import FileResponse, StreamingResponse
-from app import evidence_paths as config
-from app.protocols.evidence import panel_readers as readers
-from app import credentials as key_store
+from core.common import evidence_paths as config
+from core.simulation.closed_loop.protocols.evidence import panel_readers as readers
+from core.common import credentials as key_store
 from fastapi import APIRouter
 
 router = APIRouter()
 
 
+@router.get("/api/tiles/{city_id}/basemap.pmtiles", tags=["meta"])
+def own_tiles(city_id: str, request: Request):
+    """Our own PMTiles basemap for the city (Planetiler from the OpenStreetMap extract, kept in the routing bucket): the browser's Range
+    forwarded to S3. A city without a file answers 404 with the reason."""
+    from fastapi.responses import Response
+    from app.platform import tiles
+    status, body, headers = tiles.read_range(city_id, request.headers.get("range"))
+    return Response(content=body, status_code=status, headers=headers)
+
+
+@router.get("/api/networking/prefetch", tags=["meta"])
+def prefetch_results():
+    """The weak-signal experiment (emulated network, synthetic signal profiles; energy estimated from Bartendr), or "no data"."""
+    from core.networking.prefetch import results as pr
+    return pr.read()
+
+
+@router.get("/api/tiles/{city_id}/info", tags=["meta"])
+def own_tiles_info(city_id: str):
+    """Whether the city has an own basemap for the trip pack, and its size."""
+    from app.platform import tiles
+    return tiles.info(city_id)
+
+
 @router.get("/api/config/map", tags=["meta"])
 def map_config():
-    """Which basemap the browser should use. A Mapbox public token is meant for the browser;
-    without one the Esri street tiles are used. Never a secret key."""
+    """Which base map the browser should use. Without a Mapbox public token it is OpenFreeMap's OpenStreetMap vector
+    style (no key, no account). Also the worldwide buildings source and the satellite picture the twin can show. Never a
+    secret key."""
+    from app.platform import basemap_source
+    from core.simulation.twin import buildings_source
+    extra = {"buildings": buildings_source.source(),    # worldwide 3D buildings; see that module for licence and attribution
+             "satellite": basemap_source.SATELLITE}
     tok = key_store.mapbox_token()
     if tok:
         return {"provider": "mapbox",
                 "tiles": f"https://api.mapbox.com/styles/v1/mapbox/streets-v12/tiles/256/{{z}}/{{x}}/{{y}}?access_token={tok}",
-                "attribution": "© Mapbox © OpenStreetMap | Traffic © Google Routes API"}
-    return {"provider": "esri",
-            "tiles": "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}",
-            "attribution": "Tiles © Esri | Traffic © Google Routes API"}
+                "attribution": "© Mapbox © OpenStreetMap", **extra}
+    return {**basemap_source.STREETS, **extra}
 
 
 @router.get("/api/networking/conditions", tags=["network"])
@@ -64,7 +91,7 @@ def networking_conditions():
 def health():
     """Liveness plus data freshness — a dashboard must say when its data is stale."""
     h = readers.recorder_health()
-    from app.data.live_providers.observatory import observatory
+    from core.common.data.live_providers.observatory import observatory
     live = observatory.liveness()
     cities = {k: v for k, v in live.items() if not k.startswith("_")}
     return {"status": "ok", "recorder_healthy": h.healthy, "last_tick_utc": h.last_tick_utc,

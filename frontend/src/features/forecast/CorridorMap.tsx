@@ -1,6 +1,7 @@
 import {useEffect, useRef} from "react";
 
 import {MapView, maplibregl, useMapInstance, whenStyled} from "@/components/MapView";
+import {useT} from "@/i18n";
 import {fc, line} from "@/lib/basemap";
 import {levelColour} from "@/features/mobility/types";
 import type {Horizon} from "./model";
@@ -10,7 +11,8 @@ export type Corridor = {id: string; name: string; road?: string; geometry: [numb
 const levelAt = (c: Corridor, h: Horizon) => (h === "now" ? c.level_now : c.pred[h] ?? null);
 
 /** The city's observed corridors as coloured lines: recorded or live state now, the model's level later. */
-export function CorridorMap({corridors, horizon, center, onSelect, caption}: {corridors: Corridor[]; horizon: Horizon; center: [number, number]; onSelect: (id: string) => void; caption: React.ReactNode}) {
+export function CorridorMap({corridors, horizon, center, onSelect, caption}: {corridors: Corridor[]; horizon: Horizon; center?: [number, number]; onSelect: (id: string) => void; caption: React.ReactNode}) {
+  const t = useT();
   const {map, onReady} = useMapInstance();
   const fitted = useRef(false);
   const select = useRef(onSelect); select.current = onSelect;
@@ -41,7 +43,7 @@ export function CorridorMap({corridors, horizon, center, onSelect, caption}: {co
   return (
     <MapView onReady={onReady} className="map tf-map" center={center} zoom={12.5}>
       <div className="tf-cap">{caption}</div>
-      <div className="legend"><span><i style={{background: levelColour(0)}} />flowing</span><span><i style={{background: levelColour(1)}} />slow</span><span><i style={{background: levelColour(2)}} />congested</span><span><i style={{background: levelColour(null)}} />no reading</span></div>
+      <div className="legend"><span><i style={{background: levelColour(0)}} />{t("city.level.flowing")}</span><span><i style={{background: levelColour(1)}} />{t("city.level.slow")}</span><span><i style={{background: levelColour(2)}} />{t("city.level.congested")}</span><span><i style={{background: levelColour(null)}} />{t("city.level.none")}</span></div>
     </MapView>
   );
 }

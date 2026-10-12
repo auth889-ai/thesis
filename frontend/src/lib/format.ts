@@ -17,3 +17,6 @@ export const ago = (iso: string | null | undefined) => {
 export const ci = (s?: {ci95?: [number | null, number | null] | null} | null) => (s?.ci95 && s.ci95[0] != null ? `[${pct(s.ci95[0], 2)}, ${pct(s.ci95[1], 2)}]` : "");
 export const label = (l: string | null | undefined) => (l === "HELPED" ? "helped" : l === "HURT" ? "hurt" : l ? "inconclusive" : "–");
 export const word = (l: string | null | undefined) => (l === "HELPED" ? "shorter" : l === "HURT" ? "longer" : "about the same");
+
+/** A clock time in the app's language: Bangla digits on a 24-hour clock (Intl's Bangla keeps the English "AM/PM"), the browser's usual form otherwise. */
+export const timeOfDay = (d: Date, lang: string) => d.toLocaleTimeString(lang, lang === "bn" ? {hour: "2-digit", minute: "2-digit", hourCycle: "h23"} : {hour: "2-digit", minute: "2-digit"});

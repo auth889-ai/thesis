@@ -13,7 +13,6 @@ import pytest
 from pathlib import Path
 
 REPO_FILES = {
-    "/api/forecast/dhaka/accuracy": "results/forecasting/live_backtest.json",
     "/api/experiment/chain": "results/routing/integrated_chain_ideal.json",
     "/api/experiment/sweep": "results/routing/sweep_compliance.json",
     "/api/experiment/ablation": "results/routing/ablation_forecast_quality.json",
@@ -29,7 +28,7 @@ def test_health(client):
 
 @pytest.mark.parametrize("path,rel", list(REPO_FILES.items()))
 def test_evidence_endpoints_are_honest_in_both_states(client, path, rel):
-    from app import evidence_paths as config
+    from core.common import evidence_paths as config
     d = client.get(path).json()
     exists = (config.REPO / rel).exists()
     assert d["available"] is exists
@@ -51,18 +50,18 @@ def test_accuracy_payload_has_every_model_on_identical_pairs(client):
 
 def test_accuracy_for_an_unknown_city_is_not_invented(client):
     d = client.get("/api/forecast/nowhere/accuracy").json()
-    assert d["available"] is False and d["command"]
+    assert d["available"] is False and "no observed traffic" in d["note"]
 
 
-@needs_recorded
-def test_forecast_uses_recorded_window_when_buffer_is_empty_and_logs_it(client):
-    d = client.get("/api/forecast/dhaka?horizons=15").json()
-    assert d["source"] == "recorded"
-    assert d["input"]["shape"][0] >= 8 and d["input"]["unit"] == "congestion_level_0_3"
-    assert d["forecast"] and d["forecast"]["model"]
-    assert d["logged_rows"] == len(d["forecast"]["node_ids"])          # one row per corridor
-    sb = client.get("/api/forecast/dhaka/scoreboard").json()
-    assert sb["logged"] == d["logged_rows"] and sb["scored"] == 0      # target time not reached yet
+def test_a_city_without_its_own_observations_says_so_everywhere(client):
+    """The recorded Dhaka series was derived from Google Routes results and was withdrawn; nothing stands in for it."""
+    for path in ("/api/forecast/dhaka?horizons=15", "/api/forecast/dhaka?horizons=15&source=recorded"):
+        d = client.get(path).json()
+        assert "no observed traffic for this city yet" in d["note"] and d.get("source") != "recorded"
+        assert not (d.get("forecast") or {}).get("values")                  # no number is produced from nothing
+    assert client.get("/api/forecast/dhaka/accuracy").json()["available"] is False
+    h = client.get("/api/history/dhaka?horizons=15").json()
+    assert h["history"] == [] and h["forecast"] is None and "recorded" not in h["source"]
 
 
 def test_a_requested_model_that_does_not_exist_is_refused_not_swapped(client):
@@ -71,19 +70,9 @@ def test_a_requested_model_that_does_not_exist_is_refused_not_swapped(client):
     assert "not a registered model" in d["decision"]["reason"]
 
 
-@needs_recorded
-def test_history_falls_back_to_the_recorded_day_with_accuracy_attached(client):
-    d = client.get("/api/history/dhaka?horizons=15,30").json()
-    assert d["unit"] == "congestion_level_0_3"
-    assert 8 <= len(d["history"]) <= 288
-    assert d["forecast"] and d["observed"]["as_of_utc"]
-    assert all(v is None or 0 <= v <= 3 for row in d["history"] for v in row["values"])
-    assert "recorded" in d["source"]
-
-
 def test_chain_run_executes_the_real_function_in_the_background(client, tmp_path, monkeypatch):
     """POST starts a run, GET reports its progress, and the result is what run_chain returned."""
-    from app.protocols.chains import integrated_chain as ic
+    from core.simulation.closed_loop.protocols.chains import integrated_chain as ic
     monkeypatch.setattr(ic, "RUNS", tmp_path)
     calls = {}
 
@@ -116,7 +105,7 @@ def test_chain_run_rejects_unknown_options_and_paths(client, tmp_path, monkeypat
         r = client.get(f"/api/experiment/chain/run/{bad}")
         assert r.status_code == 404 or r.json().get("found") is False
     # unknown keys are dropped before the run starts — and no real chain is launched here
-    from app.protocols.chains import integrated_chain as ic
+    from core.simulation.closed_loop.protocols.chains import integrated_chain as ic
     monkeypatch.setattr(ic, "RUNS", tmp_path)
     seen = {}
     monkeypatch.setattr(ic, "run_chain", lambda **o: seen.update(o) or {"summary": {}})
@@ -133,14 +122,14 @@ def test_chain_run_rejects_unknown_options_and_paths(client, tmp_path, monkeypat
 def test_places_and_place_resolution(client):
     p = client.get("/api/places").json()["places"]
     assert any(x["id"] == "farmgate" for x in p)
-    from app.routing import trip_analysis as analyze
+    from core.simulation.routing import trip_analysis as analyze
     assert analyze.resolve_place("23.75, 90.39")["source"] == "coordinates"
     assert analyze.resolve_place("Farmgate")["source"] == "known place"
     assert analyze.resolve_place("karwan bazar")["label"] == "karwanbazar"
 
 
 def test_runs_along_needs_coverage_not_just_a_touch():
-    from app.routing import trip_analysis as analyze
+    from core.simulation.routing import trip_analysis as analyze
     a, b = (23.7573, 90.3854), (23.7389, 90.3958)              # farmgate -> shahbagh
     poly = [(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t) for t in (0, .25, .5, .75, 1)]
     along = [(a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t) for t in (0.1, 0.3, 0.5, 0.7, 0.9)]
@@ -149,8 +138,8 @@ def test_runs_along_needs_coverage_not_just_a_touch():
 
 
 def test_analyze_job_reports_real_stages_and_refuses_honestly(client, monkeypatch):
-    from app.routing import trip_analysis as analyze
-    from app.routing.trip import places
+    from core.simulation.routing import trip_analysis as analyze
+    from core.simulation.routing.trip import places
     monkeypatch.setattr(places, "resolve_place", lambda t, city="dhaka": (_ for _ in ()).throw(ValueError(f"could not find '{t}'")))
     j = client.post("/api/analyze", json={"origin": "nowhere-xyz", "destination": "shahbagh"}).json()
     for _ in range(100):
@@ -162,7 +151,7 @@ def test_analyze_job_reports_real_stages_and_refuses_honestly(client, monkeypatc
 
 
 def test_verdict_ci_labels_from_paired_seeds():
-    from app.protocols.chains import integrated_chain as ic
+    from core.simulation.closed_loop.protocols.chains import integrated_chain as ic
     def run(arm, seed, vh):
         return {"arm": arm, "seed": seed, "routes_changed": 0, "advisories_delivered": 0,
                 "metrics": {"total_vehicle_hours": vh, "mean_travel_time_s": 1, "p95_travel_time_s": 1,
@@ -181,6 +170,17 @@ def test_operate_cities_starts_with_dhaka(client):
     assert c[0] == {"id": "dhaka", "label": "Dhaka", "forecast": True}
     # any other city is forecastable only once it is being observed (and says how many samples)
     assert all(("steps" in x) and (x["forecast"] == (x["steps"] > 0)) for x in c[1:])
+
+
+def test_operate_cities_lists_every_configured_city_with_what_its_config_states(client):
+    from core.common.data import city_config
+    r = client.get("/api/operate/cities").json()
+    by = {c["id"]: c for c in r["configured"]}
+    assert set(by) == set(city_config.list_ids()) and [c["id"] for c in r["configured"] if c["default"]] == [r["cities"][0]["id"]]
+    for cid, c in by.items():
+        cfg = city_config.load(cid)
+        assert c["display_name"] == cfg.display_name and c["time_zone"] == cfg.time_zone and c["emergency_numbers"] == cfg.emergency_numbers
+        assert (c["center"] is None) == (cfg.bounding_box is None)          # an unknown area stays unknown, it is not filled in
 
 
 def test_twin_compare_requires_a_network(client):
@@ -207,10 +207,10 @@ def test_prediction_lab_lists_real_datasets_and_runs_the_floor(client):
 
 
 def test_city_id_resolution_and_level_conversion():
-    from app.routing import trip_analysis as analyze
+    from core.simulation.routing import trip_analysis as analyze
     assert analyze.city_id_for("Dhaka") == "dhaka"
     assert analyze.city_id_for("Nairobi") in ("nairobi_kenya", None)
-    from app.forecasting.adapters.base import CityData
+    from core.ml.forecasting.adapters.base import CityData
     import numpy as np
     cd = CityData(city_id="x", node_ids=["a", "b"], values=np.array([[10.0, 5.0]], dtype="float32"))
     live = {"corridors": [{"id": "a", "distance_m": 1000, "static_duration_s": 100},     # free-flow 10 m/s
@@ -222,9 +222,9 @@ def test_city_id_resolution_and_level_conversion():
 def test_observe_endpoint_refuses_an_unknown_city_honestly(client, monkeypatch):
     """Two honest refusals, both environment-independent: a city whose road graph cannot be
     derived (registered here, corridors fail), and a name that cannot be created at all."""
-    from app.data import city_corridors
+    from core.common.data import city_corridors
     from types import SimpleNamespace
-    from app.data.cities import registry
+    from core.common.data.cities import registry
     monkeypatch.setattr(city_corridors, "ensure", lambda cid, k=12: (_ for _ in ()).throw(RuntimeError("no graph")))
     # the city is registered on this machine or not (CI has no data/cities): make it registered either way
     real_get = registry.get
@@ -239,8 +239,8 @@ def test_observe_endpoint_refuses_an_unknown_city_honestly(client, monkeypatch):
 def test_learned_gate_endpoint_reads_the_newest_report_or_says_it_is_missing(client, tmp_path, monkeypatch):
     """Blocker #6: the learned-model outcome is read as-is from the frozen protocol's report; the oracle arm stays research-only."""
     import json
-    from app import evidence_paths as config
-    from app.protocols import learned_gate as lg
+    from core.common import evidence_paths as config
+    from core.simulation.closed_loop.protocols import learned_gate as lg
     monkeypatch.setattr(config, "REPO", tmp_path)
     r = client.get("/api/experiment/learned_gate").json()
     assert r["available"] is False and "learned_gate" in r["command"]
@@ -262,7 +262,7 @@ def test_learned_gate_endpoint_reads_the_newest_report_or_says_it_is_missing(cli
 def test_v2x_closed_loop_endpoint_lists_runs_and_reroute_examples(client, tmp_path, monkeypatch):
     """The V2X closed-loop results are read as-is; the reroute examples come from the run's own log."""
     import json
-    from app import evidence_paths as config
+    from core.common import evidence_paths as config
     monkeypatch.setattr(config, "REPO", tmp_path)
     assert client.get("/api/experiment/v2x_closed_loop").json()["available"] is False
     d = tmp_path / "results/v2x/closed_loop/la_x_peak_ideal_p30_cfgz"; (d / "s101/predictive_v2x").mkdir(parents=True)
@@ -283,7 +283,7 @@ def test_health_reports_live_sampling_age_not_just_process_liveness(client, tmp_
     """A running process is not live data: health must say when each city last got a valued sample, and the
     overall flag must be false when the newest valued sample is old (the 2026-09 month of nulls)."""
     import json, sqlite3, time
-    from app.data.live_providers import observatory as obs
+    from core.common.data.live_providers import observatory as obs
     db = tmp_path / "obs.sqlite"
     c = sqlite3.connect(db)
     c.execute("create table samples (city text, t real, utc text, nodes text, values_json text, primary key (city, t))")
@@ -303,7 +303,7 @@ def test_observatory_samples_through_the_selected_provider_not_google_by_name():
     """The sampler must ask `live.provider()` (Amazon Location when configured); a month of null samples came
     from a hard import of the Google provider after that key stopped working."""
     import inspect
-    from app.data.live_providers import observatory as obs
+    from core.common.data.live_providers import observatory as obs
     src = inspect.getsource(obs.Observatory.sample)
     assert "live import provider" in src and "google_routes import service" not in src
 

@@ -1,0 +1,129 @@
+{
+ "generated_utc": "2026-10-12T03:36:40.023644+00:00",
+ "label": "SIMULATION, LA twin, synthetic 8x peak demand on the real network; METR-LA speeds replayed as caps",
+ "design": "Chan, Kuncheria, Macfarlane, arXiv:2207.12580 (2022): penetration rate of dynamic rerouting swept 0-100 % (design followed; their simulator is Mobiliti, no code copied)",
+ "seed": 201,
+ "profile": "4g",
+ "profile_params": {
+  "latency_ms": 75.0,
+  "jitter_ms": 0.0,
+  "loss": 0.04,
+  "ttl_s": 600.0,
+  "from": "network_model.yaml technologies.cellular_4g (delay_s x hops, delivery_ratio_in_range, lifetime_s)"
+ },
+ "minutes_after_fork": 60,
+ "baseline_vehicle_hours": 3750.8756,
+ "baseline_run_dir": "results/v2x/closed_loop/la_c4_central_wide_prepeak_4g_p100_cfgea08dddedc14_pen1791775641_fork1200_x8_peak_arterial",
+ "rows": [
+  {
+   "share": 0.1,
+   "vehicle_hours": 3738.2031,
+   "vs_baseline": -12.672,
+   "arrived": 9065,
+   "teleports": 103,
+   "connected": 1110,
+   "seen": 11508,
+   "reroutes_applied": 125,
+   "uplink": {
+    "tx": 110691,
+    "rx": 106147,
+    "lost": 4544
+   },
+   "downlink": {
+    "tx": 167,
+    "rx": 158,
+    "lost": 9
+   },
+   "run_dir": "results/v2x/closed_loop/la_c4_central_wide_prepeak_4g_p10_cfgea08dddedc14_pen1791774104_fork1200_x8_peak_arterial",
+   "wall_s": 244.3
+  },
+  {
+   "share": 0.3,
+   "vehicle_hours": 3752.4014,
+   "vs_baseline": 1.526,
+   "arrived": 9065,
+   "teleports": 105,
+   "connected": 3400,
+   "seen": 11505,
+   "reroutes_applied": 307,
+   "uplink": {
+    "tx": 338296,
+    "rx": 324833,
+    "lost": 13463
+   },
+   "downlink": {
+    "tx": 548,
+    "rx": 526,
+    "lost": 22
+   },
+   "run_dir": "results/v2x/closed_loop/la_c4_central_wide_prepeak_4g_p30_cfgea08dddedc14_pen1791774418_fork1200_x8_peak_arterial",
+   "wall_s": 276.8
+  },
+  {
+   "share": 0.5,
+   "vehicle_hours": 3769.4194,
+   "vs_baseline": 18.544,
+   "arrived": 9053,
+   "teleports": 135,
+   "connected": 5700,
+   "seen": 11501,
+   "reroutes_applied": 506,
+   "uplink": {
+    "tx": 569241,
+    "rx": 546558,
+    "lost": 22683
+   },
+   "downlink": {
+    "tx": 991,
+    "rx": 950,
+    "lost": 41
+   },
+   "run_dir": "results/v2x/closed_loop/la_c4_central_wide_prepeak_4g_p50_cfgea08dddedc14_pen1791774764_fork1200_x8_peak_arterial",
+   "wall_s": 338.0
+  },
+  {
+   "share": 0.7,
+   "vehicle_hours": 3751.5575,
+   "vs_baseline": 0.682,
+   "arrived": 8995,
+   "teleports": 95,
+   "connected": 8050,
+   "seen": 11507,
+   "reroutes_applied": 585,
+   "uplink": {
+    "tx": 801774,
+    "rx": 769513,
+    "lost": 32261
+   },
+   "downlink": {
+    "tx": 1328,
+    "rx": 1279,
+    "lost": 49
+   },
+   "run_dir": "results/v2x/closed_loop/la_c4_central_wide_prepeak_4g_p70_cfgea08dddedc14_pen1791775174_fork1200_x8_peak_arterial",
+   "wall_s": 395.5
+  },
+  {
+   "share": 1.0,
+   "vehicle_hours": 3740.3278,
+   "vs_baseline": -10.548,
+   "arrived": 9121,
+   "teleports": 101,
+   "connected": 11506,
+   "seen": 11506,
+   "reroutes_applied": 757,
+   "uplink": {
+    "tx": 1146349,
+    "rx": 1100226,
+    "lost": 46123
+   },
+   "downlink": {
+    "tx": 1730,
+    "rx": 1663,
+    "lost": 67
+   },
+   "run_dir": "results/v2x/closed_loop/la_c4_central_wide_prepeak_4g_p100_cfgea08dddedc14_pen1791775641_fork1200_x8_peak_arterial",
+   "wall_s": 481.9
+  }
+ ]
+}

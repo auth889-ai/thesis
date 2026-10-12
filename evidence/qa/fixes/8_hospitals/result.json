@@ -1,0 +1,58 @@
+{
+ "fix": "8_hospitals",
+ "ranks": "8",
+ "change": "nearest hospitals leave out animal hospitals (OSM healthcare:speciality=veterinary or the name says so; 2 of 477 in Dhaka) and list a hospital entered twice in OpenStreetMap once (same name within 200 m; 10 entries, found in the final matrix where 'General Medical Hospital' filled two of three places). The ambulance reach result is unchanged: it uses only the 37 emergency=yes hospitals, none veterinary or duplicated. The QA check now fails on an animal hospital; in LA it accepts the plain 'no data'",
+ "regression_test": "backend/tests/emergency/test_nearest_people_only.py (4)",
+ "before_pass": "6/8",
+ "after_pass": "8/8",
+ "after_runs": [
+  {
+   "run": "F7-desktop-dhaka-1",
+   "ok": true,
+   "ms": 8397,
+   "reason": null
+  },
+  {
+   "run": "F7-desktop-dhaka-2",
+   "ok": true,
+   "ms": 7878,
+   "reason": null
+  },
+  {
+   "run": "F7-desktop-dhaka-3",
+   "ok": true,
+   "ms": 8381,
+   "reason": null
+  },
+  {
+   "run": "F7-desktop-los_angeles-1",
+   "ok": true,
+   "ms": 6312,
+   "reason": null
+  },
+  {
+   "run": "F7-phone-dhaka-1",
+   "ok": true,
+   "ms": 8427,
+   "reason": null
+  },
+  {
+   "run": "F7-phone-dhaka-2",
+   "ok": true,
+   "ms": 7888,
+   "reason": null
+  },
+  {
+   "run": "F7-phone-dhaka-3",
+   "ok": true,
+   "ms": 8396,
+   "reason": null
+  },
+  {
+   "run": "F7-phone-los_angeles-1",
+   "ok": true,
+   "ms": 6281,
+   "reason": null
+  }
+ ]
+}

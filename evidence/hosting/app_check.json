@@ -1,0 +1,40 @@
+{
+ "item": "Q5 minimal hosting",
+ "date": "2026-10-07",
+ "url": "https://43-205-213-250.sslip.io/",
+ "where": "the running routing instance i-0e8476dac1d2fa7c1 (t3.xlarge, ap-south-1); no new instance; self-terminates about 18:26 +06 on 2026-10-08",
+ "checked": [
+  "fresh browser profile (headless Chrome): no password -> refused (ERR_INVALID_AUTH_CREDENTIALS after the 401 challenge); wrong password -> refused; with the password -> 200",
+  "HTTPS: Let's Encrypt certificate (issuer YE2, valid to 2027-01-05); window.isSecureContext true",
+  "location: permission granted, position read (23.8103, 90.4125); motion: DeviceMotion API present, an event received; the crash detector arms once motion is allowed (and says so when it is not)",
+  "APIs over HTTPS: reach, whole-city route, own tiles (206, PMTiles header); routing rate limit: 30 per minute then 429",
+  "security group: 80 and 443 open to everyone; 8002 and 8003 (Valhalla) only the owner's IP; the app reaches Valhalla on 127.0.0.1",
+  "the password appears in no file except .env (searched the repository)"
+ ],
+ "not_checked": [
+  "a real phone over the public address (location and motion prompts on Android and iOS)",
+  "the ambulance run to its arrival over HTTPS (watched for 81 simulated seconds)"
+ ],
+ "files": [
+  "fresh_browser_check.json",
+  "hosted_home.png",
+  "hosted_sos_armed.png"
+ ],
+ "update_2026_10_07": {
+  "password": "rotated (new one only in .env; Caddy has only its bcrypt hash); old password -> 401, new -> 200",
+  "sumo": "Eclipse SUMO sumo 1.27.1 on the server (pip eclipse-sumo==1.27.1, the laptop's version), recorded in /srv/app/SUMO_VERSION.txt; the app finds /srv/venv/lib/python3.12/site-packages/sumo/bin/sumo",
+  "checked": [
+   "over HTTPS in a fresh browser profile: the 3D City page ran a Dhaka live simulation (3 -> 14 -> 40 vehicles; labelled SYNTHETIC WHAT-IF DEMAND on the REAL OSM ROAD NETWORK)",
+   "a second start while it ran -> refused ('a live simulation is already running'): one simulation for the whole site",
+   "the per-visitor limit refused a 7th start within the hour (429, Retry-After)",
+   "an ambulance run on Dhaka (alert and signals, ITS-G5, 50 % equipped) started from the Emergency page: running at 81 s, 42 vehicles, 1 ambulance driving, 7 alert messages; the 3D City page shows it (hosted_3d_ambulance.png)"
+  ],
+  "limits": "hosted runs: at most 1800 simulated seconds, never continuous, stopped after 600 s of real time; 6 simulation starts per visitor per hour",
+  "note": "the 3D City page starts its own run when none is running, and each start counts toward the visitor's 6 per hour; the counters were reset once (app restart) during this check because the checks themselves had used them up",
+  "files_added": [
+   "hosted_simulation_check.json",
+   "hosted_3d_live.png",
+   "hosted_3d_ambulance.png"
+  ]
+ }
+}

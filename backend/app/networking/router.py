@@ -4,8 +4,8 @@ from __future__ import annotations
 import json
 import re
 from fastapi import HTTPException
-from app.protocols.evidence.vehicle_trace import vehicle_trace
-from app import evidence_paths as config
+from core.simulation.closed_loop.protocols.evidence.vehicle_trace import vehicle_trace
+from core.common import evidence_paths as config
 from fastapi import APIRouter
 
 router = APIRouter()
@@ -18,7 +18,7 @@ def experiment_v2x_closed_loop(run: str | None = None):
     root = config.REPO / "results/v2x/closed_loop"
     dirs = sorted((d for d in root.glob("*/report.json")), key=lambda f: f.stat().st_mtime) if root.exists() else []
     if not dirs:
-        return {"available": False, "command": "python -m app.control.closed_loop --city la_c4_central_wide --seeds 101 --profile ideal"}
+        return {"available": False, "command": "python -m core.simulation.closed_loop.control.closed_loop --city la_c4_central_wide --seeds 101 --profile ideal"}
     def summary(f):
         rep = json.loads(f.read_text()); P = rep["protocol"]
         key = "total_vehicle_hours_incl_never_inserted"
@@ -57,8 +57,8 @@ def experiment_v2x_timeline(run: str, seed: int, arm: str = "predictive_v2x"):
     """The control-room replay of one closed-loop arm: rounds, incidents, every delivered recommendation with
     its old/new route geometry, the incident edge, the corridor backdrop, and the arm comparison — all read
     from the run's own files."""
-    from app.forecasting.operations import road_forecasts as forecast_map
-    from app.protocols.evidence.replay_verification import verify
+    from core.ml.forecasting.operations import road_forecasts as forecast_map
+    from core.simulation.closed_loop.protocols.evidence.replay_verification import verify
     if any(not re.fullmatch(r"[A-Za-z0-9_-][A-Za-z0-9_.-]*", value) for value in (run, arm)):
         raise HTTPException(422, "Run and arm must be identifiers, not paths")
     root = config.REPO / "results/v2x/closed_loop" / run

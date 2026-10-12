@@ -1,0 +1,58 @@
+{
+ "fix": "5_add_city",
+ "ranks": "5",
+ "change": "duckdb installed on the hosted app; the DuckDB connection is created with a home directory and httpfs loaded (the service has no HOME); a failed search shows a plain translated sentence, the exception stays in 'detail'. The QA check now waits as long as the page says (a new name can take about a minute) and reads the result labels. Found in this re-run: a build refused by the daily limit (429) left the page silent; fixed in the next deploy and checked in the final matrix",
+ "regression_test": "backend/tests/test_hosted_package.py: every backend requirement installed; search failure is a code; connects without HOME with httpfs loaded",
+ "before_pass": "0/8",
+ "after_pass": "8/8",
+ "after_runs": [
+  {
+   "run": "F2-desktop-dhaka-1",
+   "ok": true,
+   "ms": 14251,
+   "reason": null
+  },
+  {
+   "run": "F2-desktop-dhaka-2",
+   "ok": true,
+   "ms": 14208,
+   "reason": null
+  },
+  {
+   "run": "F2-desktop-dhaka-3",
+   "ok": true,
+   "ms": 14004,
+   "reason": null
+  },
+  {
+   "run": "F2-desktop-los_angeles-1",
+   "ok": true,
+   "ms": 14375,
+   "reason": null
+  },
+  {
+   "run": "F2-phone-dhaka-1",
+   "ok": true,
+   "ms": 14173,
+   "reason": null
+  },
+  {
+   "run": "F2-phone-dhaka-2",
+   "ok": true,
+   "ms": 14125,
+   "reason": null
+  },
+  {
+   "run": "F2-phone-dhaka-3",
+   "ok": true,
+   "ms": 14441,
+   "reason": null
+  },
+  {
+   "run": "F2-phone-los_angeles-1",
+   "ok": true,
+   "ms": 14051,
+   "reason": null
+  }
+ ]
+}

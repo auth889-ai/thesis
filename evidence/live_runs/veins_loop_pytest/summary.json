@@ -1,0 +1,148 @@
+{
+ "generated_utc": "2026-10-12T15:18:05.554223+00:00",
+ "label": "SIMULATION, Dhaka corridor at the thesis's Dhaka-density level; network: Veins 5.3.1 IEEE 802.11p (packet level: PHY/MAC, building shadowing, interference), 20 mW, 6 Mbit/s",
+ "scale": 0.78,
+ "share": 1.0,
+ "design": "Su et al., EMVLight, AAAI 2022, arXiv:2109.05429 (design idea only: primary = the junction being entered, secondary = the next one)",
+ "horizon_s": 1200,
+ "seeds": [
+  11
+ ],
+ "beacons": false,
+ "rows": [
+  {
+   "seed": 11,
+   "rl_v2i": {
+    "ambulance_s": 274.0,
+    "arrived": true,
+    "others_vehicle_hours": 114.364,
+    "teleports": 49,
+    "messages": {
+     "sent": 272,
+     "delivered": 14438,
+     "lost": 0,
+     "out_of_range": 494
+    },
+    "messages_per_junction": {
+     "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+      "sent": 272,
+      "delivered": 22,
+      "lost": 0,
+      "out_of_range": 250,
+      "preempted": true
+     },
+     "cluster_10139575501_2446124135_2446124154_3501293480": {
+      "sent": 272,
+      "delivered": 28,
+      "lost": 0,
+      "out_of_range": 244,
+      "preempted": true
+     }
+    },
+    "preemption_events": [
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "informed",
+      "t": 977.0
+     },
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "takeover",
+      "t": 977.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "informed",
+      "t": 978.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "takeover",
+      "t": 978.0
+     },
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "released",
+      "t": 980.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "released",
+      "t": 1000.0
+     }
+    ],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 1170,
+     "denm_sent": 272,
+     "car_receptions": 14384,
+     "cars_made_way": 67,
+     "rsu_receptions": 54,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 272,
+       "received": 4,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 268,
+       "flags_written": 8
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 272,
+       "received": 22,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 250,
+       "flags_written": 44
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 272,
+       "received": 28,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 244,
+       "flags_written": 56
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 272.0,
+     "ambulance_modules": 2
+    },
+    "state": "arrived"
+   }
+  }
+ ],
+ "median_ambulance_s": {
+  "rl_v2i": 274.0
+ },
+ "median_others_vehicle_hours": {
+  "rl_v2i": 114.364
+ },
+ "median_saving_s_vs_fixed": {
+  "rl_v2i": null
+ },
+ "channel_model_loop_for_comparison": {
+  "file": "evidence/ambulance_loop/summary.json",
+  "tech": "its_g5",
+  "median_ambulance_s": {
+   "fixed": 292.0,
+   "rl": 196.0,
+   "rl_v2i": 194.0,
+   "fixed_v2i": 345.0
+  },
+  "median_others_vehicle_hours": {
+   "fixed": 670.424,
+   "rl": 866.634,
+   "rl_v2i": 872.639,
+   "fixed_v2i": 694.869
+  }
+ }
+}

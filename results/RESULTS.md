@@ -1,6 +1,6 @@
 # RESULTS — DhakaFlow rebuild
 
-Generated 2026-09-30T03:54 @ `be0b04c7` by `python research/reports/build_results.py`.
+Generated 2026-10-12T21:13 @ `2fcbb862` by `python research/reports/build_results.py`.
 
 Every table below is read from a file written by the pipeline named next to it. Nothing here is typed by hand.
 
@@ -11,7 +11,7 @@ Every table below is read from a file written by the pipeline named next to it. 
 
 # Evidence Audit
 
-Generated UTC: `2026-09-01T23:33:55.944665+00:00`.
+Generated UTC: `2026-10-05T00:19:52.946623+00:00`.
 Overall status: **PASS_WITH_PENDING_ITEMS**.
 
 | area | status | artifact | check | details |
@@ -20,22 +20,12 @@ Overall status: **PASS_WITH_PENDING_ITEMS**.
 | Prediction floors | PASS | `results/forecasting/twin_floors.json` | persistence and historical-average at 4 horizons | models=['historical_average', 'persistence']; horizons_min=[5, 15, 30, 60] |
 | Colab BasicTS benchmark | PASS | `results/forecasting/benchmark.md` | benchmark markdown exists | CSV not present; markdown will be shown in RESULTS |
 | Routing decision guard | PASS | `results/routing/decision_guard.json` | appendix simulation either selects a safe arm or honestly blocks unsafe action | decision=NO_SAFE_ROUTING_ACTION; selected=None; benefit_total_vehicle_hours=None |
-| Live Google reference | PASS | `artifacts/p_live/live_reference_summary.json` | live/reference only, no Google route content persisted | corridors=6; states={'CONGESTED': 2, 'FREE_FLOW': 1, 'SLOW': 3}; route_content_persisted=False |
-| Real route advisor | PENDING | `live/results/route_advice.jsonl` | live advisory metadata exists | run python live/route_advisor.py --live --yes --corridor farmgate_to_shahbagh |
 | Real user pilot | PENDING | `live/results/pilot_metrics.json` | completed trip metrics exist | run live/user_trip_logger.py start/complete for the 3 users |
-| Asset bootstrap manifest | PASS | `docs/ASSET_MANIFEST.json` | manifest has assets and no missing entries | assets=50; missing_when_built=0 |
+| Asset bootstrap manifest | PENDING | `docs/ASSET_MANIFEST.json` | asset manifest exists | run python research/reports/build_asset_manifest.py |
 | V2X networking sweep | PASS | `results/networking/penetration.csv` | non-empty penetration table | rows=15 |
 | NLP incident classifier | PASS | `results/nlp/classifier.json` | classifier metrics JSON exists | metric_keys=['distilbert', 'tfidf_lr', 'tfidf_lr_dhaka_aug'] |
 
-Reality rule: live Google data is used only as runtime/reference evidence, not as cached training data. Dhaka twin sensor data is simulated on the real frozen R1 topology and must not be described as real sensor measurements.
-The `live/` route-advisor and user-pilot path is the no-fixed-seed real-world evidence path.
-
-
-## Real route advisor — live Dhaka advisory without fixed seeds
-
-`python live/route_advisor.py --live --yes --corridor farmgate_to_shahbagh` → `live/results/route_advice.md`
-
-_NOT YET PRODUCED_
+Reality rule: no Google data is used. Every result built on the Google Routes recording was withdrawn on 2026-10-05 (docs/proposals.md). Dhaka twin sensor data is simulated on the real frozen R1 topology and must not be described as real sensor measurements; its demand is a synthetic what-if, uncalibrated.
 
 
 ## Real user pilot — 3-user trip timestamp evidence
@@ -43,31 +33,6 @@ _NOT YET PRODUCED_
 `python live/user_trip_logger.py start ... && python live/user_trip_logger.py complete ...` → `live/results/pilot_metrics.md`
 
 _NOT YET PRODUCED_
-
-
-## Prediction — LIVE Dhaka congestion floors (real Google-derived stream)
-
-`python src/pipeline/forecasting/record_live.py --live --yes  (recorder) && python src/pipeline/forecasting/live_state.py --report` → `results/forecasting/live_floors.md`
-
-# Live Dhaka congestion — arithmetic floors (REAL_LIVE, no model)
-
-1020 captures -> 132 bins x 6 corridors over 11.0 h, coverage 73%; target = derived congestion level 0-3 (FREE_FLOW..SEVERE); chronological 70/30 split; gaps masked, never imputed.
-
-| horizon | persistence MAE | historical-avg MAE | global-mean MAE | n pairs |
-|---|---|---|---|---|
-| 5 min | 0.093 | 0.162 | 0.162 | 216 |
-| 15 min | 0.137 | 0.172 | 0.172 | 204 |
-| 30 min | 0.182 | 0.213 | 0.213 | 192 |
-| 60 min | 0.244 | 0.263 | 0.263 | 156 |
-
-## How to read these numbers
-
-The target is heavily imbalanced: **95 % of the 582 observations are FREE_FLOW** (FREE_FLOW 551, SLOW 22, CONGESTED 8, SEVERE 1). On a series that is mostly one class a constant predictor already scores a small MAE, so the absolute values above are NOT evidence of skill on their own -- the comparison between them is. Persistence beating the historical average at every horizon says short-term congestion is autocorrelated; both being small says Dhaka was mostly free-flowing here.
-
-Only 31 readings (5 %) were SLOW or worse, so a learned model has few congestion events to learn from yet. Recording through more rush hours is what makes this dataset worth training on.
-
-A learned forecaster must beat these on the same masked test region to be worth reporting.
-Regenerate: `python pipeline/forecasting/live_state.py --report`.
 
 
 ## Prediction — twin floors (persistence / historical average)
@@ -96,6 +61,18 @@ target = speed_ms (m/s), test region only, masked
 
 | model | dataset | horizon | MAE | published MAE | diff | RMSE | MAPE % | published MAPE % |
 |---|---|---|---|---|---|---|---|---|
+| D2STGNN | METR-LA | 5 min | 2.084 | – | – | 3.627 | 4.92 | – |
+| D2STGNN | METR-LA | 15 min | 2.563 | 2.56 | +0.1 % | 4.932 | 6.51 | 6.48 |
+| D2STGNN | METR-LA | 30 min | 2.914 | 2.90 | +0.5 % | 5.954 | 7.89 | 7.78 |
+| D2STGNN | METR-LA | 60 min | 3.355 | 3.35 | +0.1 % | 7.074 | 9.60 | 9.40 |
+| DCRNN | METR-LA | 5 min | 2.176 | – | – | 3.773 | 5.18 | – |
+| DCRNN | METR-LA | 15 min | 2.672 | 2.77 | -3.5 % | 5.176 | 6.86 | 7.30 |
+| DCRNN | METR-LA | 30 min | 3.078 | 3.15 | -2.3 % | 6.313 | 8.41 | 8.80 |
+| DCRNN | METR-LA | 60 min | 3.572 | 3.60 | -0.8 % | 7.558 | 10.34 | 10.50 |
+| DCRNN | PEMS-BAY | 5 min | 0.848 | – | – | 1.532 | 1.63 | – |
+| DCRNN | PEMS-BAY | 15 min | 1.310 | 1.38 | -5.1 % | 2.755 | 2.73 | 2.95 |
+| DCRNN | PEMS-BAY | 30 min | 1.655 | 1.74 | -4.9 % | 3.775 | 3.75 | 3.97 |
+| DCRNN | PEMS-BAY | 60 min | 1.972 | 2.07 | -4.7 % | 4.616 | 4.74 | 4.74 |
 | GWNet | METR-LA | 15 min | 2.719 | 2.69 | +1.1 % | 5.183 | 7.02 | 6.90 |
 | GWNet | METR-LA | 30 min | 3.111 | 3.07 | +1.3 % | 6.225 | 8.45 | 8.37 |
 | GWNet | METR-LA | 60 min | 3.595 | 3.53 | +1.8 % | 7.423 | 10.05 | 10.01 |
@@ -103,6 +80,14 @@ target = speed_ms (m/s), test region only, masked
 | GWNet | PEMS-BAY | 15 min | 1.308 | 1.30 | +0.6 % | 2.744 | 2.70 | 2.73 |
 | GWNet | PEMS-BAY | 30 min | 1.638 | 1.63 | +0.5 % | 3.693 | 3.63 | 3.67 |
 | GWNet | PEMS-BAY | 60 min | 1.945 | 1.95 | -0.2 % | 4.460 | 4.55 | 4.63 |
+| MegaCRN | METR-LA | 5 min | 2.141 | – | – | 3.705 | 5.08 | – |
+| MegaCRN | METR-LA | 15 min | 2.631 | 2.52 | +4.4 % | 5.049 | 6.73 | 6.44 |
+| MegaCRN | METR-LA | 30 min | 3.018 | 2.93 | +3.0 % | 6.124 | 8.23 | 7.96 |
+| MegaCRN | METR-LA | 60 min | 3.476 | 3.38 | +2.8 % | 7.298 | 10.04 | 9.72 |
+| STAEformer | METR-LA | 5 min | 2.267 | – | – | 3.970 | 5.51 | – |
+| STAEformer | METR-LA | 15 min | 2.674 | – | – | 5.167 | 6.96 | – |
+| STAEformer | METR-LA | 30 min | 2.985 | – | – | 6.068 | 8.25 | – |
+| STAEformer | METR-LA | 60 min | 3.350 | – | – | 7.063 | 9.82 | – |
 | STID | METR-LA | 15 min | 2.825 | – | – | 5.563 | 7.69 | – |
 | STID | METR-LA | 30 min | 3.214 | – | – | 6.665 | 9.55 | – |
 | STID | METR-LA | 60 min | 3.593 | – | – | 7.646 | 11.31 | – |
@@ -113,7 +98,7 @@ target = speed_ms (m/s), test region only, masked
 
 Compare against `results/forecasting/benchmark_floors.md` (the floors these must beat) and the published numbers cited there.
 
-Regenerate: `python pipeline/forecasting/aws_train.py --launch` then `--collect`.
+Regenerate: `python -m app.forecasting.training.aws_train --launch` then `--collect`.
 
 
 ## Prediction — PHASE 1 verdict: floors vs trained vs published, with gate
@@ -130,7 +115,10 @@ Regenerate: `python pipeline/forecasting/aws_train.py --launch` then `--collect`
 | **historical_average** | floor | 4.189 | 4.189 | 4.189 | 4.189 | – | – |
 | **persistence** | floor | 2.795 | 3.460 | 4.147 | 5.308 | – | – |
 | **seasonal_naive** | floor | 5.329 | 5.329 | 5.329 | 5.329 | – | – |
+| **D2STGNN** | trained | 2.084 | 2.563 | 2.914 | 3.355 | 2.56 | +0.1 % |
+| **DCRNN** | trained | 2.176 | 2.672 | 3.078 | 3.572 | 2.77 | -3.5 % |
 | **GWNet** | trained | – | 2.719 | 3.111 | 3.595 | 2.69 | +1.1 % |
+| **MegaCRN** | trained | 2.141 | 2.631 | 3.018 | 3.476 | 2.52 | +4.4 % |
 | **STAEformer** | trained | 2.267 | 2.674 | 2.985 | 3.350 | – | – |
 | **STID** | trained | – | 2.825 | 3.214 | 3.593 | – | – |
 
@@ -151,7 +139,10 @@ Published 15-min MAE from STAEformer (CIKM 2023) Table 1, which retrained every 
 
 | our model | dataset | our MAE@15 | band | gap to SOTA | published models it beats |
 |---|---|---|---|---|---|
+| **D2STGNN** | METR-LA | 2.563 | state of the art | +-3.3 % | STAEformer (CIKM 2023), DCRNN (ICLR 2018), Graph WaveNet (IJCAI 2019), MTGNN (KDD 2020), STGCN (IJCAI 2018) +7 more |
+| **DCRNN** | METR-LA | 2.672 | respectable published baseline | +0.8 % | Graph WaveNet (IJCAI 2019), MTGNN (KDD 2020), STGCN (IJCAI 2018), GTS (ICLR 2021), GMAN (AAAI 2020) +5 more |
 | **GWNet** | METR-LA | 2.719 | respectable published baseline | +2.6 % | STGCN (IJCAI 2018), GTS (ICLR 2021), GMAN (AAAI 2020), STNorm (KDD 2021), STID (CIKM 2022) +3 more |
+| **MegaCRN** | METR-LA | 2.631 | state of the art | +-0.7 % | STAEformer (CIKM 2023), DCRNN (ICLR 2018), Graph WaveNet (IJCAI 2019), MTGNN (KDD 2020), STGCN (IJCAI 2018) +7 more |
 | **STAEformer** | METR-LA | 2.674 | respectable published baseline | +0.9 % | Graph WaveNet (IJCAI 2019), MTGNN (KDD 2020), STGCN (IJCAI 2018), GTS (ICLR 2021), GMAN (AAAI 2020) +5 more |
 | **STID** | METR-LA | 2.825 | respectable published baseline | +6.6 % | PDFormer (AAAI 2023), AGCRN (NeurIPS 2020), HI (naive) (-) |
 | **GWNet** | PEMS-BAY | 1.308 | state of the art | +0.6 % | STAEformer (CIKM 2023), DCRNN (ICLR 2018), HI (naive) (-) |
@@ -163,12 +154,12 @@ Published 15-min MAE from STAEformer (CIKM 2023) Table 1, which retrained every 
 |---|---|---|
 | G1_both_cities | yes | METR-LA, PEMS-BAY |
 | G2_floors | yes | METR-LA/global_mean, METR-LA/historical_average, METR-LA/persistence, METR-LA/seasonal_naive, PEMS-BAY/global_mean, PEMS-BAY/historical_average, PEMS- |
-| G3_models | yes | METR-LA/GWNet, METR-LA/STAEformer, METR-LA/STID, PEMS-BAY/GWNet, PEMS-BAY/STID |
+| G3_models | yes | METR-LA/D2STGNN, METR-LA/DCRNN, METR-LA/GWNet, METR-LA/MegaCRN, METR-LA/STAEformer, METR-LA/STID, PEMS-BAY/GWNet, PEMS-BAY/STID |
 | G4_models_beat_floors | yes | every trained model beats every floor |
 | G5_gwnet_reproduces_published | yes | METR-LA@15min +1.1 %, METR-LA@30min +1.3 %, METR-LA@60min +1.8 %, PEMS-BAY@15min +0.6 %, PEMS-BAY@30min +0.5 %, PEMS-BAY@60min -0.2 % |
 | G6_checkpoint_inference | yes | STID/PEMS-BAY, GWNet/PEMS-BAY, GWNet/METR-LA, STID/METR-LA |
 
-Regenerate: `python -m app.forecasting.evaluation.comparison_table`. Machine-readable: `phase1_comparison.json` / `.csv`.
+Regenerate: `python -m core.ml.forecasting.evaluation.comparison_table`. Machine-readable: `phase1_comparison.json` / `.csv`.
 
 
 ## Prediction — forecasting floors on real cities + protocol validation vs published
@@ -372,34 +363,6 @@ Upper bounds, not deployable real forecasts:
 | predictive_oracle | 10 | False | 16.4% |
 
 Honesty label: `DHAKA_SIMULATED_SENSOR_GRAPH`.
-
-
-## Live reference — Google Routes derived congestion states
-
-`python src/pipeline/forecasting/run_live_capture.py && python src/pipeline/forecasting/summarize_live_reference.py` → `results/artifacts/p_live/live_reference_summary.md`
-
-# Live Reference Summary
-
-Source: `/Users/jannatulferdouseva/thesis/artifacts/p_live/normalized/google_routes_runtime_reference.jsonl`.
-Generated UTC: `2026-09-01T05:07:26.065250+00:00`.
-Google data mode: `RUNTIME_REFERENCE`.
-
-This summary stores only request metadata and derived congestion states.
-It does not store Google route geometry, route durations, speed intervals, or training data.
-
-Latest captured corridors: **6**.
-Latest congested/severe corridors: **2**.
-
-| corridor | captured UTC | state | latency ms | route content persisted |
-|---|---|---|---:|---|
-| banglamotor_to_karwanbazar | 2026-09-01T05:06:41.390288+00:00 | SLOW | 255.5 | False |
-| farmgate_to_banglamotor | 2026-09-01T05:06:41.876769+00:00 | SLOW | 486.2 | False |
-| farmgate_to_shahbagh | 2026-09-01T05:06:40.579774+00:00 | SLOW | 346.4 | False |
-| karwanbazar_to_banglamotor | 2026-09-01T05:06:41.134441+00:00 | CONGESTED | 280.1 | False |
-| karwanbazar_to_shahbagh | 2026-09-01T05:06:42.158782+00:00 | CONGESTED | 281.6 | False |
-| shahbagh_to_farmgate | 2026-09-01T05:06:40.853874+00:00 | FREE_FLOW | 273.6 | False |
-
-State counts: {"CONGESTED": 2, "FREE_FLOW": 1, "SLOW": 3}
 
 
 ## Routing — demand-scale sensitivity / gridlock check (why scale 0.25 is primary)

@@ -5,8 +5,8 @@ from types import SimpleNamespace
 import numpy as np
 import pytest
 
-from app.forecasting import ForecastService, ModelSpec
-from app.forecasting.operations import road_forecasts, scientific_prediction
+from core.ml.forecasting import ForecastService, ModelSpec
+from core.ml.forecasting.operations import road_forecasts, scientific_prediction
 
 
 @pytest.fixture
@@ -110,8 +110,8 @@ def test_partial_future_is_not_filled_or_indexed_past_end(service, monkeypatch):
 
 def test_prediction_is_recomputed_on_every_request(monkeypatch):
     """No stored answers: two identical requests are two forward passes, each labelled FRESH_INFERENCE."""
-    from app.data import forecast_inputs
-    from app.forecasting.operations import model_registry
+    from core.common.data import forecast_inputs
+    from core.ml.forecasting.operations import model_registry
     monkeypatch.setattr(model_registry, "resolve", lambda *_: {"model": "persistence"})
     calls = []
     def compute(*args):
@@ -127,8 +127,8 @@ def test_prediction_is_recomputed_on_every_request(monkeypatch):
 
 
 def test_prediction_job_uses_canonical_adapter_not_legacy_series(service, tmp_path, monkeypatch):
-    from app.forecasting.operations import prediction_jobs
-    from app.data import provenance
+    from core.ml.forecasting.operations import prediction_jobs
+    from core.common.data import provenance
     instance, calls = service
     monkeypatch.setattr(scientific_prediction, "series", lambda: ({"first_utc": "2012-03-01T00:00:00"}, instance.values))
     monkeypatch.setattr(prediction_jobs, "_series", lambda *_: pytest.fail("legacy path called"))
@@ -143,8 +143,8 @@ def test_prediction_job_uses_canonical_adapter_not_legacy_series(service, tmp_pa
 
 
 def test_cloud_configuration_check_uses_public_credential_loader(monkeypatch):
-    from app import credentials
-    from app.forecasting.operations import prediction_jobs
+    from core.common import credentials
+    from core.ml.forecasting.operations import prediction_jobs
     for name in prediction_jobs.AWS_VARS:
         monkeypatch.delenv(name, raising=False)
     monkeypatch.setattr(credentials, "load", lambda _: "")
@@ -155,8 +155,8 @@ def test_aws_job_script_applies_the_same_python312_fix_as_the_local_path():
     """DCRNN's official config calls random.randint with float bounds; Python >= 3.10 raises. The local
     trainer patches it to integer bounds; the AWS job script must do the same or the cloud run dies at import
     (job dcrnn-metr-la, 2026-10-02, died in six minutes)."""
-    from app.forecasting.training.aws import scripts
-    from app.forecasting.training import basicts_train
+    from core.ml.forecasting.training.aws import scripts
+    from core.ml.forecasting.training import basicts_train
     import inspect
     assert "random.randint(-1000000, 1000000)" in scripts.BENCHMARK_SCRIPT if hasattr(scripts, "BENCHMARK_SCRIPT") else "random.randint(-1000000, 1000000)" in inspect.getsource(scripts)
     assert "random.randint(-1000000, 1000000)" in inspect.getsource(basicts_train)
@@ -166,14 +166,14 @@ def test_protocol_b_scores_the_trained_checkpoints_with_the_official_architectur
     """Protocol B (evaluate_models) must include every trained checkpoint it can find, loaded through the
     pinned harness's config, never a local re-implementation; names must match the leaderboard's."""
     import inspect
-    from app.forecasting.evaluation import checkpoint_stage, evaluate_models
+    from core.ml.forecasting.evaluation import checkpoint_stage, evaluate_models
     assert checkpoint_stage.ARCH == {"GraphWaveNet": "GWNet", "STID": "STID", "STAEformer": "STAEformer", "DCRNN": "DCRNN", "D2STGNN": "D2STGNN", "MegaCRN": "MegaCRN"}
     src = inspect.getsource(checkpoint_stage)
     assert "load_official_cfg" in src and "find_checkpoints" in src
     assert "the harness data file and the evaluation data file disagree" in src   # the timeline check stays
     assert '"checkpoints"' in inspect.getsource(evaluate_models.stage)
     assert "checkpoints_for(dataset)" in inspect.getsource(evaluate_models.evaluate)
-    from app.forecasting.evaluation.protocol_b import baselines, data, records, run, scoring, settings, stages
+    from core.ml.forecasting.evaluation.protocol_b import baselines, data, records, run, scoring, settings, stages
     for mod in (settings, data, baselines, scoring, stages, records, run):
         assert len(inspect.getsource(mod).splitlines()) < 200, mod.__name__       # one responsibility per file
     for ck in checkpoint_stage.checkpoints_for("METR-LA"):
@@ -185,7 +185,7 @@ def test_regime_aware_conformal_restores_coverage_where_a_global_quantile_cannot
     free flow and under-covers congestion; a quantile per prediction-time regime covers both. MAPIE owns
     the quantile; our estimator is the identity on the stored point forecast."""
     import numpy as np
-    from app.forecasting.evaluation import conformal
+    from core.ml.forecasting.evaluation import conformal
     rng = np.random.default_rng(0)
     n = 4000
     cong = rng.random(n) < 0.3
@@ -209,8 +209,8 @@ def test_protocol_b_merge_refuses_a_stage_scored_on_different_windows(tmp_path, 
     """A foundation model's predictions join the persisted block only if they were made on exactly the
     same windows; otherwise the comparison would silently mix test moments."""
     import numpy as np
-    from app.forecasting.evaluation import evaluate_models as em
-    from app.forecasting.evaluation.protocol_b import records
+    from core.ml.forecasting.evaluation import evaluate_models as em
+    from core.ml.forecasting.evaluation.protocol_b import records
     monkeypatch.setattr(records, "OUT", tmp_path)
     monkeypatch.setattr(records, "RECORDS", tmp_path / "model_comparison.json")
     monkeypatch.setattr(records, "load", lambda ds: np.ones((1000, 4), dtype="float32"))
@@ -229,13 +229,13 @@ def test_protocol_b_merge_refuses_a_stage_scored_on_different_windows(tmp_path, 
 def test_finish_runs_the_same_commands_a_reviewer_would(monkeypatch, tmp_path):
     """`--finish` is a sequence of the public commands, in order; no private scoring path."""
     import inspect
-    from app.forecasting.training.aws import benchmark, cli
+    from core.ml.forecasting.training.aws import benchmark, cli
     src = inspect.getsource(benchmark.finish)
-    for must in ("collect(a, job)", "collect_checkpoints(a, job)", '"--stage", "checkpoints"', '"--merge"', "app.forecasting.evaluation.conformal"):
+    for must in ("collect(a, job)", "collect_checkpoints(a, job)", '"--stage", "checkpoints"', '"--merge"', "core.ml.forecasting.evaluation.conformal"):
         assert must in src, must
     assert "--finish" in inspect.getsource(cli.parser)
-    from app.forecasting.training import basicts_train
-    from app.forecasting.operations import model_registry
+    from core.ml.forecasting.training import basicts_train
+    from core.ml.forecasting.operations import model_registry
     for arch in ("D2STGNN", "MegaCRN"):
         assert arch in basicts_train.ARCHS and arch in model_registry.TRAINED
 
@@ -244,7 +244,7 @@ def test_checkpoint_stage_never_hands_a_model_the_future_speed():
     """Models whose official forward takes future covariates (MegaCRN's time of day) get them; the speed
     channel of that tensor is zeroed in the source, so the stage cannot leak the answer."""
     import inspect
-    from app.forecasting.evaluation import checkpoint_stage
+    from core.ml.forecasting.evaluation import checkpoint_stage
     src = inspect.getsource(checkpoint_stage.predict_checkpoints)
     assert "f[..., 0] = 0.0" in src and "future_data=torch.tensor(f)" in src
 
@@ -252,7 +252,7 @@ def test_checkpoint_stage_never_hands_a_model_the_future_speed():
 def test_forecast_map_serves_every_trained_checkpoint_with_fresh_inference(client):
     """Any architecture with a best-validation METR-LA checkpoint is selectable on the forecast map; the
     answer carries a fresh forward pass, the checkpoint's SHA-256 and the loader it came through."""
-    from app.forecasting.operations import served_checkpoints as sc, scientific_prediction as sp
+    from core.ml.forecasting.operations import served_checkpoints as sc, scientific_prediction as sp
     served = sc.available("METR-LA")
     if not served:
         pytest.skip("no trained checkpoints collected on this machine")

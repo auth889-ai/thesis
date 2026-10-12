@@ -1,0 +1,1938 @@
+{
+ "generated_utc": "2026-10-12T14:38:37.905470+00:00",
+ "label": "SIMULATION, LA twin, synthetic peak demand on the real network; METR-LA speeds replayed as caps; network: Veins 5.3.1 IEEE 802.11p (packet level), 20 mW, 6 Mbit/s, no obstacle shadowing on the LA twin",
+ "design": "Santamaria, Fazio, Raimondo, Tropea, De Rango, IEEE TVT 68(5) 2019, doi:10.1109/TVT.2019.2905753 (design: RSUs + 802.11p + predictive rerouting; no code released)",
+ "seed": 201,
+ "minutes_after_warm_up": 15,
+ "warm_up_s": 1200,
+ "demand": {
+  "demand_file": "evidence/veins_forecast_routing/20261012T143208Z/s201/demand_s201.rou.xml",
+  "demand_hash": "50efca1c9ed7",
+  "vehicles": 12480,
+  "demand_scale": 8.0,
+  "demand_profile": "peak",
+  "profile_phases": [
+   [
+    0,
+    600,
+    0.5
+   ],
+   [
+    600,
+    1500,
+    0.8
+   ],
+   [
+    1500,
+    2400,
+    1.0
+   ],
+   [
+    2400,
+    3600,
+    1.0
+   ]
+  ],
+  "od_rule": "arterial",
+  "od_rule_text": "origins and destinations restricted to MAJOR roads (OSM motorway/trunk/primary/secondary incl. links), weight = lanes \u00d7 length, minimum trip distance 2000 m \u2014 demand concentrates on the corridor's arterials instead of the 12k-edge residential grid"
+ },
+ "rsus": [
+  {
+   "node": "cluster_15027596_1719546613",
+   "sumo_xy": [
+    6971.34,
+    4805.87
+   ],
+   "entered": 2824,
+   "veins_xy": [
+    6996.34,
+    6484.64
+   ]
+  },
+  {
+   "node": "9276692666",
+   "sumo_xy": [
+    6528.33,
+    4512.85
+   ],
+   "entered": 2681,
+   "veins_xy": [
+    6553.33,
+    6777.66
+   ]
+  },
+  {
+   "node": "123455061",
+   "sumo_xy": [
+    5828.83,
+    4348.33
+   ],
+   "entered": 2600,
+   "veins_xy": [
+    5853.83,
+    6942.18
+   ]
+  },
+  {
+   "node": "1719559337",
+   "sumo_xy": [
+    5196.12,
+    4216.28
+   ],
+   "entered": 1859,
+   "veins_xy": [
+    5221.12,
+    7074.23
+   ]
+  },
+  {
+   "node": "123495471",
+   "sumo_xy": [
+    4679.49,
+    4109.26
+   ],
+   "entered": 1782,
+   "veins_xy": [
+    4704.49,
+    7181.25
+   ]
+  },
+  {
+   "node": "9786469530",
+   "sumo_xy": [
+    4173.1,
+    4005.54
+   ],
+   "entered": 1633,
+   "veins_xy": [
+    4198.1,
+    7284.97
+   ]
+  },
+  {
+   "node": "21490206",
+   "sumo_xy": [
+    3639.32,
+    3885.9
+   ],
+   "entered": 1522,
+   "veins_xy": [
+    3664.32,
+    7404.61
+   ]
+  },
+  {
+   "node": "20820632",
+   "sumo_xy": [
+    6804.3,
+    6046.02
+   ],
+   "entered": 1509,
+   "veins_xy": [
+    6829.3,
+    5244.49
+   ]
+  },
+  {
+   "node": "863795835-AddedOnRampNode",
+   "sumo_xy": [
+    6479.45,
+    7406.57
+   ],
+   "entered": 1486,
+   "veins_xy": [
+    6504.45,
+    3883.94
+   ]
+  },
+  {
+   "node": "15029454",
+   "sumo_xy": [
+    8150.31,
+    6077.77
+   ],
+   "entered": 1397,
+   "veins_xy": [
+    8175.31,
+    5212.74
+   ]
+  },
+  {
+   "node": "298583385",
+   "sumo_xy": [
+    6371.11,
+    7959.59
+   ],
+   "entered": 1372,
+   "veins_xy": [
+    6396.11,
+    3330.92
+   ]
+  },
+  {
+   "node": "1852134918",
+   "sumo_xy": [
+    7858.1,
+    6647.39
+   ],
+   "entered": 1338,
+   "veins_xy": [
+    7883.1,
+    4643.12
+   ]
+  },
+  {
+   "node": "4073554455",
+   "sumo_xy": [
+    3145.15,
+    3593.01
+   ],
+   "entered": 1288,
+   "veins_xy": [
+    3170.15,
+    7697.5
+   ]
+  },
+  {
+   "node": "1686584226",
+   "sumo_xy": [
+    5626.19,
+    8870.85
+   ],
+   "entered": 1099,
+   "veins_xy": [
+    5651.19,
+    2419.66
+   ]
+  },
+  {
+   "node": "1233732679",
+   "sumo_xy": [
+    4647.57,
+    9155.27
+   ],
+   "entered": 1084,
+   "veins_xy": [
+    4672.57,
+    2135.24
+   ]
+  },
+  {
+   "node": "1956040650",
+   "sumo_xy": [
+    3739.6,
+    9164.73
+   ],
+   "entered": 1048,
+   "veins_xy": [
+    3764.6,
+    2125.78
+   ]
+  },
+  {
+   "node": "1718378908",
+   "sumo_xy": [
+    5718.55,
+    3564.73
+   ],
+   "entered": 979,
+   "veins_xy": [
+    5743.55,
+    7725.78
+   ]
+  },
+  {
+   "node": "403618471",
+   "sumo_xy": [
+    9232.85,
+    4193.52
+   ],
+   "entered": 929,
+   "veins_xy": [
+    9257.85,
+    7096.99
+   ]
+  },
+  {
+   "node": "20189446",
+   "sumo_xy": [
+    8070.93,
+    3912.39
+   ],
+   "entered": 892,
+   "veins_xy": [
+    8095.93,
+    7378.12
+   ]
+  },
+  {
+   "node": "1614923794",
+   "sumo_xy": [
+    8156.82,
+    2044.64
+   ],
+   "entered": 828,
+   "veins_xy": [
+    8181.82,
+    9245.87
+   ]
+  },
+  {
+   "node": "28112699",
+   "sumo_xy": [
+    5542.01,
+    1146.36
+   ],
+   "entered": 827,
+   "veins_xy": [
+    5567.01,
+    10144.15
+   ]
+  },
+  {
+   "node": "364873626",
+   "sumo_xy": [
+    6193.21,
+    8552.14
+   ],
+   "entered": 827,
+   "veins_xy": [
+    6218.21,
+    2738.37
+   ]
+  },
+  {
+   "node": "20954504",
+   "sumo_xy": [
+    7690.03,
+    7653.99
+   ],
+   "entered": 804,
+   "veins_xy": [
+    7715.03,
+    3636.52
+   ]
+  },
+  {
+   "node": "2381944429",
+   "sumo_xy": [
+    7159.21,
+    5426.55
+   ],
+   "entered": 782,
+   "veins_xy": [
+    7184.21,
+    5863.96
+   ]
+  },
+  {
+   "node": "1967796670",
+   "sumo_xy": [
+    7613.5,
+    2038.45
+   ],
+   "entered": 744,
+   "veins_xy": [
+    7638.5,
+    9252.06
+   ]
+  },
+  {
+   "node": "4072114565",
+   "sumo_xy": [
+    8605.7,
+    3831.33
+   ],
+   "entered": 739,
+   "veins_xy": [
+    8630.7,
+    7459.18
+   ]
+  },
+  {
+   "node": "cluster_10057746599_13424054215",
+   "sumo_xy": [
+    8514.01,
+    5595.49
+   ],
+   "entered": 722,
+   "veins_xy": [
+    8539.01,
+    5695.02
+   ]
+  },
+  {
+   "node": "25712278",
+   "sumo_xy": [
+    7635.06,
+    5762.57
+   ],
+   "entered": 711,
+   "veins_xy": [
+    7660.06,
+    5527.94
+   ]
+  },
+  {
+   "node": "382650862",
+   "sumo_xy": [
+    10298.01,
+    4840.09
+   ],
+   "entered": 711,
+   "veins_xy": [
+    10323.01,
+    6450.42
+   ]
+  },
+  {
+   "node": "166999198#1-AddedOffRampNode",
+   "sumo_xy": [
+    10958.36,
+    7022.3
+   ],
+   "entered": 710,
+   "veins_xy": [
+    10983.36,
+    4268.21
+   ]
+  },
+  {
+   "node": "863801551-AddedOnRampNode",
+   "sumo_xy": [
+    9803.76,
+    4559.45
+   ],
+   "entered": 709,
+   "veins_xy": [
+    9828.76,
+    6731.06
+   ]
+  },
+  {
+   "node": "493139643",
+   "sumo_xy": [
+    10958.05,
+    6208.05
+   ],
+   "entered": 708,
+   "veins_xy": [
+    10983.05,
+    5082.46
+   ]
+  },
+  {
+   "node": "3628053838",
+   "sumo_xy": [
+    5110.55,
+    3168.35
+   ],
+   "entered": 707,
+   "veins_xy": [
+    5135.55,
+    8122.16
+   ]
+  },
+  {
+   "node": "863796619-AddedOnRampNode",
+   "sumo_xy": [
+    10714.31,
+    5129.03
+   ],
+   "entered": 690,
+   "veins_xy": [
+    10739.31,
+    6161.48
+   ]
+  },
+  {
+   "node": "6810568403",
+   "sumo_xy": [
+    10949.04,
+    8138.02
+   ],
+   "entered": 685,
+   "veins_xy": [
+    10974.04,
+    3152.49
+   ]
+  },
+  {
+   "node": "21490248",
+   "sumo_xy": [
+    2394.24,
+    3588.51
+   ],
+   "entered": 681,
+   "veins_xy": [
+    2419.24,
+    7702.0
+   ]
+  },
+  {
+   "node": "1839311946",
+   "sumo_xy": [
+    6716.27,
+    890.96
+   ],
+   "entered": 675,
+   "veins_xy": [
+    6741.27,
+    10399.55
+   ]
+  },
+  {
+   "node": "cluster_13424058350_13424058351",
+   "sumo_xy": [
+    8553.19,
+    6645.58
+   ],
+   "entered": 656,
+   "veins_xy": [
+    8578.19,
+    4644.93
+   ]
+  },
+  {
+   "node": "cluster_1830231468_1830231489_9276692628",
+   "sumo_xy": [
+    6998.36,
+    3954.82
+   ],
+   "entered": 651,
+   "veins_xy": [
+    7023.36,
+    7335.69
+   ]
+  },
+  {
+   "node": "122657733",
+   "sumo_xy": [
+    7120.36,
+    1545.48
+   ],
+   "entered": 651,
+   "veins_xy": [
+    7145.36,
+    9745.03
+   ]
+  },
+  {
+   "node": "123065648",
+   "sumo_xy": [
+    6047.55,
+    1102.1
+   ],
+   "entered": 646,
+   "veins_xy": [
+    6072.55,
+    10188.41
+   ]
+  },
+  {
+   "node": "156415224-AddedOffRampNode",
+   "sumo_xy": [
+    2978.74,
+    9055.93
+   ],
+   "entered": 636,
+   "veins_xy": [
+    3003.74,
+    2234.58
+   ]
+  },
+  {
+   "node": "26511795",
+   "sumo_xy": [
+    9096.11,
+    6656.81
+   ],
+   "entered": 625,
+   "veins_xy": [
+    9121.11,
+    4633.7
+   ]
+  },
+  {
+   "node": "26428271",
+   "sumo_xy": [
+    2386.59,
+    9040.51
+   ],
+   "entered": 610,
+   "veins_xy": [
+    2411.59,
+    2250.0
+   ]
+  },
+  {
+   "node": "18199065",
+   "sumo_xy": [
+    9767.92,
+    6662.85
+   ],
+   "entered": 598,
+   "veins_xy": [
+    9792.92,
+    4627.66
+   ]
+  },
+  {
+   "node": "13604342488",
+   "sumo_xy": [
+    4757.64,
+    1154.77
+   ],
+   "entered": 579,
+   "veins_xy": [
+    4782.64,
+    10135.74
+   ]
+  },
+  {
+   "node": "13890125",
+   "sumo_xy": [
+    7442.06,
+    9129.62
+   ],
+   "entered": 567,
+   "veins_xy": [
+    7467.06,
+    2160.89
+   ]
+  },
+  {
+   "node": "291676550",
+   "sumo_xy": [
+    9558.21,
+    2393.94
+   ],
+   "entered": 557,
+   "veins_xy": [
+    9583.21,
+    8896.57
+   ]
+  },
+  {
+   "node": "1783926563",
+   "sumo_xy": [
+    10988.95,
+    5679.85
+   ],
+   "entered": 554,
+   "veins_xy": [
+    11013.95,
+    5610.66
+   ]
+  },
+  {
+   "node": "291676987",
+   "sumo_xy": [
+    9211.22,
+    2846.55
+   ],
+   "entered": 552,
+   "veins_xy": [
+    9236.22,
+    8443.96
+   ]
+  },
+  {
+   "node": "1376737817",
+   "sumo_xy": [
+    8553.77,
+    2433.25
+   ],
+   "entered": 544,
+   "veins_xy": [
+    8578.77,
+    8857.26
+   ]
+  },
+  {
+   "node": "1718672392",
+   "sumo_xy": [
+    2689.05,
+    2785.94
+   ],
+   "entered": 542,
+   "veins_xy": [
+    2714.05,
+    8504.57
+   ]
+  },
+  {
+   "node": "19668613",
+   "sumo_xy": [
+    9982.04,
+    8038.23
+   ],
+   "entered": 542,
+   "veins_xy": [
+    10007.04,
+    3252.28
+   ]
+  },
+  {
+   "node": "4072114572",
+   "sumo_xy": [
+    9249.84,
+    4713.47
+   ],
+   "entered": 521,
+   "veins_xy": [
+    9274.84,
+    6577.04
+   ]
+  },
+  {
+   "node": "1734644776",
+   "sumo_xy": [
+    10131.99,
+    8827.2
+   ],
+   "entered": 521,
+   "veins_xy": [
+    10156.99,
+    2463.31
+   ]
+  },
+  {
+   "node": "1956040672",
+   "sumo_xy": [
+    9297.59,
+    9162.51
+   ],
+   "entered": 521,
+   "veins_xy": [
+    9322.59,
+    2128.0
+   ]
+  },
+  {
+   "node": "1785835452",
+   "sumo_xy": [
+    8884.9,
+    5161.32
+   ],
+   "entered": 515,
+   "veins_xy": [
+    8909.9,
+    6129.19
+   ]
+  },
+  {
+   "node": "383849340",
+   "sumo_xy": [
+    8291.15,
+    9171.43
+   ],
+   "entered": 491,
+   "veins_xy": [
+    8316.15,
+    2119.08
+   ]
+  },
+  {
+   "node": "537019608",
+   "sumo_xy": [
+    7526.99,
+    7049.86
+   ],
+   "entered": 485,
+   "veins_xy": [
+    7551.99,
+    4240.65
+   ]
+  },
+  {
+   "node": "28112694",
+   "sumo_xy": [
+    4174.78,
+    1158.48
+   ],
+   "entered": 480,
+   "veins_xy": [
+    4199.78,
+    10132.03
+   ]
+  }
+ ],
+ "rsu_reach_m": 600.0,
+ "penetration": 0.3,
+ "arms": {
+  "baseline": {
+   "state": "ok",
+   "metrics": {
+    "arrived": 3180,
+    "unfinished_at_horizon": 3324,
+    "unfinished": 3324,
+    "total_vehicle_hours": 1055.5111111111112,
+    "mean_travel_time_all": 584.2312423124231,
+    "mean_travel_time_s": 659.2745283018868,
+    "p95_travel_time_s": 1304.0,
+    "mean_waiting_s": 123.7191823899371,
+    "total_waiting_s": 393427.0,
+    "mean_time_loss_s": 257.9394905660377,
+    "mean_depart_delay_s": 0.6841886792452829,
+    "vehicles_rerouted_at_least_once": 0,
+    "teleports": 5,
+    "loaded": 12480,
+    "inserted": 6504,
+    "running_at_end": 3324,
+    "waiting_to_insert_at_end": 13,
+    "mean_queue_veh": 437.34,
+    "max_queue_veh": 1116.0,
+    "mean_running_veh": 1816.63,
+    "queue_steps": 2110,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "congestion": {
+     "major_edges": 4952,
+     "teleport_reasons": {
+      "total": 5,
+      "jam": 0,
+      "yield": 1,
+      "wrongLane": 4
+     },
+     "busiest_interval_utilisation": {
+      "p50": 0.02,
+      "p90": 0.11,
+      "max": 0.767,
+      "share_ge_0.5": 0.0,
+      "share_ge_0.7": 0.0,
+      "share_ge_0.9": 0.0
+     },
+     "mean_occupancy_pct_major": 1.26,
+     "spillback_major_edges_occ_ge_80": 0,
+     "spillback_share": 0.0,
+     "max_running_vehicles": 3324,
+     "max_halting_vehicles": 1116,
+     "mean_halting_vehicles": 437.3,
+     "mean_speed_mps": 11.55,
+     "min_mean_speed_mps": 0.0,
+     "loaded_mean_speed_mps": 11.2,
+     "loaded_min_speed_mps": 8.95,
+     "loaded_mean_halting_share": 0.23,
+     "loaded_max_halting_share": 0.343,
+     "loaded_steps": 1677
+    },
+    "total_vehicle_hours_incl_never_inserted": 1055.5111,
+    "wall_s": 107.0
+   },
+   "network": {
+    "link": "Veins 5.3.1 IEEE 802.11p (packet level), 20 mW, 6 Mbit/s, no obstacle shadowing on the LA twin",
+    "uplink": {
+     "messages_tx": 0,
+     "messages_rx_at_rsus": 0,
+     "unique_to_server": 0,
+     "duplicates_two_rsus": 0,
+     "delivery_ratio_unique": null
+    },
+    "downlink": {
+     "advice_decided": 0,
+     "still_pending_at_end": 0,
+     "handed_to_rsu": 0,
+     "broadcast_by_rsus": 0,
+     "received_by_car": 0,
+     "applied": 0,
+     "inapplicable": 0,
+     "expired_no_rsu_in_reach": 0,
+     "delivery_ratio": null
+    },
+    "connected_vehicles": 1926,
+    "penetration_configured": 0.3,
+    "rsus": 60,
+    "rsu_reach_m": 600.0,
+    "reroutes_applied": 0,
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 1929,
+     "status_sent": 0,
+     "status_received_at_rsus": 0,
+     "advice_sent_by_rsus": 0,
+     "advice_received": 0,
+     "advice_applied": 0,
+     "advice_inapplicable": 0,
+     "advice_deferred_on_junction": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "per_rsu": [
+      {
+       "rsu": 0,
+       "node": "cluster_15027596_1719546613",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 1,
+       "node": "9276692666",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 2,
+       "node": "123455061",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 3,
+       "node": "1719559337",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 4,
+       "node": "123495471",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 5,
+       "node": "9786469530",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 6,
+       "node": "21490206",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 7,
+       "node": "20820632",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 8,
+       "node": "863795835-AddedOnRampNode",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 9,
+       "node": "15029454",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 10,
+       "node": "298583385",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 11,
+       "node": "1852134918",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 12,
+       "node": "4073554455",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 13,
+       "node": "1686584226",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 14,
+       "node": "1233732679",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 15,
+       "node": "1956040650",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 16,
+       "node": "1718378908",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 17,
+       "node": "403618471",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 18,
+       "node": "20189446",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 19,
+       "node": "1614923794",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 20,
+       "node": "28112699",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 21,
+       "node": "364873626",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 22,
+       "node": "20954504",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 23,
+       "node": "2381944429",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 24,
+       "node": "1967796670",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 25,
+       "node": "4072114565",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 26,
+       "node": "cluster_10057746599_13424054215",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 27,
+       "node": "25712278",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 28,
+       "node": "382650862",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 29,
+       "node": "166999198#1-AddedOffRampNode",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 30,
+       "node": "863801551-AddedOnRampNode",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 31,
+       "node": "493139643",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 32,
+       "node": "3628053838",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 33,
+       "node": "863796619-AddedOnRampNode",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 34,
+       "node": "6810568403",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 35,
+       "node": "21490248",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 36,
+       "node": "1839311946",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 37,
+       "node": "cluster_13424058350_13424058351",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 38,
+       "node": "cluster_1830231468_1830231489_9276692628",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 39,
+       "node": "122657733",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 40,
+       "node": "123065648",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 41,
+       "node": "156415224-AddedOffRampNode",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 42,
+       "node": "26511795",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 43,
+       "node": "26428271",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 44,
+       "node": "18199065",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 45,
+       "node": "13604342488",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 46,
+       "node": "13890125",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 47,
+       "node": "291676550",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 48,
+       "node": "1783926563",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 49,
+       "node": "291676987",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 50,
+       "node": "1376737817",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 51,
+       "node": "1718672392",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 52,
+       "node": "19668613",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 53,
+       "node": "4072114572",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 54,
+       "node": "1734644776",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 55,
+       "node": "1956040672",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 56,
+       "node": "1785835452",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 57,
+       "node": "383849340",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 58,
+       "node": "537019608",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 59,
+       "node": "28112694",
+       "status_received": 0,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      }
+     ]
+    }
+   },
+   "out_dir": "evidence/veins_forecast_routing/20261012T143208Z/s201/baseline"
+  },
+  "predictive_corrected_v2x": {
+   "state": "ok",
+   "metrics": {
+    "arrived": 3162,
+    "unfinished_at_horizon": 3343,
+    "unfinished": 3343,
+    "total_vehicle_hours": 1055.9272222222223,
+    "mean_travel_time_all": 584.371714066103,
+    "mean_travel_time_s": 660.4576217583808,
+    "p95_travel_time_s": 1299.0,
+    "mean_waiting_s": 123.6831119544592,
+    "total_waiting_s": 391086.0,
+    "mean_time_loss_s": 258.69817836812143,
+    "mean_depart_delay_s": 0.6782005060088551,
+    "vehicles_rerouted_at_least_once": 1,
+    "teleports": 6,
+    "loaded": 12480,
+    "inserted": 6505,
+    "running_at_end": 3343,
+    "waiting_to_insert_at_end": 12,
+    "mean_queue_veh": 435.47,
+    "max_queue_veh": 1115.0,
+    "mean_running_veh": 1817.43,
+    "queue_steps": 2110,
+    "never_inserted": 0,
+    "never_inserted_vehicle_hours": 0.0,
+    "congestion": {
+     "major_edges": 4952,
+     "teleport_reasons": {
+      "total": 6,
+      "jam": 0,
+      "yield": 2,
+      "wrongLane": 4
+     },
+     "busiest_interval_utilisation": {
+      "p50": 0.02,
+      "p90": 0.113,
+      "max": 0.78,
+      "share_ge_0.5": 0.0,
+      "share_ge_0.7": 0.0,
+      "share_ge_0.9": 0.0
+     },
+     "mean_occupancy_pct_major": 1.25,
+     "spillback_major_edges_occ_ge_80": 0,
+     "spillback_share": 0.0,
+     "max_running_vehicles": 3343,
+     "max_halting_vehicles": 1115,
+     "mean_halting_vehicles": 435.5,
+     "mean_speed_mps": 11.56,
+     "min_mean_speed_mps": 0.0,
+     "loaded_mean_speed_mps": 11.22,
+     "loaded_min_speed_mps": 9.18,
+     "loaded_mean_halting_share": 0.229,
+     "loaded_max_halting_share": 0.339,
+     "loaded_steps": 1674
+    },
+    "total_vehicle_hours_incl_never_inserted": 1055.9272,
+    "wall_s": 217.9
+   },
+   "network": {
+    "link": "Veins 5.3.1 IEEE 802.11p (packet level), 20 mW, 6 Mbit/s, no obstacle shadowing on the LA twin",
+    "uplink": {
+     "messages_tx": 101385,
+     "messages_rx_at_rsus": 115474,
+     "unique_to_server": 52981,
+     "duplicates_two_rsus": 23851,
+     "delivery_ratio_unique": 0.5226
+    },
+    "downlink": {
+     "advice_decided": 183,
+     "still_pending_at_end": 71,
+     "handed_to_rsu": 23,
+     "broadcast_by_rsus": 22,
+     "received_by_car": 19,
+     "applied": 15,
+     "inapplicable": 4,
+     "expired_no_rsu_in_reach": 89,
+     "delivery_ratio": 0.8261
+    },
+    "connected_vehicles": 1934,
+    "penetration_configured": 0.3,
+    "rsus": 60,
+    "rsu_reach_m": 600.0,
+    "reroutes_applied": 15,
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 1935,
+     "status_sent": 101385,
+     "status_received_at_rsus": 115474,
+     "advice_sent_by_rsus": 22,
+     "advice_received": 19,
+     "advice_applied": 15,
+     "advice_inapplicable": 4,
+     "advice_deferred_on_junction": 2,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "per_rsu": [
+      {
+       "rsu": 0,
+       "node": "cluster_15027596_1719546613",
+       "status_received": 6221,
+       "advice_sent": 2,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 1,
+       "node": "9276692666",
+       "status_received": 5750,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 2,
+       "node": "123455061",
+       "status_received": 3762,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 3,
+       "node": "1719559337",
+       "status_received": 2948,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 4,
+       "node": "123495471",
+       "status_received": 2607,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 5,
+       "node": "9786469530",
+       "status_received": 2529,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 6,
+       "node": "21490206",
+       "status_received": 3826,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 7,
+       "node": "20820632",
+       "status_received": 1962,
+       "advice_sent": 1,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 8,
+       "node": "863795835-AddedOnRampNode",
+       "status_received": 2123,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 9,
+       "node": "15029454",
+       "status_received": 2544,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 10,
+       "node": "298583385",
+       "status_received": 1646,
+       "advice_sent": 1,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 11,
+       "node": "1852134918",
+       "status_received": 2866,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 12,
+       "node": "4073554455",
+       "status_received": 7085,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 13,
+       "node": "1686584226",
+       "status_received": 1721,
+       "advice_sent": 2,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 14,
+       "node": "1233732679",
+       "status_received": 2277,
+       "advice_sent": 1,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 15,
+       "node": "1956040650",
+       "status_received": 1944,
+       "advice_sent": 3,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 16,
+       "node": "1718378908",
+       "status_received": 1822,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 17,
+       "node": "403618471",
+       "status_received": 2169,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 18,
+       "node": "20189446",
+       "status_received": 1874,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 19,
+       "node": "1614923794",
+       "status_received": 2075,
+       "advice_sent": 1,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 20,
+       "node": "28112699",
+       "status_received": 1434,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 21,
+       "node": "364873626",
+       "status_received": 1959,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 22,
+       "node": "20954504",
+       "status_received": 1443,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 23,
+       "node": "2381944429",
+       "status_received": 3124,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 24,
+       "node": "1967796670",
+       "status_received": 1379,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 25,
+       "node": "4072114565",
+       "status_received": 1793,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 26,
+       "node": "cluster_10057746599_13424054215",
+       "status_received": 803,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 27,
+       "node": "25712278",
+       "status_received": 1046,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 28,
+       "node": "382650862",
+       "status_received": 1099,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 29,
+       "node": "166999198#1-AddedOffRampNode",
+       "status_received": 899,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 30,
+       "node": "863801551-AddedOnRampNode",
+       "status_received": 1511,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 31,
+       "node": "493139643",
+       "status_received": 950,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 32,
+       "node": "3628053838",
+       "status_received": 2160,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 33,
+       "node": "863796619-AddedOnRampNode",
+       "status_received": 1179,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 34,
+       "node": "6810568403",
+       "status_received": 1749,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 35,
+       "node": "21490248",
+       "status_received": 5363,
+       "advice_sent": 5,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 36,
+       "node": "1839311946",
+       "status_received": 1423,
+       "advice_sent": 1,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 37,
+       "node": "cluster_13424058350_13424058351",
+       "status_received": 1266,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 38,
+       "node": "cluster_1830231468_1830231489_9276692628",
+       "status_received": 1129,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 39,
+       "node": "122657733",
+       "status_received": 949,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 40,
+       "node": "123065648",
+       "status_received": 1274,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 41,
+       "node": "156415224-AddedOffRampNode",
+       "status_received": 1376,
+       "advice_sent": 1,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 42,
+       "node": "26511795",
+       "status_received": 561,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 43,
+       "node": "26428271",
+       "status_received": 1686,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 44,
+       "node": "18199065",
+       "status_received": 612,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 45,
+       "node": "13604342488",
+       "status_received": 1478,
+       "advice_sent": 1,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 46,
+       "node": "13890125",
+       "status_received": 974,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 47,
+       "node": "291676550",
+       "status_received": 1352,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 48,
+       "node": "1783926563",
+       "status_received": 1040,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 49,
+       "node": "291676987",
+       "status_received": 1527,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 50,
+       "node": "1376737817",
+       "status_received": 1174,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 51,
+       "node": "1718672392",
+       "status_received": 1708,
+       "advice_sent": 2,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 52,
+       "node": "19668613",
+       "status_received": 894,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 53,
+       "node": "4072114572",
+       "status_received": 1711,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 54,
+       "node": "1734644776",
+       "status_received": 1011,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 55,
+       "node": "1956040672",
+       "status_received": 1094,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 56,
+       "node": "1785835452",
+       "status_received": 480,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 57,
+       "node": "383849340",
+       "status_received": 1015,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 58,
+       "node": "537019608",
+       "status_received": 760,
+       "advice_sent": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      },
+      {
+       "rsu": 59,
+       "node": "28112694",
+       "status_received": 1338,
+       "advice_sent": 1,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0
+      }
+     ]
+    }
+   },
+   "out_dir": "evidence/veins_forecast_routing/20261012T143208Z/s201/predictive_corrected_v2x"
+  }
+ },
+ "comparison": {
+  "baseline_vehicle_hours": 1055.5111,
+  "predictive_vehicle_hours": 1055.9272,
+  "difference_vehicle_hours": 0.416
+ }
+}

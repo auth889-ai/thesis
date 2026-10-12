@@ -1,0 +1,28 @@
+{
+  "item": "Final plan item 1: app structure (traffic app first)",
+  "date": "2026-10-06",
+  "plan": "/Users/jannatulferdouseva/.claude/plans/swift-munching-minsky.md (approved 2026-10-06)",
+  "server": "python -m uvicorn app.main:app --app-dir backend --port 8012, started 05:58 +06 with the working tree of that moment; the older copy on 8011 (started 2026-10-05 22:27, old code) answered 500 on /api/operate/cities and was left alone",
+  "browser": "Chrome through the Claude extension, one window, 1447x748, city Dhaka, language Bangla (the city's first language)",
+  "checked": [
+    "menu is Home, 3D City, Add city, Emergency, Offline alerts, Research, Settings; no LIFE OS entry (home_menu_dhaka_bn.jpg)",
+    "/ shows Home only (Today's LIFE OS half is not on it); brand sub-label 'traffic digital twin' in Bangla",
+    "search 'Farm' lists 'Farmgate' (place) and 'Add \"Farm\" as a city'; Enter on Farmgate opens Home with Farmgate as the destination, pin B on the map",
+    "zooming the home map out twice shows 'Zoom in to see 3D buildings' (Bangla) above the map",
+    "/emergency: police, fire, ambulance 999 from config/cities/dhaka.yaml, 'nothing is dialled' line, ambulance results table, link to the 3D panel, SOS 'not built yet' (emergency_dhaka_bn.jpg)",
+    "/offline: 'no offline mesh result for Dhaka yet'",
+    "/settings: city and language selects, Privacy card",
+    "/3d: the twin panel with the ambulance alert panel, started by itself (autostart)",
+    "frontend: 77 tests pass (13 new in src/app, i18n updated), tsc clean; backend/tests/test_structure_migration.py 15 pass with the emergency folder"
+  ],
+  "not_checked": [
+    "the pages in English (the browser stayed in Bangla)",
+    "a city match in the search switching the city (typed text was lost once; covered by src/app/search.test.ts only)",
+    "/add-city opened from the search's 'Add … as a city' row with ?name= (the card's prefill and automatic lookup)",
+    "/today, /you-lifeos and the other LIFE OS addresses in the browser",
+    "keyboard arrows in the search list; Escape",
+    "the zoom note on the 3D City map (seen on the home map only)",
+    "the backend test suite as a whole (speed rules: changed files only during a step)"
+  ],
+  "files": ["home_menu_dhaka_bn.jpg", "emergency_dhaka_bn.jpg"]
+}

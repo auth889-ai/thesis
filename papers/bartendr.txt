@@ -1,0 +1,931 @@
+               Bartendr: A Practical Approach to Energy-aware
+                          Cellular Data Scheduling
+
+                Aaron Schulman?1 , Vishnu Navda† , Ramachandran Ramjee† , Neil Spring? ,
+            Pralhad Deshpande‡1 , Calvin Grunewald? , Kamal Jain , Venkata N. Padmanabhan†
+        ?                                       †                                        ‡                            
+            University of Maryland                  Microsoft Research India                 Stony Brook University       Microsoft Research
+
+
+
+ABSTRACT                                                                             1.        INTRODUCTION
+Cellular radios consume more power and suffer reduced data                              While cellular data networks provide near-ubiquitous cov-
+rate when the signal is weak. According to our measure-                              erage across many urban areas, the quality of coverage is
+ments, the communication energy per bit can be as much as                            far from being uniform. There are areas where the signal is
+6x higher when the signal is weak than when it is strong.                            strong and others where it is weak, and the whole spectrum
+To realize energy savings, applications must preferentially                          in between [18]. The signal strength has a direct impact
+communicate when the signal is strong, either by deferring                           on radio energy consumption, which is a significant compo-
+non-urgent communication or by advancing anticipated com-                            nent of overall energy consumption on mobile devices such as
+munication to coincide with periods of strong signal. Allow-                         smartphones. For instance, our measurements on a Samsung
+ing applications to perform such scheduling requires predict-                        SGH-i780 smartphone show that the radio, when active, con-
+ing signal strength, so that opportunities for energy-efficient                      sumes up to five times the power of the base device.
+communication can be anticipated. Furthermore, such pre-                                The impact of signal strength on cellular radio energy con-
+diction must be performed at little energy cost.                                     sumption arises from two factors. First, the power, i.e., en-
+   In this paper, we make several contributions towards a                            ergy per unit time, drawn by the radio increases when the
+practical system for energy-aware cellular data scheduling                           signal is weak. This is because a weak signal often means
+called Bartendr. First, we establish, via measurements, the                          that the mobile device is near the edge of coverage and hence
+relationship between signal strength and power consump-                              it must amplify the received signal. Also, it must transmit,
+tion. Second, we show that location alone is not sufficient                          both upstream data and acks for downstream data, at a
+to predict signal strength and motivate the use of tracks to                         higher power for power control reasons [4] or simply to have
+enable effective prediction. Finally, we develop energy-aware                        its feedback be heard by the tower. Second, the data rate,
+scheduling algorithms for different workloads—syncing and                            i.e., bits per unit time, decreases when the signal is weak.
+streaming—and evaluate these via simulation driven by traces                         The reason is that the radio typically switches to a lower rate
+obtained during actual drives, demonstrating energy savings                          of modulation to keep the bit error rate low. The net result
+of up to 60%. Our experiments have been performed on four                            is that, according to our measurements, the communication
+cellular networks across two large metropolitan areas, one in                        energy per bit when the signal is weak can be as much as six
+India and the other in the U.S.                                                      times the energy per bit when the signal is strong.
+                                                                                        While WiFi radios also exhibit significant variation in en-
+                                                                                     ergy cost per bit at different locations, this is mainly due to
+Categories and Subject Descriptors                                                   variations in data rate rather than radio power [2, 8]. More-
+C.2.1 [Computer Communications Networks]: Network                                    over, there is little opportunity to exploit these variations
+Architecture and Design—Wireless communication; B.8.0                                for saving energy since WiFi users are typically stationary.
+[Hardware]: Performance and Reliability—General                                      In contrast, we show that a cellular radio experiences sig-
+                                                                                     nificant signal variations, say as the user goes about their
+General Terms                                                                        daily commute, and these signal variations can be exploited
+                                                                                     by preferentially communicating when the signal is strong,
+Design, Experimentation, Measurement, Performance
+                                                                                     thereby saving energy.
+                                                                                        Scheduling communication when the signal is strong may
+Keywords                                                                             not always be feasible (e.g., in the case of real-time commu-
+Bartendr, Cellular, Mobile, Energy, EVDO, HSDPA                                      nication such as VoIP). However, there are significant classes
+                                                                                     of applications where it is. Certain applications such as email
+                                                                                     syncing or photo uploads can defer communication, up to a
+                                                                                     point, without sacrificing service. Other applications such as
+Permission to make digital or hard copies of all or part of this work for            on-demand streaming can prefetch content in anticipation of
+personal or classroom use is granted without fee provided that copies are            future need.
+not made or distributed for profit or commercial advantage and that copies              In this paper we present Bartendr, a practical framework
+bear this notice and the full citation on the first page. To copy otherwise, to      for reducing radio energy cost in the above class of applica-
+republish, to post on servers or to redistribute to lists, requires prior specific
+permission and/or a fee.                                                             1
+MobiCom’10, September 20–24, 2010, Chicago, Illinois, USA.                            Aaron and Pralhad completed part of this work while in-
+Copyright 2010 ACM 978-1-4503-0181-7/10/09 ...$10.00.                                terning at Microsoft Research India.
+tions by being cognizant of the signal strength “bars”. Bar-         provider    country    type        device         precision
+tendr saves energy for these applications by addressing the          Sprint       USA      EVDO          Pre             ∼80
+following two key challenges.                                        Reliance     India    EVDO       EC1260 USB           6
+   First, signal strength must be predicted so that opportu-         Verizon      USA      EVDO         Omnia            ∼80
+nities for energy-efficient communication can be anticipated,        AT&T         USA      HSDPA       SGH-i907          ∼80
+while taking application deadlines into account. Such oppor-
+tunities may arise as the user, who may be driving, moves           Table 1: Sources of measurement data, including
+in and out of areas of good coverage. Moreover, such predic-        different technologies in different countries. “Pre-
+tion must be energy-efficient, i.e., we cannot rely on energy-      cision” represents the number of unique signal
+expensive sensors such as GPS.                                      strength values the device reports.
+   Second, communication scheduling must take into account
+the energy consumption characteristics of both the CPU and
+the cellular radio. For example, waking up the phone to             cellular networks across two large metropolitan areas, Ban-
+schedule can be expensive (e.g., 1 J to awaken and 0.5 J            galore in India and Washington DC in the U.S, and spans
+to suspend on a Samsung Omnia). Further, the cellular               3G networks based on both EVDO and HSDPA. Our evalua-
+radio incurs a “tail energy” cost [3, 19], since the radio          tion demonstrates energy savings of up to 10% for the email
+lingers in a high-energy state even after the end of trans-         sync application, even when the sync operation results in no
+mission or reception. These factors make the problem of             email being downloaded, implying that the energy savings
+performing energy-aware data scheduling, driven by the mo-          in this case results only from the lowering of the radio power
+bile phone, challenging and novel compared to channel-state         when the signal is strong. In contrast, our evaluation shows
+based scheduling algorithms such as Proportional Fair used          energy savings of up to 60% for the streaming application,
+in 3G base stations [11].                                           where energy-aware scheduling helps save energy by both
+   Our work addresses the above challenges and makes the            lowering the radio power used and by cutting the duration
+following contributions:                                            of radio activity owing to the higher throughput enabled by
+   First, we establish the relationship between signal strength     a strong signal.
+and power consumption, on the one hand, and between sig-
+nal strength and data rate, on the other. Together these            2.    MOTIVATION
+yield the impact of cellular signal strength on energy per
+                                                                       In this section, we argue, based on measurements, that
+bit, which to our knowledge has not been characterized em-
+                                                                    exploiting variation in signal strength can yield energy sav-
+pirically in the literature.
+                                                                    ings. Table 1 lists the mobile devices and networks that
+   Second, we show that location alone is not sufficient to
+                                                                    we measured. These devices expose signal strength in one
+predict signal strength because of the hysteresis built into
+                                                                    of two ways: some provide fine-grained, raw received signal
+cellular handoff decisions, which results in stickiness to the
+                                                                    strength indication (RSSI), others provide only six coarse
+current point of attachment [17]. On the other hand, we
+                                                                    signal levels, corresponding to the (0–5) “bars” displayed on
+show that the pattern of variation in signal strength is quite
+                                                                    phones. These reported values lack meaningful units.
+stable when location is coupled with direction of travel. Bar-
+                                                                       Our first step is to show that energy consumed by commu-
+tendr, thus, leverages the notion of a track [1], e.g., the route
+                                                                    nication varies with reported signal strength. Next we show
+from a user’s home to workplace, for its signal prediction.
+                                                                    that signal strength varies in practice, and that this vari-
+However, using GPS on the phone for identifying its position
+                                                                    ation is consistent. Finally, we describe how a few typical
+on a track can be prohibitive in terms of energy cost. Bar-
+                                                                    applications may be sufficiently flexible in scheduling their
+tendr sidesteps this difficulty by representing a track solely
+                                                                    communication to match the periods of good signal strength.
+in terms of the identifies of the base stations encountered,
+                                                                       We focus on saving energy for applications that mostly
+together with the corresponding cellular signal strength val-
+                                                                    download because these are most prevalent on mobile devices
+ues. The device’s current position and future signal values
+                                                                    (e.g., email, news, streaming audio and video). While there
+are identified by matching against the recorded tracks in the
+                                                                    are applications that primarily upload (e.g., photo sharing),
+signal dimension, thereby completely avoiding the need, and
+                                                                    we do not discuss these here or present measurements of the
+hence the energy cost, of determining the device’s physical
+                                                                    upload power consumption on mobile phones.
+location.
+                                                                       Measuring the energy consumption of mobile phones in
+   Third, we develop energy-aware scheduling algorithms for
+                                                                    motion requires a power measurement apparatus that is both
+different application workloads. For a syncing workload,
+                                                                    portable and can be connected between a mobile phone’s
+where little data is transmitted or received, scheduling is
+                                                                    battery and the device. Our setup consists of a USB oscillo-
+based on finding intervals in which the signal strength ex-
+                                                                    scope that measures current by observing the voltage drop
+ceeds a threshold. For a streaming workload, on the other
+                                                                    over a .1 Ω precision shunt resistor. The resistor connects
+hand, we develop a dynamic-programming-based algorithm
+                                                                    the phone’s power lead to its battery.
+to obtain the optimal data download schedule. This al-
+gorithm incorporates the predictions of signal quality, and
+thereby energy per bit, and also the tail energy cost. Note
+                                                                    2.1   Strong signal reduces energy cost
+that in this paper we focus on the common case of data                Communicating when the signal is strong reduces the en-
+download, although we believe energy-aware scheduling is            ergy cost by cutting both the power drawn by the radio and
+equally applicable to the case of data upload.                      the communication time. Communication in strong signal
+   We evaluate Bartendr using extensive simulations based           takes less power, for both transmission and reception, al-
+on signal and throughput measurements obtained during ac-           though our focus here is primarily on the reception power.
+tual drives. Our experiments have been performed on four            A strong signal also makes feasible advanced modulation
+                                                                    schemes that yield higher throughput. Thereby cutting the
+             3500                                                                                                             6
+                                       Pre                       EC1260                                                       5
+                                                                                                                        drives
+             3000                   Omnia                                                                                     4
+                                  SGH-i907                                                                                    3
+                                                                                                                              2
+             2500                                                                                                             1
+
+
+
+power (mW)
+             2000                                                                                                           -50
+
+
+
+
+                                                                                               signal strength (RSSI)
+                                                                                                                            -60  0   20       40       60    80        100        120    140    160
+
+
+
+
+             1500                                                                                                           -70
+             1000                                                                                                           -80
+                                                                                                                            -90
+              500
+                                                                                                                           -100
+                   0                                                                                                       -110
+                   -100 -90 -80 -70 -60 -50 -40 -30        40     60          80       99                                  -120 1         2        3              4          5          6
+                                                                                                                           -130
+                                  signal strength (RSSI)
+                                                                                                                                0    20       40   60       80        100        120    140    160
+
+Figure 1: Power consumed by mobile devices re-                                                                                                         100 meter steps
+port fine- (left) or coarse-grained RSSI (right). The
+                                                                                            Figure 3: Signal varies by location for 6 drives over
+EVDO devices are measured while driving; the i907
+                                                                                            17 km. Colors on top indicate base station id.
+was measured statically at several locations. The
+very high i907 power was observed while communi-
+cating indoors.
+                                                                                            signal strengths. The measurements are 2-second (Reliance)
+                                                                                            and 3-second (Sprint) UDP flood throughput samples.
+                                                                                               For the device on Sprint’s network, RSSI values are rounded
+               1                                  1
+             0.9                                0.9
+                                                                                            “up,” i.e. values between -59 and -50 appear as -50 while the
+             0.8                                0.8                           signal        device on Reliance’s network reported signal values already
+             0.7                                0.7                     -50                 in one of six bins. The median throughput increases dramat-
+                                      signal
+             0.6                                0.6                     -60                 ically with signal strength; there is a factor of four difference
+                                 99                                     -70
+ CDF
+             0.5                                0.5                                         in the median throughput between 60 and 99 RSSI for the
+             0.4                 80             0.4                     -80
+                                 60                                     -90                 Reliance network in India and a similar factor appears be-
+             0.3                                0.3
+             0.2
+                                 40
+                                                0.2
+                                                                       -100                 tween -50 and -110 RSSI for the Sprint network in the U.S.
+                                 20                                    -110                 However, the CDF also shows a wide range of throughputs
+             0.1                                0.1
+                                  0                                    -120
+               0                                  0                                         for each signal quality bin, likely due to variations in sharing
+                   0 0.5 1 1.5 2 2.5 3 3.5            0    0.5    1           1.5      2    of aggregate cell capacity with other users.
+                                      throughput Mbit/s
+                                                                                               In summary, when the signal is weak, not only does data
+                                                                                            transfer take longer to complete, but the radio is also si-
+Figure 2: Signal affects throughput. Throughput                                             multaneously drawing higher power. These two factors are
+over 9 drives on Reliance Telecom’s EVDO network                                            cumulative, so the overall energy required to transfer a fixed
+in Bangalore, India (left) and a 4 hour drive using                                         chunk of data, i.e. energy per bit, can be as much as six
+Sprint’s EVDO network on US interstate 95 (right).                                          times higher (25% throughput and 50% more power) while
+                                                                                            communicating from poor signal locations compared to good
+                                                                                            signal locations.
+
+time needed to complete the communication and potentially                                   2.2                              Signal varies by location
+allowing the device to sleep eagerly. In this section, we ad-                                  Cellular signal strength varies depending on location be-
+dress power and time, in turn.                                                              cause of the physics of wireless signal propagation. Signal
+   The radio draws more current to operate in low signal lo-                                strength degrades sharply with distance from the base sta-
+cations. One reason is that the power amplifier switches to a                               tion and is impeded by obstructions such as trees and build-
+high power mode to counter the drop in signal strength [7].                                 ings. Although the “bars” displayed on phones have made
+This applies not only for transmission, but also for reception                              everyone aware that cellular signal varies across locations,
+since the mobile client continuously reports the received sig-                              this variation needs to be both significant and consistent for
+nal strength to the base station, 800 to 1600 times per second                              signal strength based scheduling to be effective.
+(the base station uses this feedback to choose an appropriate                                  Figure 3 plots the signal strength reported by the Palm
+modulation and data rate). Figure 1 depicts the power con-                                  Pre on each of five drives along a 17 km highway path from
+sumption of different devices while receiving a packet flood,                               Washington, DC to College Park, MD collected on different
+when operating at different signal strengths. Communica-                                    days. The colored bars above the graph represent which base
+tion at a poor signal location can result in a device power                                 station the device is associated with during each track. In
+draw that is 50% higher than at good signal locations. Mod-                                 presenting these repeated drives of approximately the same
+erate signal strength values (-90 to -70 RSSI) are more com-                                path, we take for granted that humans are creatures of habit
+mon than extremes.                                                                          and that their paths are predictable [10]. Figure 3 shows
+   Communication can take less time by exploiting high through-                             graphically that, despite potential changes in handoff behav-
+put available in locations of good signal. Strong signal allows                             ior or environmental effects, recorded traces of signal varia-
+for high rates, and thus short data transfer times. For exam-                               tion may be able to predict future signal variation along the
+ple, EVDO Rev A uses one of 14 rates ranging from 38 Kbps                                   same path. A majority of the signal variation across drives
+to 3.1 Mbps depending on signal strength. Figure 2 depicts                                  are small (< 5 RSSI) while a few variations are significant,
+cumulative distributions of receive throughput for various                                  for example, at the start of drive 5. For this particular drive,
+                               -50                                                                              20
+                               -60
+
+
+
+
+     signal strength (RSSI)
+                               -70                                                                              15
+                               -80
+
+                                                                                                   energy (J)
+                               -90                                                                              10
+                              -100
+                              -110                                                                              5
+                                                                            r=0.747
+                              -120                                          MSE=50.9
+                              -130                                                                              0
+                                 -130   -120   -110    -100    -90    -80      -70   -60   -50                  -105 -100 -95 -90 -85 -80 -75 -70 -65 -60 -55 -50
+                                                      signal strength (RSSI)                                                    signal strength (RSSI)
+
+Figure 4: Signal variations are consistent for 6 drives                                          Figure 5: Average signal and energy for 60 SSL email
+over 17 km. Signal correlation for 25 m steps in                                                 syncs on the Palm Pre. Error bars represent µ and σ
+all drive-pairs. To better illustrate the density of                                             for windows of ±2.5 RSSI. Above -75 RSSI, the sync
+integral signal strength points, we add random noise                                             energy is consistently low. Below this threshold, the
+of -0.5 to 0.5 RSSI to each pair.                                                                sync energy is higher and variable.
+
+
+unlike the others, the Pre does not keep a steady association
+                                                                                                 powered on, meaning that even small savings in energy con-
+to the base station represented by blue. Instead it switches
+                                                                                                 sumption for each background synchronization operation has
+between base stations until close to step 15 when it steadily
+                                                                                                 the potential to yield large cumulative energy savings.
+associates with the violet (dark gray) base station.
+                                                                                                    In order to schedule individual synchronization attempts,
+   For each 25 m step, we present a scatter plot of signal
+                                                                                                 we assume that the synchronization interval is flexible. For
+strength values across all pairs of drives in Figure 4. Perfect
+                                                                                                 example, while the application may be configured to check
+linear correlation is represented by the 45-degree line; one
+                                                                                                 for new mail every five minutes, we allow each individual
+can see that most of the points in the figure are clustered
+                                                                                                 sync to be spaced, say, four or six minutes apart, while en-
+around this line. The overall correlation coefficient is 0.75,
+                                                                                                 suring that the average sync interval remains five minutes.
+which indicates that there is significant linear correlation
+                                                                                                 In our evaluation, we focus on the common case of a sync
+of signal strength values across drives. This validates our
+                                                                                                 operation that does not result in any new data (e.g., email)
+hypothesis that signal variation along a path is consistent
+                                                                                                 being fetched. This represents a lower bound on the poten-
+between drives.
+                                                                                                 tial energy savings. We expect that, by choosing to perform
+   Figure 3 shows that the variation of the signal strength
+                                                                                                 sync more often when the signal is good, actual data com-
+along the drive is also significant. The highest and lowest
+                                                                                                 munication (e.g., downloading of emails and attachments), if
+strength values are -50 and -120 RSSI and there are fre-
+                                                                                                 any, would also likely happen during periods of good signal,
+quent signal strength variations between -90 and -70 RSSI.
+                                                                                                 resulting in additional energy savings.
+The cost of communicating at -90 instead of at -70 RSSI en-
+                                                                                                    Figure 5 shows the energy consumed for 60 syncs while
+tails the use of about 20% additional power (Figure 1) and
+                                                                                                 driving on main roads in two states in the U.S. (20 in Michi-
+a median throughput that is 50% lower (Figure 2). This
+                                                                                                 gan, 40 in Maryland). The signal shown is the average signal
+results in an energy per bit on the Pre that is 2.4 times
+                                                                                                 over the sync. The median sync time is 10 seconds, the max-
+higher at -90 RSSI compared to at -70 RSSI. Thus, if ap-
+                                                                                                 imum is 13.2 s and the minimum is 7.4 s. Although the sig-
+plications were to preferentially communicate at -70 RSSI
+                                                                                                 nal strength during a given sync operation is typically stable
+instead of at -90 RSSI, the potential communication energy
+                        1                                                                        (median variation is 3 RSSI), it can also be highly variable at
+savings are 60% (1 − 2.4  ).
+                                                                                                 times (maximum variation is 22 RSSI). The error bars repre-
+                                                                                                 sent average and standard deviation for ±2.5 RSSI windows.
+3.                            SUITABLE APPLICATIONS                                              Nevertheless, in Figure 5, we can set a threshold of approxi-
+  The approach to saving energy in Bartendr is to defer com-                                     mately -75 RSSI, such that syncs performed when the signal
+munication, where possible, until the device moves into a lo-                                    is above the threshold consistently consume less energy than
+cation with better signal strength, or conversely, to prefetch                                   when below the threshold. The average sync at a location
+information before the signal degrades. However, not all                                         with signal above -75 requires 75.3% of the energy when the
+communication is amenable to adjustments in timing. We                                           signal is below -75. The decrease in average sync energy
+now look at two types of common applications that can make                                       as signal increases matches the power profile of the Pre in
+use of this approach.                                                                            Figure 1.
+                                                                                                    Although the differences in energy cost are significant, de-
+3.1                           Sync                                                               signing a system to realize these savings is challenging. In the
+   The first application class that we consider is background                                    extreme case, when there are no other applications executing
+synchronization, where the device probes a server periodi-                                       on the device, the entire device could be asleep in between
+cally to check for new mail, updated news, or similar pending                                    each sync operation, so the device must predict when to sync
+messages. Within each periodic interval, the syncing opera-                                      before it goes to sleep, and while it sleeps the prediction can
+tion can be scheduled whenever the signal is strong. Many                                        not be updated. A simple syncing schedule that checks pre-
+devices perform this background synchronization whenever                                         cisely every five minutes might miss opportunities to sync in
+          run   power (mW)     time (s)   energy (J)
+                             -93 RSSI                                                     waking       suspending             asleep
+                                                                               1000
+
+
+                                                                  power (mW)
+           1        1969          85         167
+           2        1983          83         164
+           3        1904          82         156                                500
+                             -73 RSSI
+           4        1655          86         142
+           5        1539          68         104                                  0
+           6        1532         187         286                                      0       2    4      6        8     10    12      14
+           7        1309          85         111
+                                                                                                              time (s)
+           8        1400          76         106
+           9        1403          71          99                          Figure 6: Omnia’s wakeup and suspend power.
+
+Table 2: Even while playing a YouTube video on
+the Palm Pre, efficient communication saves signifi-             run 6, energy consumed at -73 RSSI is higher than energy
+cant energy. Energy consumed while playing a one                 consumed at -93 RSSI, because of lower bandwidth at -73
+minute YouTube video in low (-93 RSSI) and high                  RSSI for this experiment (perhaps due to competing users).
+(-73 RSSI) signal.                                               This bandwidth variation can pose a significant challenge in
+                                                                 delivering the full energy savings of scheduling at good signal
+                                                                 locations.
+strong signal locations, but for those five minutes, the de-       Given the above findings, in later experiments where we
+vice uses very little power. Further, any energy expended        evaluate Bartendr, we will ignore the processor and display
+as part of the computation to predict where the good signal      power consumption, and focus our measurement solely on
+strength location five minutes in the future detracts from the   the communication energy. Doing so also helps us avoid
+potential savings, if any.                                       noise due to fluctuations in the energy consumed by the other
+   The alternative of push-based notification is not necessar-   components.
+ily more energy efficient than a pull-based approach. Push         Although our focus is on streaming, with its intermedi-
+notification requires the device to be in a (higher-energy)      ate deadlines for maintaining uninterrupted playback, bulk
+state where it can receive such notifications and also expend    transfers could be equally amenable to scheduling. Consider
+energy to maintain a connection to the server as the de-         the tasks of uploading photographs and downloading pod-
+vice traverses many cells. In contrast, a pull-based approach    casts: although these tasks should be completed within a
+can keep the device in a very low-power suspended state be-      reasonable time, a user might appreciate if the transfers also
+tween each sync. Finally, even in the case of a device that      placed a minimal cost on battery life.
+uses push notifications, Bartendr could be used to decide
+when to schedule the downloading of large messages, the          4.            PHONE ENERGY MODEL
+availability of which is learned through the push notification      Bartendr reduces the energy consumed to communicate by
+mechanism.                                                       taking advantage of variations in power indicated by signal.
+                                                                 However, to save radio energy, it will need to spend energy
+3.2   Streaming                                                  to predict signal strength and schedule communication. One
+   Streaming applications such as Internet radio and YouTube     consequence of this tradeoff is that we must forgo GPS as a
+are another class of applications that permit flexible commu-    means of determining location.
+nication scheduling, so long as application playout deadlines       The goal of this section is to identify the power costs of
+are met. Streaming sites typically transmit pre-generated        various features of the phone that we use to inform the design
+content over HTTP. In addition, some of these sites throttle     of Bartendr. We expect these power features are represen-
+the rate at which the data is streamed to the client, while      tative of the current and future state of phone technology.
+keeping the client-side buffer non-empty to avoid playout dis-   Where possible, we provide power costs measured on the
+ruptions. We can save energy for these applications by mod-      Palm Pre and Samsung Omnia exemplars, and expect their
+ulating the traffic stream to match the radio energy charac-     relative values on other phones will be be qualitatively sim-
+teristics: downloading more data in good signal conditions       ilar. This section comprises two parts: the power of devices
+and avoiding communication at poor signal locations. The         on the phone, and a power model for the radio.
+challenge, however, is to ensure that every packet is deliv-
+ered to the client before its playout deadline, to avoid any     4.1            Processor and device power
+disruption being experienced by the user.                          Processors can sleep in a very low power state. The
+   One might question whether the variation in power due to      Omnia uses power unmeasurably small by our equipment
+signal strength is significant relative to the baseline power    when sleeping, while when awake it requires approximately
+consumed by display and processor during video playback.         144 mW. Sleep precludes any activity until the processor is
+In fact, video playing is an important worst-case example        awakened by an interrupt. The focus of aggressive power
+because it exercises the most energy consuming hardware on       saving is thus to keep the processor in suspended state for
+the device. To address this question, Table 2 presents the       as long as possible.
+total energy cost of downloading and playing a one minute          Unfortunately, the transition between sleep and active states
+YouTube clip on the Pre at two locations with different signal   requires more energy than simply powering the processor.
+strengths. In general, energy consumed at -93 RSSI is about      We show an example transition on the Omnia in Figure 6.
+50% higher than the energy consumed at -73 RSSI. In other        The peaks before and after the awake state represent the
+words, communication energy savings are significant, even        power cost of restoring state and saving state for devices.
+while most of the phone’s hardware is active. However, in        The energy cost of these transitions is approximately 1 joule
+                2500                                               for a preconfigured timeout duration after each communica-
+                                                                   tion episode, consuming what is known as Tail Energy [3, 19]
+                2000
+
+
+   power (mW)
+                                                                   (3 s to 6 s in Figure 7). Cellular network providers typically
+                1500                                               control this timeout value, though some mobile devices use a
+                1000                                               technique called fast dormancy to reduce the duration. The
+                                                                   duration of this timeout, which ranges from a few seconds to
+                 500                                               ten seconds or more, is chosen to balance the cost of signal-
+                   0                                               ing for resource allocation to move a radio into active state
+                       0   2     4              6   8       10     (and the resulting latency and energy costs on the device)
+                                     time (s)                      and the wasted resources due to maintaining a radio unnec-
+                                                                   essarily in active state. Since the tail energy cost is incurred
+Figure 7: The Palm Pre’s tail energy. The Pre initi-               after every communication episode, sporadic communication
+ates an ICMP Ping at 2 s and it completes at 3 s; the              can be a significant energy drain on mobile devices.
+tail continues until 6 s. Following the tail, the base-
+line power of the phone is 400 mW with the display
+dimmed.                                                            5.    BARTENDR ARCHITECTURE
+                                                                      In this section, we introduce Bartendr. Bartendr strives
+                                                                   for energy efficiency by scheduling communication during pe-
+to restore from sleep and 0.5 joules to return to sleep. In        riods of strong signal. To accomplish this, it predicts signal
+short, the processor cannot simply be put to sleep for short       strength minutes into the future. For example, Bartendr can
+intervals to save power.                                           predict efficient times to wake up and sync email, and inter-
+  GPS devices can provide precise position. However, GPS           vals when data should be downloaded. First, we describe
+measurement suffers from high latency to obtain a fix from         how Bartendr uses prior tracks of signal strength to predict
+the satellites, and high energy to interpret their weak signals.   future signal strength. Then, we compare tracks to alternate
+Constandache et al. report 400 mW baseline power for GPS           methods of signal prediction based on location and history.
+on a Nokia N95 [6].                                                Finally, we present algorithms that use the predicted signal
+  Cellular signal strength provides an alternative method          strength to efficiently schedule syncs and streaming media.
+to position the device [12] with much lower power require-
+ments. The radio measures signal strength as part of the           5.1    Predicting signal with signal tracks
+normal operation of the phone, for example, to receive in-            Bartendr predicts signal strength for a phone moving along
+coming phone calls and perform registrations. It performs          a path. As we saw in Figures 3 and 4, signal strength is
+this measurement even while the processor is suspended.            consistent at the granularity of 25 and 100 m steps along
+  Accelerometer measurements are nearly free, but can              a path. This consistency means that Bartendr could, in
+only be used when the processor is powered on. Their mea-          principle, predict signal strength along a path using pre-
+surements could improve mobility prediction. In Section 8.2.       vious signal measurements, captured while traveling along
+we discuss incorporating accelerometer measurements into           the same path. Before discussing the challenges involved
+the signal prediction. Accelerometer measurements have             in accomplishing this, we lay out our assumptions. We as-
+been previously used to position devices [5].                      sume that users will, in general, store several of these sig-
+                                                                   nal tracks on their phone, corresponding to the paths that
+4.2             Radio power states                                 they frequently travel on. We further assume that Bartendr
+   In this subsection, we describe the cellular radio character-   can infer the current track of the mobile phone. This can
+istics that influence power consumption but are independent        be identified with high probability using mobility prediction
+of signal variation.                                               techniques [10].
+   The cellular radio mostly remains in a low power state,            Predicting signal strength on a signal track requires two
+ready to receive incoming phone calls. At an intermediate          steps: finding the current position of the phone on the track,
+power state, the radio is ready to transmit and receive data       and predicting the signal in the future starting from that
+packets. Finally, in the highest power state, the radio is         position. GPS could be used to locate a phone on a track,
+actively transmitting or receiving data. Apart from these          but doing so would drain considerable energy and would de-
+states, when the received signal is very poor, the phone may       tract from the energy savings sought by Bartendr. Instead,
+expend energy continuously searching for a tower with good         Bartendr locates itself on a signal track by finding the mea-
+signal.                                                            surement in the track that is closest to its current signal
+   Figure 7 depicts the power drawn by a Palm Pre device           measurement. Signal measurements come at no extra en-
+over time when a single ICMP Ping message is initiated from        ergy cost because the phone’s cellular protocol needs them
+the device around time 2 s. Prior to 2 s, the radio remains        for handoff [21]. Of course, there may be several points on a
+in a low power state (the phone, dimmed display and radio          signal track with the same signal strength, so signal measure-
+consume less than 400 mW). When the ping is initiated, sig-        ments also include a neighbor list: a list of all the phone’s
+naling messages are exchanged for resource allocation and          neighboring base stations sorted by signal strength. Bar-
+the radio transitions to the high power state (power drawn         tendr’s current position in the track is the one that has the
+goes up to 2000 mW). The ping is sent and a ping response is       most matching neighbors (in order) and the closest signal
+received between 2 and 3 s. The radio then remains in an in-       strength. While this approach of signal tuple-based match-
+termediate power state, ready to transmit and receive further      ing in Bartendr is similar to that used for localization in prior
+packets, until about 6 s (power drawn around 1500 mW). Fi-         work [12], all of the computation in Bartendr is confined to
+nally, the radio transitions back to the low power state.          signal space, without any reference to physical location.
+   The radio remains active in the intermediate power state           We find that the closest match heuristic works well for Bar-
+                               16
+                                        current signal                                                                 from 1
+                                                                                                                       from 2
+
+
+
+
+  mean absolute error (RSSI)
+                               14        signal tracks
+                                                                                                                           to
+                               12
+                                                                                                                              -50
+
+
+
+
+                                                                                                    signal strength (RSSI)
+                               10                                                                                             -60   0     20      40      60            80    100      120     140    160
+
+
+
+
+                                8                                                                                             -70
+                                                                                                                              -80
+                                6                                                                                             -90
+                                4                                                                                            -100
+                                                                                                                             -110
+                                2                                                                                            -120
+                                                                                                                             -130        from 1                from 2                 to
+                                0
+                                    0    100    200      300     400      500   600   700   800                                     0    20       40     60         80       100     120     140     160
+                                                               time (s)                                                                                  100 meter steps
+
+Figure 8: Average prediction error from all 25 m                                                  Figure 9: Tracks from opposite directions may not
+steps in six 17 km tracks. Signal tracks predict sig-                                             align in signal strength. Two “from” tracks com-
+nal strength with lower error than predicting future                                              pared to a representative “to” track from Figure 3.
+signal to be the same as the current signal. Signal
+tracks can also be used for long term predictions.
+                                                                                                                              -50
+                                                                                                                              -60
+
+
+
+
+                                                                                                    signal strength (RSSI)
+tendr’s needs, but errors are possible. The signal strength                                                                   -70
+approaching and leaving a cell may be similar, and the clos-
+                                                                                                                              -80
+est neighbor list might not disambiguate these two positions.
+Further, if the signal is not changing often, perhaps in an en-                                                               -90
+vironment of sparsely populated terrain, the closest match                                                                   -100
+may be ambiguous. We observed very few occurrences of
+                                                                                                                             -110
+such errors in our testing. We discuss other approaches for                                                                                                                         r=0.632
+phone positioning in Section 8.2.                                                                                            -120                                                   MSE=75.6
+   Once Bartendr determines the phone’s location on the                                                                      -130
+track, it predicts signal strength minutes into the future.                                                                     -130    -120   -110     -100       -90       -80     -70     -60     -50
+With signal tracks this means simply looking ahead in time                                                                                             signal strength (RSSI)
+from the current location. Although signal is consistent for
+locations along a path, the time to travel to a location along                                    Figure 10: Signal correlation of 25 m steps in all
+the path is not. For example, if the phone is traveling along                                     pairs of the two “from” tracks with the six “to”
+a road it may travel at different speeds or stop at different                                     tracks. The dashed line represents the ideal cor-
+times. This problem can be mitigated by constantly updat-                                         relation.
+ing the phone’s location on the track (discussed further in
+Section 8.1). For the evaluation of Bartendr in Section 6,
+Bartendr skips over stops in the signal tracks, although this                                     estimates of signal than would be possible with Bartendr’s
+provides minimal benefit.                                                                         signal track predictor. However, our measurements show
+   We now compare Bartendr’s signal track predictor with a                                        that signal strength can be significantly different at a lo-
+simple predictor that only uses the current observed signal                                       cation based on how the device arrived there, for example,
+strength, which is averaged over few seconds, to predict fu-                                      the direction of arrival. Figure 9 depicts the average sig-
+ture signal strength. We choose a position every 25 m on                                          nal strength for each 100 m step of tracks collected while
+each of the six 17 km tracks as the starting position for the                                     traveling in opposite directions (“from” and “to”). Compared
+prediction. Using the two methods, we computed the error                                          to signal strength values over a track when traveling in the
+of signal strength predictions up to 800 s in the future. We                                      same direction (Figure 3), it is clear that there is less cor-
+ran both predictors on all of the starting positions in all six                                   relation when traveling in opposite directions. The lower
+tracks. We also used all six tracks as previous tracks for the                                    correlation values of a signal at a location when traveling
+signal track predictor.                                                                           in opposite directions (Figure 10) compared to traveling in
+   Figure 8 shows the average absolute error (y-axis) of all                                      the same direction (Figure 4) provides further evidence that
+signal predictions 0 s to 800 s in the future (x-axis). Signal                                    location alone is not sufficient for signal strength prediction.
+appears to vary about 6 RSSI over short intervals (< 20 s).                                          The identity of the cellular base station that the phone is
+We find that predicting past 20 s in the future, the signal                                       attached to at a given location (color-coded at the top of the
+track based predictor has lower average error than the cur-                                       graph) does not match at many steps across tracks in oppo-
+rent signal based predictor. Signal tracks can also predict                                       site directions. We believe that the hysteresis in the cellular
+signal strength 800 s in the future without a significant in-                                     handoff process explains this effect. A phone switches from
+crease in error.                                                                                  its current attached base station only when its received signal
+                                                                                                  strength dips below the signal strength from the next base
+5.1.1                               Location alone is not sufficient                              station by more than a threshold [17]. Thus, phones travel-
+ One might expect that the precise location of GPS, if                                            ing in different directions may be attached to different base
+made for “free” in terms of energy cost, would yield better                                       stations at a given location. This observation implies that in-
+corporating direction of travel with location, i.e., a track [1],
+
+                                                                    1"23,4%
+is necessary for accurately predicting signal strength on a
+path.
+
+5.2    Scheduling sync                                                                                          '/##73"8,9/3%53$+26%
+
+
+                                                                    ./0$+%
+   After locating the device on a stored signal track, we must                                                            !,"4%53$+26%
+determine when to schedule the next sync. Recall that for
+sync, our goal is to put the processor to sleep for a calcu-
+lated interval, so that the phone wakes up when it is at a
+
+                                                                    *+,#$-%
+strong signal location. If the prediction is incorrect, perhaps
+because the device traversed a track more quickly or more                     (%                 &%     '% )%
+slowly than expected, the device may sync in a location of
+poor signal or attempt to defer for a few seconds to to catch                  :%;                :%<     :%= :%>
+the good signal if it is soon to come.                                                    !"#$%
+   We propose two threshold-based techniques to find the lo-        Figure 11: A sketch of the signal-based stream
+cation to sync given our current location in the track, first       scheduling algorithm.
+above threshold and widest above threshold. The threshold
+used in both techniques represents significant power savings:
+in Figure 5, reasonable threshold values span -76 to -74 RSSI,      The two functions in this expression map a signal value to the
+from which we picked -75 RSSI. The first approach waits to          corresponding power value and median throughput value.
+sync until the first time -75 RSSI is crossed in the stored         The mapping is done based on empirical measurements as
+track; the widest approach waits (potentially longer) for the       described in Section 2.
+time at which the stored track exceeds -75 RSSI for the                Given N frames and M slots, where N ≤ M , the opti-
+widest interval. First could limit prediction mistakes if it        mal scheduling problem seeks to find an assignment for each
+is easier to predict near-term events; widest could limit pre-      frame to one of the slots, such that the total energy required
+diction mistakes if the wide intervals represent easy targets.      to transmit N frames is the minimum of all possible assign-
+   Once the future time for sync is predicted by one of these       ments. One approach is to greedily schedule the frames in
+techniques, the device is suspended to a very low power state       the best N slots which incur the least energy for commu-
+until the predicted time. If the user on the track travels at a     nication. However, this approach ignores the cost of tail
+speed significantly different from that of the historical tracks,   energy incurred every time there is a communication. When
+the wakeup could occur at a different signal strength value         multiple frames are scheduled in consecutive slots, the entire
+compared to prediction, possibly resulting in diminished en-        batch of frames incur only one tail, as opposed to a tail for
+ergy savings.                                                       each frame if they are spaced out in time. A greedy approach
+                                                                    that ignores the radio tail behavior can be very inefficient.
+5.3    Scheduling streaming                                            Thus, the scheduling algorithm should take into account
+   We next look at scheduling communication for the stream-         both the energy required for communication and the tail
+ing application. When streaming, the device remains pow-            energy incurred for the schedule. Let us look at how to com-
+ered on and continuously determines position, so that unlike        pute the tail energy overhead for a schedule. When there
+syncs, errors due to speed variations can be compensated for        are no frames scheduled for a certain period of time prior
+dynamically.                                                        to the current slot, the radio is in an idle state at the be-
+   We now look at how to efficiently schedule a data stream of      ginning of the slot. If a frame is sent during this slot, the
+size S over certain duration of time T with minimal energy.         radio switches to its active state, and remains in the active
+To make the problem tractable, we divide the input stream           state for the duration of at least one tail period (e.g., Frame
+into fixed size chunks of N frames, and time T is divided into      A in Figure 11). However, if a frame is scheduled in a slot
+slots. A slot is defined as the period of time where a single       when the radio is already in active state due to some trans-
+frame can be transmitted. Since data rates are not fixed,           mission in the prior slots, none or only a fraction of the tail
+each slot can be of variable width depending on the expected        energy needs to be accounted (Frame D). We now describe a
+datarate at that time. The power consumed to transmit a             dynamic programming formulation that computes the min-
+frame in a slot is also variable. We use the predicted signal       imum energy schedule given the energy cost of transmission
+strengths and median observed throughput values for the             in each slot, accounting for these various tail overheads.
+scheduling interval T to estimate the slot widths and average          Let Ek,t be the minimum energy required to transmit k
+power consumption for each slot. This is illustrated in the         frames in t timeslots. Corresponding to this minimum en-
+Figure 11, which depicts signal strength variation over time        ergy schedule, the variable Lastk,t stores the slot number
+and power consumed during transmission of frames A, B, C,           where the kth frame is scheduled. Let ESlot` be the sum of
+and D at times t1 ,t2 , t3 , and t4 . Frame A is scheduled when     the communication energy required to transmit a frame in
+the signal is low, and hence it incurs higher power and longer      slot ` and the incremental tail energy cost, given the trans-
+time to complete compared to all the other frames. Given a          missions that occurred in the previous slots. For example,
+predicted signal` in slot `, we calculate the communication         in Figure 11, frames A, B, and C are all scheduled at times
+energy as follows:                                                  when the radio is idle. As a result, each of them incur the
+                                                                    cost of a full tail. However, frame D is scheduled imme-
+                                            S
+               Signal to P ower(signall ) ∗ N                       diately after frame C, and hence incurs no additional tail
+               Signal to T hroughput(signall )                      energy.
+                                                                                                  optimal         first      widest
+
+                                 1
+
+
+
+
+     fraction of naive energy
+                                0.9
+
+
+                                0.8
+
+
+                                0.7
+                                                0             60   120                      180             240                300
+                                      120 240 360 480 600                forced delay (s)
+                                      prediction window (s)
+
+
+
+Figure 12: Based on the Pre’s radio power profile, predicting signal with previous traces can save energy
+for email syncs. Median energy for 42 pairs of experiment and training traces with a maximum ten minute
+scheduling window. Y-axis starts at our expected best savings.
+
+
+  The dynamic programming algorithm that computes the                          the Palm Pre’s signal strength and throughput. We model
+minimum energy schedule is as follows:                                         the phone’s power with the measurements shown in Figure 1.
+                                                                               The advantage of using a simulator is that we can compare
+     Initialization                                                            the performance of different approaches against each other
+     for t = 1 to M do
+                                                                               as well as compare their performance against an optimal
+       E0,t = 0
+     end for                                                                   algorithm that has full knowledge of future signal.
+
+     Computing optimal schedules
+     for k = 1 to N do                                                         6.1      Syncing
+       for t = k to M do                                                          In this section, we show that the variation of signal is
+          Ek,t = mint−1
+                    `=k−1 ( Ek−1,` + ESlot`+1 )                                amenable to energy savings by an optimal algorithm and
+          Lastk,t = ` value for which the previous quantity was                that the prediction algorithms (first and widest, Section 5.2)
+          minimized
+                                                                               are able to approach that optimal reduction. We run the
+       end for
+     end for                                                                   simulation on all pairs of seven 17 km tracks (training and
+                                                                               experiment). Although likely valuable, we do not yet have a
+The intuition behind the dynamic programming algorithm is                      scheme for combining different tracks to form a refined track
+that the minimum energy to transfer k frames in time t, Ek,t ,                 model.
+is simply the minimum of sum of transferring k − 1 frames in                      At every ten second interval of the experiment track, we
+time (k−1 to t−1) and the cost of transferring the k0 th frame                 execute the prediction given two constraints: the forced de-
+in the time remaining, including incurred tail costs, if any.                  lay represents the minimum time that must be slept before
+Thus, the optimal substructure property holds and the solu-                    performing a sync, while the prediction window represents
+tion to the dynamic program is the same as the optimal solu-                   the interval of time after the forced delay where a sync may
+tion. Additional timing constraints for a frame can be easily                  occur. The decomposition into these two parameters allows
+incorporated in this algorithm by restricting the search for                   us to model various application-level choices about how to
+minimum value within the arrival and deadline slots for the                    constrain the schedule, and provides information about how
+frame as follows:                                                              much latitude is required and whether prediction accuracy
+              Deadline(k)−1
+   Ek,t = min`=Arrival(k)−1 ( Ek−1,` + ESlot`+1 )                              degrades with time.
+The value EN,M is the minimum energy for the predicted                            We assume all syncs take a fixed time of 10 seconds (the
+schedule, which can be computed by tracing backwards from                      median observed in Section 3.1). It is possible that syncs
+LastN,M . The order of the above algorithm is O(M 2 × N ).                     can take more or less time because of latency variations.
+  Finally, the algorithm could suffer from two kinds of er-                       Figure 12 presents the total sync energy for widest, first,
+rors: 1) the speed of the current drive being different from                   and optimal. It shows the sync energy for these techniques
+speed of the previous drive, and 2) the expected through-                      relative the naive approach (always sync immediately after
+put at a slot being different from the median throughput                       the end of the forced delay period, equivalent to a predic-
+in the track. Fortunately, since the device continues to re-                   tion window of zero). Optimal scheduling can provide up
+main powered on for running this application, we can simply                    to 20% sync energy savings, when it is possible to choose
+re-run the dynamic programming algorithm from the point                        over prediction windows longer than six minutes. Optimal
+of discrepancy and recompute the optimal schedule. In our                      uses future knowledge of the current track to make decisions,
+evaluations, this recomputation helped avoid significant de-                   and will always choose a low-energy period if one is available.
+terioration in energy savings on account of the above errors.                  We note from this graph the potential energy savings result-
+                                                                               ing from increased flexibility in scheduling communication
+                                                                               events.
+6.                              SIMULATION-BASED EVALUATION                       The widest scheduling approach generally outperforms first,
+  In this section, we simulate Bartendr with the 17 km tracks                  offering up to 10% reduction in sync energy. We suppose
+shown in Figure 3. While driving these tracks we collected                     that the advantage of widest is due to short-term variations
+in mobility that do not accumulate over long enough inter-                                          1
+vals. That is, the variations may cancel each other out.                                                                                  64 kbit/s
+
+
+
+
+                                                                       fraction of naive energy
+   While these savings are modest, they represent savings for                                      0.8                                   128 kbit/s
+the case where the sync operation does not result in down-
+loading of any content. Thus, the energy savings are only                                          0.6
+due to reduced transmission power from good signal loca-
+tions and does not benefit from better data rates available                                        0.4
+at these locations. When the sync operations result in down-
+loading of updated content, the higher data rates available                                        0.2
+at good signal locations should substantially improve energy
+savings (see next section on scheduling streaming).                                                 0
+                                                                                                         120   240         360            480         600
+   Finally, we expect that the effectiveness of these schedul-
+ing approaches could be improved by better aggregation of                                                            stream length (s)
+training data (omitting track 5 seen in Figure 3 in particular
+alters the results substantially). Further, by explicitly con-   Figure 13: Energy savings with signal-based schedul-
+sidering variations in mobility we would have further poten-     ing for 64 and 128Kbps data streams.
+tial to increase scheduling accuracy. We discuss a particle-
+filter-based approach for doing so in Section 8.2.
+                                                                 schedule computed by the dynamic programming solution.
+6.2   Streaming                                                  We achieved this using a network proxy that starts to down-
+                                                                 load the data from the streaming server as soon as the client
+   We compare the performance of a naive approach to Bar-
+                                                                 initiates a request. The schedule basically consists of start
+tendr’s signal-based scheduling algorithm for the Stream-
+                                                                 and stop times for downloading each frame from the proxy.
+ing application through data driven simulations. Again,
+                                                                    We stagger the start to arbitrary times in the tracks and
+we use the data collected from real driving experiments,
+                                                                 present the average results for over hundred runs. Figure 13
+which consist of signal strength, instantaneous throughput
+                                                                 plots the energy savings of the signal-based scheduling schemes
+and power consumption measurements while receiving TCP
+                                                                 compared to the naive case. As the stream length increases
+streams over several drives, to drive the custom simulator.
+                                                                 from 120 s to 600 s, there are more number of data frames
+We analyze the energy consumed to download streams of
+                                                                 that are farther away from the start of the stream. These
+varying bitrates (corresponding to popular audio/video en-
+                                                                 frames have longer deadlines and provide more opportunities
+coding rates) and varying stream lengths (120 s to 600 s of
+                                                                 to search for energy efficient time slots to download them
+play length). The bitrates play a role in how fast the appli-
+                                                                 within their specified deadlines. We see that energy savings
+cation consumes the downloaded data, and thus impacts the
+                                                                 of up to 60% are achievable by scheduling using the Bartendr
+how long a data frame in the stream can be delayed. The
+                                                                 framework.
+stream length determines the total number of data frames
+in the stream that need to be downloaded.
+   In the naive case, all data frames in the stream are down-    7.                  RELATED WORK
+loaded in one shot from the beginning of the stream until
+completion. In the signal-based scheduling algorithm, we           Several studies have results that are relevant to the Bar-
+plugin the real signal values from the track. We then map        tendr theme, including: mobile prediction of wireless net-
+these signal values to median throughput and power con-          work quality, stability of ubiquitous wireless network quality
+sumption numbers from prior tracks corresponding to the          measurements, scheduling and other approaches for mobile
+same drive, which are used in the computation of ESlot`          energy savings.
+values. For each frame in the input stream, we also com-
+pute the deadline before which it needs to be scheduled for      7.1                              Predicting wireless network quality
+transmission based on the stream bitrate. We illustrate how        The goals of Breadcrumbs [16] closely resemble those of
+the deadlines are calculated through an example. Consider        Bartendr: predict network quality at a physical location,
+a 5 min audio stream encoded at 128 Kbps (total size ≈           and use this knowledge to make applications use the network
+5 MB), and assume the number of data frames N to be 25           more efficiently. However, the two systems differ in many
+(frame size ≈ 200 KB). Since the application consumes data       ways.
+at an average rate of 128 Kbps, at most one data frame is          Bartendr seeks to provide energy savings on ubiquitous
+needed every 12 seconds to ensure that the playout buffer        cellular networks, while Breadcrumbs is tailored to wireless
+doesn’t run out of data. Thus, in this example the dead-         LANs. While Breadcrumbs indexes WiFi bandwidth avail-
+lines for each consecutive frame occurs every 12 s within the    ability by GPS location (similar to the work of [18] where
+5 min window. After computing the deadlines, we then run         location is a key context used in determining whether to scan
+the dynamic programming algorithm to compute the sched-          for WiFi availability), we find that for cellular networks, lo-
+ule for downloading each frame. During the execution of the      cation coupled with direction of arrival is necessary for pre-
+schedule, if we find that there is a deviation in the actual     dicting signal strength, and thus available bandwidth.
+and expected throughput, we rerun the dynamic program-             Furthermore, because of the dynamic nature of wireless
+ming algorithm with an updated number of frames to be            LANs, Breadcrumbs requires an energy consuming measure-
+scheduled in the reminder of the interval along with their       ment framework that periodically scans for WiFi bandwidth
+corresponding deadlines.                                         availability to predict network quality at a location. Bar-
+   To implement the signal-based approach, we need to be         tendr leverages the fact that cellular signal strength infor-
+able to start and stop the stream download based on the          mation can be obtained very inexpensively on the mobile
+(since the cellular radio must remain on to receive phone          be possible if simple programmability were exposed by the
+calls) to schedule communication at appropriate locations.         (always-active) radio firmware; second, what designs might
+                                                                   be reasonable with provider cooperation.
+7.2    Stability of cellular signals                                  Bartendr, for synchronization, attempts to carefully choose
+   Recent studies have quantified the service-level stability      when to awaken the processor and radio to perform commu-
+of ubiquitous wireless networks [14, 20]. They found that          nication when signal is strong. The radio logic on a mo-
+bandwidth changes over time, even though signal strength           bile phone, however, is constantly active and always able
+measurements remain stable. In the earliest study, Tan et al.      to determine signal quality, even when the processor is in-
+discovered that over three weeks, even though signal strength      active. A straightforward approach, then, would be to use
+measurements were stable at a location, network bandwidth          this information to awaken the processor, not just after a
+measurements vary by 54% [20]. Later, Liu et al. [14], using       sleep interval has elapsed or on receiving a phone call, but
+more detailed measurements of an EVDO network, found               also whenever signal quality exceeded some threshold. With
+that signal strength and the downlink data rate used by the        some potentially simple rules, one might be able to perform
+provider were highly correlated over long timescales. How-         communication as soon as signal is good, without a need
+ever, they also noticed that over about a months time, the         to predict variation. Such a threshold-based approach does
+rates fluctuate between 500Kbps and 3Mbps at a given lo-           little for planning in the context of streaming applications,
+cation.                                                            but could augment the gain in very low power operation.
+   Given this information, can an approach like Bartendr still     One might imagine that an accelerometer could provide ad-
+be effective? First, since we find that energy efficiency is de-   ditional information about mobility, or that the history of
+pendent on signal strength, relative signal strength stability     signal measurements could be recorded without processor
+and high long term correlation with data rates is certainly        involvement to generate training data. These operations,
+helpful. Second, while some bandwidth availability variation       of course, would require slightly more work, but would be
+is to be expected on a commercial network with competing           valuable in improving predictions made on the device.
+users, applications like email or RSS feeds that we expect to         A second approach to positioning and prediction may sim-
+benefit from Bartendr do not require the maximum through-          ply be to place the prediction logic at the provider. Providers
+put of the link.                                                   are reasonably aware of the paths taken by clients and can
+                                                                   observe per-client signal strength variation. Such observa-
+7.3    Energy-efficient cellular data scheduling                   tions have led to research in better selection of handoff lo-
+   The proportional fair scheduler [11] used in 3G networks        cations [13], and other provisioning scenarios. It could be
+today already uses signal conditions at the mobile nodes           reasonable to migrate the logic of signal strength variation
+to preferentially schedule nodes with higher signal strength.      prediction to the well-provisioned side of the wireless link.
+Bartendr uses the same principle of channel state-based schedul-   To place this logic at the provider might also enable ex-
+ing but differs from the proportional fair scheduler in two        ploitation of information from diverse users who follow sim-
+ways. First, while proportional fair schedules traffic at a        ilar paths. Cellular data providers have a direct interest in
+fine granularity of milliseconds, Bartendr schedules traffic       providing such a service since Bartendr helps conserve spec-
+over time intervals of tens of seconds to several minutes or       trum: using faster communication with hosts that are near a
+more. Thus, while proportional fair is reactive, relying on        base station avoids using slower modulations and data rates
+continuous feedback of channel state from the mobile nodes,        for the same effective service, permitting service to more
+Bartendr must predict future channel state in order to sched-      subscribers. At the same time, extending battery life for
+ule effectively. Second, proportional fair is used today only      subscribers may aid to the service they provide.
+to schedule traffic on the downlink while Bartendr schedules
+both uplink and downlink traffic, leveraging a network-based       8.2    Particle filters
+proxy for buffering downlink traffic.
+   Another aspect unique to cellular radios is the tail energy        The challenge in predicting signal variation comprises two
+overhead, i.e., the lingering of cellular radio in a high power    interrelated problems: determining current location along a
+state for a few seconds after each communication episode.          trace and predicting future locations. Inspired by research
+Approaches like TailEnder [3] and Cool-Tether [19] create en-      literature [9, 15], we applied a particle-filter-based approach
+ergy savings by reducing the cellular tail overhead; TailEnder     to both problems, intending to explicitly capture the un-
+performs batching and prefetching for email and web search         certainty in measurement and prediction. Inferring position
+applications, respectively, while Cool-Tether performs aggre-      based on cell signal information alone, while avoiding power-
+gation for web browsing. In contrast to these approaches,          hungry GPS, had the potential to yield many candidate lo-
+Bartendr takes into account both the tail overhead and sig-        cations of comparable likelihood. If so, particle filters would
+nal strength information for saving energy.                        help to predict signal based on all possible current locations,
+                                                                   which would yield a better estimate of sleep time. Similarly,
+                                                                   predicting movement along a track despite uncertain speed
+8.    DISCUSSION                                                   and stop durations would be facilitated by particle filters,
+  We now discuss a few potential enhancements to Bartendr.         since different probabilities can be assigned for faster and
+                                                                   slower movements than the baseline training data.
+8.1    Alternate models of energy conservation                        In our experience, somewhat surprisingly, particle filter
+  Based on the energy conservation potential presented in          approaches did not yield better outcomes. For the problem
+this paper, it is worth considering whether the phone-based        of determining current location, the closest match by sig-
+logic we use to demonstrate feasibility is in fact the cor-        nal already provided us a reasonably accurate estimate of
+rect architecture for taking advantage of signal variation.        location; the uncertainty captured by particle filters did not
+Here, we discuss two alternate models: first, what could           turn out to be useful beyond this. For the problem of pre-
+dicting future locations, it turned out that mobility along         [4] M. Chiang, P. Hande, T. Lan, and C. W. Tan. Power
+our automobile-based commute paths was not determinis-                  control in wireless cellular networks. Foundations and
+tic enough—speeds and stop durations varied—to make any                 Trends in Networking, 2008.
+algorithm significantly better at prediction than any other.        [5] I. Constandache, R. R. Choudhury, and I. Rhee.
+Completely deterministic progress would mean that a simple              Towards mobile phone localization without
+model of matching progress through the training data will               war-driving. In IEEE INFOCOM, 2010.
+work well. Somewhat deterministic progress would enable             [6] I. Constandache, S. Gaonkar, M. Sayler, R. R.
+particle filters to outperform. The wide variation in progress          Choudhury, and L. C. (Duke). EnLoc: Energy-efficient
+through the training data that we observed did not permit               localization for mobile phones. In IEEE INFOCOM
+particle filters to yield significantly better selection of good        Mini-conference, 2009.
+signal periods. Thus, the added computation cost was also           [7] S. C. Cripps. RF Power Amplifiers for Wireless
+not compensated. Despite this negative result, we believe               Communications. Artech House, 2006.
+that particle filters can be useful in other scenarios. For ex-     [8] L. M. Feeney and M. Nilsson. Investigating the energy
+ample, in order to resolve conflicting position information or          consumption of a wireless network interface in an ad
+to help incorporate low energy accelerometer data into the              hoc networking environment. In IEEE INFOCOM,
+scheduling algorithms.                                                  2001.
+                                                                    [9] F. Gustafsson, F. Gunnarsson, N. Bergman,
+9.    CONCLUSION                                                        U. Forssell, J. Jansson, R. Karlsson, and P.-J.
+   Signal strength has a direct impact on cellular radio energy         Nordlund. Particle filters for positioning, navigation
+consumption, which by far dominates the base energy con-                and tracking. T-SP, Feb 2002.
+sumption of mobile devices such as smartphones. The varia-         [10] J. Krumm and E. Horvitz. Predestination: Where do
+tions in cellular signal strength as a user drives around cou-          you want to go today? IEEE Computer Magazine, Apr
+pled with the presence of flexible applications, such as email          2007.
+syncing, photo sharing, and on-demand streaming, presents          [11] H. Kushner and P. Whiting. Convergence of
+a significant opportunity to save energy. We have presented             proportional-fair sharing algorithms under general
+Bartendr, a practical framework for scheduling application              conditions. IEEE Transactions on Wireless
+communication to be aligned with periods of good signal.                Communications, July 2004.
+Bartendr addresses a number of challenges and makes novel          [12] A. LaMarca et al. Place Lab: Device positioning using
+contributions, including track-based, energy-efficient predic-          radio beacons in the wild. In IEEE Pervasive
+tion of signal strength and a dynamic programming-based                 Computing, May 2005.
+procedure for computing the optimal communication sched-           [13] T. Liu, P. Bahl, and I. Chlamtac. Mobility modeling,
+ule. Our simulations demonstrate significant energy savings             location tracking, and trajectory prediction in wireless
+of up to 10% for email sync and up to 60% for on-demand                 atm networks. IEEE JSAC, Aug 1998.
+streaming.                                                         [14] X. Liu, A. Sridharan, S. Machiraju, M. Seshadri, and
+   In future work, we plan to investigate more sophisticated            H. Zang. Experiences in a 3G network: interplay
+approaches to signal strength prediction and, separately, the           between the wireless channel and applications. In
+design of appropriate APIs for exposing radio energy cost to            ACM MobiCom, 2008.
+applications that wish to make an intelligent choice.              [15] L. Mihaylova, D. Angelova, S. Honary, D. R. Bull,
+                                                                        C. Canagarajah, and B. Ristic. Mobility tracking in
+10.    ACKNOWLEDGMENTS                                                  cellular networks using particle filtering. IEEE
+                                                                        Transactions on Mobile Computing, Oct 2007.
+  We thank our shepherd Prasun Sinha and the anonymous
+reviewers for their insightful comments and discussion. Ad-        [16] A. J. Nicholson and B. D. Noble. Breadcrumbs:
+ditionally, we thank the summer 2009 interns of Microsoft               Forecasting mobile connectivity. In ACM MobiCom,
+Research India for many beneficial discussions. We extend               2008.
+our gratitude to the cab drivers at Microsoft Research In-         [17] G. P. Pollini. Trends in handover design. IEEE
+dia for their assistance with the data collection. This work            Communications Magazine, Mar 1996.
+was supported in part by NSF Awards CNS-0643443 and                [18] A. Rahmati and L. Zhong. Context-for-wireless:
+CNS-0626629.                                                            Context-sensitive energy-efficient wireless data
+                                                                        transfer. In ACM MobiSys, 2007.
+                                                                   [19] A. Sharma, V. Navda, R. Ramjee, V. Padmanabhan,
+11.    REFERENCES                                                       and E. Belding. Cool-Tether: Energy efficient
+ [1] G. Ananthanarayanan, M. Haridasan, I. Mohomed,                     on-the-fly WiFi hot-spots using mobile phones. In
+     D. Terry, and C. A. Thekkath. StarTrack: A                         ACM CoNext, 2009.
+     framework for enabling track-based applications. In           [20] W. L. Tan, F. Lam, and W. C. Lau. An empirical
+     ACM MobiSys, 2009.                                                 study on 3G network capacity and performance. In
+ [2] Power consumption and energy efficiency comparisons                IEEE INFOCOM, May 2007.
+     of WLAN products. White paper, Atheros                        [21] N. D. Tripathi, J. H. Reed, and H. F.
+     Communications, Inc., 2003.                                        VanLandingham. Handoff in cellular systems. IEEE
+ [3] N. Balasubramanian, A. Balasubramanian, and                        Personal Communications, Dec 1998.
+     A. Venkataramani. Energy consumption in mobile
+     smartphones: A measurement study and implications
+     for network applications. In ACM IMC, 2009.
+

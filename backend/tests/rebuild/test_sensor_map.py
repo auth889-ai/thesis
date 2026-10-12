@@ -9,7 +9,7 @@ import pytest
 REPO = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(REPO))
 
-from app.twin import sensor_map as sm  # noqa: E402
+from core.simulation.twin import sensor_map as sm  # noqa: E402
 
 MAPPING = REPO / "data/cities/los_angeles_metr/sumo/sensor_to_edge.json"
 needs_la = pytest.mark.skipif(not (MAPPING.exists() and sm.LOCATIONS.exists()), reason="LA scenario or pinned DCRNN metadata not present here")
@@ -52,7 +52,7 @@ def test_mapping_becomes_the_optimizer_corridor_map():
 
 
 def test_speed_units_reach_the_cost_builder_in_metres_per_second():
-    from app.routing import analysis_routing as route_opt
+    from core.simulation.routing import analysis_routing as route_opt
     v, u = route_opt.to_mps({"a": 72.0, "b": None}, "speed km/h")
     assert u == "speed_mps" and v["a"] == pytest.approx(20.0) and v["b"] is None
     v, u = route_opt.to_mps({"a": 2.5}, "congestion_level_0_3")
@@ -62,6 +62,6 @@ def test_speed_units_reach_the_cost_builder_in_metres_per_second():
 
 
 def test_dataset_run_without_mapping_is_refused_not_guessed():
-    from app.routing import analysis_routing as route_opt
+    from core.simulation.routing import analysis_routing as route_opt
     with pytest.raises(route_opt.NoStoredForecast, match="NO_SENSOR_MAPPING"):
         route_opt.corridor_map_for({"run_id": "an_x", "city": "user:no_such_dataset"})

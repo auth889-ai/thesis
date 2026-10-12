@@ -1,0 +1,100 @@
+{
+ "city_id": "dhaka",
+ "demand_id": "dhaka_density",
+ "arm": "rl_v2i",
+ "signals": "sumo-rl Q-learning (frozen)",
+ "signals_controlled": [
+  "6904866115",
+  "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+  "cluster_10139575501_2446124135_2446124154_3501293480"
+ ],
+ "v2i": true,
+ "technology": "its_g5",
+ "equipped_share": 1.0,
+ "seed": 21,
+ "scale": 0.78,
+ "design": "Su et al., EMVLight, AAAI 2022, arXiv:2109.05429 (design idea only: primary = the junction being entered, secondary = the next one)",
+ "wall_s": 48.4,
+ "run_utc": "2026-10-11T22:43:15.080209+00:00",
+ "makeway": {
+  "version": 2,
+  "distance_m": 100,
+  "keep_strategic": true
+ },
+ "state": "arrived",
+ "departed_s": 901.0,
+ "arrived_s": 1304.0,
+ "messages": {
+  "sent": 633,
+  "delivered": 280,
+  "lost": 50,
+  "out_of_range": 303
+ },
+ "vehicles_alerted": 85,
+ "junctions_preempted": [
+  "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+  "cluster_10139575501_2446124135_2446124154_3501293480"
+ ],
+ "messages_per_junction": {
+  "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+   "sent": 153,
+   "delivered": 1,
+   "lost": 0,
+   "out_of_range": 152
+  },
+  "cluster_10139575501_2446124135_2446124154_3501293480": {
+   "sent": 152,
+   "delivered": 1,
+   "lost": 0,
+   "out_of_range": 151
+  }
+ },
+ "preemption_events": [
+  {
+   "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+   "what": "informed",
+   "t": 1067.0
+  },
+  {
+   "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+   "what": "takeover",
+   "t": 1067.0
+  },
+  {
+   "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+   "what": "released",
+   "t": 1084.0
+  },
+  {
+   "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+   "what": "informed",
+   "t": 1086.0
+  },
+  {
+   "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+   "what": "takeover",
+   "t": 1086.0
+  },
+  {
+   "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+   "what": "released",
+   "t": 1104.0
+  }
+ ],
+ "ambulance": {
+  "arrived": true,
+  "travel_time_s": 403.0,
+  "time_loss_s": 261.35,
+  "waiting_s": 105.0,
+  "depart_s": 900.0
+ },
+ "others": {
+  "vehicles": 3248,
+  "arrived": 1587,
+  "unfinished_at_horizon": 1661,
+  "total_vehicle_hours": 872.639,
+  "mean_time_loss_s": 535.57,
+  "mean_waiting_s": 329.1
+ },
+ "teleports": 507
+}

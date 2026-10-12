@@ -12,7 +12,7 @@ def db(tmp_path, monkeypatch):
     url = f"sqlite:///{tmp_path}/probes.sqlite"
     monkeypatch.setenv("LIFEOS_DATABASE_URL", url)
     from app.lifeos import db as core
-    assert core.init(url) == "0003_road_watches"
+    assert core.init(url) == "0004_probe_signal"
     return url
 
 
@@ -74,19 +74,20 @@ def test_raw_fixes_are_purged_after_retention_and_cells_remain(db):
     assert st["points_retained"] == 6 and st["cells"] >= 2
 
 
-def test_without_aws_the_status_says_unsnapped(db, monkeypatch):
+def test_without_aws_or_a_city_server_the_status_says_unsnapped(db, monkeypatch):
     from app.probes import service, snap
     monkeypatch.setattr(snap.AmazonSnap, "configured", property(lambda self: False))
+    monkeypatch.setattr(snap.ValhallaSnap, "configured", property(lambda self: False))
     st = service.status("dhaka", db_url=db)
     assert st["snapper"] == "none" and "not configured" in st["snapping"]
 
 
 def test_http_round_trip(db, client):
-    body = {"device_id": "browser-xyz", "city": "dhaka", "points": _trace(speed=36.0)}
+    body = {"device_id": "browser-xyz", "city": "dhaka", "points": _trace(speed=36.0, start=datetime.now(timezone.utc))}   # the cells window is 24 h: a fixed date goes stale
     from app.probes import service, snap
     import app.probes.service as svc
     orig = svc.default
-    svc.default = lambda: FakeSnap()
+    svc.default = lambda city=None: FakeSnap()
     try:
         r = client.post("/api/probes", json=body)
         assert r.status_code == 200 and r.json()["accepted"] == 6
@@ -95,3 +96,14 @@ def test_http_round_trip(db, client):
         assert client.post("/api/probes", json={**body, "points": []}).status_code == 422
     finally:
         svc.default = orig
+
+
+def test_signal_readings_are_kept_per_cell_and_a_weak_rule_is_stated(db):
+    from app.probes import service
+    pts = _trace(speed=30.0, start=datetime.now(timezone.utc))
+    for i, p in enumerate(pts):
+        p.update({"net_type": "2g" if i < 2 else "4g", "downlink_mbps": 0.2 if i < 2 else 8.0, "rtt_ms": 900 if i < 2 else 50})
+    service.ingest("sig-dev", "dhaka", pts, snapper=FakeSnap(), db_url=db)
+    cells = service.cells("dhaka", minutes=10, db_url=db)["cells"]
+    assert sum(c["n_signal"] for c in cells) == 6 and sum(c["weak_signal"] for c in cells) == 2
+    assert service.is_weak("2g", None) and service.is_weak(None, 0.3) and not service.is_weak("4g", 8.0) and not service.is_weak(None, None)

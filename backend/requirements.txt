@@ -9,3 +9,6 @@ alembic>=1.13
 sqlalchemy>=2.0
 mapie==1.5.0
 h3==4.5.0
+duckdb==1.5.5
+boto3==1.43.57              # own map tiles from the routing bucket (app.platform.tiles); also Amazon Location when configured
+botocore[crt]==1.43.57      # lets boto3 use an `aws login` session

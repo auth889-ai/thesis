@@ -28,7 +28,7 @@ class Bedrock:
         """Keys come from the process environment or the server's .env (never from the client); a
         missing key is reported as such, not as a missing model."""
         import boto3
-        from app import credentials
+        from core.common import credentials
         key, secret = credentials.load("AWS_ACCESS_KEY_ID"), credentials.load("AWS_SECRET_ACCESS_KEY")
         if not key or not secret:
             raise RuntimeError("no AWS credentials on the server: set AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY in .env")

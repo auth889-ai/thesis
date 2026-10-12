@@ -1,0 +1,291 @@
+{
+ "available": true,
+ "label": "SIMULATED",
+ "built_utc": "2026-10-06T22:59:32.363237+00:00",
+ "network": "emulated in headless Chromium (CDP); presets fast 4G 4/3 Mbit/s 20 ms, slow 3G 400/400 kbit/s 400 ms, 2G-like 50/20 kbit/s 1000 ms, offline 10 s after the route",
+ "runs_total": 24,
+ "rows": [
+  {
+   "condition": "2g_like",
+   "arm": "without_prefetch",
+   "runs": 3,
+   "failed": 0,
+   "route_shown": "3 of 3",
+   "median_time_to_route_s": 7.4,
+   "time_range_s": [
+    6.8,
+    7.4
+   ],
+   "median_mb": 0.031,
+   "median_map_view_mb": 0.0,
+   "service_worker_throttled": true,
+   "continues_offline": null
+  },
+  {
+   "condition": "2g_like",
+   "arm": "with_prefetch",
+   "runs": 3,
+   "failed": 0,
+   "route_shown": "3 of 3",
+   "median_time_to_route_s": 0.8,
+   "time_range_s": [
+    0.8,
+    0.8
+   ],
+   "median_mb": 0.0,
+   "median_map_view_mb": 1.21,
+   "service_worker_throttled": true,
+   "continues_offline": null
+  },
+  {
+   "condition": "fast_4g",
+   "arm": "without_prefetch",
+   "runs": 3,
+   "failed": 0,
+   "route_shown": "3 of 3",
+   "median_time_to_route_s": 0.8,
+   "time_range_s": [
+    0.8,
+    0.8
+   ],
+   "median_mb": 0.031,
+   "median_map_view_mb": 0.0,
+   "service_worker_throttled": true,
+   "continues_offline": null
+  },
+  {
+   "condition": "fast_4g",
+   "arm": "with_prefetch",
+   "runs": 3,
+   "failed": 0,
+   "route_shown": "3 of 3",
+   "median_time_to_route_s": 0.8,
+   "time_range_s": [
+    0.8,
+    0.8
+   ],
+   "median_mb": 0.001,
+   "median_map_view_mb": 0.28,
+   "service_worker_throttled": true,
+   "continues_offline": null
+  },
+  {
+   "condition": "offline_mid_route",
+   "arm": "without_prefetch",
+   "runs": 3,
+   "failed": 0,
+   "route_shown": "3 of 3",
+   "median_time_to_route_s": 0.8,
+   "time_range_s": [
+    0.8,
+    0.8
+   ],
+   "median_mb": 0.056,
+   "median_map_view_mb": 0.05,
+   "service_worker_throttled": true,
+   "continues_offline": "3 of 3"
+  },
+  {
+   "condition": "offline_mid_route",
+   "arm": "with_prefetch",
+   "runs": 3,
+   "failed": 0,
+   "route_shown": "3 of 3",
+   "median_time_to_route_s": 0.8,
+   "time_range_s": [
+    0.8,
+    0.8
+   ],
+   "median_mb": 0.001,
+   "median_map_view_mb": 0.93,
+   "service_worker_throttled": true,
+   "continues_offline": "3 of 3"
+  },
+  {
+   "condition": "slow_3g",
+   "arm": "without_prefetch",
+   "runs": 3,
+   "failed": 0,
+   "route_shown": "3 of 3",
+   "median_time_to_route_s": 1.8,
+   "time_range_s": [
+    1.8,
+    1.8
+   ],
+   "median_mb": 0.03,
+   "median_map_view_mb": 0.0,
+   "service_worker_throttled": true,
+   "continues_offline": null
+  },
+  {
+   "condition": "slow_3g",
+   "arm": "with_prefetch",
+   "runs": 3,
+   "failed": 0,
+   "route_shown": "3 of 3",
+   "median_time_to_route_s": 0.8,
+   "time_range_s": [
+    0.8,
+    0.8
+   ],
+   "median_mb": 0.0,
+   "median_map_view_mb": 0.28,
+   "service_worker_throttled": true,
+   "continues_offline": null
+  }
+ ],
+ "pack_bytes_median": 10201674,
+ "energy": {
+  "label": "estimated from Bartendr's Palm Pre measurements (ACM MobiCom 2010), not measured on our phones",
+  "profiles": "SYNTHETIC: weak stretches over 10, 30 and 50 % of the real Dhaka route, 3 seeds each, one 200 m tunnel",
+  "throughput_bytes_per_s": {
+   "strong": 500000,
+   "medium": 250000,
+   "weak": 125000,
+   "none": 0,
+   "unknown": 250000
+  },
+  "power_w": {
+   "strong": 1.5,
+   "medium": 1.7999999999999998,
+   "weak": 2.25,
+   "none": 0.0,
+   "unknown": 1.7999999999999998
+  },
+  "tail_j": 4.5,
+  "rows": [
+   {
+    "weak_share": 0.1,
+    "seed": 1,
+    "steps": 85,
+    "pack_bytes": 10201674,
+    "chunks": 156,
+    "now_j": 35.1,
+    "as_needed_j": 62.0,
+    "bartendr_j": 35.1,
+    "bartendr_bursts": 1,
+    "saving_vs_as_needed_pct": 43.4,
+    "now_vs_as_needed_pct": 43.4
+   },
+   {
+    "weak_share": 0.1,
+    "seed": 2,
+    "steps": 85,
+    "pack_bytes": 10201674,
+    "chunks": 156,
+    "now_j": 35.1,
+    "as_needed_j": 62.6,
+    "bartendr_j": 35.1,
+    "bartendr_bursts": 1,
+    "saving_vs_as_needed_pct": 43.9,
+    "now_vs_as_needed_pct": 43.9
+   },
+   {
+    "weak_share": 0.1,
+    "seed": 3,
+    "steps": 85,
+    "pack_bytes": 10201674,
+    "chunks": 156,
+    "now_j": 35.1,
+    "as_needed_j": 72.1,
+    "bartendr_j": 35.1,
+    "bartendr_bursts": 1,
+    "saving_vs_as_needed_pct": 51.3,
+    "now_vs_as_needed_pct": 51.3
+   },
+   {
+    "weak_share": 0.3,
+    "seed": 1,
+    "steps": 85,
+    "pack_bytes": 10201674,
+    "chunks": 156,
+    "now_j": 35.1,
+    "as_needed_j": 97.6,
+    "bartendr_j": 35.1,
+    "bartendr_bursts": 1,
+    "saving_vs_as_needed_pct": 64.0,
+    "now_vs_as_needed_pct": 64.0
+   },
+   {
+    "weak_share": 0.3,
+    "seed": 2,
+    "steps": 85,
+    "pack_bytes": 10201674,
+    "chunks": 156,
+    "now_j": 35.1,
+    "as_needed_j": 104.9,
+    "bartendr_j": 35.1,
+    "bartendr_bursts": 1,
+    "saving_vs_as_needed_pct": 66.5,
+    "now_vs_as_needed_pct": 66.5
+   },
+   {
+    "weak_share": 0.3,
+    "seed": 3,
+    "steps": 85,
+    "pack_bytes": 10201674,
+    "chunks": 156,
+    "now_j": 35.1,
+    "as_needed_j": 106.9,
+    "bartendr_j": 35.1,
+    "bartendr_bursts": 1,
+    "saving_vs_as_needed_pct": 67.2,
+    "now_vs_as_needed_pct": 67.2
+   },
+   {
+    "weak_share": 0.5,
+    "seed": 1,
+    "steps": 85,
+    "pack_bytes": 10201674,
+    "chunks": 156,
+    "now_j": 35.1,
+    "as_needed_j": 124.8,
+    "bartendr_j": 35.1,
+    "bartendr_bursts": 1,
+    "saving_vs_as_needed_pct": 71.9,
+    "now_vs_as_needed_pct": 71.9
+   },
+   {
+    "weak_share": 0.5,
+    "seed": 2,
+    "steps": 85,
+    "pack_bytes": 10201674,
+    "chunks": 156,
+    "now_j": 35.1,
+    "as_needed_j": 131.6,
+    "bartendr_j": 35.1,
+    "bartendr_bursts": 1,
+    "saving_vs_as_needed_pct": 73.3,
+    "now_vs_as_needed_pct": 73.3
+   },
+   {
+    "weak_share": 0.5,
+    "seed": 3,
+    "steps": 85,
+    "pack_bytes": 10201674,
+    "chunks": 156,
+    "now_j": 35.1,
+    "as_needed_j": 122.1,
+    "bartendr_j": 35.1,
+    "bartendr_bursts": 1,
+    "saving_vs_as_needed_pct": 71.3,
+    "now_vs_as_needed_pct": 71.3
+   }
+  ],
+  "note": null,
+  "throughput_rule": "strong = the fast-4G preset (4 Mbit/s); medium and weak at Bartendr's measured throughput ratios (1/2 and 1/4), not the slower emulated presets, so the estimate stays within what the paper measured"
+ },
+ "not_measured": "offline, the map: whether our own tiles were drawn after the network was cut (the route answers stayed on screen in both arms because the app shell keeps its last answers)",
+ "references": [
+  "Bartendr: Schulman, Navda, Ramjee, Spring, ACM MobiCom 2010",
+  "BreadCrumbs: Nicholson, Noble, ACM MobiCom 2008",
+  "Borkowski, Skarlat, Schulte, Dustdar, IEEE MS 2016 (secondary)"
+ ],
+ "plain": {
+  "slow_without_s": 7.4,
+  "slow_with_s": 0.8,
+  "offline_with": "3 of 3",
+  "offline_without": "3 of 3"
+ },
+ "sha256": "001a05cea353d51ba6d9dd899c73eec4e9057defc560338fe0ae51f5fa824732"
+}
