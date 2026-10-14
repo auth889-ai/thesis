@@ -18,7 +18,8 @@ network SharedSumoScenario
         double playgroundSizeY @unit(m);
         double playgroundSizeZ @unit(m);
         int numRsu = default(0);
-        @display("bgb=dropUnit($playgroundSizeX),dropUnit($playgroundSizeY)");
+        double canvasScale = default(1);   // Qtenv pixels per metre: 0.07 shows an 11 km playground in one window
+        @display("bgb=dropUnit($playgroundSizeX),dropUnit($playgroundSizeY);bgs=$canvasScale,m");
     submodules:
         obstacles: ObstacleControl { @display("p=240,50"); }
         annotations: AnnotationManager { @display("p=260,50"); }

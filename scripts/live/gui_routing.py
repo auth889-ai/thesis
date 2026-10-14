@@ -166,11 +166,17 @@ def main(argv: list[str] | None = None) -> int:
     temp: dict[str, float] = {}                                # short-lived shapes -> remove at
     plot = {"fig": None}
 
+    present = {"t": -1.0, "ids": set()}                         # vehicles on the road this step: a colour for a car that just left would make sumo-gui print an error line
+
     def colour(vid, c):
         if not gui:
             return
         try:
-            traci.vehicle.setColor(vid, c)
+            now = traci.simulation.getTime()
+            if now != present["t"]:
+                present["t"], present["ids"] = now, set(traci.vehicle.getIDList())
+            if vid in present["ids"]:
+                traci.vehicle.setColor(vid, c)
         except traci.TraCIException:
             pass
 

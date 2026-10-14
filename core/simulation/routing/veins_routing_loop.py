@@ -116,7 +116,7 @@ def write_veins(out: Path, cfgf: Path, P: dict, rsus: list[dict], seed: int, arm
     d = out / "veins"; d.mkdir(parents=True, exist_ok=True)
     sumo_bin = vl.SUMO121 / "bin" / ("sumo-gui" if gui else "sumo")
     extra = " --start --quit-on-end --window-size 1000,800 --window-pos 0,420" if gui else ""
-    rsu_lines = "\n".join(f'*.rsu[{i}].mobility.x = {r["veins_xy"][0]}\n*.rsu[{i}].mobility.y = {r["veins_xy"][1]}\n*.rsu[{i}].mobility.z = 3\n*.rsu[{i}].appl.poiId = "rsu{i}"' for i, r in enumerate(rsus))
+    rsu_lines = "\n".join(f'*.rsu[{i}].mobility.x = {r["veins_xy"][0]}\n*.rsu[{i}].mobility.y = {r["veins_xy"][1]}\n*.rsu[{i}].mobility.z = 3\n*.rsu[{i}].appl.poiId = "RSU {i}"' for i, r in enumerate(rsus))
     ini = f"""[General]
 cmdenv-express-mode = true
 cmdenv-autoflush = true
@@ -134,6 +134,7 @@ result-dir = results
 *.playgroundSizeY = {y1 - y0 + 200:.0f}m
 *.playgroundSizeZ = 50m
 *.numRsu = {len(rsus)}
+*.canvasScale = {min(0.5, 800.0 / max(x1 - x0 + 200, 1)):.4f}
 *.annotations.draw = {'true' if gui else 'false'}
 *.manager.updateInterval = 1s
 *.manager.host = "localhost"
@@ -204,8 +205,39 @@ def veins_stats(vals: dict, rsus: list[dict]) -> dict:
             "per_rsu": per}
 
 
+def _route_line(c, edges: list[str]) -> list[tuple[float, float]]:
+    """The route as a line on the map (lane 0 of each edge, there and back so the unfilled polygon draws no closing stroke)."""
+    pts: list = []
+    for e in edges:
+        if e.startswith(":"):
+            continue
+        try:
+            pts += [tuple(p) for p in c.lane.getShape(f"{e}_0")]
+        except Exception:                                          # noqa: BLE001
+            pass
+    if len(pts) > 120:                                             # TraCI polygons take at most 255 points: thin the line, keep both ends
+        step = len(pts) / 119.0
+        pts = [pts[int(k * step)] for k in range(119)] + [pts[-1]]
+    return pts + pts[::-1] if len(pts) >= 2 else []
+
+
+def _story_end(c, story: dict, centre) -> None:
+    for pid in story["polys"]:
+        try:
+            c.polygon.remove(pid)
+        except Exception:                                          # noqa: BLE001
+            pass
+    try:
+        c.gui.trackVehicle("View #0", ""); c.gui.setOffset("View #0", *centre); c.gui.setZoom("View #0", story.get("zoom0", 1000))
+    except Exception:                                              # noqa: BLE001
+        pass
+    story.update(vid=None, polys=[], mid=None)
+
+
 # ------------------------------------------------------------------ one run
-def run(arm: str, seed: int, pre: dict, rsus: list[dict], out: Path, gui: bool, rsu_reach_m: float, port: int | None = None, say=print) -> dict:
+def run(arm: str, seed: int, pre: dict, rsus: list[dict], out: Path, gui: bool, rsu_reach_m: float, port: int | None = None, say=print, sumo_gui: bool | None = None, live_map: bool = False, sumo_mirror: bool = False, demo_early: bool = False, veins_cmdenv: bool = False, veins_start_delay: float = 0.0, explain_vid: str | None = None, step_through: bool = False) -> dict:
+    veins_gui = gui and not veins_cmdenv                                # --veins-cmdenv: the real sumo-gui window, Veins without its window (no RUN to press)
+    sumo_gui = gui if sumo_gui is None else (gui and sumo_gui)          # the SUMO 1.21 build draws nothing under XQuartz on some Macs: OMNeT++ alone can carry the picture
     P, cfg, fc, caps, routes = pre["P"], pre["cfg"], pre["fc"], pre["caps"], pre["routes"]
     cl = pre["cl"]
     from core.simulation.twin import runtime as pr
@@ -214,36 +246,107 @@ def run(arm: str, seed: int, pre: dict, rsus: list[dict], out: Path, gui: bool, 
     import traci
     out.mkdir(parents=True, exist_ok=True)
     net_path = REPO / P["network"]; H = int(P["simulation_duration_s"]); t_begin = int(P["fork_t0_s"]); round_s = int(P["round_s"])
+    if demo_early:                                                   # DEMO SETTING (printed): server listens from 60 s and decides every 120 s, first decision at 120 s
+        t_begin, round_s = 60, 120
     port = port or vl.free_port()
     cfgf = write_sumo_cfg(out, P, routes, H)
-    vdir = write_veins(out, cfgf, P, rsus, seed, arm, H, port, gui, int(P["status_period_s"]))
+    vdir = write_veins(out, cfgf, P, rsus, seed, arm, H, port, veins_gui, int(P["status_period_s"]))
     sim_id = f"sim_veins_s{seed}_{arm}"
     server = cl.Server(P, seed, cfg, fc, net_path, out, sim_id, "gwnet+correction", None, "vehicle") if arm != "baseline" else None
-    say(f"VEINS ROUTING seed {seed} arm {arm}: SUMO 1.21.0 --num-clients 2 on port {port}; client 1 Veins ({'Qtenv' if gui else 'Cmdenv'}), {len(rsus)} RSUs; client 2 this process"
+    say(f"VEINS ROUTING seed {seed} arm {arm}: SUMO {vl.sumo_version()} --num-clients 2 on port {port}; client 1 Veins ({'Qtenv' if gui else 'Cmdenv'}), {len(rsus)} RSUs; client 2 this process"
         f" ({'the Graph WaveNet + correction server, decisions every ' + str(round_s) + ' s from ' + str(t_begin) + ' s' if server else 'no server'}); radios {'ACTIVE' if arm != 'baseline' else 'silent'}; {H} s")
-    if gui:
+    say(vl.omnet_mode_line(veins_gui) if (veins_gui or not sumo_gui) else "  OMNeT++ mode: Cmdenv (no OMNeT++ window)   |   SUMO: sumo-gui window")
+    if veins_gui:
         say("  In the OMNeT++ window press RUN (F5) or FAST (F6); the sumo-gui window follows. This process waits for the connection.")
+    if demo_early:
+        say("  *** DEMO SETTING: the server listens from 60 s and decides every 120 s (first decision at 120 s) instead of from 1 200 s every 300 s, so advice is visible within a minute. Not a thesis result. ***")
     t0 = time.time()
-    sumo_bin = vl.SUMO121 / "bin" / ("sumo-gui" if gui else "sumo")
+    sumo_bin = vl.SUMO121 / "bin" / ("sumo-gui" if sumo_gui else "sumo")
+    if sumo_gui:                                                     # sumo-gui under TraCI opens on an empty corner: a settings file frames the network (zoom 100 = whole net) in real-world colours
+        near = [r for r in rsus if math.dist(r["sumo_xy"], rsus[0]["sumo_xy"]) <= 1500] or rsus[:1]   # the busiest unit and its neighbours within 1.5 km
+        bx0, _, bx1, _ = vl.net_bounds(net_path)
+        vl.gui_view(out, rsus[:1], span_m=500, net_width_m=bx1 - bx0, max_span_m=500, delay_ms=200 if explain_vid else 0)
     for attempt in range(1, 6):                                      # SUMO 1.21's two-client handshake fails now and then before the first step: restart whole on a fresh port
-      sumo_cmd = [str(sumo_bin), "-c", str(cfgf), "--remote-port", str(port), "--seed", str(seed), "--num-clients", "2"] + (["--start", "--quit-on-end", "--window-size", "1000,800", "--window-pos", "0,420"] if gui else [])
+      sumo_cmd = [str(sumo_bin), "-c", str(cfgf), "--remote-port", str(port), "--seed", str(seed), "--num-clients", "2"] + (["--start", "--quit-on-end", "--window-size", "1000,880", "--window-pos", "990,25", "--gui-settings-file", str(out / "viewsettings.xml")] if sumo_gui else [])
       sumo = subprocess.Popen(sumo_cmd, cwd=out, stdout=open(out / "sumo.log", "a"), stderr=subprocess.STDOUT)      # this process owns SUMO: its outputs are complete when it exits
-      veins = subprocess.Popen(vl.opp_cmd(gui), cwd=vdir, env=vl.opp_env(), stdout=open(out / "veins.log", "a"), stderr=subprocess.STDOUT)
+      if veins_start_delay:
+        say(f"  TEST SETTING: Veins starts {veins_start_delay:g} s after SUMO (as a late RUN press would)"); time.sleep(veins_start_delay)
+      veins = subprocess.Popen(vl.opp_cmd(veins_gui), cwd=vdir, env=vl.opp_env(), stdout=open(out / "veins.log", "a"), stderr=subprocess.STDOUT)
+      if veins_gui:
+        vl.qtenv_left(veins)
       label = f"{sim_id}-{int(time.time())}-{attempt}"
       crashed, stepped = None, 0
       conn: set[str] = set(); present_conn: set[str] = set(); recent: list[list[str]] = []; classified: set[str] = set()
       up_rx, up_dup, down_tx, applied, inapplicable, no_rsu, expired, decided = 0, 0, 0, 0, 0, 0, 0, 0
       seen_status: set[tuple] = set(); pending: list[dict] = []; handed: dict[str, dict] = {}; reroute_log: list[dict] = []; teleports: list[dict] = []
       rsu_rx = [0] * len(rsus); adv_seq = [0] * len(rsus); lanes: dict[str, list[str]] = {}
+      lm = None; mirror = None
+      story = {"vid": None, "until": 0.0, "polys": [], "mid": None}
+      xv = [v_ for v_ in (explain_vid or "").split(",") if v_]          # the followed cars (one or more)
+      COLS = [(255, 120, 0, 255), (220, 0, 220, 255), (0, 190, 230, 255)]
+      CNAMES = ["ORANGE", "MAGENTA", "CYAN"]
+      xs = {v_: {"tag": f"car {chr(65 + k_)} ({v_})", "col": COLS[k_ % 3], "cname": CNAMES[k_ % 3], "tracking": False, "sent": 0, "waiting_said": False, "done": False,
+                 "sent_at": {}, "decoded": set()} for k_, v_ in enumerate(xv)}
+      ex = {"n": 0, "last_bin": None, "cam": None}
+      SRC = {"car": "research/veins_loops/src/RoutingCar11p.cc", "rsu": "research/veins_loops/src/RoutingRSU11p.cc", "loop": "core/simulation/routing/veins_routing_loop.py",
+             "ctrl": "core/simulation/routing/controller.py", "fc": "core/ml/forecasting/routing_forecast.py", "corr": "core/networking/v2x/state_correction.py", "opt": "core/simulation/routing/route_optimizer.py"}
+
+      def check_sent(fv: str) -> None:
+          """Announce each status a followed car has sent (count and exact send time come from the car app), before any decode of it."""
+          st = xs[fv]
+          try:
+              n_s, t_s = (c.vehicle.getParameter(fv, "v2x.sent") or "0 0").split()
+              n_s, t_s = int(n_s), float(t_s)
+          except Exception:                                      # noqa: BLE001
+              return
+          if n_s > st["sent"]:
+              st["sent"] = n_s; st["sent_at"][n_s] = t_s
+              try:
+                  sp_, rd_ = c.vehicle.getSpeed(fv), c.vehicle.getRoadID(fv)
+              except Exception:                                  # noqa: BLE001
+                  sp_, rd_ = 0.0, "?"
+              ev(f"{SRC['car']}:handleSelfMsg", f"{st['tag']} broadcasts its status #{n_s} at {t_s:.1f} s over IEEE 802.11p: road {rd_}, speed {sp_:.1f} m/s. Veins now decides, by radio physics, which roadside units (RSUs) can decode it.", car=fv)
+
+      def ev(where: str, what: str, car: str | None = None) -> None:
+          ex["n"] += 1
+          if car and sumo_gui and ex["cam"] != car:                      # the camera follows the car that is acting now
+              try:
+                  if car in c.vehicle.getIDList():
+                      c.gui.trackVehicle("View #0", car); c.gui.setZoom("View #0", 3500); ex["cam"] = car
+              except Exception:                                      # noqa: BLE001
+                  pass
+          say(f"  [{ex['n']} | {where}] t={t}s  {what}")
+          if step_through:
+              try:
+                  input("      (Enter = next step) ")
+              except EOFError:
+                  pass
+      if sumo_mirror:
+          from core.simulation.routing.sumo_mirror import SumoMirror
+          mirror = SumoMirror(net_path, rsus, out, label=f"seed {seed} {arm}")
+      if live_map and arm != "baseline":
+          from core.simulation.routing.live_map import LiveMap
+          lm = LiveMap(net_path, rsus, f"seed {seed}, {arm}")
       if server is not None and attempt > 1:
           server = cl.Server(P, seed, cfg, fc, net_path, out, sim_id, "gwnet+correction", None, "vehicle")
       try:
+        if not vl.wait_for_first_client(port, None if gui else 180, say, veins):   # Veins first, this client second; with windows, as long as RUN takes
+            raise RuntimeError("Veins did not connect (the OMNeT++ window was closed, or Cmdenv failed)")
         traci.init(port=port, numRetries=600 if gui else 120, label=label); c = traci.getConnection(label); c.setOrder(2)
         for i, r in enumerate(rsus):                                     # the RSUs' points of interest = the wired backhaul; visible in sumo-gui
-            c.poi.add(f"rsu{i}", r["sumo_xy"][0], r["sumo_xy"][1], (220, 30, 30, 255), poiType="rsu", layer=10, width=12, height=12)
-            c.poi.setParameter(f"rsu{i}", "obs", ""); c.poi.setParameter(f"rsu{i}", "adv", ""); c.poi.setParameter(f"rsu{i}", "adv_seq", "0")
-        c.poi.add("v2x_log", rsus[0]["sumo_xy"][0], rsus[0]["sumo_xy"][1], (0, 0, 0, 0), poiType="log", layer=0)
+            c.poi.add(f"RSU {i}", r["sumo_xy"][0] + 48, r["sumo_xy"][1] + 30, (0, 0, 0, 0), poiType="rsu", layer=31, width=1, height=1)   # label beside the ring; also the backhaul
+            c.poi.setParameter(f"RSU {i}", "obs", ""); c.poi.setParameter(f"RSU {i}", "adv", ""); c.poi.setParameter(f"RSU {i}", "adv_seq", "0")
+        lx0, ly0, _, _ = vl.net_bounds(net_path)
+        c.poi.add("v2x_log", lx0 - 5000, ly0 - 5000, (0, 0, 0, 0), poiType="log", layer=0)     # off the map: carries the cars' reports, never drawn in view
         c.poi.setParameter("v2x_log", "log", "")
+        if sumo_gui:
+            vl.mark_rsus(c, rsus, label=None)                            # red rings; the labels are the backhaul points of interest above
+            try:
+                c.gui.setOffset("View #0", *rsus[0]["sumo_xy"])          # centre the view on the busiest road-side unit
+                bxa, _, bxb, _ = vl.net_bounds(net_path); c.gui.setZoom("View #0", 100.0 * (bxb - bxa) / 500.0)   # about 500 m wide (the settings file's viewport is not always applied)
+            except traci.TraCIException:
+                pass
+            pass  # the on-map legend was removed (owner, 2026-10-14)
         for edge in caps:
             try:
                 lanes[edge] = [f"{edge}_{i}" for i in range(c.edge.getLaneNumber(edge))]
@@ -290,16 +393,31 @@ def run(arm: str, seed: int, pre: dict, rsus: list[dict], out: Path, gui: bool, 
                     last_say = t; say(f"  t={t}s  vehicles {c.vehicle.getIDCount()}  connected (Veins nodes) {len(present_conn)}  [{time.time() - t0:.0f} s wall]")
                 continue
             # ---- uplink: what the RSUs really received (their point of interest), to the server
+            if xs:
+                here_ = set(c.vehicle.getIDList())
+                for fv_ in xs:
+                    if not xs[fv_]["done"] and fv_ in here_:
+                        check_sent(fv_)                                  # the send is announced before any decode of it
             for i in range(len(rsus)):
-                obs = c.poi.getParameter(f"rsu{i}", "obs")
+                obs = c.poi.getParameter(f"RSU {i}", "obs")
                 if not obs:
                     continue
-                c.poi.setParameter(f"rsu{i}", "obs", "")
+                c.poi.setParameter(f"RSU {i}", "obs", "")
                 for item in obs.split(";"):
                     if not item:
                         continue
                     vid, road, pos, speed, ts = item.split("|")
                     rsu_rx[i] += 1
+                    if vid in xs and not xs[vid]["done"]:
+                        st = xs[vid]
+                        n_ = next((k_ for k_, v_ in st["sent_at"].items() if abs(v_ - float(ts)) < 1e-3), None); st["decoded"].add(n_)
+                        ev(f"{SRC['rsu']}:onWSM", f"RSU {i} DECODED {st['tag']}'s status " + (f"#{n_} " if n_ else "") + f"(sent at {float(ts):.0f} s) (Veins: received power above the threshold, no collision) and passes it by cable to the server: speed {float(speed):.1f} m/s on {road}."
+                           + (" The server is still in its warm-up and ignores it." if t < t_begin else " The server stores it as a live observation of that road."), car=vid)
+                    if lm:
+                        try:
+                            lm.frame_up(c.vehicle.getPosition(vid), i)
+                        except traci.TraCIException:
+                            pass
                     if t < t_begin:
                         continue                                         # warm-up: nothing reaches the server before the fork time, as in the channel-model loop
                     key = (vid, ts)
@@ -325,6 +443,32 @@ def run(arm: str, seed: int, pre: dict, rsus: list[dict], out: Path, gui: bool, 
                         present_conn.discard(vid)
                 msgs, rrec = server.plan_round(k, t, vehicles, None)
                 pending.extend(msgs); decided += len(msgs)
+                if xs and not all(s_["done"] for s_ in xs.values()):
+                    same_ = ex["last_bin"] == rrec["as_of_index"]; ex["last_bin"] = rrec["as_of_index"]
+                    ev(f"{SRC['fc']}:Forecaster.predict", f"FORECAST round {k}: Graph WaveNet runs on the last hour of REAL METR-LA sensor readings up to bin {rrec['as_of_index']}"
+                       + (" (the same 5-minute bin as the previous round: in this DEMO setting rounds come every 120 s, the real data moves every 300 s; the corrections from the cars' reports are new)" if same_ else "")
+                       + f" and predicts every mapped road's speed 15/30/60 min ahead; "
+                       f"{SRC['corr']}:residual_correction then adjusts roads where the cars' reports disagree with the forecast.")
+                    rec_ = {}
+                    try:
+                        rec_ = json.loads((out / f"routing_round_{k}" / "routing_record.json").read_text())
+                    except Exception:                          # noqa: BLE001
+                        pass
+                    for fv_, st in xs.items():
+                        if st["done"]:
+                            continue
+                        mine = next((m_ for m_ in msgs if m_["vehicle_id"] == fv_), None)
+                        dec_ = next((d_ for d_ in rec_.get("decisions", []) if d_.get("vehicle") == fv_), None)
+                        if mine:
+                            ev(f"{SRC['ctrl']}:RoutingController.plan_round", f"DECISION for {st['tag']}: SUMO's router ({SRC['opt']}) found alternative routes on the forecast travel times; the best one takes "
+                               f"{mine.get('new_predicted_cost_s') or 0:.0f} s instead of {mine.get('old_predicted_cost_s') or 0:.0f} s, saving {mine.get('predicted_saving_s') or 0:.0f} s (more than the 60 s and 5 % threshold) -> REROUTE.", car=fv_)
+                        elif dec_:
+                            ev(f"{SRC['ctrl']}:RoutingController.plan_round", f"DECISION for {st['tag']}: {dec_.get('decision')} ({dec_.get('decision_reason') or 'no better route worth the change'}).")
+                        elif fv_ in present_conn:
+                            ev(f"{SRC['ctrl']}:RoutingController.plan_round", f"{st['tag']} is on the road but not considered in this round (the server has no fresh status from it yet).")
+                if lm:
+                    dd = rrec['decisions'] or {}
+                    lm.round_line(f"round {k}, t={t} s: forecast from real bin {rrec['as_of_index']}; {rrec['vehicles_considered']} cars: reroute {dd.get('REROUTE', 0)}, keep {dd.get('KEEP_CURRENT_BELOW_THRESHOLD', 0)}, no better route {dd.get('NO_ALTERNATIVE', 0)}")
                 say(f"  round {k} t={t}s as_of={rrec['as_of_index']} priced={rrec['priced_edges']} considered={rrec['vehicles_considered']} decisions={rrec['decisions']} advice={len(msgs)} statuses_known={rrec['statuses_known']}"
                     f" (RSU receptions so far {sum(rsu_rx)}, unique {up_rx})")
                 k += 1; next_round += round_s
@@ -341,15 +485,44 @@ def run(arm: str, seed: int, pre: dict, rsus: list[dict], out: Path, gui: bool, 
                 except traci.TraCIException:
                     inapplicable += 1; reroute_log.append({"vehicle_id": m["vehicle_id"], "sim_time_s": t, "message_id": None, "created_s": m["created_s"], "outcome": "VEHICLE_GONE"}); continue
                 i, dist = min(((i, math.dist((x, y), tuple(r["sumo_xy"]))) for i, r in enumerate(rsus)), key=lambda z: z[1])
+                if dist > rsu_reach_m and m["vehicle_id"] in xs and not xs[m["vehicle_id"]]["waiting_said"]:
+                    xs[m["vehicle_id"]]["waiting_said"] = True
+                    ev(f"{SRC['loop']}:run", f"the advice for {xs[m['vehicle_id']]['tag']} WAITS: no RSU is within {rsu_reach_m:.0f} m of it yet ({dist:.0f} m to the nearest); it is kept for its 60 s validity.", car=m["vehicle_id"])
                 if dist > rsu_reach_m:
                     no_rsu += 1 if m.get("_waiting") is None else 0; m["_waiting"] = t; keep.append(m); continue
                 down_tx += 1; mid = f"adv-{down_tx}"
                 handed[mid] = {**{kk: v for kk, v in m.items() if not kk.startswith("_")}, "msg_id": mid, "handed_s": t, "rsu": i, "rsu_distance_m": round(dist, 1)}
                 batches[i].append(f"{mid}|{m['vehicle_id']}|{' '.join(m['route'])}")
+                if lm:
+                    lm.frame_down((x, y), i)
+                if m["vehicle_id"] in xs and not xs[m["vehicle_id"]]["done"]:
+                    ev(f"{SRC['loop']}:run -> {SRC['rsu']}:handleSelfMsg", f"ADVICE SENT: the server gives {xs[m['vehicle_id']]['tag']}'s new route to RSU {i} ({dist:.0f} m from the car), which broadcasts it as an 802.11p frame addressed to it.", car=m["vehicle_id"])
+                if sumo_gui and story["vid"] is None and not explain_vid:
+                    vid_ = m["vehicle_id"]; story.update(vid=vid_, until=t + 90, mid=mid)
+                    try:
+                        story["zoom0"] = c.gui.getZoom("View #0")
+                    except Exception:                          # noqa: BLE001
+                        story["zoom0"] = 1000
+                    for name_, edges_, col_, lay_ in ((f"story_old_{mid}", m.get("old_route") or [], (230, 30, 30, 255), 26), (f"story_new_{mid}", m["route"], (30, 90, 255, 255), 27)):
+                        line_ = _route_line(c, edges_)
+                        if line_:
+                            try:
+                                c.polygon.add(name_, line_, col_, fill=False, layer=lay_, lineWidth=9); story["polys"].append(name_)
+                            except Exception as e_:            # noqa: BLE001
+                                say(f"  (route line not drawn: {str(e_)[:80]})")
+                    for f_ in (lambda: c.vehicle.highlight(vid_, (30, 90, 255, 255), 30, 255, 90), lambda: c.gui.trackVehicle("View #0", vid_), lambda: c.gui.setZoom("View #0", 1400)):
+                        try:
+                            f_()
+                        except Exception:                      # noqa: BLE001
+                            pass
+                    sav = m.get("predicted_saving_s"); oc, nc = m.get("old_predicted_cost_s"), m.get("new_predicted_cost_s")
+                    say(f"  >>> STORY t={t}s  car {vid_}: the forecast (Graph WaveNet on the real sensor history, corrected by the cars' reports) says its RED route will take "
+                        f"{oc:.0f} s and the BLUE route {nc:.0f} s, saving {sav:.0f} s. The server hands the advice to RSU {i} ({dist:.0f} m from the car), which will broadcast it over 802.11p." if None not in (sav, oc, nc) else
+                        f"  >>> STORY t={t}s  car {vid_}: the server advises a new route (BLUE) instead of the current one (RED); RSU {i} will broadcast it.")
             pending = keep
             for i, items in batches.items():
                 adv_seq[i] += 1
-                c.poi.setParameter(f"rsu{i}", "adv", ";".join(items) + ";"); c.poi.setParameter(f"rsu{i}", "adv_seq", str(adv_seq[i]))
+                c.poi.setParameter(f"RSU {i}", "adv", ";".join(items) + ";"); c.poi.setParameter(f"RSU {i}", "adv_seq", str(adv_seq[i]))
             # ---- outcomes reported by the cars (the route change happened inside Veins, on a real reception)
             log = c.poi.getParameter("v2x_log", "log")
             if log:
@@ -361,10 +534,65 @@ def run(arm: str, seed: int, pre: dict, rsus: list[dict], out: Path, gui: bool, 
                              "latency_ms": round((float(ts) - h["handed_s"]) * 1000, 1) if h else None, "routing_run_id": h.get("routing_run_id"), "forecast_hash": h.get("forecast_hash"), "edge_cost_hash": h.get("edge_cost_hash"),
                              "reason": h.get("reason"), "predicted_saving_s": h.get("predicted_saving_s"), "outcome": outcome, "current_edge": road}
                     reroute_log.append(entry)
+                    if vid in xs and not xs[vid]["done"]:
+                        st = xs[vid]
+                        if outcome == "APPLIED":
+                            ev(f"{SRC['car']}:onWSM", f"ADVICE RECEIVED: {st['tag']}'s radio decoded the frame (Veins PHY/MAC); the frame was addressed to it.", car=vid)
+                            if sumo_gui:
+                                try:
+                                    line_ = _route_line(c, list(c.vehicle.getRoute(vid))[c.vehicle.getRouteIndex(vid):])
+                                    if line_:
+                                        c.polygon.add(f"explain_new_{vid}", line_, (30, 90, 255, 255), fill=False, layer=27, lineWidth=10)
+                                    c.vehicle.setColor(vid, (30, 90, 255, 255))
+                                except Exception:                  # noqa: BLE001
+                                    pass
+                            ev(f"{SRC['car']}:applyAdvice", f"ROUTE CHANGED: {st['tag']} is on road {road}, which is on the new route, so changeVehicleRoute succeeds. Its NEW route is drawn in BLUE and the car turns blue; its old route stays {st['cname']}.", car=vid)
+                        else:
+                            ev(f"{SRC['car']}:applyAdvice", f"the advice reached {st['tag']} but could not be used ({outcome}): the car had already passed the junction where the routes split.", car=vid)
+                        st["done"] = True
+                    if story["vid"] == vid and mid == story["mid"]:
+                        say(f"  >>> STORY t={float(ts):.0f}s  car {vid}: " + ("RECEIVED the advice frame and CHANGED ROUTE: it now follows the BLUE route (the car is blue)." if outcome == "APPLIED" else
+                            f"received the advice but could not use it ({outcome}): it was already past the junction where the routes split."))
+                        story["until"] = float(ts) + 25
                     if outcome == "APPLIED":
                         applied += 1
+                        if lm:
+                            lm.rerouted.add(vid)
+                        if mirror:
+                            mirror.rerouted.add(vid)
                     else:
                         inapplicable += 1
+            if xs:
+                here_ = set(c.vehicle.getIDList())
+                for fv, st in xs.items():
+                    if st["done"]:
+                        continue
+                    here = fv in here_
+                    if here and not st["tracking"]:
+                        st["tracking"] = True
+                        if sumo_gui:
+                            try:
+                                c.vehicle.highlight(fv, st["col"], 18, 255, -1); c.vehicle.setColor(fv, st["col"])
+                                line_ = _route_line(c, list(c.vehicle.getRoute(fv)))
+                                if line_:
+                                    c.polygon.add(f"explain_old_{fv}", line_, st["col"], fill=False, layer=28, lineWidth=16)
+                            except Exception:                  # noqa: BLE001
+                                pass
+                        ev(f"{SRC['loop']}:run", f"{st['tag']} enters the road network. It has a Veins radio, so it is a CONNECTED car. It is drawn {st['cname']} and its planned route is a thick {st['cname']} line.", car=fv)
+                    for n_, ts_ in list(st["sent_at"].items()):
+                        if n_ not in st["decoded"] and t >= ts_ + 2:
+                            st["decoded"].add(n_)
+                            ev(f"{SRC['rsu']}:onWSM", f"{st['tag']}'s status #{n_} (sent at {ts_:.0f} s) was decoded by NO roadside unit: the car was out of radio range of every RSU (Veins: received power below the receiver threshold). The server learns nothing from it.", car=fv)
+                    if here:
+                        check_sent(fv)
+            if story["vid"] is not None and t >= story["until"]:
+                if story["until"] and not any(e.get("message_id") == story["mid"] for e in reroute_log):
+                    say(f"  >>> STORY t={t}s  car {story['vid']}: the advice frame never reached it (out of radio range or lost) - its route did not change.")
+                _story_end(c, story, rsus[0]["sumo_xy"])
+            if mirror:
+                mirror.update(t, c, present_conn)
+            if lm:
+                lm.update(t, c, present_conn, {"rx": sum(rsu_rx), "unique": up_rx, "handed": down_tx, "applied": applied, "expired": expired})
             if t % 60 == 0 and t != last_say:
                 last_say = t
                 say(f"  t={t}s  vehicles {c.vehicle.getIDCount()}  connected {len(present_conn)}  statuses at RSUs {sum(rsu_rx)} (unique to server {up_rx})  advice handed {down_tx} applied {applied} waiting-for-RSU {sum(1 for m in pending if m.get('_waiting'))}  [{time.time() - t0:.0f} s wall]")
@@ -375,6 +603,8 @@ def run(arm: str, seed: int, pre: dict, rsus: list[dict], out: Path, gui: bool, 
                 break
       except Exception as e:                                             # noqa: BLE001
         crashed = str(e)[:300]; say(f"  client 2 stopped: {crashed}")
+      if mirror:
+        mirror.close()
       try:                                                               # Veins leaves at its time limit (its close only removes it: SUMO keeps serving the last client)
         veins.wait(timeout=30 if crashed else 900)
       except subprocess.TimeoutExpired:
@@ -393,7 +623,7 @@ def run(arm: str, seed: int, pre: dict, rsus: list[dict], out: Path, gui: bool, 
         if old.suffix in (".sca", ".vec", ".vci"):
           old.rename(old.with_name(old.name + f".{int(time.time())}.handshake_failed"))
       port = vl.free_port(port + 1)
-      vdir = write_veins(out, cfgf, P, rsus, seed, arm, H, port, gui, int(P["status_period_s"]))
+      vdir = write_veins(out, cfgf, P, rsus, seed, arm, H, port, veins_gui, int(P["status_period_s"]))
       say(f"  handshake failed before the first step (SUMO 1.21 two-client connect); attempt {attempt + 1} on port {port}")
     vals = vl.read_scalars(vdir / "results"); vs = veins_stats(vals, rsus) if vals else {}
     ok = (out / "tripinfo.xml").exists() and (out / "statistic.xml").exists() and not crashed and stepped > 0
@@ -412,7 +642,7 @@ def run(arm: str, seed: int, pre: dict, rsus: list[dict], out: Path, gui: bool, 
     (out / "reroute_log.jsonl").write_text("".join(json.dumps(e) + "\n" for e in reroute_log))
     (out / "network_metrics.json").write_text(json.dumps(net_metrics, indent=1))
     res = {"simulation_run_id": sim_id, "arm": arm, "seed": seed, "profile": "veins_802.11p", "penetration": P["penetration"], "moment": P["moment"], "config_hash": P["routing_config_hash"], "network_hash": P["network_hash"],
-           "sumo": "1.21.0 --num-clients 2 (Veins order 1, this loop order 2)", "fork": None, "warm_up_s": t_begin, "design": PREVE, "information": "gwnet+correction" if server else "baseline",
+           "sumo": f"{vl.sumo_version()} --num-clients 2 (Veins order 1, this loop order 2)", "fork": None, "warm_up_s": t_begin, "round_s": round_s, "demo_setting": bool(demo_early), "design": PREVE, "information": "gwnet+correction" if server else "baseline",
            "state": "ok" if ok else "crashed", "crash": crashed, "veins_exit": veins.returncode, "metrics": m, "network": net_metrics, "rounds": server.rounds if server else [],
            "routing_run_ids": server.routing_run_ids if server else [], "reroutes_applied": applied, "out_dir": str(out.relative_to(REPO)), "run_utc": datetime.now(timezone.utc).isoformat()}
     (out / "arm_result.json").write_text(json.dumps(res, indent=1, default=str))
@@ -430,6 +660,15 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--arms", nargs="+", default=["baseline", ARM], choices=["baseline", ARM])
     ap.add_argument("--edgedata", type=Path, default=None, help="a baseline run's edgedata.xml for choosing the busiest junctions (default: the newest x8 peak arterial baseline of this seed)")
     ap.add_argument("--no-gui", action="store_true")
+    ap.add_argument("--explain", nargs="?", const="auto", default=None, help="follow ONE connected car that gets rerouted (give its id, or 'auto': a quick headless pass of the same seed finds the first car whose advice was applied)")
+    ap.add_argument("--explain-cars", type=int, default=3, help="with --explain auto: how many cars to follow (default 3)")
+    ap.add_argument("--step-through", action="store_true", help="with --explain: pause for Enter at each event of that car")
+    ap.add_argument("--veins-cmdenv", action="store_true", help="windows: the real sumo-gui (driven by Veins) but Veins without its OMNeT++ window: nothing to press")
+    ap.add_argument("--veins-start-delay", type=float, default=0.0, help="TEST SETTING: start Veins this many seconds after SUMO, as a late RUN press would")
+    ap.add_argument("--demo-early", action="store_true", help="DEMO SETTING: the server listens from 60 s and decides every 120 s (not the thesis protocol); printed in the terminal")
+    ap.add_argument("--sumo-mirror", action="store_true", help="a working SUMO 1.27 window that mirrors the running 1.21 simulation car by car (the 1.21 window draws blank on this Mac)")
+    ap.add_argument("--live-map", action="store_true", help="a live map window drawn from the running simulation (roads, cars, RSUs, decoded frames, rerouted cars, forecast rounds); works headless too")
+    ap.add_argument("--no-sumo-gui", action="store_true", help="windows: OMNeT++ (Qtenv) only, SUMO without its window (its 1.21 window draws nothing under XQuartz on some Macs)")
     ap.add_argument("--out", type=Path, default=None)
     a = ap.parse_args(argv)
     a.seed = (int(time.time()) % 9000) + 1000 if str(a.seed).lower() == "clock" else int(a.seed)
@@ -464,10 +703,34 @@ def main(argv: list[str] | None = None) -> int:
     say(f"  demand {pre['dinfo']['vehicles']} vehicles (hash {pre['dinfo']['demand_hash'][:12]}, scale {pre['dinfo']['demand_scale']}); {int(P['penetration'] * 100)} % connected (Veins's draw);"
         f" RSUs at the {len(rsus)} busiest junctions of {ed.relative_to(REPO)} (entered vehicles {rsus[0]['entered']} … {rsus[-1]['entered']}); METR-LA caps on {len(pre['caps'])} edges")
     (root / "rsus.json").write_text(json.dumps({"edgedata": str(ed.relative_to(REPO)), "rsus": rsus}, indent=1))
+    explain_vid = None
+    if a.explain:
+        explain_vid = None if a.explain == "auto" else a.explain
+        if explain_vid is None:
+            pre_out = root / "explain_prepass"
+            say(f"  --explain auto: a quick headless pass of the SAME seed {a.seed} finds a car whose advice is really applied (the run is deterministic for a seed) ...")
+            cmd = [sys.executable, "-m", "core.simulation.routing.veins_routing_loop", "--no-gui", "--seed", str(a.seed), "--minutes", str(a.minutes), "--rsus", str(a.rsus),
+                   "--rsu-reach-m", str(a.rsu_reach_m), "--arms", ARM, "--out", str(pre_out)] + (["--demo-early"] if a.demo_early else []) + (["--edgedata", str(a.edgedata)] if a.edgedata else [])
+            subprocess.run(cmd, cwd=REPO, env={**os.environ, "PYTHONPATH": f"{REPO}:{REPO / 'backend'}"}, capture_output=True, text=True)
+            logf = next(iter(pre_out.glob(f"s{a.seed}/{ARM}/reroute_log.jsonl")), None)
+            applied_ = [json.loads(l) for l in logf.read_text().splitlines()] if logf else []
+            applied_ = [e for e in applied_ if e.get("outcome") == "APPLIED"]
+            if not applied_:
+                say("  --explain auto: no advice was applied in this seed's pass; try another seed (or --rsus 60)"); return 1
+            picks_ = []
+            for e_ in sorted(applied_, key=lambda e_: e_["sim_time_s"]):
+                if e_["vehicle_id"] not in picks_:
+                    picks_.append(e_["vehicle_id"])
+                if len(picks_) == a.explain_cars:
+                    break
+            explain_vid = ",".join(picks_)
+            say(f"  --explain: following {len(picks_)} car(s) {', '.join(picks_)} (their advice was applied in the headless pass of this seed, which is deterministic)")
+        say("  EXPLAIN MODE: press RUN (not EXPRESS) in the OMNeT++ window; sumo-gui runs with a 200 ms delay per step; the view follows whichever followed car is acting."
+            + (" STEP-THROUGH: press Enter in this terminal after each event." if a.step_through else ""))
     vl.veins_env()                                                                        # from here on: SUMO 1.21's traci (API 21) for the shared simulation
     res = {}
     for arm in a.arms:
-        res[arm] = run(arm, a.seed, pre, rsus, pre["sdir"] / arm, not a.no_gui, a.rsu_reach_m, say=say)
+        res[arm] = run(arm, a.seed, pre, rsus, pre["sdir"] / arm, not a.no_gui, a.rsu_reach_m, say=say, sumo_gui=not a.no_sumo_gui, live_map=a.live_map, sumo_mirror=a.sumo_mirror, demo_early=a.demo_early, veins_cmdenv=a.veins_cmdenv, veins_start_delay=a.veins_start_delay, explain_vid=explain_vid if arm != "baseline" else None, step_through=a.step_through)
         r = res[arm]; m, n = r["metrics"], r["network"]
         say(f"  {arm}: {'veh-h=%.1f arrived=%s tel=%s' % (m['total_vehicle_hours_incl_never_inserted'], m.get('arrived'), m['teleports']) if r['state'] == 'ok' else 'CRASHED: ' + str(r['crash'])}"
             f"  statuses sent {n['uplink']['messages_tx']} received at RSUs {n['uplink']['messages_rx_at_rsus']} (unique {n['uplink']['unique_to_server']})  advice handed {n['downlink']['handed_to_rsu']}"

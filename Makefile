@@ -73,14 +73,16 @@ run-sos-collide: ## LIVE: a real collision inside SUMO (one car ignores the safe
 run-ambulance-loop: ## Part A (2026-10-12): Q-learning signals + V2X alert + V2I pre-emption in ONE run, 4 arms x 5 seeds, ITS-G5 -> evidence/ambulance_loop/; ARGS="--seeds 11 --arms rl_v2i --tech c_v2x"
 	@PYTHONPATH=.:backend $(HOME)/.dhakaflow/venvs/sumo-rl-np1/bin/python core/simulation/ambulance/rl_v2x_loop.py $(ARGS)
 
+VEINS_SUMO_HOME ?= $(shell $(PY) -c "import sumo; print(sumo.SUMO_HOME)")   # 2026-10-14: the Veins runs use SUMO 1.27.1 (its sumo-gui draws) behind the local Veins API-22 patch; set to the 1.21 home to go back
+
 veins-ambulance-loop: ## Phase 1 (2026-10-12): Q-learning signals + IEEE 802.11p DENM in Veins, ONE SUMO (--num-clients 2), OMNeT++ Qtenv + sumo-gui windows (press RUN in Qtenv); SEED=<n>|clock (default 11); ARGS="--no-gui --seeds 11 12 13 14 15 --arms fixed rl rl_v2i --out evidence/veins_ambulance_loop" = the evidence run
-	@PYTHONPATH=.:backend $(HOME)/.dhakaflow/venvs/sumo-rl-np1/bin/python core/simulation/ambulance/veins_loop.py --seeds $(or $(SEED),11) $(ARGS)
+	@DHAKAFLOW_VEINS_SUMO_HOME=$(VEINS_SUMO_HOME) PYTHONPATH=.:backend $(HOME)/.dhakaflow/venvs/sumo-rl-np1/bin/python core/simulation/ambulance/veins_loop.py --seeds $(or $(SEED),11) $(ARGS)
 
 prove-forecast-routing: ## 2026-10-13: PROOF by running: forecast routing over Veins with a clock seed, then PASS/FAIL checks read from the run's own files (real inputs, fresh forecast per round, different seed -> different draw/moment/decisions, loop counters = Veins scalars); SEED=<n>|clock RSUS=<n>; ARGS="--minutes 10"
-	@PYTHONPATH=.:backend $(PY) scripts/live/prove_forecast_routing.py --seed $(or $(SEED),clock) --rsus $(or $(RSUS),20) $(ARGS)
+	@DHAKAFLOW_VEINS_SUMO_HOME=$(VEINS_SUMO_HOME) PYTHONPATH=.:backend $(PY) scripts/live/prove_forecast_routing.py --seed $(or $(SEED),clock) --rsus $(or $(RSUS),20) $(ARGS)
 
 veins-forecast-routing: ## Phase 2 (2026-10-12): the Graph WaveNet routing server + RSUs + 802.11p in Veins on the LA twin (PRE-VE design), ONE SUMO, baseline then predictive, Qtenv + sumo-gui (press RUN twice); SEED=<n>|clock (default 201) RSUS=<n> (default 20); ARGS="--no-gui --minutes 15" -> evidence/veins_forecast_routing/<stamp>/
-	@PYTHONPATH=.:backend $(PY) -m core.simulation.routing.veins_routing_loop --seed $(or $(SEED),201) --rsus $(or $(RSUS),20) $(ARGS)
+	@DHAKAFLOW_VEINS_SUMO_HOME=$(VEINS_SUMO_HOME) PYTHONPATH=.:backend $(PY) -m core.simulation.routing.veins_routing_loop --seed $(or $(SEED),201) --rsus $(or $(RSUS),20) $(ARGS)
 
 gui-ambulance-loop: ## Part E (2026-10-12): the ML + V2X ambulance loop in sumo-gui (rl_v2x_loop.py unchanged): ambulance red, alerted cars yellow while making way, junction labels Q-learning / V2X override / released; ARGS="--seed 11 --arm rl_v2i"
 	@PYTHONPATH=.:backend $(HOME)/.dhakaflow/venvs/sumo-rl-np1/bin/python scripts/live/gui_ambulance_loop.py $(ARGS)

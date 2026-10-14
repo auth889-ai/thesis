@@ -25,6 +25,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import math
 import os
 import pickle
 import re
@@ -40,7 +41,7 @@ sys.path[:0] = [str(REPO), str(REPO / "backend")]
 
 UP = Path.home() / ".dhakaflow/upstream"
 VEINS, OPP = UP / "veins", UP / "omnetpp-6.2.0"
-SUMO121 = Path.home() / ".dhakaflow/venvs/sumo-veins/lib/python3.13/site-packages/sumo"      # eclipse-sumo 1.21.0 (TraCI API 21, Veins 5.3.1)
+SUMO121 = Path(os.environ.get("DHAKAFLOW_VEINS_SUMO_HOME") or Path.home() / ".dhakaflow/venvs/sumo-veins/lib/python3.13/site-packages/sumo")   # default eclipse-sumo 1.21.0 (TraCI API 21, Veins 5.3.1); DHAKAFLOW_VEINS_SUMO_HOME=<SUMO 1.27.1 home> with the local Veins patch (API 22)
 LOOPS = REPO / "research/veins_loops"
 DHAKA_VEINS = REPO / "research/veins_dhaka"                    # config.xml, antenna.xml (Veins's example settings), the OSM buildings polygons
 OUT = REPO / "evidence/veins_ambulance_loop"
@@ -73,6 +74,96 @@ def ready() -> str | None:
             return what
     return None
 
+
+
+# ------------------------------------------------------------------ the real sumo-gui (SUMO 1.27.1 behind the local Veins API-22 patch)
+def sumo_version() -> str:
+    try:
+        out = subprocess.run([str(SUMO121 / "bin" / "sumo"), "--version"], capture_output=True, text=True, timeout=30).stdout
+        return re.search(r"(\d+\.\d+\.\d+)", out).group(1)
+    except Exception:                                              # noqa: BLE001
+        return "?"
+
+
+def gui_view(out: Path, rsus: list[dict], span_m: float = 1500.0, net_width_m: float | None = None, max_span_m: float | None = None, delay_ms: int = 0) -> Path:
+    """sumo-gui settings: the real-world look, cars drawn 3x, framed on the road-side units (not the whole city)."""
+    xs = [r["sumo_xy"][0] for r in rsus]; ys = [r["sumo_xy"][1] for r in rsus]
+    cx, cy = statistics.fmean(xs), statistics.fmean(ys)
+    span = max(span_m, (max(xs) - min(xs)) * 1.3, (max(ys) - min(ys)) * 1.3)
+    if max_span_m:
+        span = min(span, max_span_m)
+    vs = out / "viewsettings.xml"
+    vs.write_text(f"""<viewsettings>
+  <scheme name="real world x10">
+    <background backgroundColor="51,128,51" showGrid="0"/>
+    <edges laneEdgeMode="0" laneShowBorders="1" showLinkDecals="1" showRails="1" hideConnectors="0" spreadSuperposed="0">
+      <colorScheme name="uniform"><entry color="110,110,110"/></colorScheme>
+    </edges>
+    <vehicles vehicleQuality="2" vehicle_minSize="1" vehicle_exaggeration="10" vehicle_constantSize="0" showBlinker="1">
+      <colorScheme name="given vehicle/type/route color"><entry color="190,190,190"/></colorScheme>
+    </vehicles>
+    <junctions junctionMode="0" drawLinkTLIndex="0">
+      <colorScheme name="uniform"><entry color="70,70,70"/></colorScheme>
+    </junctions>
+    <pois poiSize_minSize="1" poiSize_exaggeration="1" poiName_show="1" poiName_size="22" poiName_color="white" poiName_bgColor="0,0,0"/>
+    <polys polySize_minSize="0" polySize_exaggeration="1" polyName_show="0">
+      <colorScheme name="given polygon color"/>
+    </polys>
+  </scheme>
+  <viewport zoom="{100.0 * (net_width_m or span) / span:.0f}" x="{cx:.1f}" y="{cy:.1f}"/>
+  <delay value="{delay_ms}"/>
+</viewsettings>
+""")
+    return vs
+
+
+def add_legend(conn, rsus: list[dict], lines: list[str], span_m: float) -> None:
+    """Text on the map saying what each colour means (points of interest with names, top-left of the starting view)."""
+    xs = [r["sumo_xy"][0] for r in rsus]; ys = [r["sumo_xy"][1] for r in rsus]
+    x0 = statistics.fmean(xs) - 0.46 * span_m; y0 = statistics.fmean(ys) + 0.27 * span_m
+    for k, s in enumerate(lines):
+        try:
+            conn.poi.add(s, x0, y0 - k * 0.035 * span_m, (0, 0, 0, 0), layer=40, width=1, height=1)
+        except Exception:                                          # noqa: BLE001
+            pass
+
+
+def mark_rsus(conn, rsus: list[dict], ring_m: float = 45.0, label: str | None = "RSU {i}") -> None:
+    """A red ring at each road-side unit and its label beside it (a point of interest 1.6 rings to the right)."""
+    import math
+    for i, r in enumerate(rsus):
+        x, y = r["sumo_xy"]
+        ring = [(x + ring_m * math.cos(a / 12 * math.pi), y + ring_m * math.sin(a / 12 * math.pi)) for a in range(24)]
+        try:
+            conn.polygon.add(f"ring{i}", ring, (230, 20, 20, 255), fill=False, layer=30, lineWidth=8)
+            if label:
+                conn.poi.add(label.format(i=i), x + 1.6 * ring_m, y + ring_m, (0, 0, 0, 0), layer=31, width=1, height=1)
+        except Exception:                                          # noqa: BLE001
+            pass
+
+
+def qtenv_left(proc, width: int = 990, height: int = 880, timeout_s: float = 120.0) -> None:
+    """Move the OMNeT++ Qtenv window to the left half of the screen once it appears (sumo-gui opens on the right). Display only;
+    runs in a background thread and gives up quietly if macOS refuses (no Accessibility permission)."""
+    import threading
+
+    def go():
+        t0 = time.time()
+        while time.time() - t0 < timeout_s and proc.poll() is None:
+            r = subprocess.run(["osascript", "-e", 'tell application "System Events" to tell process "opp_run" to if (count of windows) > 0 then '
+                                f'set position of window 1 to {{0, 25}}', "-e", f'tell application "System Events" to tell process "opp_run" to if (count of windows) > 0 then set size of window 1 to {{{width}, {height}}}'],
+                               capture_output=True, text=True)
+            if r.returncode == 0 and "error" not in (r.stderr or "").lower():
+                chk = subprocess.run(["osascript", "-e", 'tell application "System Events" to tell process "opp_run" to get position of window 1'], capture_output=True, text=True)
+                if chk.returncode == 0 and chk.stdout.strip().startswith("0,"):
+                    return
+            time.sleep(1.0)
+    threading.Thread(target=go, daemon=True).start()
+
+
+def omnet_mode_line(gui: bool) -> str:
+    return ("  OMNeT++ mode: Qtenv (its window, LEFT; press RUN then EXPRESS)   |   SUMO: sumo-gui window, RIGHT" if gui
+            else "  OMNeT++ mode: Cmdenv (no OMNeT++ window; the radio is simulated in the background)")
 
 # ------------------------------------------------------------------ files of one run
 def net_bounds(net_path: Path) -> tuple[float, float, float, float]:
@@ -113,6 +204,29 @@ def write_sumo_cfg(out: Path, scen: dict, vtype: Path, scale: float, horizon: in
     return cfgf
 
 
+def wait_for_first_client(port: int, timeout_s: float | None, say=None, proc=None) -> bool:
+    """Block until ONE client (Veins) holds an established connection to SUMO's port, then return True; False on timeout.
+    SUMO 1.21 handles the two clients' first commands in the order they connected and clears its input buffer only between them:
+    Veins's setOrder leaves spare bytes (it sends a compound, SUMO assumes a fixed length), which are harmless when Veins is the FIRST
+    client and fatal (`Storage::readChar(): invalid position`) when it is the last. So this client always connects second. In Qtenv,
+    Veins connects when RUN is pressed, so this also waits for the person at the window."""
+    import subprocess
+    t0 = time.time(); told = False; last_note = 0.0
+    while timeout_s is None or time.time() - t0 < timeout_s:      # None (windows): wait as long as the person takes to press RUN
+        if proc is not None and proc.poll() is not None:
+            return False                                           # the OMNeT++ window was closed: give up, never connect first
+        try:
+            out = subprocess.run(["lsof", "-nP", f"-iTCP:{port}", "-sTCP:ESTABLISHED"], capture_output=True, text=True).stdout
+        except FileNotFoundError:
+            return True                                            # no lsof: fall back to the retry logic
+        if sum(1 for ln in out.splitlines() if "ESTABLISHED" in ln) >= 2:      # one connection shows twice (SUMO's end and Veins's end)
+            return True
+        if say and (not told and time.time() - t0 > 8 or told and time.time() - last_note > 120):
+            say(f"  waiting for Veins to connect first (in the OMNeT++ window press RUN) ... {time.time() - t0:.0f} s"); told = True; last_note = time.time()
+        time.sleep(0.5)
+    return False
+
+
 def free_port(start: int | None = None, n: int = 40) -> int:
     """A free TCP port from a window that starts at a process-dependent offset, so two loops started in the same minute probe different ports."""
     import socket
@@ -124,7 +238,7 @@ def free_port(start: int | None = None, n: int = 40) -> int:
     raise RuntimeError(f"no free port in {start}..{start + n}")
 
 
-def write_veins(out: Path, cfgf: Path, scen: dict, rsus: list[dict], seed: int, arm: str, share: float, horizon: int, port: int, gui: bool, cfg: dict, beacons: bool = False) -> Path:
+def write_veins(out: Path, cfgf: Path, scen: dict, rsus: list[dict], seed: int, arm: str, share: float, horizon: int, port: int, gui: bool, cfg: dict, beacons: bool = False, pos_check: int | None = None) -> Path:
     """omnetpp.ini for this run: Veins's example radio settings (research/veins_dhaka/config.xml, antenna.xml), our two apps, the RSUs.
     `beacons`: every car also sends Veins's 1 Hz beacon (a CAM-like background load on the channel), so collisions can occur."""
     from core.simulation.ambulance import service
@@ -132,7 +246,7 @@ def write_veins(out: Path, cfgf: Path, scen: dict, rsus: list[dict], seed: int, 
     x0, y0, x1, y1 = net_bounds(Path(scen["net"]))
     d = out / "veins"; d.mkdir(parents=True, exist_ok=True)
     sumo_bin = SUMO121 / "bin" / ("sumo-gui" if gui else "sumo")
-    extra = " --start --quit-on-end --window-size 900,700 --window-pos 0,420" if gui else ""
+    extra = f" --start --quit-on-end --window-size 1000,880 --window-pos 990,25 --gui-settings-file {gui_view(d, [r for r in rsus if r["tls"] in {s["tls"] for s in scen.get("signals", [])}] or rsus, span_m=900, net_width_m=x1 - x0, max_span_m=1200)}" if gui else ""
     mk = cfg["alert"]["makeway"]
     rsu_lines = "\n".join(f'*.rsu[{i}].mobility.x = {r["veins_xy"][0]}\n*.rsu[{i}].mobility.y = {r["veins_xy"][1]}\n*.rsu[{i}].mobility.z = 3\n*.rsu[{i}].appl.tlsId = "{r["tls"]}"' for i, r in enumerate(rsus))
     ini = f"""[General]
@@ -152,6 +266,7 @@ result-dir = results
 *.playgroundSizeY = {y1 - y0 + 200:.0f}m
 *.playgroundSizeZ = 50m
 *.numRsu = {len(rsus)}
+*.canvasScale = {min(0.5, 800.0 / max(x1 - x0 + 200, 1)):.4f}
 *.annotations.draw = {'true' if gui else 'false'}
 *.obstacles.obstacles = xmldoc("{DHAKA_VEINS / 'config.xml'}", "//AnalogueModel[@type='SimpleObstacleShadowing']/obstacles")
 *.manager.updateInterval = 1s
@@ -200,6 +315,7 @@ result-dir = results
 *.node[*].appl.makewayHold = 30s
 *.node[*].appl.equippedShare = {share:g}
 *.node[*].appl.active = {'true' if v2i else 'false'}
+*.node[*].appl.posReportAt = {pos_check if pos_check is not None else -1}s
 *.node[*].veinsmobility.x = 0
 *.node[*].veinsmobility.y = 0
 *.node[*].veinsmobility.z = 0
@@ -260,7 +376,7 @@ def veins_stats(vals: dict, rsus: list[dict]) -> dict:
 
 # ------------------------------------------------------------------ the loop
 def run(seed: int, arm: str, share: float = 1.0, scale: float | None = None, gui: bool = False, root: Path = OUT / "runs", horizon: int | None = None, port: int | None = None,
-        beacons: bool = False) -> dict:
+        beacons: bool = False, demo_early: bool = False, pos_check: int | None = None) -> dict:
     if arm not in ARMS:
         raise ValueError(f"arm must be one of {ARMS}")
     why = ready()
@@ -273,16 +389,18 @@ def run(seed: int, arm: str, share: float = 1.0, scale: float | None = None, gui
     rl, v2i = arm.startswith("rl"), arm.endswith("_v2i")
     q = pickle.loads((rl_signals.RQ2 / "rl" / f"q_{DEMAND}_x{scale:g}.pkl").read_bytes())
     ts_ids = list(q)
-    out = root / f"{arm}{f'_p{int(round(share * 100)):03d}' if v2i else ''}{'_cam' if (beacons and v2i) else ''}_s{seed}_x{scale:g}"
+    out = root / f"{arm}{f'_p{int(round(share * 100)):03d}' if v2i else ''}{'_cam' if (beacons and v2i) else ''}{'_DEMO' if demo_early else ''}_s{seed}_x{scale:g}"
     out.mkdir(parents=True, exist_ok=True)
     cfg, scen = service.settings(), service.scenario(CITY, DEMAND)
+    if demo_early:                                             # DEMO SETTING (printed): the ambulance leaves at 120 s so the alert is visible within a minute
+        cfg = {**cfg, "ambulance": {**cfg["ambulance"], "depart_s": 120}}
     horizon = horizon or cfg["horizon_s"]
     port = port or free_port()
     vtype = service.write_vtype(out / "ambulance_type.rou.xml", cfg)
     rsus = rsu_positions(Path(scen["net"]), ts_ids)
     short = {r["tls"]: f"RSU{i}" for i, r in enumerate(rsus)}
     cfgf = write_sumo_cfg(out, scen, vtype, scale, horizon, cfg)
-    vdir = write_veins(out, cfgf, scen, rsus, seed, arm, share, horizon, port, gui, cfg, beacons)
+    vdir = write_veins(out, cfgf, scen, rsus, seed, arm, share, horizon, port, gui, cfg, beacons, pos_check)
     for old in (vdir / "results").glob("*"):
         old.rename(old.with_name(old.name + f".{int(time.time())}.old")) if old.suffix in (".sca", ".vec", ".vci") else None
     state: dict = {}
@@ -335,9 +453,19 @@ def run(seed: int, arm: str, share: float = 1.0, scale: float | None = None, gui
         logics: dict = {}
 
         def _start_simulation(self):
+            if not wait_for_first_client(port, None if gui else 180, say, veins_proc["p"]):   # Veins first, this client second (see wait_for_first_client)
+                raise RuntimeError("Veins did not connect (the OMNeT++ window was closed, or Cmdenv failed)")
             traci.init(port=port, numRetries=600 if gui else 120, label=self.label)
             self.sumo = traci.getConnection(self.label)
             self.sumo.setOrder(2)
+            if gui:
+                mark_rsus(self.sumo, rsus)
+                route_rsus = [r for r in rsus if r["tls"] in {s["tls"] for s in scen["signals"]}] or rsus
+                try:
+                    self.sumo.gui.setOffset("View #0", statistics.fmean(r_["sumo_xy"][0] for r_ in route_rsus), statistics.fmean(r_["sumo_xy"][1] for r_ in route_rsus))
+                except Exception:                              # noqa: BLE001
+                    pass
+                pass  # the on-map legend was removed (owner, 2026-10-14)
             self.programs = {ts: self.sumo.trafficlight.getProgram(ts) for ts in self.ts_ids}
             self.logics = {ts: next(l for l in self.sumo.trafficlight.getAllProgramLogics(ts) if l.programID == self.programs[ts]) for ts in self.ts_ids}
 
@@ -371,6 +499,42 @@ def run(seed: int, arm: str, share: float = 1.0, scale: float | None = None, gui
                     conn.trafficlight.setProgramLogic(tls, env.logics[tls])
                     conn.trafficlight.setProgram(tls, env.programs[tls])
             r.on_junction_delivered = restore
+        if pos_check is not None and int(t) == pos_check:
+            state["sumo_pos"] = {v_: conn.vehicle.getPosition(v_) for v_ in conn.vehicle.getIDList()}   # SUMO's positions at this second, kept for the comparison
+        if pos_check is not None and pos_check < int(t) <= pos_check + 5 and "pos_check" not in state:   # validation: SUMO's position vs Veins's TraCIMobility position, same second
+            x0, y0, x1, y1 = net_bounds(Path(scen["net"])); margin = 25.0
+            rows = []
+            for vid in conn.vehicle.getIDList():
+                try:
+                    rep_ = conn.vehicle.getParameter(vid, "veins.xy")
+                except Exception:                              # noqa: BLE001
+                    rep_ = ""
+                if not rep_:
+                    continue
+                xo, yo, tv = (float(v) for v in rep_.split())
+                if abs(tv - pos_check) > 1e-6 or vid not in state.get("sumo_pos", {}):
+                    continue                                   # Veins's report for second pos_check, readable one step later; compared with SUMO's position at pos_check
+                vx, vy = xo + x0 - margin, (y1 - y0) - (yo - y0) + margin      # Veins's own omnet2traci (TraCICoordinateTransformation.cc:43)
+                sx, sy = state["sumo_pos"][vid]
+                rows.append({"vehicle": vid, "veins_stamp_s": tv, "sumo_xy": [round(sx, 3), round(sy, 3)], "veins_xy_in_sumo_frame": [round(vx, 3), round(vy, 3)], "veins_xy_omnet": [round(xo, 3), round(yo, 3)], "diff_m": round(math.dist((sx, sy), (vx, vy)), 4)})
+                if len(rows) == 5:
+                    break
+            n_rep = sum(1 for v_ in conn.vehicle.getIDList() if conn.vehicle.getParameter(v_, 'veins.xy'))
+            if not rows:
+                say(f'  (t={t:.0f}s: {n_rep} cars carry a veins.xy report; none stamped within this step yet)')
+                continue_check = True
+            else:
+                state["pos_check"] = rows
+            if rows:
+                say(f"  POSITION CHECK for second {pos_check} (SUMO getPosition at {pos_check} s vs Veins TraCIMobility report stamped {pos_check} s, read at {t:.0f} s):")
+            for rr in rows:
+                say(f"    {rr['vehicle']:>12s}  SUMO ({rr['sumo_xy'][0]:.3f}, {rr['sumo_xy'][1]:.3f})  Veins ({rr['veins_xy_in_sumo_frame'][0]:.3f}, {rr['veins_xy_in_sumo_frame'][1]:.3f})  diff {rr['diff_m']:.4f} m  (Veins stamp {rr['veins_stamp_s']:g} s)  {'OK' if rr['diff_m'] <= 0.1 else 'MISMATCH'}")
+        if gui and "tracking" not in state and service.AMBULANCE in conn.vehicle.getIDList():
+            try:
+                conn.gui.trackVehicle("View #0", service.AMBULANCE); conn.gui.setZoom("View #0", 1500); state["tracking"] = True
+                say(f"  t={t:.0f}s  the ambulance departs; the SUMO view now follows it")
+            except Exception:                              # noqa: BLE001
+                state["tracking"] = False
         n_ev = len(r.events)
         r.step(t)
         for e in r.events[n_ev:]:
@@ -397,14 +561,21 @@ def run(seed: int, arm: str, share: float = 1.0, scale: float | None = None, gui
     def say(s: str) -> None:
         print(s, flush=True); log.write(s + "\n"); log.flush()
 
-    say(f"VEINS LOOP seed {seed} arm {arm}: SUMO 1.21.0 --num-clients 2 on port {port}; client 1 Veins ({'Qtenv' if gui else 'Cmdenv'}), client 2 this process (SUMO-RL env, {'frozen Q-learning' if rl else 'fixed-time'});"
+    say(f"VEINS LOOP seed {seed} arm {arm}: SUMO {sumo_version()} --num-clients 2 on port {port}; client 1 Veins ({'Qtenv' if gui else 'Cmdenv'}), client 2 this process (SUMO-RL env, {'frozen Q-learning' if rl else 'fixed-time'});"
         f" {len(rsus)} RSUs at {[r['tls'][:12] for r in rsus]}; radios {'ACTIVE: DENM every 1 s, make-way rule v2 in the car app, RSU flags' if v2i else 'silent'}; horizon {horizon} s")
+    say(omnet_mode_line(gui))
     if gui:
         say("  In the OMNeT++ window press RUN (F5) or FAST (F6); the sumo-gui window follows. This process waits for the connection.")
+    if demo_early:
+        say("  *** DEMO SETTING: the ambulance departs at 120 s instead of the thesis's 900 s, so the alert is visible within a minute. Not a thesis result. ***")
     t0 = time.time()
     crashed, env, veins, steps = None, None, None, {"n": 0}
+    veins_proc: dict = {"p": None}
     for attempt in range(1, 6):                                # SUMO 1.21's two-client handshake fails now and then at connect (before any step): the run is restarted whole
         veins = subprocess.Popen(opp_cmd(gui), cwd=vdir, env=opp_env(), stdout=open(out / "veins.log", "a"), stderr=subprocess.STDOUT)
+        veins_proc["p"] = veins
+        if gui:
+            qtenv_left(veins)
         crashed, env = None, None
         try:
             env = VeinsEnv(net_file=str(scen["net"]), route_file=f"{scen['routes']},{vtype}", num_seconds=horizon, time_to_teleport=cfg["sumo"]["time_to_teleport_s"],
@@ -450,7 +621,7 @@ def run(seed: int, arm: str, share: float = 1.0, scale: float | None = None, gui
             if old.suffix in (".sca", ".vec", ".vci"):
                 old.rename(old.with_name(old.name + f".{int(time.time())}.handshake_failed"))
         port = free_port(port + 1)
-        vdir = write_veins(out, cfgf, scen, rsus, seed, arm, share, horizon, port, gui, cfg, beacons)
+        vdir = write_veins(out, cfgf, scen, rsus, seed, arm, share, horizon, port, gui, cfg, beacons, pos_check)
         say(f"  handshake failed before the first step (SUMO 1.21 two-client connect); attempt {attempt + 1} on port {port}")
         state.clear(); live.update({"tx": 0, "last_print": -1})
     r = state.get("run")
@@ -464,8 +635,8 @@ def run(seed: int, arm: str, share: float = 1.0, scale: float | None = None, gui
                     "out_of_range": v.get("not_received_below_sensitivity", 0), "preempted": bool(r and r.per_junction[tls]["delivered"])}
     head = {"city_id": CITY, "demand_id": DEMAND, "arm": arm, "signals": "sumo-rl Q-learning (frozen)" if rl else "SUMO fixed-time programmes", "signals_controlled": ts_ids,
             "v2i": v2i, "link": LINK if v2i else None, "technology": "802.11p_veins" if v2i else None, "equipped_share": share if v2i else 0.0, "seed": seed, "scale": scale,
-            "design": rl_v2x_loop.EMVLIGHT if v2i else None, "sumo": "1.21.0 --num-clients 2 (Veins order 1, this loop order 2)", "rsus": rsus, "horizon_s": horizon,
-            "wall_s": round(time.time() - t0, 1), "run_utc": datetime.now(timezone.utc).isoformat(), "veins_exit": veins.returncode,
+            "design": rl_v2x_loop.EMVLIGHT if v2i else None, "sumo": f"{sumo_version()} --num-clients 2 (Veins order 1, this loop order 2)", "rsus": rsus, "horizon_s": horizon,
+            "wall_s": round(time.time() - t0, 1), "run_utc": datetime.now(timezone.utc).isoformat(), "veins_exit": veins.returncode, "position_check": state.get("pos_check"),
             **(r.summary() if r else {}), "messages": {"sent": vs.get("denm_sent", 0), "delivered": vs.get("rsu_receptions", 0) + vs.get("car_receptions", 0),
                                                         "lost": sum(p["lost"] for p in per.values()), "out_of_range": sum(p["out_of_range"] for p in per.values())} if v2i else None,
             "messages_per_junction": per if v2i else {}, "preemption_events": r.events if r else [], "veins": vs}
@@ -498,6 +669,8 @@ def main(argv: list[str] | None = None) -> int:
     ap.add_argument("--share", type=float, default=1.0)
     ap.add_argument("--no-gui", action="store_true", help="Cmdenv + sumo (the evidence runs); default: Qtenv + sumo-gui windows")
     ap.add_argument("--horizon", type=int, default=None, help="simulated seconds (default: the thesis's 3600); tests only")
+    ap.add_argument("--pos-check", type=int, default=None, help="validation: at this second, compare 5 cars' SUMO positions with Veins's TraCIMobility positions")
+    ap.add_argument("--demo-early", action="store_true", help="DEMO SETTING: the ambulance departs at 120 s instead of 900 s (not the thesis protocol)")
     ap.add_argument("--beacons", action="store_true", help="rl_v2i: every car also sends Veins's 1 Hz beacon (CAM-like channel load; slower)")
     ap.add_argument("--out", type=Path, default=None, help="output folder; default evidence/live_runs/veins_ambulance_loop/<stamp> (the evidence run passes evidence/veins_ambulance_loop)")
     a = ap.parse_args(argv)
@@ -505,7 +678,7 @@ def main(argv: list[str] | None = None) -> int:
     why = ready()
     if why:
         print(f"STOP: {why}"); return 1
-    root = (a.out or (REPO / "evidence/live_runs/veins_ambulance_loop" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"))); root.mkdir(parents=True, exist_ok=True)
+    root = (a.out or (REPO / "evidence/live_runs/veins_ambulance_loop" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ"))).resolve(); root.mkdir(parents=True, exist_ok=True)
     log = open(root / "run.log", "a")
     veins_env()
     from core.simulation.ambulance import rl_v2x_loop
@@ -516,7 +689,7 @@ def main(argv: list[str] | None = None) -> int:
     for seed in a.seeds:
         row = {"seed": seed}
         for arm in a.arms:
-            m = run(seed, arm, a.share, scale, gui=not a.no_gui, root=root / "runs", horizon=a.horizon, beacons=a.beacons)
+            m = run(seed, arm, a.share, scale, gui=not a.no_gui, root=root / "runs", horizon=a.horizon, beacons=a.beacons, demo_early=a.demo_early, pos_check=a.pos_check)
             say_run(m, log)
             row[arm] = {"ambulance_s": (m.get("ambulance") or {}).get("travel_time_s"), "arrived": (m.get("ambulance") or {}).get("arrived"), "others_vehicle_hours": (m.get("others") or {}).get("total_vehicle_hours"),
                         "teleports": m.get("teleports"), "messages": m.get("messages"), "messages_per_junction": m.get("messages_per_junction"), "preemption_events": m.get("preemption_events"),

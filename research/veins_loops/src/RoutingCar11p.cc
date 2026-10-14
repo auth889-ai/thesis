@@ -52,6 +52,7 @@ void RoutingCar11p::handleSelfMsg(cMessage* msg)
             wsm->addBitLength(data.str().size() * 8);
             sendDown(wsm);
             statusSent++;
+            traciVehicle->setParameter("v2x.sent", std::to_string(statusSent) + " " + std::to_string(simTime().dbl()));   // for --explain: count and exact send time of this car's last status
         }
         scheduleAt(simTime() + par("statusInterval"), statusTimer);
     }
