@@ -1,0 +1,8 @@
+<configuration>
+  <input><net-file value="/Users/jannatulferdouseva/thesis/data/cities/dhaka/sumo/corridor/dhaka_corridor.net.xml.gz"/><route-files value="/Users/jannatulferdouseva/thesis/data/cities/dhaka/sumo/corridor/dhaka_density.rou.xml,/Users/jannatulferdouseva/thesis/evidence/veins_ambulance_loop_sumo127/runs/rl_v2i_p100_s15_x0.78/ambulance_type.rou.xml"/><additional-files value="/Users/jannatulferdouseva/thesis/evidence/veins_ambulance_loop_sumo127/runs/rl_v2i_p100_s15_x0.78/additional.xml,/Users/jannatulferdouseva/thesis/research/veins_dhaka/dhaka_buildings.poly.xml"/></input>
+  <time><begin value="0"/><end value="3600"/></time>
+  <processing><scale value="0.78"/><lateral-resolution value="0.8"/><time-to-teleport value="300"/>
+    <max-depart-delay value="-1"/><waiting-time-memory value="1000"/><ignore-route-errors value="true"/><device.rerouting.probability value="0"/></processing>
+  <output><tripinfo-output value="/Users/jannatulferdouseva/thesis/evidence/veins_ambulance_loop_sumo127/runs/rl_v2i_p100_s15_x0.78/tripinfo.xml"/><tripinfo-output.write-unfinished value="true"/><statistic-output value="/Users/jannatulferdouseva/thesis/evidence/veins_ambulance_loop_sumo127/runs/rl_v2i_p100_s15_x0.78/statistic.xml"/></output>
+  <report><no-step-log value="true"/><no-warnings value="true"/></report>
+</configuration>

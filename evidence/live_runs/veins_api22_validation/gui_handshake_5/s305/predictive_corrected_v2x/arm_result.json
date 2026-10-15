@@ -1,0 +1,939 @@
+{
+ "simulation_run_id": "sim_veins_s305_predictive_corrected_v2x",
+ "arm": "predictive_corrected_v2x",
+ "seed": 305,
+ "profile": "veins_802.11p",
+ "penetration": 0.3,
+ "moment": "prepeak",
+ "config_hash": "ea08dddedc14",
+ "network_hash": "0d81df27ab2d",
+ "sumo": "1.27.1 --num-clients 2 (Veins order 1, this loop order 2)",
+ "fork": null,
+ "warm_up_s": 60,
+ "round_s": 120,
+ "demo_setting": true,
+ "design": "Santamaria, Fazio, Raimondo, Tropea, De Rango, IEEE TVT 68(5) 2019, doi:10.1109/TVT.2019.2905753 (design: RSUs + 802.11p + predictive rerouting; no code released)",
+ "information": "gwnet+correction",
+ "state": "ok",
+ "crash": null,
+ "veins_exit": 0,
+ "metrics": {
+  "arrived": 1185,
+  "unfinished_at_horizon": 2155,
+  "unfinished": 2155,
+  "total_vehicle_hours": 395.99583333333334,
+  "mean_travel_time_all": 426.82185628742513,
+  "mean_travel_time_s": 502.52911392405065,
+  "p95_travel_time_s": 954.0,
+  "mean_waiting_s": 80.64556962025317,
+  "total_waiting_s": 95565.0,
+  "mean_time_loss_s": 170.0391729957806,
+  "mean_depart_delay_s": 0.3948691983122363,
+  "vehicles_rerouted_at_least_once": 0,
+  "teleports": 1,
+  "loaded": 12480,
+  "inserted": 3340,
+  "running_at_end": 2155,
+  "waiting_to_insert_at_end": 1,
+  "mean_queue_veh": 214.15,
+  "max_queue_veh": 576.0,
+  "mean_running_veh": 1139.48,
+  "queue_steps": 1270,
+  "never_inserted": 0,
+  "never_inserted_vehicle_hours": 0.0,
+  "congestion": {
+   "major_edges": 4952,
+   "teleport_reasons": {
+    "total": 1,
+    "jam": 0,
+    "yield": 0,
+    "wrongLane": 1
+   },
+   "busiest_interval_utilisation": {
+    "p50": 0.029,
+    "p90": 0.129,
+    "max": 0.6,
+    "share_ge_0.5": 0.001,
+    "share_ge_0.7": 0.0,
+    "share_ge_0.9": 0.0
+   },
+   "mean_occupancy_pct_major": 0.98,
+   "spillback_major_edges_occ_ge_80": 0,
+   "spillback_share": 0.0,
+   "max_running_vehicles": 2156,
+   "max_halting_vehicles": 576,
+   "mean_halting_vehicles": 214.1,
+   "mean_speed_mps": 13.89,
+   "min_mean_speed_mps": 11.58,
+   "loaded_mean_speed_mps": 13.5,
+   "loaded_min_speed_mps": 11.58,
+   "loaded_mean_halting_share": 0.184,
+   "loaded_max_halting_share": 0.27,
+   "loaded_steps": 998
+  },
+  "total_vehicle_hours_incl_never_inserted": 395.9958,
+  "wall_s": 213.1
+ },
+ "network": {
+  "link": "Veins 5.3.1 IEEE 802.11p (packet level), 20 mW, 6 Mbit/s, no obstacle shadowing on the LA twin",
+  "uplink": {
+   "messages_tx": 37752,
+   "messages_rx_at_rsus": 20589,
+   "unique_to_server": 15936,
+   "duplicates_two_rsus": 4640,
+   "delivery_ratio_unique": 0.4221
+  },
+  "downlink": {
+   "advice_decided": 19,
+   "still_pending_at_end": 2,
+   "handed_to_rsu": 4,
+   "broadcast_by_rsus": 4,
+   "received_by_car": 1,
+   "applied": 1,
+   "inapplicable": 0,
+   "expired_no_rsu_in_reach": 13,
+   "delivery_ratio": 0.25
+  },
+  "connected_vehicles": 995,
+  "penetration_configured": 0.3,
+  "rsus": 20,
+  "rsu_reach_m": 600.0,
+  "reroutes_applied": 1,
+  "veins": {
+   "source": "Veins scalars (results/*.sca), its PHY/MAC",
+   "nodes": 996,
+   "status_sent": 37752,
+   "status_received_at_rsus": 20589,
+   "advice_sent_by_rsus": 4,
+   "advice_received": 1,
+   "advice_applied": 1,
+   "advice_inapplicable": 0,
+   "advice_deferred_on_junction": 0,
+   "frames_lost_all_nodes": {
+    "interference_or_collision": 0,
+    "while_transmitting": 0
+   },
+   "per_rsu": [
+    {
+     "rsu": 0,
+     "node": "cluster_15027596_1719546613",
+     "status_received": 2145,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 1,
+     "node": "9276692666",
+     "status_received": 1690,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 2,
+     "node": "123455061",
+     "status_received": 1477,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 3,
+     "node": "1719559337",
+     "status_received": 1265,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 4,
+     "node": "123495471",
+     "status_received": 1106,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 5,
+     "node": "9786469530",
+     "status_received": 999,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 6,
+     "node": "21490206",
+     "status_received": 1103,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 7,
+     "node": "20820632",
+     "status_received": 840,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 8,
+     "node": "863795835-AddedOnRampNode",
+     "status_received": 860,
+     "advice_sent": 1,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 9,
+     "node": "15029454",
+     "status_received": 775,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 10,
+     "node": "298583385",
+     "status_received": 655,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 11,
+     "node": "1852134918",
+     "status_received": 1030,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 12,
+     "node": "4073554455",
+     "status_received": 1583,
+     "advice_sent": 2,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 13,
+     "node": "1686584226",
+     "status_received": 647,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 14,
+     "node": "1233732679",
+     "status_received": 667,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 15,
+     "node": "1956040650",
+     "status_received": 651,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 16,
+     "node": "1718378908",
+     "status_received": 537,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 17,
+     "node": "403618471",
+     "status_received": 793,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 18,
+     "node": "20189446",
+     "status_received": 1007,
+     "advice_sent": 0,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    },
+    {
+     "rsu": 19,
+     "node": "1614923794",
+     "status_received": 759,
+     "advice_sent": 1,
+     "lost_interference_or_collision": 0,
+     "lost_while_transmitting": 0
+    }
+   ]
+  }
+ },
+ "rounds": [
+  {
+   "routing_run_id": "rt_v2x_veins_s305_predictive_corrected_v2x_r0",
+   "round": 0,
+   "sim_time_s": 120,
+   "as_of_index": 34179,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "1b91f2d70deeeb89",
+   "raw_prediction_hash": "df94f54689d4f253",
+   "future_cost_hash": "51d5877952bf8e98",
+   "priced_edges": 210,
+   "reroute_budget": 6,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 36,
+    "NO_ALTERNATIVE": 21,
+    "REROUTE": 2
+   },
+   "correction": {
+    "residual_edges": 1,
+    "propagated_edges": 4,
+    "by_kind_at_h0": {
+     "OBSERVED": 1,
+     "RESIDUAL_UPSTREAM": 4
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -7.64,
+      "1023269928"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 0,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.046,
+   "vehicles_considered": 59,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 36,
+    "NO_ALTERNATIVE": 21,
+    "REROUTE": 2
+   },
+   "recommendations_sent": 2,
+   "statuses_known": 15,
+   "edges_with_current_speed": 34
+  },
+  {
+   "routing_run_id": "rt_v2x_veins_s305_predictive_corrected_v2x_r1",
+   "round": 1,
+   "sim_time_s": 240,
+   "as_of_index": 34179,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "1b91f2d70deeeb89",
+   "raw_prediction_hash": "df94f54689d4f253",
+   "future_cost_hash": "e9b2d6774fe6216f",
+   "priced_edges": 210,
+   "reroute_budget": 13,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 58,
+    "NO_ALTERNATIVE": 63,
+    "REROUTE": 2,
+    "REJECTED_COOLDOWN": 1
+   },
+   "correction": {
+    "residual_edges": 1,
+    "propagated_edges": 5,
+    "by_kind_at_h0": {
+     "OBSERVED": 1,
+     "RESIDUAL_UPSTREAM": 5
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -6.25,
+      "978443691"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 0,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.047,
+   "vehicles_considered": 124,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 58,
+    "NO_ALTERNATIVE": 63,
+    "REROUTE": 2,
+    "REJECTED_COOLDOWN": 1
+   },
+   "recommendations_sent": 2,
+   "statuses_known": 56,
+   "edges_with_current_speed": 104
+  },
+  {
+   "routing_run_id": "rt_v2x_veins_s305_predictive_corrected_v2x_r2",
+   "round": 2,
+   "sim_time_s": 360,
+   "as_of_index": 34180,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "fded07948488dd36",
+   "raw_prediction_hash": "e4190d5cb1e58e95",
+   "future_cost_hash": "8b3d527f41ffd012",
+   "priced_edges": 211,
+   "reroute_budget": 19,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 85,
+    "NO_ALTERNATIVE": 98,
+    "REJECTED_COOLDOWN": 2
+   },
+   "correction": {
+    "residual_edges": 3,
+    "propagated_edges": 7,
+    "by_kind_at_h0": {
+     "OBSERVED": 3,
+     "RESIDUAL_UPSTREAM": 7
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -5.85,
+      "123570164"
+     ],
+     [
+      -4.91,
+      "123570158"
+     ],
+     [
+      -4.37,
+      "864049094"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 0,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.047,
+   "vehicles_considered": 185,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 85,
+    "NO_ALTERNATIVE": 98,
+    "REJECTED_COOLDOWN": 2
+   },
+   "recommendations_sent": 0,
+   "statuses_known": 107,
+   "edges_with_current_speed": 184
+  },
+  {
+   "routing_run_id": "rt_v2x_veins_s305_predictive_corrected_v2x_r3",
+   "round": 3,
+   "sim_time_s": 480,
+   "as_of_index": 34180,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "fded07948488dd36",
+   "raw_prediction_hash": "e4190d5cb1e58e95",
+   "future_cost_hash": "b8106e35c73bc863",
+   "priced_edges": 212,
+   "reroute_budget": 24,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 100,
+    "NO_ALTERNATIVE": 130,
+    "REROUTE": 2
+   },
+   "correction": {
+    "residual_edges": 2,
+    "propagated_edges": 9,
+    "by_kind_at_h0": {
+     "OBSERVED": 2,
+     "RESIDUAL_UPSTREAM": 9
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -7.07,
+      "978443691"
+     ],
+     [
+      -6.82,
+      "1023269928"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 0,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.044,
+   "vehicles_considered": 232,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 100,
+    "NO_ALTERNATIVE": 130,
+    "REROUTE": 2
+   },
+   "recommendations_sent": 2,
+   "statuses_known": 171,
+   "edges_with_current_speed": 215
+  },
+  {
+   "routing_run_id": "rt_v2x_veins_s305_predictive_corrected_v2x_r4",
+   "round": 4,
+   "sim_time_s": 600,
+   "as_of_index": 34181,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "afb36fe2e99946d0",
+   "raw_prediction_hash": "e917ae9b0cffcd8c",
+   "future_cost_hash": "2c59f976eb1f1168",
+   "priced_edges": 215,
+   "reroute_budget": 27,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "NO_ALTERNATIVE": 157,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 109
+   },
+   "correction": {
+    "residual_edges": 4,
+    "propagated_edges": 11,
+    "by_kind_at_h0": {
+     "OBSERVED": 4,
+     "RESIDUAL_UPSTREAM": 11
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -11.11,
+      "978443691"
+     ],
+     [
+      -6.41,
+      "1023269928"
+     ],
+     [
+      -5.83,
+      "885098190"
+     ],
+     [
+      -5.7,
+      "36040729-AddedOffRampEdge"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 0,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.045,
+   "vehicles_considered": 266,
+   "decisions": {
+    "NO_ALTERNATIVE": 157,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 109
+   },
+   "recommendations_sent": 0,
+   "statuses_known": 231,
+   "edges_with_current_speed": 265
+  },
+  {
+   "routing_run_id": "rt_v2x_veins_s305_predictive_corrected_v2x_r5",
+   "round": 5,
+   "sim_time_s": 720,
+   "as_of_index": 34181,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "afb36fe2e99946d0",
+   "raw_prediction_hash": "e917ae9b0cffcd8c",
+   "future_cost_hash": "dbcf47f3d75e4d25",
+   "priced_edges": 224,
+   "reroute_budget": 34,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 138,
+    "NO_ALTERNATIVE": 192,
+    "REJECTED_COOLDOWN": 1
+   },
+   "correction": {
+    "residual_edges": 10,
+    "propagated_edges": 29,
+    "by_kind_at_h0": {
+     "OBSERVED": 10,
+     "RESIDUAL_UPSTREAM": 29
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -13.06,
+      "123570155"
+     ],
+     [
+      -8.72,
+      "1023269928"
+     ],
+     [
+      -8.49,
+      "123570163"
+     ],
+     [
+      -7.49,
+      "123570164"
+     ],
+     [
+      -6.54,
+      "866544914-AddedOnRampEdge"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 0,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.062,
+   "vehicles_considered": 331,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 138,
+    "NO_ALTERNATIVE": 192,
+    "REJECTED_COOLDOWN": 1
+   },
+   "recommendations_sent": 0,
+   "statuses_known": 306,
+   "edges_with_current_speed": 273
+  },
+  {
+   "routing_run_id": "rt_v2x_veins_s305_predictive_corrected_v2x_r6",
+   "round": 6,
+   "sim_time_s": 840,
+   "as_of_index": 34181,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "afb36fe2e99946d0",
+   "raw_prediction_hash": "e917ae9b0cffcd8c",
+   "future_cost_hash": "53a137a127d3057f",
+   "priced_edges": 216,
+   "reroute_budget": 39,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 188,
+    "NO_ALTERNATIVE": 198,
+    "REROUTE": 1
+   },
+   "correction": {
+    "residual_edges": 7,
+    "propagated_edges": 20,
+    "by_kind_at_h0": {
+     "OBSERVED": 7,
+     "RESIDUAL_UPSTREAM": 20
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -11.61,
+      "1023269928"
+     ],
+     [
+      -6.45,
+      "123570163"
+     ],
+     [
+      -5.38,
+      "404280188-AddedOnRampEdge"
+     ],
+     [
+      -4.84,
+      "32455824"
+     ],
+     [
+      -4.75,
+      "866543941-AddedOnRampEdge"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 0,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.053,
+   "vehicles_considered": 387,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 188,
+    "NO_ALTERNATIVE": 198,
+    "REROUTE": 1
+   },
+   "recommendations_sent": 1,
+   "statuses_known": 393,
+   "edges_with_current_speed": 298
+  },
+  {
+   "routing_run_id": "rt_v2x_veins_s305_predictive_corrected_v2x_r7",
+   "round": 7,
+   "sim_time_s": 960,
+   "as_of_index": 34182,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "c3f8cb28874299b7",
+   "raw_prediction_hash": "5932bcce5a029207",
+   "future_cost_hash": "e64c34bd0a6ba768",
+   "priced_edges": 225,
+   "reroute_budget": 46,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 189,
+    "REROUTE": 7,
+    "NO_ALTERNATIVE": 255,
+    "REJECTED_COOLDOWN": 1
+   },
+   "correction": {
+    "residual_edges": 5,
+    "propagated_edges": 27,
+    "by_kind_at_h0": {
+     "OBSERVED": 5,
+     "RESIDUAL_UPSTREAM": 27
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -13.92,
+      "166858623"
+     ],
+     [
+      -9.35,
+      "32455824"
+     ],
+     [
+      -8.29,
+      "866543941-AddedOnRampEdge"
+     ],
+     [
+      -7.92,
+      "866648659-AddedOnRampEdge"
+     ],
+     [
+      -5.67,
+      "978443691"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 0,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.054,
+   "vehicles_considered": 452,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 189,
+    "REROUTE": 7,
+    "NO_ALTERNATIVE": 255,
+    "REJECTED_COOLDOWN": 1
+   },
+   "recommendations_sent": 7,
+   "statuses_known": 485,
+   "edges_with_current_speed": 318
+  },
+  {
+   "routing_run_id": "rt_v2x_veins_s305_predictive_corrected_v2x_r8",
+   "round": 8,
+   "sim_time_s": 1080,
+   "as_of_index": 34182,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "c3f8cb28874299b7",
+   "raw_prediction_hash": "5932bcce5a029207",
+   "future_cost_hash": "b3f38e4ff9023484",
+   "priced_edges": 217,
+   "reroute_budget": 51,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 217,
+    "REJECTED_COOLDOWN": 6,
+    "NO_ALTERNATIVE": 276,
+    "REROUTE": 3
+   },
+   "correction": {
+    "residual_edges": 6,
+    "propagated_edges": 17,
+    "by_kind_at_h0": {
+     "OBSERVED": 6,
+     "RESIDUAL_UPSTREAM": 17
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -13.47,
+      "1023269928"
+     ],
+     [
+      -5.4,
+      "866648659-AddedOnRampEdge"
+     ],
+     [
+      -5.32,
+      "885098190"
+     ],
+     [
+      -5.15,
+      "701282684"
+     ],
+     [
+      -3.92,
+      "123570161"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 0,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.048,
+   "vehicles_considered": 502,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 217,
+    "REJECTED_COOLDOWN": 6,
+    "NO_ALTERNATIVE": 276,
+    "REROUTE": 3
+   },
+   "recommendations_sent": 3,
+   "statuses_known": 590,
+   "edges_with_current_speed": 348
+  },
+  {
+   "routing_run_id": "rt_v2x_veins_s305_predictive_corrected_v2x_r9",
+   "round": 9,
+   "sim_time_s": 1200,
+   "as_of_index": 34183,
+   "checkpoint_sha256": "548e399bd53c",
+   "input_window_hash": "1c9bc9a01da26358",
+   "raw_prediction_hash": "d562ff264a2cd5f1",
+   "future_cost_hash": "5f27b4a63aad76c1",
+   "priced_edges": 213,
+   "reroute_budget": 55,
+   "deferred_by_budget": 0,
+   "decisions_after_budget": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 221,
+    "NO_ALTERNATIVE": 316,
+    "REJECTED_COOLDOWN": 2,
+    "REROUTE": 2
+   },
+   "correction": {
+    "residual_edges": 3,
+    "propagated_edges": 12,
+    "by_kind_at_h0": {
+     "OBSERVED": 3,
+     "RESIDUAL_UPSTREAM": 12
+    },
+    "tau_min": 30.0,
+    "upstream_hops": 2,
+    "hop_decay": 0.5,
+    "largest_residuals": [
+     [
+      -9.24,
+      "33411038#1"
+     ],
+     [
+      -4.72,
+      "32455824"
+     ],
+     [
+      -4.45,
+      "863795835-AddedOnRampEdge"
+     ]
+    ]
+   },
+   "incidents_detected_so_far": 0,
+   "time_dependent": true,
+   "optimizer": "vehicle",
+   "assignment_diagnostics": null,
+   "candidate_generator": "duarouter (eclipse-sumo v1_27_1): run 0 exact forecast weights, runs 1..K-1 --weights.random-factor",
+   "direct_edges": 74,
+   "derived_edges": 134,
+   "observed_edges_fused": 0,
+   "information": "gwnet+correction",
+   "inference_seconds": 0.057,
+   "vehicles_considered": 541,
+   "decisions": {
+    "KEEP_CURRENT_BELOW_THRESHOLD": 221,
+    "NO_ALTERNATIVE": 316,
+    "REJECTED_COOLDOWN": 2,
+    "REROUTE": 2
+   },
+   "recommendations_sent": 2,
+   "statuses_known": 675,
+   "edges_with_current_speed": 318
+  }
+ ],
+ "routing_run_ids": [
+  "rt_v2x_veins_s305_predictive_corrected_v2x_r0",
+  "rt_v2x_veins_s305_predictive_corrected_v2x_r1",
+  "rt_v2x_veins_s305_predictive_corrected_v2x_r2",
+  "rt_v2x_veins_s305_predictive_corrected_v2x_r3",
+  "rt_v2x_veins_s305_predictive_corrected_v2x_r4",
+  "rt_v2x_veins_s305_predictive_corrected_v2x_r5",
+  "rt_v2x_veins_s305_predictive_corrected_v2x_r6",
+  "rt_v2x_veins_s305_predictive_corrected_v2x_r7",
+  "rt_v2x_veins_s305_predictive_corrected_v2x_r8",
+  "rt_v2x_veins_s305_predictive_corrected_v2x_r9"
+ ],
+ "reroutes_applied": 1,
+ "out_dir": "evidence/live_runs/veins_api22_validation/gui_handshake_5/s305/predictive_corrected_v2x",
+ "run_utc": "2026-10-14T01:24:20.321316+00:00"
+}

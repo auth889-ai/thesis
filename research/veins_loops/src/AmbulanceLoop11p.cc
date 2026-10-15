@@ -149,6 +149,22 @@ void AmbulanceLoop11p::onWSM(BaseFrame1609_4* frame)
     scheduleAt(simTime() + par("makewayHold"), releaseTimer);
 }
 
+void AmbulanceLoop11p::handlePositionUpdate(cObject* obj)
+{
+    DemoBaseApplLayer::handlePositionUpdate(obj);
+    // validation of the TraCI coupling: once, at posReportAt, write the position Veins's TraCIMobility holds for this car
+    // (OMNeT++ coordinates) to its SUMO parameter veins.xy, so the Python client can compare it with SUMO's own position
+    double at = par("posReportAt").doubleValue();
+    if (!posReported && at >= 0 && simTime().dbl() >= at) {
+        posReported = true;
+        Coord p = mobility->getPositionAt(simTime());
+        std::ostringstream s;
+        s.precision(10);
+        s << p.x << " " << p.y << " " << simTime().dbl();
+        traciVehicle->setParameter("veins.xy", s.str());
+    }
+}
+
 void AmbulanceLoop11p::finish()
 {
     DemoBaseApplLayer::finish();

@@ -1,0 +1,133 @@
+{
+ "city_id": "dhaka",
+ "demand_id": "dhaka_density",
+ "arm": "fixed",
+ "signals": "SUMO fixed-time programmes",
+ "signals_controlled": [
+  "6904866115",
+  "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+  "cluster_10139575501_2446124135_2446124154_3501293480"
+ ],
+ "v2i": false,
+ "link": null,
+ "technology": null,
+ "equipped_share": 0.0,
+ "seed": 12,
+ "scale": 0.78,
+ "design": null,
+ "sumo": "1.27.1 --num-clients 2 (Veins order 1, this loop order 2)",
+ "rsus": [
+  {
+   "tls": "6904866115",
+   "sumo_xy": [
+    3041.77,
+    4741.03
+   ],
+   "veins_xy": [
+    338.13,
+    54.79
+   ]
+  },
+  {
+   "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+   "sumo_xy": [
+    3601.17,
+    2718.78
+   ],
+   "veins_xy": [
+    897.53,
+    2077.04
+   ]
+  },
+  {
+   "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+   "sumo_xy": [
+    3711.53,
+    2216.35
+   ],
+   "veins_xy": [
+    1007.89,
+    2579.47
+   ]
+  }
+ ],
+ "horizon_s": 3600,
+ "wall_s": 313.8,
+ "run_utc": "2026-10-14T01:14:33.104069+00:00",
+ "veins_exit": 0,
+ "position_check": null,
+ "makeway": {
+  "version": 2,
+  "distance_m": 100,
+  "keep_strategic": true
+ },
+ "state": "arrived",
+ "departed_s": 901.0,
+ "arrived_s": 1244.0,
+ "messages": null,
+ "vehicles_alerted": 0,
+ "junctions_preempted": [],
+ "messages_per_junction": {},
+ "preemption_events": [],
+ "veins": {
+  "source": "Veins scalars (results/*.sca), its PHY/MAC",
+  "nodes": 3484,
+  "denm_sent": 0,
+  "car_receptions": 0,
+  "cars_made_way": 0,
+  "rsu_receptions": 0,
+  "per_rsu": {
+   "6904866115": {
+    "rsu": 0,
+    "sent": 0,
+    "received": 0,
+    "lost_interference_or_collision": 0,
+    "lost_while_transmitting": 0,
+    "not_received_below_sensitivity": 0,
+    "flags_written": 0
+   },
+   "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+    "rsu": 1,
+    "sent": 0,
+    "received": 0,
+    "lost_interference_or_collision": 0,
+    "lost_while_transmitting": 0,
+    "not_received_below_sensitivity": 0,
+    "flags_written": 0
+   },
+   "cluster_10139575501_2446124135_2446124154_3501293480": {
+    "rsu": 2,
+    "sent": 0,
+    "received": 0,
+    "lost_interference_or_collision": 0,
+    "lost_while_transmitting": 0,
+    "not_received_below_sensitivity": 0,
+    "flags_written": 0
+   }
+  },
+  "beacons_generated": 0,
+  "beacons_received": 0,
+  "frames_lost_all_nodes": {
+   "interference_or_collision": 0,
+   "while_transmitting": 0
+  },
+  "ambulance_time_in_veins_s": 343.0,
+  "ambulance_modules": 1
+ },
+ "ambulance": {
+  "arrived": true,
+  "travel_time_s": 343.0,
+  "time_loss_s": 202.01,
+  "waiting_s": 44.0,
+  "depart_s": 900.0
+ },
+ "others": {
+  "vehicles": 3260,
+  "arrived": 1493,
+  "unfinished_at_horizon": 1767,
+  "total_vehicle_hours": 886.66,
+  "mean_time_loss_s": 605.97,
+  "mean_waiting_s": 407.52
+ },
+ "teleports": 250
+}

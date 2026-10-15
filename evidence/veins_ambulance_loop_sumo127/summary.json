@@ -1,0 +1,1113 @@
+{
+ "generated_utc": "2026-10-14T03:09:44.001970+00:00",
+ "label": "SIMULATION, Dhaka corridor at the thesis's Dhaka-density level; network: Veins 5.3.1 IEEE 802.11p (packet level: PHY/MAC, building shadowing, interference), 20 mW, 6 Mbit/s",
+ "scale": 0.78,
+ "share": 1.0,
+ "design": "Su et al., EMVLight, AAAI 2022, arXiv:2109.05429 (design idea only: primary = the junction being entered, secondary = the next one)",
+ "horizon_s": null,
+ "seeds": [
+  11,
+  12,
+  13,
+  14,
+  15
+ ],
+ "beacons": false,
+ "rows": [
+  {
+   "seed": 11,
+   "fixed": {
+    "ambulance_s": 292.0,
+    "arrived": true,
+    "others_vehicle_hours": 532.33,
+    "teleports": 35,
+    "messages": null,
+    "messages_per_junction": {},
+    "preemption_events": [],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 3413,
+     "denm_sent": 0,
+     "car_receptions": 0,
+     "cars_made_way": 0,
+     "rsu_receptions": 0,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 292.0,
+     "ambulance_modules": 1
+    },
+    "state": "arrived"
+   },
+   "rl": {
+    "ambulance_s": 188.0,
+    "arrived": true,
+    "others_vehicle_hours": 793.946,
+    "teleports": 500,
+    "messages": null,
+    "messages_per_junction": {},
+    "preemption_events": [],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 3711,
+     "denm_sent": 0,
+     "car_receptions": 0,
+     "cars_made_way": 0,
+     "rsu_receptions": 0,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 188.0,
+     "ambulance_modules": 1
+    },
+    "state": "arrived"
+   },
+   "rl_v2i": {
+    "ambulance_s": 186.0,
+    "arrived": true,
+    "others_vehicle_hours": 766.825,
+    "teleports": 462,
+    "messages": {
+     "sent": 186,
+     "delivered": 5135,
+     "lost": 0,
+     "out_of_range": 317
+    },
+    "messages_per_junction": {
+     "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+      "sent": 186,
+      "delivered": 23,
+      "lost": 0,
+      "out_of_range": 163,
+      "preempted": true
+     },
+     "cluster_10139575501_2446124135_2446124154_3501293480": {
+      "sent": 186,
+      "delivered": 32,
+      "lost": 0,
+      "out_of_range": 154,
+      "preempted": true
+     }
+    },
+    "preemption_events": [
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "informed",
+      "t": 963.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "takeover",
+      "t": 963.0
+     },
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "informed",
+      "t": 964.0
+     },
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "takeover",
+      "t": 964.0
+     },
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "released",
+      "t": 966.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "released",
+      "t": 987.0
+     }
+    ],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 3694,
+     "denm_sent": 186,
+     "car_receptions": 5076,
+     "cars_made_way": 19,
+     "rsu_receptions": 59,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 186,
+       "received": 4,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 182,
+       "flags_written": 8
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 186,
+       "received": 23,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 163,
+       "flags_written": 46
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 186,
+       "received": 32,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 154,
+       "flags_written": 64
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 186.0,
+     "ambulance_modules": 1
+    },
+    "state": "arrived"
+   }
+  },
+  {
+   "seed": 12,
+   "fixed": {
+    "ambulance_s": 343.0,
+    "arrived": true,
+    "others_vehicle_hours": 886.66,
+    "teleports": 250,
+    "messages": null,
+    "messages_per_junction": {},
+    "preemption_events": [],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 3484,
+     "denm_sent": 0,
+     "car_receptions": 0,
+     "cars_made_way": 0,
+     "rsu_receptions": 0,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 343.0,
+     "ambulance_modules": 1
+    },
+    "state": "arrived"
+   },
+   "rl": {
+    "ambulance_s": null,
+    "arrived": false,
+    "others_vehicle_hours": null,
+    "teleports": null,
+    "messages": null,
+    "messages_per_junction": {},
+    "preemption_events": [],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 433,
+     "denm_sent": 0,
+     "car_receptions": 0,
+     "cars_made_way": 0,
+     "rsu_receptions": 0,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": null,
+     "ambulance_modules": 0
+    },
+    "state": "crashed"
+   },
+   "rl_v2i": {
+    "ambulance_s": 648.0,
+    "arrived": true,
+    "others_vehicle_hours": 986.591,
+    "teleports": 578,
+    "messages": {
+     "sent": 648,
+     "delivered": 123846,
+     "lost": 0,
+     "out_of_range": 1244
+    },
+    "messages_per_junction": {
+     "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+      "sent": 648,
+      "delivered": 23,
+      "lost": 0,
+      "out_of_range": 625,
+      "preempted": true
+     },
+     "cluster_10139575501_2446124135_2446124154_3501293480": {
+      "sent": 648,
+      "delivered": 29,
+      "lost": 0,
+      "out_of_range": 619,
+      "preempted": true
+     }
+    },
+    "preemption_events": [
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "informed",
+      "t": 1424.0
+     },
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "takeover",
+      "t": 1424.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "informed",
+      "t": 1427.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "takeover",
+      "t": 1427.0
+     },
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "released",
+      "t": 1428.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "released",
+      "t": 1448.0
+     }
+    ],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 3803,
+     "denm_sent": 648,
+     "car_receptions": 123789,
+     "cars_made_way": 39,
+     "rsu_receptions": 57,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 648,
+       "received": 5,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 643,
+       "flags_written": 10
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 648,
+       "received": 23,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 625,
+       "flags_written": 46
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 648,
+       "received": 29,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 619,
+       "flags_written": 58
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 648.0,
+     "ambulance_modules": 2
+    },
+    "state": "arrived"
+   }
+  },
+  {
+   "seed": 13,
+   "fixed": {
+    "ambulance_s": 898.0,
+    "arrived": true,
+    "others_vehicle_hours": 1069.531,
+    "teleports": 498,
+    "messages": null,
+    "messages_per_junction": {},
+    "preemption_events": [],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 3632,
+     "denm_sent": 0,
+     "car_receptions": 0,
+     "cars_made_way": 0,
+     "rsu_receptions": 0,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 898.0,
+     "ambulance_modules": 1
+    },
+    "state": "arrived"
+   },
+   "rl": {
+    "ambulance_s": null,
+    "arrived": false,
+    "others_vehicle_hours": null,
+    "teleports": null,
+    "messages": null,
+    "messages_per_junction": {},
+    "preemption_events": [],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 417,
+     "denm_sent": 0,
+     "car_receptions": 0,
+     "cars_made_way": 0,
+     "rsu_receptions": 0,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": null,
+     "ambulance_modules": 0
+    },
+    "state": "crashed"
+   },
+   "rl_v2i": {
+    "ambulance_s": null,
+    "arrived": false,
+    "others_vehicle_hours": null,
+    "teleports": null,
+    "messages": {
+     "sent": 0,
+     "delivered": 64,
+     "lost": 0,
+     "out_of_range": 0
+    },
+    "messages_per_junction": {
+     "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+      "sent": 0,
+      "delivered": 0,
+      "lost": 0,
+      "out_of_range": 0,
+      "preempted": false
+     },
+     "cluster_10139575501_2446124135_2446124154_3501293480": {
+      "sent": 0,
+      "delivered": 0,
+      "lost": 0,
+      "out_of_range": 0,
+      "preempted": false
+     }
+    },
+    "preemption_events": [],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 419,
+     "denm_sent": 0,
+     "car_receptions": 64,
+     "cars_made_way": 0,
+     "rsu_receptions": 0,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": null,
+     "ambulance_modules": 0
+    },
+    "state": "crashed"
+   }
+  },
+  {
+   "seed": 14,
+   "fixed": {
+    "ambulance_s": 299.0,
+    "arrived": true,
+    "others_vehicle_hours": 800.891,
+    "teleports": 283,
+    "messages": null,
+    "messages_per_junction": {},
+    "preemption_events": [],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 3505,
+     "denm_sent": 0,
+     "car_receptions": 0,
+     "cars_made_way": 0,
+     "rsu_receptions": 0,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 299.0,
+     "ambulance_modules": 1
+    },
+    "state": "arrived"
+   },
+   "rl": {
+    "ambulance_s": 758.0,
+    "arrived": true,
+    "others_vehicle_hours": 1140.955,
+    "teleports": 845,
+    "messages": null,
+    "messages_per_junction": {},
+    "preemption_events": [],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 3903,
+     "denm_sent": 0,
+     "car_receptions": 0,
+     "cars_made_way": 0,
+     "rsu_receptions": 0,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 758.0,
+     "ambulance_modules": 1
+    },
+    "state": "arrived"
+   },
+   "rl_v2i": {
+    "ambulance_s": 313.0,
+    "arrived": true,
+    "others_vehicle_hours": 974.021,
+    "teleports": 617,
+    "messages": {
+     "sent": 313,
+     "delivered": 36655,
+     "lost": 0,
+     "out_of_range": 572
+    },
+    "messages_per_junction": {
+     "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+      "sent": 313,
+      "delivered": 23,
+      "lost": 0,
+      "out_of_range": 290,
+      "preempted": true
+     },
+     "cluster_10139575501_2446124135_2446124154_3501293480": {
+      "sent": 313,
+      "delivered": 31,
+      "lost": 0,
+      "out_of_range": 282,
+      "preempted": true
+     }
+    },
+    "preemption_events": [
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "informed",
+      "t": 1096.0
+     },
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "takeover",
+      "t": 1096.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "informed",
+      "t": 1097.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "takeover",
+      "t": 1097.0
+     },
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "released",
+      "t": 1099.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "released",
+      "t": 1119.0
+     }
+    ],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 3791,
+     "denm_sent": 313,
+     "car_receptions": 36597,
+     "cars_made_way": 39,
+     "rsu_receptions": 58,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 313,
+       "received": 4,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 309,
+       "flags_written": 8
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 313,
+       "received": 23,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 290,
+       "flags_written": 46
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 313,
+       "received": 31,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 282,
+       "flags_written": 62
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 313.0,
+     "ambulance_modules": 1
+    },
+    "state": "arrived"
+   }
+  },
+  {
+   "seed": 15,
+   "fixed": {
+    "ambulance_s": 226.0,
+    "arrived": true,
+    "others_vehicle_hours": 670.424,
+    "teleports": 164,
+    "messages": null,
+    "messages_per_junction": {},
+    "preemption_events": [],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 3479,
+     "denm_sent": 0,
+     "car_receptions": 0,
+     "cars_made_way": 0,
+     "rsu_receptions": 0,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 226.0,
+     "ambulance_modules": 1
+    },
+    "state": "arrived"
+   },
+   "rl": {
+    "ambulance_s": 195.0,
+    "arrived": true,
+    "others_vehicle_hours": 866.634,
+    "teleports": 460,
+    "messages": null,
+    "messages_per_junction": {},
+    "preemption_events": [],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 3675,
+     "denm_sent": 0,
+     "car_receptions": 0,
+     "cars_made_way": 0,
+     "rsu_receptions": 0,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 0,
+       "received": 0,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 0,
+       "flags_written": 0
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 195.0,
+     "ambulance_modules": 1
+    },
+    "state": "arrived"
+   },
+   "rl_v2i": {
+    "ambulance_s": 185.0,
+    "arrived": true,
+    "others_vehicle_hours": 882.194,
+    "teleports": 483,
+    "messages": {
+     "sent": 185,
+     "delivered": 10002,
+     "lost": 0,
+     "out_of_range": 316
+    },
+    "messages_per_junction": {
+     "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+      "sent": 185,
+      "delivered": 24,
+      "lost": 0,
+      "out_of_range": 161,
+      "preempted": true
+     },
+     "cluster_10139575501_2446124135_2446124154_3501293480": {
+      "sent": 185,
+      "delivered": 30,
+      "lost": 0,
+      "out_of_range": 155,
+      "preempted": true
+     }
+    },
+    "preemption_events": [
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "informed",
+      "t": 961.0
+     },
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "takeover",
+      "t": 961.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "informed",
+      "t": 964.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "takeover",
+      "t": 964.0
+     },
+     {
+      "tls": "cluster_10139575489_10139575490_1720308864_225181943_#4more",
+      "what": "released",
+      "t": 966.0
+     },
+     {
+      "tls": "cluster_10139575501_2446124135_2446124154_3501293480",
+      "what": "released",
+      "t": 987.0
+     }
+    ],
+    "veins": {
+     "source": "Veins scalars (results/*.sca), its PHY/MAC",
+     "nodes": 3689,
+     "denm_sent": 185,
+     "car_receptions": 9944,
+     "cars_made_way": 18,
+     "rsu_receptions": 58,
+     "per_rsu": {
+      "6904866115": {
+       "rsu": 0,
+       "sent": 185,
+       "received": 4,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 181,
+       "flags_written": 8
+      },
+      "cluster_10139575489_10139575490_1720308864_225181943_#4more": {
+       "rsu": 1,
+       "sent": 185,
+       "received": 24,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 161,
+       "flags_written": 48
+      },
+      "cluster_10139575501_2446124135_2446124154_3501293480": {
+       "rsu": 2,
+       "sent": 185,
+       "received": 30,
+       "lost_interference_or_collision": 0,
+       "lost_while_transmitting": 0,
+       "not_received_below_sensitivity": 155,
+       "flags_written": 60
+      }
+     },
+     "beacons_generated": 0,
+     "beacons_received": 0,
+     "frames_lost_all_nodes": {
+      "interference_or_collision": 0,
+      "while_transmitting": 0
+     },
+     "ambulance_time_in_veins_s": 185.0,
+     "ambulance_modules": 1
+    },
+    "state": "arrived"
+   }
+  }
+ ],
+ "median_ambulance_s": {
+  "fixed": 299.0,
+  "rl": 195.0,
+  "rl_v2i": 249.5
+ },
+ "median_others_vehicle_hours": {
+  "fixed": 800.891,
+  "rl": 866.634,
+  "rl_v2i": 928.1075
+ },
+ "median_saving_s_vs_fixed": {
+  "fixed": null,
+  "rl": 31.0,
+  "rl_v2i": 13.5
+ },
+ "channel_model_loop_for_comparison": {
+  "file": "evidence/ambulance_loop/summary.json",
+  "tech": "its_g5",
+  "median_ambulance_s": {
+   "fixed": 292.0,
+   "rl": 196.0,
+   "rl_v2i": 194.0,
+   "fixed_v2i": 345.0
+  },
+  "median_others_vehicle_hours": {
+   "fixed": 670.424,
+   "rl": 866.634,
+   "rl_v2i": 872.639,
+   "fixed_v2i": 694.869
+  }
+ }
+}

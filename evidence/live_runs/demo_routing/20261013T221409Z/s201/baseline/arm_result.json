@@ -1,0 +1,166 @@
+{
+ "simulation_run_id": "sim_v2x_s201_baseline_4g_p30",
+ "arm": "baseline",
+ "seed": 201,
+ "profile": "4g",
+ "penetration": 0.3,
+ "moment": "prepeak",
+ "config_hash": "ea08dddedc14",
+ "network_hash": "0d81df27ab2d",
+ "fork": {
+  "t0_s": 1200,
+  "state_file": "evidence/live_runs/demo_routing/20261013T221409Z/s201/fork/fork_state_s201_t1200.xml",
+  "state_sha256": "ac117185cee8"
+ },
+ "information": "baseline",
+ "metrics": {
+  "arrived": 1385,
+  "unfinished_at_horizon": 2924,
+  "unfinished": 2924,
+  "total_vehicle_hours": 648.9297222222223,
+  "mean_travel_time_all": 542.1552564400093,
+  "mean_travel_time_s": 680.7198555956679,
+  "p95_travel_time_s": 1257.0,
+  "mean_waiting_s": 122.01227436823105,
+  "total_waiting_s": 168987.0,
+  "mean_time_loss_s": 258.41994223826714,
+  "mean_depart_delay_s": 0.6721805054151625,
+  "vehicles_rerouted_at_least_once": 0,
+  "teleports": 3,
+  "loaded": 12480,
+  "inserted": 5271,
+  "running_at_end": 2924,
+  "waiting_to_insert_at_end": 6,
+  "mean_queue_veh": 622.39,
+  "max_queue_veh": 842.0,
+  "mean_running_veh": 2493.73,
+  "queue_steps": 600,
+  "never_inserted": 0,
+  "never_inserted_vehicle_hours": 0.0,
+  "congestion": {
+   "major_edges": 4952,
+   "teleport_reasons": {
+    "total": 3,
+    "jam": 0,
+    "yield": 1,
+    "wrongLane": 2
+   },
+   "busiest_interval_utilisation": {
+    "p50": 0.017,
+    "p90": 0.107,
+    "max": 0.687,
+    "share_ge_0.5": 0.0,
+    "share_ge_0.7": 0.0,
+    "share_ge_0.9": 0.0
+   },
+   "mean_occupancy_pct_major": 1.6,
+   "spillback_major_edges_occ_ge_80": 0,
+   "spillback_share": 0.0,
+   "max_running_vehicles": 2924,
+   "max_halting_vehicles": 842,
+   "mean_halting_vehicles": 622.4,
+   "mean_speed_mps": 10.73,
+   "min_mean_speed_mps": 9.64,
+   "loaded_mean_speed_mps": 10.73,
+   "loaded_min_speed_mps": 9.64,
+   "loaded_mean_halting_share": 0.248,
+   "loaded_max_halting_share": 0.312,
+   "loaded_steps": 600
+  },
+  "total_vehicle_hours_incl_never_inserted": 648.9297,
+  "teleport_events": [
+   {
+    "vehicle_id": "veh1_1047",
+    "sim_time_s": 1607,
+    "connected": false,
+    "edge": "380779252"
+   },
+   {
+    "vehicle_id": "veh1_450",
+    "sim_time_s": 1618,
+    "connected": false,
+    "edge": "520217586"
+   },
+   {
+    "vehicle_id": "veh1_1176",
+    "sim_time_s": 1729,
+    "connected": false,
+    "edge": ""
+   }
+  ],
+  "reactive_reroute_calls": 0,
+  "incidents_applied": [],
+  "wall_s": 80.6
+ },
+ "network": {
+  "uplink": {
+   "channel": "uplink",
+   "latency_profile": {
+    "latency_ms": 75.0,
+    "jitter_ms": 0.0,
+    "loss": 0.04,
+    "ttl_s": 600.0,
+    "source": "configured"
+   },
+   "messages_tx": 0,
+   "messages_rx": 0,
+   "messages_dropped": 0,
+   "messages_expired": 0,
+   "undelivered_at_end": 0,
+   "packet_delivery_ratio": null,
+   "latency_mean_ms": null,
+   "latency_median_ms": null,
+   "latency_p95_ms": null,
+   "latency_p99_ms": null,
+   "observed_latency_median_ms": null,
+   "observed_latency_p95_ms": null,
+   "bytes_tx": 0,
+   "message_rate_per_s": 0.0,
+   "throughput_bytes_per_s": 0.0
+  },
+  "downlink": {
+   "channel": "downlink",
+   "latency_profile": {
+    "latency_ms": 75.0,
+    "jitter_ms": 0.0,
+    "loss": 0.04,
+    "ttl_s": 600.0,
+    "source": "configured"
+   },
+   "messages_tx": 0,
+   "messages_rx": 0,
+   "messages_dropped": 0,
+   "messages_expired": 0,
+   "undelivered_at_end": 0,
+   "packet_delivery_ratio": null,
+   "latency_mean_ms": null,
+   "latency_median_ms": null,
+   "latency_p95_ms": null,
+   "latency_p99_ms": null,
+   "observed_latency_median_ms": null,
+   "observed_latency_p95_ms": null,
+   "bytes_tx": 0,
+   "message_rate_per_s": 0.0,
+   "throughput_bytes_per_s": 0.0
+  },
+  "connected_vehicles": 1081,
+  "vehicles_seen": 3644,
+  "penetration_configured": 0.3,
+  "recommendations_delivered": 0,
+  "reroutes_applied": 0,
+  "recommendations_inapplicable": 0,
+  "incidents_detected": [],
+  "incident_detection_delay_s": null,
+  "lead_time": {
+   "incident_onset_s": null,
+   "first_reroute_applied_s": null,
+   "first_reroute_after_onset_s": null,
+   "reroutes_before_onset": 0
+  }
+ },
+ "rounds": [],
+ "routing_run_ids": [],
+ "reroute_log_file": "evidence/live_runs/demo_routing/20261013T221409Z/s201/baseline/reroute_log.jsonl",
+ "reroutes_applied": 0,
+ "out_dir": "evidence/live_runs/demo_routing/20261013T221409Z/s201/baseline"
+}

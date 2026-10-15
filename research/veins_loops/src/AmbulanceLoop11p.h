@@ -26,12 +26,14 @@ protected:
     bool makingWay = false;
     bool equipped = true;
     bool active = true;
+    bool posReported = false;                // validation: one report of Veins's own position (posReportAt)
     simtime_t departedAt = -1;
     long alertsSent = 0, alertsReceived = 0, madeWay = 0;
     omnetpp::cMessage* sendTimer = nullptr;
     omnetpp::cMessage* releaseTimer = nullptr;
 
     void onWSM(veins::BaseFrame1609_4* wsm) override;
+    void handlePositionUpdate(omnetpp::cObject* obj) override;
     void handleSelfMsg(omnetpp::cMessage* msg) override;
     void setVehicleVariable(uint8_t variable, int32_t value);
     void setVehicleVariable(uint8_t variable, const std::string& value);

@@ -9,6 +9,7 @@ simple AmbulanceLoop11p extends DemoBaseApplLayer
         double alertInterval @unit(s) = default(1s);
         double makewayDistance @unit(m) = default(100m);
         double makewayHold @unit(s) = default(30s);
+        double posReportAt @unit(s) = default(-1s);  // validation: at this time, write Veins's TraCIMobility position (OMNeT++ coordinates) to the SUMO vehicle parameter veins.xy; -1 = off
         double equippedShare = default(1);   // share of cars whose app acts on the alert (drawn per car); the ambulance always sends
         bool active = default(true);         // false: no frame is sent or acted on (the arms without V2X; the radio stays modelled)
         @display("i=block/app2");

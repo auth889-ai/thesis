@@ -10,6 +10,8 @@
  "sumo": "1.21.0 --num-clients 2 (Veins order 1, this loop order 2)",
  "fork": null,
  "warm_up_s": 1200,
+ "round_s": 300,
+ "demo_setting": false,
  "design": "Santamaria, Fazio, Raimondo, Tropea, De Rango, IEEE TVT 68(5) 2019, doi:10.1109/TVT.2019.2905753 (design: RSUs + 802.11p + predictive rerouting; no code released)",
  "information": "gwnet+correction",
  "state": "ok",
@@ -70,7 +72,7 @@
    "loaded_steps": 1192
   },
   "total_vehicle_hours_incl_never_inserted": 567.6439,
-  "wall_s": 88.4
+  "wall_s": 95.2
  },
  "network": {
   "link": "Veins 5.3.1 IEEE 802.11p (packet level), 20 mW, 6 Mbit/s, no obstacle shadowing on the LA twin",
@@ -289,8 +291,8 @@
    "reroute_budget": 64,
    "deferred_by_budget": 0,
    "decisions_after_budget": {
-    "KEEP_CURRENT_BELOW_THRESHOLD": 253,
     "NO_ALTERNATIVE": 318,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 253,
     "REROUTE": 61
    },
    "correction": {
@@ -335,11 +337,11 @@
    "derived_edges": 134,
    "observed_edges_fused": 0,
    "information": "gwnet+correction",
-   "inference_seconds": 0.047,
+   "inference_seconds": 0.049,
    "vehicles_considered": 632,
    "decisions": {
-    "KEEP_CURRENT_BELOW_THRESHOLD": 253,
     "NO_ALTERNATIVE": 318,
+    "KEEP_CURRENT_BELOW_THRESHOLD": 253,
     "REROUTE": 61
    },
    "recommendations_sent": 61,
@@ -352,5 +354,5 @@
  ],
  "reroutes_applied": 0,
  "out_dir": "evidence/live_runs/veins_routing_pytest/s201/predictive_corrected_v2x",
- "run_utc": "2026-10-12T15:20:31.046434+00:00"
+ "run_utc": "2026-10-14T17:31:03.713587+00:00"
 }
