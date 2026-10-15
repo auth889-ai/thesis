@@ -59,7 +59,7 @@ def test_ini_and_sumo_cfg_follow_the_arm(tmp_path):
     if not Path(scen["net"]).exists():
         pytest.skip("corridor not built")
     cfg = {"sumo": {"lateral_resolution": 0.8, "time_to_teleport_s": 300}, "alert": {"makeway": {"distance_m": 100}}}
-    rsus = [{"tls": "T1", "veins_xy": [10.0, 20.0]}, {"tls": "T2", "veins_xy": [30.0, 40.0]}]
+    rsus = [{"tls": "T1", "sumo_xy": [10.0, 20.0], "veins_xy": [10.0, 20.0]}, {"tls": "T2", "sumo_xy": [30.0, 40.0], "veins_xy": [30.0, 40.0]}]
     cfgf = vl.write_sumo_cfg(tmp_path, scen, tmp_path / "vt.rou.xml", 0.78, 3600, cfg)
     text = cfgf.read_text()
     assert '<scale value="0.78"/>' in text and '<end value="3600"/>' in text and "tripinfo-output.write-unfinished" in text and "dhaka_buildings.poly.xml" in text

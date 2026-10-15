@@ -60,7 +60,7 @@ def test_ini_and_cfg_follow_the_arm(tmp_path):
         ini = (vr.write_veins(tmp_path / arm, cfgf, P, rsus, 201, arm, 2100, 9977, False, 10) / "omnetpp.ini").read_text()
         assert f"*.rsu[*].appl.active = {active}" in ini and f"*.node[*].appl.active = {active}" in ini
         assert "network = SharedSumoScenarioExt" in ini and "*.manager.order = 1" in ini and "*.manager.port = 9977" in ini and "*.manager.penetrationRate = 0.3" in ini
-        assert '*.rsu[1].appl.poiId = "rsu1"' in ini and "*.rsu[1].mobility.x = 55.0" in ini and "*.numRsu = 2" in ini and "*.node[*].appl.statusInterval = 10s" in ini
+        assert '*.rsu[1].appl.poiId = "RSU 1"' in ini and "*.rsu[1].mobility.x = 55.0" in ini and "*.numRsu = 2" in ini and "*.node[*].appl.statusInterval = 10s" in ini
         assert "*.manager.commandLine" not in ini                                            # the Python client owns SUMO in Phase 2
 
 

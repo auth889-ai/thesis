@@ -15,11 +15,19 @@ jobs:
       - run: |
           pip install numpy pandas scipy scikit-learn matplotlib pytest tables joblib PyYAML \
                       streamlit pydeck eclipse-sumo sumolib traci pyproj \
-                      fastapi httpx uvicorn
+                      fastapi httpx uvicorn python-dotenv sqlalchemy
           pip install torch --index-url https://download.pytorch.org/whl/cpu
       # rclone fetches datasets from Drive; without it those tests skip rather than fail
       - run: sudo apt-get update -qq && sudo apt-get install -y -qq rclone || true
-      - run: python -m pytest -q -m "not slow"
+      # Forecast-routing tests only: the other parts of the project read data files that are kept out of git
+      # (Drive/S3), so their tests cannot run on a fresh checkout. Run the whole suite locally with `python -m pytest -q -m "not slow"`.
+      - run: |
+          python -m pytest -q -m "not slow" \
+            backend/tests/rebuild/test_route_optimizer.py backend/tests/rebuild/test_state_correction.py \
+            backend/tests/rebuild/test_network_assignment.py backend/tests/rebuild/test_v2x_closed_loop.py \
+            backend/tests/rebuild/test_chain_service.py backend/tests/rebuild/test_coverage_diagnostic.py \
+            backend/tests/rebuild/test_sensor_map.py tests/platform/test_route_decision_guard.py \
+            tests/platform/test_veins_routing_loop.py
   web:
     runs-on: ubuntu-latest
     steps:
